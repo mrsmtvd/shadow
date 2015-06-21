@@ -1,0 +1,74 @@
+{{ include "frontend" "layout/header.tpl.html" }}
+
+<div class="page-header">
+    <h1>Log view</h1>
+</div>
+
+<div style="margin-bottom:10px;">
+    <h4>Show {{ .MaxItems }} latest records</h4>
+    <div style="position:relative;text-align:right;margin:-26px 7px 0 0;">
+        <button id="refresh" type="button" class="btn btn-default btn-xs">Auto refresh</button>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" role="tablist">
+    {{ range $name, $entries := .Loggers }}
+    <li><a href="#{{ $name }}" role="tab" data-toggle="tab">{{ $name }}</a></li>
+    {{ end }}
+</ul>
+
+<div class="tab-content">
+    {{ range $name, $logger := .Loggers }}
+    <div role="tabpanel" class="tab-pane" id="{{ $name }}">
+        <p><pre></pre></p>
+    </div>
+    {{ end }}
+</div>
+
+<script>
+$(document).ready(function() {
+  function update() {
+    var tab = $('.tab-pane:visible:first');
+
+    if (!tab) {
+      return;
+    }
+
+    var logId = tab.attr('id');
+    var el = tab.find('pre').html('');
+
+    $.ajax({
+      type: 'GET',
+      url: '/system/logs?log=' + logId,
+      success: function(response){
+        items = [];
+        for (var i in response) {
+            var item = response[i];
+            items[i] = new Date(item.time).toLocaleString()  + ' [' + item.level.toUpperCase() + '] ' + item.message;
+        }
+
+        el.html(items.join("\n"));
+      }
+    });
+  }
+
+  $('.nav a').click(update).click();
+
+  var refresh = $('#refresh');
+  refresh.click(function() {
+    if (refresh.hasClass('btn-default')) {
+      refresh.addClass('btn-primary').removeClass('btn-default');
+    } else {
+      refresh.addClass('btn-default').removeClass('btn-primary');
+    }
+  })
+
+  setInterval(function() {
+    if (refresh.hasClass('btn-primary')) {
+      update();
+    }
+  }, 1000 * 5);
+});
+</script>
+
+{{ include "frontend" "layout/footer.tpl.html" }}

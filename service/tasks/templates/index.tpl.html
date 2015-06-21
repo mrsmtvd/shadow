@@ -1,0 +1,139 @@
+{{ include "frontend" "layout/header.tpl.html" }}
+
+<div class="page-header">
+    <h1>Stats</h1>
+</div>
+
+<div class="progress">
+    <div class="progress-bar progress-bar-info progress-bar-striped active" aria-valuenow="0" aria-valuemin="0"
+         aria-valuemax="100" style="width:50%" id="progress-busy">
+        Busy workers 0
+    </div>
+    <div class="progress-bar progress-bar-success progress-bar-striped" aria-valuenow="0" aria-valuemin="0"
+         aria-valuemax="100" style="width:50%" id="progress-wait">
+        Wait workers 0
+    </div>
+</div>
+
+<div class="page-header">
+    <h1>Workers</h1>
+</div>
+
+<table class="table table-hover" id="workers">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Created</th>
+        <th>Task ID</th>
+        <th>Task name</th>
+        <th>Task status</th>
+        <th>Task created</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<div class="page-header">
+    <h1>Wait tasks</h1>
+</div>
+
+<table class="table table-hover" id="tasks">
+    <thead>
+    <tr>
+        <th>Task ID</th>
+        <th>Task name</th>
+        <th>Task created</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    function getTaskStatusName(status) {
+      switch(status) {
+        case 0:
+          return 'wait';
+          break;
+
+        case 1:
+          return 'process';
+          break;
+
+        case 2:
+          return 'success';
+          break;
+
+        case 3:
+          return 'fail';
+          break;
+
+        case 4:
+          return 'wait repeat';
+          break;
+
+        default:
+          return 'unknown';
+          break;
+      }
+    }
+
+    function update() {
+      $.ajax({
+        type: 'GET',
+        url: '/tasks/stats/',
+        success: function(r){
+          if (!Array.isArray(r.workers)) {
+            return;
+          }
+
+          var tW = $('#workers tbody').empty();
+          var tT = $('#tasks tbody').empty();
+          var wl = r.workers.length;
+
+          // running & wait
+          if (wl == 0) {
+            percent1 = percent2 = 50;
+          } else {
+            percent1 = r.workers_busy > 0 ? (r.workers_busy / wl) * 100 : 0;
+            percent2 = r.workers_wait > 0 ? (r.workers_wait / wl) * 100 : 0;
+          }
+
+          $('#progress-busy').text(percent1 ? 'Busy workers ' + r.workers_busy : '').width(percent1 + '%');
+          $('#progress-wait').text(percent2 ? 'Wait workers ' + r.workers_wait : '').width(percent2 + '%');
+
+          for(var i in r.workers) {
+            var worker = r.workers[i];
+            var task = worker.task;
+
+            tW.append('<tr>'
+              + '<td>' + worker.id + '</td>'
+              + '<td>' + new Date(worker.created).toLocaleString() + '</td>'
+              + '<td>' + (task ? task.id : '') + '</td>'
+              + '<td>' + (task ? task.name : '') + '</td>'
+              + '<td>' + (task ? getTaskStatusName(task.status) : '') + '</td>'
+              + '<td>' + (task ? new Date(task.created).toLocaleString() : '') + '</td>'
+            + '</tr>');
+          }
+
+          for(var i in r.tasks_wait) {
+            var task = r.tasks_wait[i];
+
+            tT.append('<tr>'
+              + '<td>' + task.id + '</td>'
+              + '<td>' + task.name + '</td>'
+              + '<td>' + new Date(task.created).toLocaleString() + '</td>'
+            + '</tr>');
+          }
+        }
+      });
+    }
+
+    $(function() {
+      update();
+      setInterval(update, 1000 * 5);
+    });
+</script>
+
+{{ include "frontend" "layout/footer.tpl.html" }}
