@@ -47,6 +47,17 @@ func (r *Config) Run() error {
 
 	iniflags.Parse()
 
+	resourceLogger, err := r.application.GetResource("logger")
+	if err == nil {
+		flag.VisitAll(func(f *flag.Flag) {
+			if f.Name == "config" {
+				resourceLogger.(*Logger).Get(r.GetName()).Infof("Use config from %s", f.Value.String())
+			}
+		})
+
+
+	}
+
 	return nil
 }
 
