@@ -1,7 +1,7 @@
 package resource
 
 import (
-	"bitbucket.org/kihamo/shadow/storage"
+	"github.com/kihamo/shadow/storage"
 	"github.com/kihamo/shadow"
 )
 
