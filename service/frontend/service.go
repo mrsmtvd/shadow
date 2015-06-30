@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"sync"
 
 	"github.com/GeertJohan/go.rice"
 	"github.com/Sirupsen/logrus"
@@ -117,7 +118,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	return nil
 }
 
-func (s *FrontendService) Run() error {
+func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	menus := make([]*FrontendMenu, 0, len(s.application.GetServices()))
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceFrontendHandlers); ok {
@@ -133,6 +134,8 @@ func (s *FrontendService) Run() error {
 	s.template.Globals["Menu"] = menus
 
 	go func(router *Router) {
+		defer wg.Done()
+
 		http.HandleFunc("/", func(out http.ResponseWriter, in *http.Request) {
 			router.ServeHTTP(out, in)
 		})

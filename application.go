@@ -1,6 +1,8 @@
 package shadow
 
 import (
+	"sync"
+
 	"github.com/dropbox/godropbox/errors"
 )
 
@@ -11,6 +13,10 @@ type ContextItem interface {
 
 type ContextItemRunner interface {
 	Run() error
+}
+
+type ContextItemAsyncRunner interface {
+	Run(*sync.WaitGroup) error
 }
 
 type Resource interface {
@@ -27,6 +33,8 @@ type Application struct {
 
 	Version string
 	Build   string
+
+	wg *sync.WaitGroup
 }
 
 func NewApplication(resources []Resource, services []Service, version string, build string) (*Application, error) {
@@ -35,6 +43,7 @@ func NewApplication(resources []Resource, services []Service, version string, bu
 		services:  []Service{},
 		Version:   version,
 		Build:     build,
+		wg:        new(sync.WaitGroup),
 	}
 
 	for i := range resources {
@@ -63,7 +72,10 @@ func (a *Application) Run() error {
 	}
 
 	for i := range resources {
-		if runner, ok := resources[i].(ContextItemRunner); ok {
+		if runner, ok := resources[i].(ContextItemAsyncRunner); ok {
+			a.wg.Add(1)
+			runner.Run(a.wg)
+		} else if runner, ok := resources[i].(ContextItemRunner); ok {
 			runner.Run()
 		}
 	}
@@ -78,12 +90,15 @@ func (a *Application) Run() error {
 	}
 
 	for i := range services {
-		if runner, ok := services[i].(ContextItemRunner); ok {
+		if runner, ok := services[i].(ContextItemAsyncRunner); ok {
+			a.wg.Add(1)
+			runner.Run(a.wg)
+		} else if runner, ok := services[i].(ContextItemRunner); ok {
 			runner.Run()
 		}
 	}
 
-	select {}
+	a.wg.Wait()
 
 	return nil
 }
