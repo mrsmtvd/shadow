@@ -3,6 +3,7 @@ package tasks
 import (
 	"runtime"
 	"time"
+	"sync"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
@@ -34,7 +35,7 @@ func (s *TasksService) Init(a *shadow.Application) error {
 	return nil
 }
 
-func (s *TasksService) Run() error {
+func (s *TasksService) Run(wg *sync.WaitGroup) error {
 	s.logger.Info("Start tasks manager")
 
 	return nil

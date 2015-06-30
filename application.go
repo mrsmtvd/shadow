@@ -61,22 +61,19 @@ func NewApplication(resources []Resource, services []Service, version string, bu
 	return application, nil
 }
 
-func (a *Application) Run() error {
+func (a *Application) Run() (err error) {
 	// Resources
 	resources := a.GetResources()
 
 	for i := range resources {
-		if err := resources[i].Init(a); err != nil {
+		if err = resources[i].Init(a); err != nil {
 			return err
 		}
 	}
 
 	for i := range resources {
-		if runner, ok := resources[i].(ContextItemAsyncRunner); ok {
-			a.wg.Add(1)
-			runner.Run(a.wg)
-		} else if runner, ok := resources[i].(ContextItemRunner); ok {
-			runner.Run()
+		if err = a.run(resources[i]); err != nil {
+			break
 		}
 	}
 
@@ -84,21 +81,34 @@ func (a *Application) Run() error {
 	services := a.GetServices()
 
 	for i := range services {
-		if err := services[i].Init(a); err != nil {
+		if err = services[i].Init(a); err != nil {
 			return err
 		}
 	}
 
 	for i := range services {
-		if runner, ok := services[i].(ContextItemAsyncRunner); ok {
-			a.wg.Add(1)
-			runner.Run(a.wg)
-		} else if runner, ok := services[i].(ContextItemRunner); ok {
-			runner.Run()
+		if err = a.run(services[i]); err != nil {
+			break
 		}
 	}
 
 	a.wg.Wait()
+
+	return err
+}
+
+func (a *Application) run(item ContextItem) error {
+	if runner, ok := item.(ContextItemAsyncRunner); ok {
+		a.wg.Add(1)
+		if err := runner.Run(a.wg); err != nil {
+			a.wg.Done()
+			return err
+		}
+	} else if runner, ok := item.(ContextItemRunner); ok {
+		if err := runner.Run(); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

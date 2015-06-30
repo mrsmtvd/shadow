@@ -21,7 +21,6 @@ type AbstractSlackCommand struct {
 	Application  *shadow.Application
 	Service      shadow.Service
 	SlackService *SlackService
-	Rtm          *slack.SlackWS
 }
 
 func (c *AbstractSlackCommand) AllowDirectMessage() bool {
@@ -40,7 +39,6 @@ func (c *AbstractSlackCommand) Init(s shadow.Service, a *shadow.Application) {
 	if err == nil {
 		if castService, ok := slackService.(*SlackService); ok {
 			c.SlackService = castService
-			c.Rtm = c.SlackService.Rtm
 			return
 		}
 	}
@@ -49,17 +47,17 @@ func (c *AbstractSlackCommand) Init(s shadow.Service, a *shadow.Application) {
 }
 
 func (c *AbstractSlackCommand) SendMessage(channelId string, message string) error {
-	return c.Rtm.SendMessage(c.Rtm.NewOutgoingMessage(message, channelId))
+	return c.SlackService.Rtm.SendMessage(c.SlackService.Rtm.NewOutgoingMessage(message, channelId))
 }
 
 func (c *AbstractSlackCommand) SendMessagef(channelId string, message string, args ...interface{}) error {
 	message = fmt.Sprintf(message, args...)
-	return c.Rtm.SendMessage(c.Rtm.NewOutgoingMessage(message, channelId))
+	return c.SlackService.Rtm.SendMessage(c.SlackService.Rtm.NewOutgoingMessage(message, channelId))
 }
 
 func (c *AbstractSlackCommand) SendPostMessage(channelId string, message string, params slack.PostMessageParameters) error {
 	params.AsUser = true
 
-	_, _, err := c.Rtm.Slack.PostMessage(channelId, message, params)
+	_, _, err := c.SlackService.Rtm.Slack.PostMessage(channelId, message, params)
 	return err
 }

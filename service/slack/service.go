@@ -3,6 +3,7 @@ package slack
 import (
 	"flag"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -10,6 +11,11 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
 	"github.com/nlopes/slack"
+)
+
+const (
+	keepAlive = 20 * time.Second
+	connectDelay = 5 * time.Second
 )
 
 type ServiceSlackCommands interface {
@@ -24,6 +30,11 @@ type SlackService struct {
 	Commands map[string]SlackCommand
 	Rtm      *slack.SlackWS
 	Bot      *slack.UserDetails
+
+	api             *slack.Slack
+	sender          chan slack.OutgoingMessage
+	receiver        chan slack.SlackEvent
+	connectAttempts int
 }
 
 func (s *SlackService) GetName() string {
@@ -50,60 +61,27 @@ func (s *SlackService) Init(a *shadow.Application) error {
 	return nil
 }
 
-func (s *SlackService) Run() error {
-	api := slack.New(s.config.GetString("slack-token"))
-	api.SetDebug(s.config.GetBool("debug"))
+func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
+	s.api = slack.New(s.config.GetString("slack-token"))
+	s.api.SetDebug(s.config.GetBool("debug"))
 
-	sender := make(chan slack.OutgoingMessage)
-	receiver := make(chan slack.SlackEvent)
-
-	var err error
-	s.Rtm, err = api.StartRTM("", "http://localhost/")
+	s.sender = make(chan slack.OutgoingMessage)
+	s.receiver = make(chan slack.SlackEvent)
 
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceSlackCommands); ok {
 			for _, command := range serviceCast.GetSlackCommands() {
 				if err := s.RegisterCommand(command, service.(shadow.Service)); err != nil {
-					s.logger.Errorf("Error register slack command " + command.GetName())
+					s.logger.Errorf("Error register slack command %s", command.GetName())
+					// ignore error
 				}
 			}
 		}
 	}
 
-	if err != nil {
+	if err = s.connect(); err != nil {
 		return err
 	}
-
-	go s.Rtm.HandleIncomingEvents(receiver)
-	go s.Rtm.Keepalive(20 * time.Second)
-
-	go func(wsAPI *slack.SlackWS, chSender chan slack.OutgoingMessage) {
-		for {
-			select {
-			case msg := <-chSender:
-				wsAPI.SendMessage(&msg)
-			}
-		}
-	}(s.Rtm, sender)
-
-	s.Bot = s.Rtm.GetInfo().User
-	s.logger.Infof("Connect slack as %s", s.Bot.Name)
-
-	go func() {
-		for {
-			select {
-			case msg := <-receiver:
-				switch msg.Data.(type) {
-				case *slack.MessageEvent:
-					s.handleCommand(msg.Data.(*slack.MessageEvent))
-				default:
-					if s.config.GetBool("debug") {
-						s.logger.Warnf("Unexpected: %v\n", msg.Data)
-					}
-				}
-			}
-		}
-	}()
 
 	return nil
 }
@@ -188,4 +166,68 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	}
 
 	command.Run(m, args...)
+}
+
+func (s *SlackService) connect() (err error) {
+	s.connectAttempts = s.connectAttempts + 1
+
+	s.Rtm, err = s.api.StartRTM("", "http://localhost/")
+
+	go func(wsAPI *slack.SlackWS, ch chan slack.SlackEvent) {
+		defer func() {
+			if r := recover(); r != nil {
+				// TODO: reconnect
+				panic(r)
+			}
+		}()
+
+		wsAPI.HandleIncomingEvents(ch)
+	}(s.Rtm, s.receiver)
+
+	go s.keepalive()
+
+	go func(wsAPI *slack.SlackWS, chSender chan slack.OutgoingMessage) {
+		for {
+			select {
+			case msg := <-chSender:
+				wsAPI.SendMessage(&msg)
+			}
+		}
+	}(s.Rtm, s.sender)
+
+	s.Bot = s.Rtm.GetInfo().User
+	s.connectAttempts = 0
+	s.logger.Infof("Connect slack as %s", s.Bot.Name)
+
+	go func() {
+		for {
+			select {
+			case msg := <-s.receiver:
+				switch msg.Data.(type) {
+				case *slack.MessageEvent:
+					s.handleCommand(msg.Data.(*slack.MessageEvent))
+				default:
+					if s.config.GetBool("debug") {
+						s.logger.Warnf("Unexpected: %v", msg.Data)
+					}
+				}
+			}
+		}
+	}()
+
+	return nil
+}
+
+func (s *SlackService) keepalive() {
+	ticker := time.NewTicker(keepAlive)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			if err := s.Rtm.Ping(); err != nil {
+				s.logger.Errorf("Ping error: %s ", err.Error())
+			}
+		}
+	}
 }
