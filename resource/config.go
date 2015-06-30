@@ -55,7 +55,6 @@ func (r *Config) Run() error {
 			}
 		})
 
-
 	}
 
 	return nil
