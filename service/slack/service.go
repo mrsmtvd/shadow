@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	keepAlive = 20 * time.Second
+	keepAlive    = 10 * time.Second
 	connectDelay = 5 * time.Second
 )
 
@@ -31,10 +31,11 @@ type SlackService struct {
 	Rtm      *slack.SlackWS
 	Bot      *slack.UserDetails
 
+	mutex           sync.RWMutex
+	connected       bool
 	api             *slack.Slack
-	sender          chan slack.OutgoingMessage
-	receiver        chan slack.SlackEvent
-	connectAttempts int
+	senderChannel   chan slack.OutgoingMessage
+	receiverChannel chan slack.SlackEvent
 }
 
 func (s *SlackService) GetName() string {
@@ -65,8 +66,8 @@ func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
 	s.api = slack.New(s.config.GetString("slack-token"))
 	s.api.SetDebug(s.config.GetBool("debug"))
 
-	s.sender = make(chan slack.OutgoingMessage)
-	s.receiver = make(chan slack.SlackEvent)
+	s.senderChannel = make(chan slack.OutgoingMessage)
+	s.receiverChannel = make(chan slack.SlackEvent)
 
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceSlackCommands); ok {
@@ -79,9 +80,10 @@ func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
 		}
 	}
 
-	if err = s.connect(); err != nil {
-		return err
-	}
+	go s.sender()
+	go s.receiver()
+	go s.connect()
+	go s.keepalive()
 
 	return nil
 }
@@ -168,54 +170,67 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	command.Run(m, args...)
 }
 
-func (s *SlackService) connect() (err error) {
-	s.connectAttempts = s.connectAttempts + 1
+func (s *SlackService) connect() {
+	var err error
+
+	defer func() {
+		if r := recover(); r != nil {
+			s.mutex.Lock()
+			s.connected = false
+			s.logger.Errorf("Panic: %v", r)
+			s.logger.Debug("Connect closed. Sleep ", time.Duration(connectDelay).String())
+			s.mutex.Unlock()
+
+			time.Sleep(connectDelay)
+			go s.connect()
+		}
+	}()
 
 	s.Rtm, err = s.api.StartRTM("", "http://localhost/")
-
-	go func(wsAPI *slack.SlackWS, ch chan slack.SlackEvent) {
-		defer func() {
-			if r := recover(); r != nil {
-				// TODO: reconnect
-				panic(r)
-			}
-		}()
-
-		wsAPI.HandleIncomingEvents(ch)
-	}(s.Rtm, s.receiver)
-
-	go s.keepalive()
-
-	go func(wsAPI *slack.SlackWS, chSender chan slack.OutgoingMessage) {
-		for {
-			select {
-			case msg := <-chSender:
-				wsAPI.SendMessage(&msg)
-			}
-		}
-	}(s.Rtm, s.sender)
+	if err != nil {
+		panic(err)
+	}
 
 	s.Bot = s.Rtm.GetInfo().User
-	s.connectAttempts = 0
-	s.logger.Infof("Connect slack as %s", s.Bot.Name)
 
-	go func() {
-		for {
-			select {
-			case msg := <-s.receiver:
-				switch msg.Data.(type) {
-				case *slack.MessageEvent:
-					s.handleCommand(msg.Data.(*slack.MessageEvent))
-				default:
-					if s.config.GetBool("debug") {
+	s.mutex.Lock()
+	s.connected = true
+	s.logger.Infof("Connect slack as %s", s.Bot.Name)
+	s.mutex.Unlock()
+
+	s.Rtm.HandleIncomingEvents(s.receiverChannel)
+}
+
+func (s *SlackService) sender() {
+	for {
+		select {
+		case msg := <-s.senderChannel:
+			s.Rtm.SendMessage(&msg)
+		}
+	}
+}
+
+func (s *SlackService) receiver() {
+	for {
+		select {
+		case msg := <-s.receiverChannel:
+			switch msg.Data.(type) {
+			case slack.HelloEvent:
+			// Ignore hello
+			case *slack.MessageEvent:
+				s.handleCommand(msg.Data.(*slack.MessageEvent))
+			default:
+				if s.config.GetBool("debug") {
+					// Ignore pong
+					if _, ok := msg.Data.(slack.LatencyReport); !ok {
+						s.mutex.Lock()
 						s.logger.Warnf("Unexpected: %v", msg.Data)
+						s.mutex.Unlock()
 					}
 				}
 			}
 		}
-	}()
-
-	return nil
+	}
 }
 
 func (s *SlackService) keepalive() {
@@ -225,8 +240,17 @@ func (s *SlackService) keepalive() {
 	for {
 		select {
 		case <-ticker.C:
-			if err := s.Rtm.Ping(); err != nil {
-				s.logger.Errorf("Ping error: %s ", err.Error())
+			s.mutex.RLock()
+			if s.connected {
+				s.mutex.RUnlock()
+
+				if err := s.Rtm.Ping(); err != nil {
+					s.mutex.Lock()
+					s.logger.Errorf("Ping error: %s ", err.Error())
+					s.mutex.Unlock()
+				}
+			} else {
+				s.mutex.RUnlock()
 			}
 		}
 	}

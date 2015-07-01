@@ -2,8 +2,8 @@ package tasks
 
 import (
 	"runtime"
-	"time"
 	"sync"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
