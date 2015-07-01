@@ -27,14 +27,14 @@ func (r *Logger) Init(a *shadow.Application) error {
 		textFormatter.FullTimestamp = true
 	}
 
-	if r.config.GetBool("debug") {
-		r.logger.Level = logrus.DebugLevel
-	}
-
 	return nil
 }
 
 func (r *Logger) Run() (err error) {
+	if r.config.GetBool("debug") {
+		r.logger.Level = logrus.DebugLevel
+	}
+
 	r.Get(r.GetName()).Info("Logger start")
 
 	return nil
