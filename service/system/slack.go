@@ -7,6 +7,7 @@ import (
 func (s *SystemService) GetSlackCommands() []slack.SlackCommand {
 	return []slack.SlackCommand{
 		&ConfigCommand{},
+		&ServicesCommand{},
 		&LogCommand{},
 	}
 }

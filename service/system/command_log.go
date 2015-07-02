@@ -2,9 +2,8 @@ package system
 
 import (
 	"fmt"
-	"strings"
-
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kihamo/shadow/service/slack"
