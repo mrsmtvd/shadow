@@ -3,9 +3,9 @@ package system
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow/service/slack"
 	sl "github.com/nlopes/slack"
 )
@@ -19,7 +19,7 @@ func (c *LogCommand) GetName() string {
 }
 
 func (c *LogCommand) GetDescription() string {
-	return "Логи системы"
+	return "Show logs"
 }
 
 func (c *LogCommand) Run(m *sl.MessageEvent, args ...string) {
@@ -38,7 +38,7 @@ func (c *LogCommand) Run(m *sl.MessageEvent, args ...string) {
 			})
 		}
 
-		c.SendPostMessage(m.ChannelId, "Доступные компоненты", params)
+		c.SendPostMessage(m.ChannelId, "Available components", params)
 		return
 	}
 
@@ -46,30 +46,82 @@ func (c *LogCommand) Run(m *sl.MessageEvent, args ...string) {
 	if len(args) == 2 {
 		var err error
 		if showItemsCount, err = strconv.Atoi(args[1]); err != nil {
-			c.SendMessage(m.ChannelId, "Значение количества выводимых записей не является числом")
+			c.SendMessage(m.ChannelId, "Specified number of records to display is not a number")
 			return
 		}
 	}
 
 	component, ok := loggers[args[0]]
 	if !ok {
-		c.SendMessagef(m.ChannelId, "Компонента *%s* не существует", args[0])
+		c.SendMessagef(m.ChannelId, "Component *%s* does't exists", args[0])
+		return
+	}
+
+	if len(component) == 0 {
+		c.SendMessagef(m.ChannelId, "Log empty for *%s* component", args[0])
 		return
 	}
 
 	skip := -1
 	if showItemsCount < len(component) {
 		skip = len(component) - showItemsCount
+	} else {
+		showItemsCount = len(component)
 	}
 
-	values := []string{}
-	for i := range component {
+	var (
+		color      string
+		index      int64
+		attachment sl.Attachment
+	)
+
+	params := sl.NewPostMessageParameters()
+	params.Attachments = make([]sl.Attachment, showItemsCount)
+
+	for i, c := range component {
 		if i < skip {
 			continue
 		}
 
-		values = append(values, fmt.Sprintf("%s [%s] %s", component[i].Time.Format(time.RFC1123Z), strings.ToUpper(component[i].Level.String()), component[i].Message))
+		switch c.Level {
+		case logrus.DebugLevel:
+			color = "#999999"
+		case logrus.InfoLevel:
+			color = "#5bc0de"
+		case logrus.WarnLevel:
+			color = "warning"
+		case logrus.ErrorLevel:
+			color = "danger"
+		case logrus.FatalLevel:
+			color = "danger"
+		case logrus.PanicLevel:
+			color = "danger"
+		default:
+			color = "good"
+		}
+
+		attachment = sl.Attachment{
+			Color:  color,
+			Title:  c.Time.Format(time.RFC1123Z),
+			Text:   c.Message,
+			Fields: []sl.AttachmentField{},
+		}
+
+		for field, value := range component[i].Data {
+			if field == "component" {
+				continue
+			}
+
+			attachment.Fields = append(attachment.Fields, sl.AttachmentField{
+				Title: field,
+				Value: fmt.Sprintf("%v", value),
+				Short: true,
+			})
+		}
+
+		params.Attachments[index] = attachment
+		index = index + 1
 	}
 
-	c.SendMessage(m.ChannelId, strings.Join(values, "\n"))
+	c.SendPostMessage(m.ChannelId, fmt.Sprintf("Show last *%d* entries for *%s* component", showItemsCount, args[0]), params)
 }
