@@ -1,6 +1,7 @@
 package api
 
 import (
+	"crypto/tls"
 	"fmt"
 	"sync"
 
@@ -83,10 +84,13 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 	fields := logrus.Fields{
 		"protocol":  protocol,
 		"transport": transport,
+		"ssl":       false,
 	}
 
 	if socket, ok := serverTransport.(*thrift.TServerSocket); ok {
 		fields["addr"] = socket.Addr()
+	} else if _, ok := serverTransport.(*thrift.TSSLServerSocket); ok {
+		fields["ssl"] = true
 	}
 
 	s.logger.WithFields(fields).Info("Running service")
@@ -101,7 +105,21 @@ func (s *ApiService) GetClientTransport() (thrift.TTransport, error) {
 
 func (s *ApiService) GetServerTransport() (thrift.TServerTransport, error) {
 	addr := fmt.Sprintf("%s:%s", s.config.GetString("api-host"), s.config.GetString("api-port"))
-	return thrift.NewTServerSocket(addr)
+
+	if s.config.GetBool("api-secure") {
+		config := new(tls.Config)
+		cert, err := tls.LoadX509KeyPair(s.config.GetString("api-secure-crt"), s.config.GetString("api-secure-key"))
+
+		if err != nil {
+			return nil, err
+		} else {
+			config.Certificates = append(config.Certificates, cert)
+		}
+
+		return thrift.NewTSSLServerSocket(addr, config)
+	} else {
+		return thrift.NewTServerSocket(addr)
+	}
 }
 
 func (s *ApiService) GetProtocolFactory(protocol string) (protocolFactory thrift.TProtocolFactory, err error) {
