@@ -10,7 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
-	"github.com/kihamo/shadow/service/tasks"
 )
 
 type AwsService struct {
@@ -56,12 +55,10 @@ func (s *AwsService) Init(a *shadow.Application) error {
 
 	s.SNS = sns.New(awsConfig)
 
-	service, err := a.GetService("tasks")
-	if err != nil {
-		return err
+	if a.HasResource("tasks") {
+		tasks, _ := a.GetResource("tasks")
+		tasks.(*resource.Dispatcher).AddTask(s.getStatsJob)
 	}
-	tasks := service.(*tasks.TasksService)
-	tasks.AddTask(s.getStatsJob)
 
 	return nil
 }

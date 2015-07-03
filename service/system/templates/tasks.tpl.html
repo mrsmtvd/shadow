@@ -82,7 +82,7 @@
     function update() {
       $.ajax({
         type: 'GET',
-        url: '/tasks/stats/',
+        url: '/system/tasks',
         success: function(r){
           if (!Array.isArray(r.workers)) {
             return;

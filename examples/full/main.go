@@ -1,4 +1,4 @@
-package main
+package main // import "github.com/kihamo/shadow/examples/full"
 
 import (
 	"log"
@@ -10,7 +10,6 @@ import (
 	"github.com/kihamo/shadow/service/frontend"
 	"github.com/kihamo/shadow/service/slack"
 	"github.com/kihamo/shadow/service/system"
-	"github.com/kihamo/shadow/service/tasks"
 )
 
 func main() {
@@ -19,10 +18,10 @@ func main() {
 			new(resource.Config),
 			new(resource.Logger),
 			new(resource.Template),
+			new(resource.Dispatcher),
 		},
 		[]shadow.Service{
 			new(system.SystemService),
-			new(tasks.TasksService),
 			new(api.ApiService),
 			new(aws.AwsService),
 			new(frontend.FrontendService),

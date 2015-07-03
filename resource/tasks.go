@@ -1,4 +1,4 @@
-package tasks
+package resource
 
 import (
 	"container/heap"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/kihamo/shadow"
 )
 
 // https://talks.golang.org/2010/io/balance.go
@@ -213,19 +214,25 @@ type Dispatcher struct {
 	waitGroup *sync.WaitGroup
 }
 
-func NewDispatcher() *Dispatcher {
-	d := &Dispatcher{
-		newTasks:        make(chan *Task),
-		queue:           make(chan *Task),
-		workers:         make(Pool, 0),
-		done:            make(chan *Worker),
-		allowProcessing: make(chan bool),
-		quit:            make(chan bool),
-		waitGroup:       new(sync.WaitGroup),
-		workersBusy:     0,
-		tasksWait:       make([]*Task, 0),
-	}
+func (d *Dispatcher) GetName() string {
+	return "tasks"
+}
 
+func (d *Dispatcher) Init(a *shadow.Application) error {
+	d.newTasks = make(chan *Task)
+	d.queue = make(chan *Task)
+	d.workers = make(Pool, 0)
+	d.done = make(chan *Worker)
+	d.allowProcessing = make(chan bool)
+	d.quit = make(chan bool)
+	d.waitGroup = new(sync.WaitGroup)
+	d.workersBusy = 0
+	d.tasksWait = make([]*Task, 0)
+
+	return nil
+}
+
+func (d *Dispatcher) Run() error {
 	// отслеживание квоты на занятость исполнителей
 	go func() {
 		for {
@@ -243,7 +250,7 @@ func NewDispatcher() *Dispatcher {
 	}
 
 	go d.process()
-	return d
+	return nil
 }
 
 // AddWorker добавляет еще одного исполнителя в пулл

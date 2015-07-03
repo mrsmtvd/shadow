@@ -61,6 +61,10 @@ func (h *AbstractFrontendHandler) Render() {
 	}
 }
 
+func (h *AbstractFrontendHandler) IsAjax() bool {
+	return h.Input.Header.Get("X-Requested-With") == "XMLHttpRequest"
+}
+
 func (h *AbstractFrontendHandler) SendJSON(reply interface{}) {
 	response, err := json.Marshal(reply)
 	if err != nil {

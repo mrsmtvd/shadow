@@ -10,18 +10,30 @@ func (s *SystemService) GetTemplateBox() *rice.Box {
 }
 
 func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
-	return &frontend.FrontendMenu{
-		Name: "System",
-		SubMenu: []*frontend.FrontendMenu{
-			&frontend.FrontendMenu{
-				Name: "Config",
-				Url:  "/system/config",
-			},
-			&frontend.FrontendMenu{
-				Name: "Logs",
-				Url:  "/system/logs",
-			},
+	menu := []*frontend.FrontendMenu{
+		&frontend.FrontendMenu{
+			Name: "Config",
+			Url:  "/system/config",
 		},
+	}
+
+	if s.Application.HasResource("logger") {
+		menu = append(menu, &frontend.FrontendMenu{
+			Name: "Logs",
+			Url:  "/system/logs",
+		})
+	}
+
+	if s.Application.HasResource("tasks") {
+		menu = append(menu, &frontend.FrontendMenu{
+			Name: "Tasks",
+			Url:  "/system/tasks",
+		})
+	}
+
+	return &frontend.FrontendMenu{
+		Name:    "System",
+		SubMenu: menu,
 	}
 }
 
@@ -30,5 +42,9 @@ func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 
 	if s.Application.HasResource("logger") {
 		router.GET(s, "/system/logs", &LogsHandler{})
+	}
+
+	if s.Application.HasResource("tasks") {
+		router.GET(s, "/system/tasks", &TasksHandler{})
 	}
 }
