@@ -14,6 +14,6 @@ build: deps
 	rice $(GO_RICE_IMPORT) append --exec full
 
 deps:
-	go get -t -d -v github.com/GeertJohan/go.rice/...
+	go get -t -v github.com/GeertJohan/go.rice/...
 
 .PHONY: all clean build deps
