@@ -50,7 +50,6 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 	if err != nil {
 		return err
 	}
-	defer serverTransport.Close()
 
 	// protocol
 	protocol := s.config.GetString("api-protocol")
@@ -79,21 +78,26 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 		}
 	}
 
-	go server.Serve()
+    go func() {
+        defer serverTransport.Close()
+        defer wg.Done()
 
-	fields := logrus.Fields{
-		"protocol":  protocol,
-		"transport": transport,
-		"ssl":       false,
-	}
+        fields := logrus.Fields{
+            "protocol":  protocol,
+            "transport": transport,
+            "ssl":       false,
+        }
 
-	if socket, ok := serverTransport.(*thrift.TServerSocket); ok {
-		fields["addr"] = socket.Addr()
-	} else if _, ok := serverTransport.(*thrift.TSSLServerSocket); ok {
-		fields["ssl"] = true
-	}
+        if socket, ok := serverTransport.(*thrift.TServerSocket); ok {
+            fields["addr"] = socket.Addr()
+        } else if _, ok := serverTransport.(*thrift.TSSLServerSocket); ok {
+            fields["ssl"] = true
+        }
 
-	s.logger.WithFields(fields).Info("Running service")
+        s.logger.WithFields(fields).Info("Running service")
+
+	    server.Serve()
+    }()
 
 	return nil
 }
