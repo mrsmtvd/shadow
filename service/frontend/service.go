@@ -89,19 +89,21 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 
 	methodNotAllowedHandler := MethodNotAllowedHandler{}
 	methodNotAllowedHandler.Init(s.application, s)
-	s.router.MethodNotAllowed = func(out http.ResponseWriter, in *http.Request) {
+	methodNotAllowed := func(out http.ResponseWriter, in *http.Request) {
 		methodNotAllowedHandler.InitRequest(out, in)
 		methodNotAllowedHandler.Handle()
 		methodNotAllowedHandler.Render()
 	}
+    s.router.MethodNotAllowed = http.HandlerFunc(methodNotAllowed)
 
 	notFoundHandler := &NotFoundHandler{}
 	notFoundHandler.Init(s.application, s)
-	s.router.NotFound = func(out http.ResponseWriter, in *http.Request) {
+	notFound := func(out http.ResponseWriter, in *http.Request) {
 		notFoundHandler.InitRequest(out, in)
 		notFoundHandler.Handle()
 		notFoundHandler.Render()
 	}
+    s.router.NotFound = http.HandlerFunc(notFound)
 
 	if rice.Debug {
 		s.router.HandlerFunc("GET", "/debug/pprof/cmdline", pprof.Cmdline)
