@@ -1,15 +1,19 @@
-all: clean build docker
+GO_RICE_IMPORT := \
+ -i github.com/kihamo/shadow/service/aws \
+ -i github.com/kihamo/shadow/service/frontend \
+ -i github.com/kihamo/shadow/service/slack \
+ -i github.com/kihamo/shadow/service/system
+
+all: clean build
 
 clean:
 	go clean
 
-build:
-	go build
+build: deps
+	go build -a -race
+	rice $(GO_RICE_IMPORT) append --exec full
 
-docker:
-	docker build -t shadow-full .
+deps:
+	go get -t -d -v github.com/GeertJohan/go.rice/...
 
-run:
-	docker run --rm --add-host=docker:192.168.59.3 -p 8001:8001 -p 8080:8080 --name shadow-full shadow-full
-
-.PHONY: all clean build docker run
+.PHONY: all clean build deps
