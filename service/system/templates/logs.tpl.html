@@ -44,7 +44,13 @@ $(document).ready(function() {
         items = [];
         for (var i in response) {
             var item = response[i];
-            items[i] = new Date(item.time).toLocaleString()  + ' [' + item.level.toUpperCase() + '] ' + item.message;
+            items[i] = new Date(item.time).toLocaleString()
+                     + ' [' + item.level.toUpperCase() + '] '
+                     + item.message;
+
+            if (Object.keys(item.fields).length) {
+                items[i] += ' ' + JSON.stringify(item.fields);
+            }
         }
 
         el.html(items.join("\n"));

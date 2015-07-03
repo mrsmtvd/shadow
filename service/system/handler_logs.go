@@ -23,11 +23,19 @@ func (h *LogsHandler) Handle() {
 	if _, ok := loggers[log]; ok && log != "" {
 		reply := make([]map[string]interface{}, len(loggers[log]))
 
-		for i := range loggers[log] {
+		for i, logger := range loggers[log] {
+            fields := map[string]interface{}{}
+            for name, value := range logger.Data {
+                if name != "component" {
+                    fields[name] = value
+                }
+            }
+
 			reply[i] = map[string]interface{}{
-				"time":    loggers[log][i].Time,
-				"message": loggers[log][i].Message,
-				"level":   loggers[log][i].Level.String(),
+				"time":    logger.Time,
+				"message": logger.Message,
+				"level":   logger.Level.String(),
+                "fields":  fields,
 			}
 		}
 
