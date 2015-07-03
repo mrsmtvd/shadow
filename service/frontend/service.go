@@ -94,7 +94,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 		methodNotAllowedHandler.Handle()
 		methodNotAllowedHandler.Render()
 	}
-    s.router.MethodNotAllowed = http.HandlerFunc(methodNotAllowed)
+	s.router.MethodNotAllowed = http.HandlerFunc(methodNotAllowed)
 
 	notFoundHandler := &NotFoundHandler{}
 	notFoundHandler.Init(s.application, s)
@@ -103,7 +103,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 		notFoundHandler.Handle()
 		notFoundHandler.Render()
 	}
-    s.router.NotFound = http.HandlerFunc(notFound)
+	s.router.NotFound = http.HandlerFunc(notFound)
 
 	if rice.Debug {
 		s.router.HandlerFunc("GET", "/debug/pprof/cmdline", pprof.Cmdline)
