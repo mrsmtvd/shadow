@@ -57,17 +57,18 @@ func (s *SlackService) Init(a *shadow.Application) error {
 	}
 	s.logger = resourceLogger.(*resource.Logger).Get(s.GetName())
 
-    token := s.config.GetString("slack-token")
-    if token == "" {
-        return errors.New("Slack token is empty")
-    }
-
 	s.Commands = map[string]SlackCommand{}
 
 	return nil
 }
 
 func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
+    token := s.config.GetString("slack-token")
+    if token == "" {
+        s.logger.Error("Slack token is empty")
+        return nil
+    }
+
 	s.api = slack.New(s.config.GetString("slack-token"))
 	s.api.SetDebug(s.config.GetBool("debug"))
 
