@@ -1,12 +1,16 @@
 package slack
 
 import (
-	"github.com/GeertJohan/go.rice"
+	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/service/frontend"
 )
 
-func (s *SlackService) GetTemplateBox() *rice.Box {
-	return rice.MustFindBox("../slack/templates")
+func (s *SlackService) GetTemplates() *assetfs.AssetFS {
+	return &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "templates",
+	}
 }
 
 func (s *SlackService) GetFrontendMenu() *frontend.FrontendMenu {

@@ -3,11 +3,15 @@ package frontend
 import (
 	"net/http"
 
-	"github.com/GeertJohan/go.rice"
+	"github.com/elazarl/go-bindata-assetfs"
 )
 
-func (s *FrontendService) GetTemplateBox() *rice.Box {
-	return rice.MustFindBox("../frontend/templates")
+func (s *FrontendService) GetTemplates() *assetfs.AssetFS {
+	return &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "templates",
+	}
 }
 
 func (s *FrontendService) GetFrontendMenu() *FrontendMenu {
@@ -18,18 +22,30 @@ func (s *FrontendService) GetFrontendMenu() *FrontendMenu {
 }
 
 func (s *FrontendService) SetFrontendHandlers(router *Router) {
-	box := rice.MustFindBox("public/css")
-	router.ServeFiles("/css/*filepath", box.HTTPBox())
+	router.ServeFiles("/css/*filepath", &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "public/css",
+	})
 
-	box = rice.MustFindBox("public/fonts")
-	router.ServeFiles("/fonts/*filepath", box.HTTPBox())
+	router.ServeFiles("/fonts/*filepath", &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "public/fonts",
+	})
 
-	box = rice.MustFindBox("public/js")
-	router.ServeFiles("/js/*filepath", box.HTTPBox())
+	router.ServeFiles("/js/*filepath", &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "public/js",
+	})
 
-	router.GET(s, "/favicon.svg", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
-		out.Write(s.boxStatic.MustBytes("favicon.svg"))
-	}))
+	bytes, err := publicFaviconSvgBytes()
+	if err == nil {
+		router.GET(s, "/favicon.svg", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
+			out.Write(bytes)
+		}))
+	}
 
 	router.GET(s, "/", &IndexHandler{})
 }

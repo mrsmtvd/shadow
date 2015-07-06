@@ -6,14 +6,14 @@ import (
 	"io"
 	"text/template"
 
-	"github.com/GeertJohan/go.rice"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow"
 )
 
 type ServiceTemplate interface {
 	shadow.Service
-	GetTemplateBox() *rice.Box
+	GetTemplates() *assetfs.AssetFS
 }
 
 type Template struct {
@@ -83,8 +83,19 @@ func (v *TemplateView) Render(w io.Writer) error {
 		return nil
 	}
 
-	content := v.service.GetTemplateBox().MustString(v.name)
-	tpl, err := v.template.Parse(content)
+	file, err := v.service.GetTemplates().Open(v.name)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := file.(*assetfs.AssetDirectory); ok {
+		return errors.Newf("%s is directory", v.name)
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(file.(*assetfs.AssetFile).Reader)
+
+	tpl, err := v.template.Parse(buf.String())
 	if err != nil {
 		return err
 	}

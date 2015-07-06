@@ -1,12 +1,16 @@
 package system
 
 import (
-	"github.com/GeertJohan/go.rice"
+	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/service/frontend"
 )
 
-func (s *SystemService) GetTemplateBox() *rice.Box {
-	return rice.MustFindBox("../system/templates")
+func (s *SystemService) GetTemplates() *assetfs.AssetFS {
+	return &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "templates",
+	}
 }
 
 func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
