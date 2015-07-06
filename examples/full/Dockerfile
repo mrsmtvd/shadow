@@ -1,4 +1,5 @@
 FROM scratch
+# FROM busybox
 
 EXPOSE 8001
 EXPOSE 8080

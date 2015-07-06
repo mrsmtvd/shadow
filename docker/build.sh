@@ -4,6 +4,7 @@ PACKAGE_GO_IMPORT=`go list -e -f '{{.ImportComment}}' 2>/dev/null || true`
 MAIN_PACKAGE_PATH=$GOPATH"/src/"$PACKAGE_GO_IMPORT
 PACKAGE_COMPRESS="true"
 
+# For scratch sub containers
 export GOOS=linux
 export CGO_ENABLED=0
 
@@ -27,7 +28,7 @@ do
     if [ -e "./Makefile" ]; then
         make build
     else
-        go build -a -v -race
+        go build -a -v -ldflags '-w'
     fi
 
     if [ $? -eq 0 ]; then

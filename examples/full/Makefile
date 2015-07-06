@@ -11,7 +11,7 @@ clean:
 	go clean
 
 build:
-	go build -a -v
+	go build -a -v -ldflags '-w'
 
 build-post:
 	go get -t -v github.com/GeertJohan/go.rice/...
