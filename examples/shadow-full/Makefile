@@ -9,6 +9,6 @@ docker-run:
 
 build-post:
 	go get -t -v github.com/GeertJohan/go.rice/...
-	rice -v $(GO_RICE_IMPORT) append --exec full
+	rice -v $(GO_RICE_IMPORT) append --exec shadow-full
 
 .PHONY: build-post

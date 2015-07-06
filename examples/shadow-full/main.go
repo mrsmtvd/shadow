@@ -1,4 +1,4 @@
-package main // import "github.com/kihamo/shadow/examples/full"
+package main // import "github.com/kihamo/shadow/examples/shadow-full"
 
 import (
 	"log"

@@ -19,6 +19,7 @@ build-all: builder
 	docker run --rm \
         -v "$(PWD):/src" \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        kihamo/shadow-builder
+        kihamo/shadow-builder \
+        kihamo
 
 .PHONY: gen thrift precommit builder build-all

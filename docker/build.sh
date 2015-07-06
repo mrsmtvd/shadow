@@ -5,6 +5,11 @@
 PACKAGE_GO_IMPORT=`go list -e -f '{{.ImportComment}}' 2>/dev/null || true`
 MAIN_PACKAGE_PATH=$GOPATH"/src/"$PACKAGE_GO_IMPORT
 PACKAGE_COMPRESS="true"
+DOCKER_TAG_PREFIX=$1
+
+if [ -n "$DOCKER_TAG_PREFIX" ]; then
+    DOCKER_TAG_PREFIX=$DOCKER_TAG_PREFIX"/"
+fi
 
 # For scratch sub containers
 export GOOS=linux
@@ -49,7 +54,7 @@ do
         echo "Build package $PACKAGE SUCCESS"
 
         if [ -e "/var/run/docker.sock" ] && [ -e "./Dockerfile" ]; then
-          docker build -t "$PACKAGE_NAME:latest" ./
+          docker build -t ${DOCKER_TAG_PREFIX}${PACKAGE_NAME}":latest" ./
         fi
     else
         echo "Build package $PACKAGE FAILED"
