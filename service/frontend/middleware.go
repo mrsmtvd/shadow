@@ -2,9 +2,8 @@ package frontend
 
 import (
 	"encoding/base64"
-	"net/http"
-
 	"fmt"
+	"net/http"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/justinas/alice"
@@ -61,7 +60,7 @@ func LoggerMiddleware(logger *logrus.Entry) alice.Constructor {
 
 			next.ServeHTTP(writer, r)
 
-			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.URL, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
+			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.RequestURI, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
 
 			switch writer.GetStatusCode() {
 			case 500:
