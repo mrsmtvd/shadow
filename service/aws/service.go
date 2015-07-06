@@ -64,9 +64,9 @@ func (s *AwsService) Init(a *shadow.Application) error {
 }
 
 func (s *AwsService) Run() error {
-    s.mutex.Lock()
+	s.mutex.Lock()
 	s.logger.Info("Connect AWS SNS")
-    s.mutex.Unlock()
+	s.mutex.Unlock()
 
 	return nil
 }
@@ -88,9 +88,9 @@ func (s *AwsService) getStatsJob(args ...interface{}) (bool, time.Duration) {
 				stop = true
 			}
 		} else {
-            s.mutex.Lock()
+			s.mutex.Lock()
 			s.logger.Panicf(err.Error())
-            s.mutex.Unlock()
+			s.mutex.Unlock()
 			stop = true
 		}
 	}
@@ -110,9 +110,9 @@ func (s *AwsService) getStatsJob(args ...interface{}) (bool, time.Duration) {
 				stop = true
 			}
 		} else {
-            s.mutex.Lock()
+			s.mutex.Lock()
 			s.logger.Panicf(err.Error())
-            s.mutex.Unlock()
+			s.mutex.Unlock()
 			stop = true
 		}
 	}
@@ -132,9 +132,9 @@ func (s *AwsService) getStatsJob(args ...interface{}) (bool, time.Duration) {
 				stop = true
 			}
 		} else {
-            s.mutex.Lock()
+			s.mutex.Lock()
 			s.logger.Panicf(err.Error())
-            s.mutex.Unlock()
+			s.mutex.Unlock()
 			stop = true
 		}
 	}
