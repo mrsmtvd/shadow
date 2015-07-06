@@ -4,16 +4,17 @@ GO_RICE_IMPORT := \
  -i github.com/kihamo/shadow/service/slack \
  -i github.com/kihamo/shadow/service/system
 
-all: clean build
+all: clean build build-post
 
 clean:
+	rice clean $(GO_RICE_IMPORT)
 	go clean
 
-build: deps
-	go build -a -race
-	rice $(GO_RICE_IMPORT) append --exec full
+build:
+	go build -a -v
 
-deps:
+build-post:
 	go get -t -v github.com/GeertJohan/go.rice/...
+	rice -v $(GO_RICE_IMPORT) append --exec full
 
-.PHONY: all clean build deps
+.PHONY: all clean build build-post

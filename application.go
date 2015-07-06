@@ -1,4 +1,4 @@
-package shadow
+package shadow // import "github.com/kihamo/shadow"
 
 import (
 	"sync"
