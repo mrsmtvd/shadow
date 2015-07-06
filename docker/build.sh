@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# set -x
+
 PACKAGE_GO_IMPORT=`go list -e -f '{{.ImportComment}}' 2>/dev/null || true`
 MAIN_PACKAGE_PATH=$GOPATH"/src/"$PACKAGE_GO_IMPORT
 PACKAGE_COMPRESS="true"
@@ -7,6 +9,8 @@ PACKAGE_COMPRESS="true"
 # For scratch sub containers
 export GOOS=linux
 export CGO_ENABLED=0
+
+cd $(go env GOROOT)/src && ./make.bash --no-clean && cd -
 
 mkdir -p `dirname $MAIN_PACKAGE_PATH`
 ln -sf /src $MAIN_PACKAGE_PATH
@@ -27,8 +31,10 @@ do
 
     if [ -e "./Makefile" ]; then
         make build
-    else
-        go build -a -v -ldflags '-w'
+    fi
+
+    if [ $? -ne 0 ] || [ ! -e "./Dockerfile" ]; then
+        go build -v -a -tags netgo -ldflags '-w'
     fi
 
     if [ $? -eq 0 ]; then

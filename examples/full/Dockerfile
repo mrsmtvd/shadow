@@ -1,5 +1,4 @@
-FROM scratch
-# FROM busybox
+FROM kihamo/scratch-ca-certs
 
 EXPOSE 8001
 EXPOSE 8080
