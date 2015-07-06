@@ -7,9 +7,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/GeertJohan/go.rice"
 	"github.com/Sirupsen/logrus"
-	"github.com/dropbox/godropbox/errors"
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
@@ -27,7 +25,6 @@ type ServiceFrontendHandlers interface {
 }
 
 type FrontendService struct {
-	boxStatic   *rice.Box
 	config      *resource.Config
 	template    *resource.Template
 	application *shadow.Application
@@ -62,12 +59,6 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	}
 	logger := resourceLogger.(*resource.Logger)
 	s.logger = logger.Get(s.GetName())
-
-	rice.Debug = s.config.GetBool("debug")
-	s.boxStatic, err = rice.FindBox("public")
-	if err != nil {
-		return errors.Wrap(err, "Failed init frontend service")
-	}
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
@@ -105,7 +96,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	}
 	s.router.NotFound = http.HandlerFunc(notFound)
 
-	if rice.Debug {
+	if s.config.GetBool("debug") {
 		s.router.HandlerFunc("GET", "/debug/pprof/cmdline", pprof.Cmdline)
 		s.router.HandlerFunc("GET", "/debug/pprof/profile", pprof.Profile)
 		s.router.HandlerFunc("GET", "/debug/pprof/symbol", pprof.Symbol)
