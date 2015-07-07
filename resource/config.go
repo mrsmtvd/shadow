@@ -50,7 +50,7 @@ func (r *Config) Run() error {
 	resourceLogger, err := r.application.GetResource("logger")
 	if err == nil {
 		flag.VisitAll(func(f *flag.Flag) {
-			if f.Name == "config" {
+			if f.Name == "config" && f.Value.String() != "" {
 				resourceLogger.(*Logger).Get(r.GetName()).Infof("Use config from %s", f.Value.String())
 			}
 		})

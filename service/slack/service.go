@@ -201,7 +201,7 @@ func (s *SlackService) connect() {
 
 	s.mutex.Lock()
 	s.connected = true
-	s.logger.Infof("Connect slack as %s", s.Bot.Name)
+	s.logger.WithField("token", s.config.GetString("slack-token")).Infof("Connect slack as %s", s.Bot.Name)
 	s.mutex.Unlock()
 
 	s.Rtm.HandleIncomingEvents(s.receiverChannel)

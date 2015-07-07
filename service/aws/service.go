@@ -65,8 +65,19 @@ func (s *AwsService) Init(a *shadow.Application) error {
 
 func (s *AwsService) Run() error {
 	s.mutex.Lock()
-	s.logger.Info("Connect AWS SNS")
-	s.mutex.Unlock()
+	defer s.mutex.Unlock()
+
+	fields := logrus.Fields{
+		"region": s.SNS.Config.Region,
+	}
+
+	credentials, err := s.SNS.Config.Credentials.Get()
+	if err == nil {
+		fields["key"] = credentials.AccessKeyID
+		fields["secret"] = credentials.SecretAccessKey
+	}
+
+	s.logger.WithFields(fields).Info("Connect AWS SNS")
 
 	return nil
 }
