@@ -9,15 +9,14 @@ thrift:
         $(CURRENT_DIR)service/api/service.thrift
 	rm -rf $(CURRENT_DIR)service/api/gen-go/api/api-remote
 
-builder:
+build-all: gen
 	docker build -t kihamo/shadow-builder:latest docker/
-
-build-all: builder
 	docker run --rm \
         -v "$(PWD):/src" \
         -v /var/run/docker.sock:/var/run/docker.sock \
         kihamo/shadow-builder \
         kihamo
+	docker push kihamo/shadow-full
 
 format:
 	goimports -w $(CURRENT_DIR)
@@ -28,4 +27,4 @@ static:
 	cd service/slack && go-bindata-assetfs -pkg="slack" templates/...
 	cd service/system && go-bindata-assetfs -pkg="system" templates/...
 
-.PHONY: gen thrift precommit builder build-all format static
+.PHONY: gen thrift precommit build-all format static

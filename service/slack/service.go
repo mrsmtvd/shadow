@@ -81,6 +81,8 @@ func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
 				if err := s.RegisterCommand(command, service.(shadow.Service)); err != nil {
 					s.logger.Errorf("Error register slack command %s", command.GetName())
 					// ignore error
+				} else {
+					s.logger.Debugf("Register command %s", command.GetName())
 				}
 			}
 		}
@@ -137,10 +139,7 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	// ignore bot name
 	if appeal {
 		name = strings.ToLower(f.Arg(1))
-
-		if len(args) > 1 {
-			args = args[1:]
-		}
+		args = args[1:]
 	}
 
 	var (

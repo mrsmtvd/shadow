@@ -50,8 +50,7 @@ func main() {
 Container build
 ---------------
 ```bash
-$ make build-all 
-$ docker push kihamo/shadow-full
+$ make build-all
 ```
 
 Container upgrade
@@ -61,4 +60,12 @@ $ docker pull kihamo/shadow-full
 $ docker stop shadow
 $ docker rm shadow
 $ docker run -d --name shadow -p 8001:8001 -p 8080:8080 kihamo/shadow-full -debug=true
+```
+
+Docker restart on MacOS
+-----------------------
+```bash
+$ boot2docker stop
+$ boot2docker start
+$ boot2docker ssh 'sudo /etc/init.d/docker restart'
 ```
