@@ -141,7 +141,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		s.logger.WithFields(fields).Info("Running service")
 
 		if err := http.ListenAndServe(addr, s.middleware.Then(http.DefaultServeMux)); err != nil {
-			s.logger.Fatalf("could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
+			s.logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}(s.router)
 

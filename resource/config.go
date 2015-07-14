@@ -64,6 +64,8 @@ func (r *Config) Add(key string, value interface{}, usage string) {
 	switch value.(type) {
 	case bool:
 		r.values[key] = flag.Bool(key, value.(bool), usage)
+	case int:
+		r.values[key] = flag.Int64(key, int64(value.(int)), usage)
 	case int64:
 		r.values[key] = flag.Int64(key, value.(int64), usage)
 	case string:
