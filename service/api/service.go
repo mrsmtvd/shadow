@@ -88,7 +88,10 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 		mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		})
-		mux.Handle("/", handler)
+		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+            s.logger.Infof("Connection from %s", r.RemoteAddr)
+            handler.ServeHTTP(w, r)
+        })
 
 		if err := server.ListenAndServe(); err != nil {
 			s.logger.Fatalf("Could not start api [%d]: %s\n", os.Getpid(), err.Error())
