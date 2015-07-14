@@ -133,6 +133,8 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 			router.ServeHTTP(out, in)
 		})
 
+		// TODO: ssl
+
 		addr := fmt.Sprintf("%s:%d", s.config.GetString("host"), s.config.GetInt64("port"))
 		fields := logrus.Fields{
 			"addr": addr,

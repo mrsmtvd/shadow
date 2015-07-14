@@ -1,19 +1,19 @@
 package api
 
 import (
-	"crypto/tls"
 	"fmt"
+	"net/http"
+	"os"
 	"sync"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/apache/thrift/lib/go/thrift"
-	"github.com/dropbox/godropbox/errors"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
+	"gopkg.in/jcelliott/turnpike.v2"
 )
 
 type ServiceApiHandler interface {
-	GetProcessor() thrift.TProcessor
+	GetMethods() map[string]turnpike.MethodHandler
 }
 
 type ApiService struct {
@@ -46,119 +46,54 @@ func (s *ApiService) Init(a *shadow.Application) error {
 }
 
 func (s *ApiService) Run(wg *sync.WaitGroup) error {
-	serverTransport, err := s.GetServerTransport()
+	if s.config.GetBool("debug") {
+		turnpike.Debug()
+	}
+
+	handler := turnpike.NewBasicWebsocketServer(s.GetName())
+	client, err := handler.GetLocalClient(s.GetName())
 	if err != nil {
 		return err
 	}
-
-	// protocol
-	protocol := s.config.GetString("api-protocol")
-	protocolFactory, err := s.GetProtocolFactory(s.config.GetString("api-protocol"))
-	if err != nil {
-		return err
-	}
-
-	if _, ok := protocolFactory.(*thrift.TDebugProtocolFactory); ok {
-		protocol = "debug"
-	}
-
-	// transport
-	transport := s.config.GetString("api-transport")
-	transportFactory, err := s.GetTransportFactory(transport)
-	if err != nil {
-		return err
-	}
-
-	processor := thrift.NewTMultiplexedProcessor()
-	server := thrift.NewTSimpleServer4(processor, serverTransport, transportFactory, protocolFactory)
 
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceApiHandler); ok {
-			processor.RegisterProcessor(service.GetName(), serviceCast.GetProcessor())
+			for procedure, fn := range serviceCast.GetMethods() {
+				procedure = fmt.Sprintf("%s.%s", service.GetName(), procedure)
+				if err = client.Register(procedure, fn); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
-	go func() {
-		defer serverTransport.Close()
+	go func(handler *turnpike.WebsocketServer) {
 		defer wg.Done()
 
+		// TODO: ssl
+
+		addr := fmt.Sprintf("%s:%d", s.config.GetString("api-host"), s.config.GetInt64("api-port"))
 		fields := logrus.Fields{
-			"protocol":  protocol,
-			"transport": transport,
-			"ssl":       false,
+			"addr": addr,
+			"pid":  os.Getpid(),
 		}
-
-		if socket, ok := serverTransport.(*thrift.TServerSocket); ok {
-			fields["addr"] = socket.Addr()
-		} else if _, ok := serverTransport.(*thrift.TSSLServerSocket); ok {
-			fields["ssl"] = true
-		}
-
 		s.logger.WithFields(fields).Info("Running service")
 
-		server.Serve()
-	}()
-
-	return nil
-}
-
-func (s *ApiService) GetClientTransport() (thrift.TTransport, error) {
-	addr := fmt.Sprintf("%s:%s", s.config.GetString("api-host"), s.config.GetString("api-port"))
-	return thrift.NewTSocket(addr)
-}
-
-func (s *ApiService) GetServerTransport() (thrift.TServerTransport, error) {
-	addr := fmt.Sprintf("%s:%s", s.config.GetString("api-host"), s.config.GetString("api-port"))
-
-	if s.config.GetBool("api-secure") {
-		config := new(tls.Config)
-		cert, err := tls.LoadX509KeyPair(s.config.GetString("api-secure-crt"), s.config.GetString("api-secure-key"))
-
-		if err != nil {
-			return nil, err
-		} else {
-			config.Certificates = append(config.Certificates, cert)
+		mux := http.NewServeMux()
+		server := &http.Server{
+			Handler: mux,
+			Addr:    addr,
 		}
 
-		return thrift.NewTSSLServerSocket(addr, config)
-	} else {
-		return thrift.NewTServerSocket(addr)
-	}
-}
+		mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		})
+		mux.Handle("/", handler)
 
-func (s *ApiService) GetProtocolFactory(protocol string) (protocolFactory thrift.TProtocolFactory, err error) {
-	switch protocol {
-	case "binary":
-		protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
-	case "compact":
-		protocolFactory = thrift.NewTCompactProtocolFactory()
-	case "json":
-		protocolFactory = thrift.NewTJSONProtocolFactory()
-	case "simplejson":
-		protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
-	default:
-		return nil, errors.Newf("Invalid protocol specified %s", protocol)
-	}
+		if err := server.ListenAndServe(); err != nil {
+			s.logger.Fatalf("Could not start api [%d]: %s\n", os.Getpid(), err.Error())
+		}
+	}(handler)
 
-	protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
-
-	if s.config.GetBool("debug") {
-		protocolFactory = thrift.NewTDebugProtocolFactory(protocolFactory, "shadow:")
-	}
-
-	return protocolFactory, nil
-}
-
-func (s *ApiService) GetTransportFactory(transport string) (thrift.TTransportFactory, error) {
-	switch transport {
-	case "buffered":
-		return thrift.NewTBufferedTransportFactory(8192), nil
-	case "framed":
-		transportFactory := thrift.NewTTransportFactory()
-		return thrift.NewTFramedTransportFactory(transportFactory), nil
-	case "":
-		return thrift.NewTTransportFactory(), nil
-	default:
-		return nil, errors.Newf("Invalid transport specified %s", transport)
-	}
+	return nil
 }

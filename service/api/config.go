@@ -25,7 +25,7 @@ func (s *ApiService) GetConfigVariables() []resource.ConfigVariable {
 		},
 		resource.ConfigVariable{
 			Key:   "api-port",
-			Value: "8001",
+			Value: 8001,
 			Usage: "API socket port",
 		},
 		resource.ConfigVariable{
@@ -42,16 +42,6 @@ func (s *ApiService) GetConfigVariables() []resource.ConfigVariable {
 			Key:   "api-secure-key",
 			Value: pathKey,
 			Usage: "API path to SSL key file",
-		},
-		resource.ConfigVariable{
-			Key:   "api-protocol",
-			Value: "binary",
-			Usage: "API protocol: binary, compact, json, simplejson",
-		},
-		resource.ConfigVariable{
-			Key:   "api-transport",
-			Value: "framed",
-			Usage: "API transport: buffered, framed, \"\"",
 		},
 	}
 }

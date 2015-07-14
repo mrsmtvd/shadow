@@ -1,17 +1,15 @@
 package api
 
 import (
-	base "github.com/apache/thrift/lib/go/thrift"
-	gen "github.com/kihamo/shadow/service/api/gen-go/api"
+	"gopkg.in/jcelliott/turnpike.v2"
 )
 
-func (s *ApiService) GetProcessor() base.TProcessor {
-	return gen.NewApiProcessor(&ApiHandler{})
+func (s *ApiService) GetMethods() map[string]turnpike.MethodHandler {
+	return map[string]turnpike.MethodHandler{
+		"ping": s.Ping,
+	}
 }
 
-type ApiHandler struct {
-}
-
-func (h *ApiHandler) Ping() (bool, error) {
-	return true, nil
+func (s *ApiService) Ping([]interface{}, map[string]interface{}) *turnpike.CallResult {
+	return &turnpike.CallResult{Args: []interface{}{"pong"}}
 }

@@ -22,9 +22,9 @@ func main() {
 		},
 		[]shadow.Service{
 			new(system.SystemService),
-			new(api.ApiService),
 			new(aws.AwsService),
 			new(frontend.FrontendService),
+			new(api.ApiService),
 			new(slack.SlackService),
 		},
 		"1.0",
