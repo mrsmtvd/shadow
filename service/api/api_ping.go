@@ -5,7 +5,7 @@ import (
 )
 
 type PingProcedure struct {
-    AbstractApiProcedure
+	AbstractApiProcedure
 }
 
 func (p *PingProcedure) GetName() string {

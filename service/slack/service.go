@@ -78,11 +78,13 @@ func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceSlackCommands); ok {
 			for _, command := range serviceCast.GetSlackCommands() {
+				logEntry := s.logger.WithField("command", command.GetName())
+
 				if err := s.RegisterCommand(command, service.(shadow.Service)); err != nil {
-					s.logger.Errorf("Error register slack command %s", command.GetName())
+					logEntry.WithField("error", err.Error()).Error("Error register slack command")
 					// ignore error
 				} else {
-					s.logger.Debugf("Register command %s", command.GetName())
+					logEntry.Debug("Register command")
 				}
 			}
 		}

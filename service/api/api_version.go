@@ -5,7 +5,7 @@ import (
 )
 
 type VersionProcedure struct {
-    AbstractApiProcedure
+	AbstractApiProcedure
 }
 
 func (p *VersionProcedure) GetName() string {
