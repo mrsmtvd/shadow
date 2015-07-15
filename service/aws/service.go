@@ -55,17 +55,17 @@ func (s *AwsService) Init(a *shadow.Application) error {
 
 	s.SNS = sns.New(awsConfig)
 
-	if a.HasResource("tasks") {
-		tasks, _ := a.GetResource("tasks")
-		tasks.(*resource.Dispatcher).AddTask(s.getStatsJob)
-	}
-
 	return nil
 }
 
 func (s *AwsService) Run() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
+
+	if s.application.HasResource("tasks") {
+		tasks, _ := s.application.GetResource("tasks")
+		tasks.(*resource.Dispatcher).AddTask(s.getStatsJob)
+	}
 
 	fields := logrus.Fields{
 		"region": s.SNS.Config.Region,

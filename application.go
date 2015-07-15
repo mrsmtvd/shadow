@@ -62,6 +62,8 @@ func NewApplication(resources []Resource, services []Service, version string, bu
 }
 
 func (a *Application) Run() (err error) {
+	defer a.wg.Wait()
+
 	// Resources
 	resources := a.GetResources()
 
@@ -73,7 +75,7 @@ func (a *Application) Run() (err error) {
 
 	for i := range resources {
 		if err = a.run(resources[i]); err != nil {
-			break
+			return err
 		}
 	}
 
@@ -88,13 +90,11 @@ func (a *Application) Run() (err error) {
 
 	for i := range services {
 		if err = a.run(services[i]); err != nil {
-			break
+			return err
 		}
 	}
 
-	a.wg.Wait()
-
-	return err
+	return nil
 }
 
 func (a *Application) run(item ContextItem) error {
