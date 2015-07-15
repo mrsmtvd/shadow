@@ -13,7 +13,7 @@ import (
 )
 
 type ServiceApiHandler interface {
-	GetMethods() map[string]turnpike.MethodHandler
+	GetApiMethods() map[string]turnpike.MethodHandler
 }
 
 type ApiService struct {
@@ -58,7 +58,7 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceApiHandler); ok {
-			for procedure, fn := range serviceCast.GetMethods() {
+			for procedure, fn := range serviceCast.GetApiMethods() {
 				procedure = fmt.Sprintf("%s.%s", service.GetName(), procedure)
 				if err = client.Register(procedure, fn); err != nil {
 					return err

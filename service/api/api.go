@@ -4,7 +4,7 @@ import (
 	"gopkg.in/jcelliott/turnpike.v2"
 )
 
-func (s *ApiService) GetMethods() map[string]turnpike.MethodHandler {
+func (s *ApiService) GetApiMethods() map[string]turnpike.MethodHandler {
 	return map[string]turnpike.MethodHandler{
 		"ping": s.Ping,
 	}
