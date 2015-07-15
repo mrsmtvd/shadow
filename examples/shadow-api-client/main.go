@@ -38,10 +38,10 @@ func main() {
 
 	fmt.Printf("Server response: %s\n", response.Arguments[0])
 
-    response, err = client.Call("api.version", nil, nil)
-    if err != nil {
-        log.Fatal(err.Error())
-    }
+	response, err = client.Call("api.version", nil, nil)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
-    fmt.Printf("Server response: %s\n", response.ArgumentsKw)
+	fmt.Printf("Server response: %s\n", response.ArgumentsKw)
 }
