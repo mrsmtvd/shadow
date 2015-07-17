@@ -1,0 +1,40 @@
+{{ include "frontend" "layout/header.tpl.html" }}
+
+<script src="/js/api/autobahn.min.js"></script>
+
+<div class="page-header">
+    <h1>Api</h1>
+</div>
+
+<script>
+    AUTOBAHN_DEBUG = true;
+
+    try {
+        var autobahn = require('autobahn');
+        var when = require('when');
+    } catch (e) {
+        var when = autobahn.when;
+    }
+
+    var connection = new autobahn.Connection({
+        url: '{{ .ApiUrl }}',
+        realm: 'api'
+    });
+
+    connection.onopen = function (session) {
+        session.call('api.version').then(
+            function (res) {
+                console.log("api.version() called with result: ", res);
+            },
+            function (err) {
+                if (err.error !== 'wamp.error.no_such_procedure') {
+                    console.log('call of api.version() failed: ' + err);
+                }
+            }
+        );
+    };
+
+    connection.open();
+</script>
+
+{{ include "frontend" "layout/footer.tpl.html" }}

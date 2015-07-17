@@ -96,6 +96,9 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 			w.WriteHeader(http.StatusNotFound)
 		})
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			// FiXME: Magic
+			delete(r.Header, "Origin")
+
 			s.logger.Infof("Connection from %s", r.RemoteAddr)
 			handler.ServeHTTP(w, r)
 		})

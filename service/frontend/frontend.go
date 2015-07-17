@@ -34,7 +34,7 @@ func (s *FrontendService) SetFrontendHandlers(router *Router) {
 		Prefix:   "public/fonts",
 	})
 
-	router.ServeFiles("/js/*filepath", &assetfs.AssetFS{
+	router.ServeFiles("/js/frontend/*filepath", &assetfs.AssetFS{
 		Asset:    Asset,
 		AssetDir: AssetDir,
 		Prefix:   "public/js",
