@@ -18,7 +18,7 @@ type ConfigVariable struct {
 	Usage string
 }
 
-type ServiceConfigurable interface {
+type ContextItemConfigurable interface {
 	GetConfigVariables() []ConfigVariable
 }
 
@@ -37,8 +37,16 @@ func (r *Config) Init(a *shadow.Application) error {
 }
 
 func (r *Config) Run() error {
+	for _, resource := range r.application.GetResources() {
+		if configurable, ok := resource.(ContextItemConfigurable); ok {
+			for _, variable := range configurable.GetConfigVariables() {
+				r.Add(variable.Key, variable.Value, variable.Usage)
+			}
+		}
+	}
+
 	for _, service := range r.application.GetServices() {
-		if configurable, ok := service.(ServiceConfigurable); ok {
+		if configurable, ok := service.(ContextItemConfigurable); ok {
 			for _, variable := range configurable.GetConfigVariables() {
 				r.Add(variable.Key, variable.Value, variable.Usage)
 			}

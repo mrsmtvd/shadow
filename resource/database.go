@@ -23,6 +23,21 @@ func (r *Database) GetName() string {
 	return "database"
 }
 
+func (r *Database) GetConfigVariables() []ConfigVariable {
+	return []ConfigVariable{
+		ConfigVariable{
+			Key:   "database-driver",
+			Value: "mymysql",
+			Usage: "Database driver",
+		},
+		ConfigVariable{
+			Key:   "database-dsn",
+			Value: "tcp:localhost:3306*shadow/root/",
+			Usage: "Database DSN",
+		},
+	}
+}
+
 func (r *Database) Init(a *shadow.Application) error {
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
@@ -30,8 +45,6 @@ func (r *Database) Init(a *shadow.Application) error {
 	}
 
 	r.config = resourceConfig.(*Config)
-	r.config.Add("database-driver", "mymysql", "Database driver")
-	r.config.Add("database-dsn", "tcp:localhost:3306*shadow/root/", "Database DSN")
 
 	return nil
 }
