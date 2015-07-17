@@ -2,12 +2,12 @@ CURRENT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 gen: format static
 
-build-all: gen
-	docker build -t kihamo/shadow-builder:latest docker/
+docker: gen
+	docker pull kihamo/go-builder
 	docker run --rm \
         -v "$(PWD):/src" \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        kihamo/shadow-builder \
+        kihamo/go-builder \
         kihamo
 	docker push kihamo/shadow-full
 
