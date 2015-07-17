@@ -31,16 +31,18 @@ type Application struct {
 	resources []Resource
 	services  []Service
 
+	Name    string
 	Version string
 	Build   string
 
 	wg *sync.WaitGroup
 }
 
-func NewApplication(resources []Resource, services []Service, version string, build string) (*Application, error) {
+func NewApplication(resources []Resource, services []Service, name string, version string, build string) (*Application, error) {
 	application := &Application{
 		resources: []Resource{},
 		services:  []Service{},
+		Name:      name,
 		Version:   version,
 		Build:     build,
 		wg:        new(sync.WaitGroup),

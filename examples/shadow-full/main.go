@@ -27,6 +27,7 @@ func main() {
 			new(api.ApiService),
 			new(slack.SlackService),
 		},
+		"Shadow full",
 		"1.0",
 		"12345-full",
 	)
