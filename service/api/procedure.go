@@ -18,14 +18,14 @@ type AbstractApiProcedure struct {
 	ApiService  *ApiService
 }
 
-func (c *AbstractApiProcedure) Init(s shadow.Service, a *shadow.Application) {
-	c.Application = a
-	c.Service = s
+func (p *AbstractApiProcedure) Init(s shadow.Service, a *shadow.Application) {
+	p.Application = a
+	p.Service = s
 
 	apiService, err := a.GetService("api")
 	if err == nil {
 		if castService, ok := apiService.(*ApiService); ok {
-			c.ApiService = castService
+			p.ApiService = castService
 			return
 		}
 	}
