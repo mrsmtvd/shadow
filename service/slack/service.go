@@ -80,6 +80,11 @@ func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
 			for _, command := range serviceCast.GetSlackCommands() {
 				logEntry := s.logger.WithField("command", command.GetName())
 
+				if !command.IsActive() {
+					logEntry.Debug("Ignore disable command")
+					continue
+				}
+
 				if err := s.RegisterCommand(command, service.(shadow.Service)); err != nil {
 					logEntry.WithField("error", err.Error()).Error("Error register slack command")
 					// ignore error

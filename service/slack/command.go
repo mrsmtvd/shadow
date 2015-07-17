@@ -14,6 +14,7 @@ type SlackCommand interface {
 	Run(*slack.MessageEvent, ...string)
 	AllowDirectMessage() bool
 	AllowChannel() bool
+	IsActive() bool
 }
 
 type AbstractSlackCommand struct {
@@ -28,6 +29,10 @@ func (c *AbstractSlackCommand) AllowDirectMessage() bool {
 }
 
 func (c *AbstractSlackCommand) AllowChannel() bool {
+	return true
+}
+
+func (c *AbstractSlackCommand) IsActive() bool {
 	return true
 }
 
