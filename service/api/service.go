@@ -20,6 +20,7 @@ type ApiService struct {
 	application *shadow.Application
 	config      *resource.Config
 	logger      *logrus.Entry
+	procedures  []ApiProcedure
 }
 
 func (s *ApiService) GetName() string {
@@ -59,17 +60,26 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceApiHandler); ok {
 			for _, procedure := range serviceCast.GetApiProcedures() {
+				name := procedure.GetName()
+
+				logEntry := s.logger.WithFields(logrus.Fields{
+					"procedure": name,
+					"service":   service.GetName(),
+				})
+
+				if s.HasProcedure(name) {
+					logEntry.Warn("Procedure already exists. Ignore procedure.")
+					continue
+				}
+
 				procedure.Init(s, s.application)
-
-				uri := fmt.Sprintf("%s.%s", service.GetName(), procedure.GetName())
-				logEntry := s.logger.WithField("procedure", procedure.GetName())
-
-				if err = client.Register(uri, procedure.Run); err != nil {
+				if err = client.Register(name, procedure.Run); err != nil {
 					logEntry.WithField("error", err.Error()).Error("Error register api procedure")
 					// ignore error
 				} else {
 					logEntry.Debug("Register procedure")
 				}
+				s.procedures = append(s.procedures, procedure)
 			}
 		}
 	}
@@ -109,4 +119,34 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 	}(handler)
 
 	return nil
+}
+
+func (s *ApiService) GetProcedures() []ApiProcedure {
+	return s.procedures
+}
+
+func (s *ApiService) HasProcedure(procedure string) bool {
+	for _, p := range s.procedures {
+		if p.GetName() == procedure {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (s *ApiService) GetClient() (*turnpike.Client, error) {
+	addr := fmt.Sprintf("ws://%s:%d/", s.config.GetString("api-host"), s.config.GetInt64("api-port"))
+
+	client, err := turnpike.NewWebsocketClient(turnpike.JSON, addr)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = client.JoinRealm("api", turnpike.ALLROLES, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

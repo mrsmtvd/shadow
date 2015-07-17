@@ -9,7 +9,7 @@ type VersionProcedure struct {
 }
 
 func (p *VersionProcedure) GetName() string {
-	return "version"
+	return "api.version"
 }
 
 func (p *VersionProcedure) Run([]interface{}, map[string]interface{}) *turnpike.CallResult {

@@ -78,7 +78,10 @@ func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceSlackCommands); ok {
 			for _, command := range serviceCast.GetSlackCommands() {
-				logEntry := s.logger.WithField("command", command.GetName())
+				logEntry := s.logger.WithFields(logrus.Fields{
+					"command": command.GetName(),
+					"service": service.GetName(),
+				})
 
 				if !command.IsActive() {
 					logEntry.Debug("Ignore disable command")

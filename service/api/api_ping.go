@@ -9,7 +9,7 @@ type PingProcedure struct {
 }
 
 func (p *PingProcedure) GetName() string {
-	return "ping"
+	return "api.ping"
 }
 
 func (p *PingProcedure) Run([]interface{}, map[string]interface{}) *turnpike.CallResult {
