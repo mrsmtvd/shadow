@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 
 	"github.com/kihamo/shadow"
@@ -60,6 +61,18 @@ func (c *ApiCommand) Run(m *sl.MessageEvent, args ...string) {
 		out    bytes.Buffer
 	)
 
+	apiArgs := make(procedureArgs, 0)
+	apiKwargs := make(procedureKwargs, 0)
+
+	apiSet := flag.NewFlagSet("", flag.ContinueOnError)
+	apiSet.Var(&apiArgs, "a", "Args")
+	apiSet.Var(&apiKwargs, "k", "Kwargs")
+
+	if err = apiSet.Parse(args[1:]); err != nil {
+		c.SendMessage(m.ChannelId, err.Error())
+		return
+	}
+
 	params := sl.NewPostMessageParameters()
 
 	if c.client == nil {
@@ -67,7 +80,7 @@ func (c *ApiCommand) Run(m *sl.MessageEvent, args ...string) {
 	}
 
 	if err == nil {
-		result, err = c.client.Call(args[0], nil, nil)
+		result, err = c.client.Call(args[0], apiArgs, apiKwargs)
 	}
 
 	if err != nil {
