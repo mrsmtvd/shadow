@@ -5,6 +5,10 @@ import (
 	"gopkg.in/jcelliott/turnpike.v2"
 )
 
+const (
+	ErrorInvalidArgument = "api.invalid-argument"
+)
+
 type ApiProcedure interface {
 	Init(shadow.Service, *shadow.Application)
 	GetName() string
@@ -31,4 +35,17 @@ func (p *AbstractApiProcedure) Init(s shadow.Service, a *shadow.Application) {
 	}
 
 	panic("Api service not found")
+}
+
+func (p *AbstractApiProcedure) GetResult(args []interface{}, kwargs map[string]interface{}) *turnpike.CallResult {
+	return &turnpike.CallResult{
+		Args:   args,
+		Kwargs: kwargs,
+	}
+}
+
+func (p *AbstractApiProcedure) GetError(err string) *turnpike.CallResult {
+	return &turnpike.CallResult{
+		Err: turnpike.URI(err),
+	}
 }

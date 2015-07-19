@@ -17,6 +17,8 @@ type SlackCommand interface {
 	IsActive() bool
 }
 
+// TODO: flags command, see service/api/command_api.go
+
 type AbstractSlackCommand struct {
 	SlackCommand
 	Application  *shadow.Application

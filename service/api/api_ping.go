@@ -13,5 +13,5 @@ func (p *PingProcedure) GetName() string {
 }
 
 func (p *PingProcedure) Run([]interface{}, map[string]interface{}) *turnpike.CallResult {
-	return &turnpike.CallResult{Args: []interface{}{"pong"}}
+	return p.GetResult([]interface{}{"pong"}, nil)
 }
