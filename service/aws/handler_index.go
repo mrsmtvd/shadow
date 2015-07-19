@@ -13,6 +13,7 @@ func (h *IndexHandler) Handle() {
 	h.View.Context["PageTitle"] = "Aws"
 
 	service := h.Service.(*AwsService)
+	h.View.Context["Services"] = service.Aws.GetServices()
 	h.View.Context["Applications"] = service.applications
 	h.View.Context["Subscriptions"] = service.subscriptions
 	h.View.Context["Topics"] = service.topics

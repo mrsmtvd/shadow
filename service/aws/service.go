@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
@@ -15,6 +13,7 @@ import (
 type AwsService struct {
 	application *shadow.Application
 
+	Aws    *resource.Aws
 	SNS    *sns.SNS
 	logger *logrus.Entry
 
@@ -32,52 +31,28 @@ func (s *AwsService) GetName() string {
 func (s *AwsService) Init(a *shadow.Application) error {
 	s.application = a
 
-	resourceConfig, err := a.GetResource("config")
-	if err != nil {
-		return err
-	}
-	config := resourceConfig.(*resource.Config)
-
 	resourceLogger, err := a.GetResource("logger")
 	if err != nil {
 		return err
 	}
 	s.logger = resourceLogger.(*resource.Logger).Get(s.GetName())
 
-	awsConfig := &aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.GetString("aws-key"), config.GetString("aws-secret"), ""),
-		Region:      config.GetString("aws-region"),
+	resourceAws, err := a.GetResource("aws")
+	if err != nil {
+		return err
 	}
+	s.Aws = resourceAws.(*resource.Aws)
 
-	if config.GetBool("debug") {
-		awsConfig.LogLevel = 5
-	}
-
-	s.SNS = sns.New(awsConfig)
+	s.SNS = s.Aws.GetSNS()
 
 	return nil
 }
 
 func (s *AwsService) Run() error {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-
 	if s.application.HasResource("tasks") {
 		tasks, _ := s.application.GetResource("tasks")
 		tasks.(*resource.Dispatcher).AddTask(s.getStatsJob)
 	}
-
-	fields := logrus.Fields{
-		"region": s.SNS.Config.Region,
-	}
-
-	credentials, err := s.SNS.Config.Credentials.Get()
-	if err == nil {
-		fields["key"] = credentials.AccessKeyID
-		fields["secret"] = credentials.SecretAccessKey
-	}
-
-	s.logger.WithFields(fields).Info("Connect AWS SNS")
 
 	return nil
 }
