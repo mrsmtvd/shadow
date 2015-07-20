@@ -147,3 +147,19 @@ func (s *SqlStorage) Update(list ...interface{}) (int64, error) {
 
 	return count, err
 }
+
+func (s *SqlStorage) ExecUpdate(builder *squirrel.UpdateBuilder) (sql.Result, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "could not prepare SQL query")
+	}
+	return s.executor.Exec(query, args...)
+}
+
+func (s *SqlStorage) ExecDelete(queryBuilder *squirrel.DeleteBuilder) (sql.Result, error) {
+	query, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "could not prepare SQL query")
+	}
+	return s.executor.Exec(query, args...)
+}

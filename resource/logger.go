@@ -14,6 +14,16 @@ func (r *Logger) GetName() string {
 	return "logger"
 }
 
+func (r *Logger) GetConfigVariables() []ConfigVariable {
+	return []ConfigVariable{
+		ConfigVariable{
+			Key:   "logger-level",
+			Value: 5,
+			Usage: "Log level",
+		},
+	}
+}
+
 func (r *Logger) Init(a *shadow.Application) error {
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
@@ -33,6 +43,21 @@ func (r *Logger) Init(a *shadow.Application) error {
 func (r *Logger) Run() (err error) {
 	if r.config.GetBool("debug") {
 		r.logger.Level = logrus.DebugLevel
+	} else {
+		switch r.config.GetInt64("logger-level") {
+		case 1:
+			r.logger.Level = logrus.PanicLevel
+		case 2:
+			r.logger.Level = logrus.FatalLevel
+		case 3:
+			r.logger.Level = logrus.ErrorLevel
+		case 4:
+			r.logger.Level = logrus.WarnLevel
+		case 5:
+			r.logger.Level = logrus.InfoLevel
+		case 6:
+			r.logger.Level = logrus.DebugLevel
+		}
 	}
 
 	r.Get(r.GetName()).Info("Logger start")
