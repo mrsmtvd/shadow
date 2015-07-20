@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	keepAlive    = 10 * time.Second
-	connectDelay = 5 * time.Second
+	keepAlive       = 10 * time.Second
+	connectDelay    = 5 * time.Second
+	pingMaxAttempts = 10
 )
 
 type ServiceSlackCommands interface {
@@ -33,6 +34,7 @@ type SlackService struct {
 
 	mutex           sync.RWMutex
 	connected       bool
+	pingAttempts    int
 	api             *slack.Slack
 	senderChannel   chan slack.OutgoingMessage
 	receiverChannel chan slack.SlackEvent
@@ -185,19 +187,24 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	command.Run(m, args...)
 }
 
+func (s *SlackService) reconnect(err interface{}) {
+	s.mutex.Lock()
+	s.connected = false
+	s.pingAttempts = 0
+	s.logger.Errorf("Error connect: %v", err)
+	s.logger.Debug("Connect closed. Sleep ", time.Duration(connectDelay).String())
+	s.mutex.Unlock()
+
+	time.Sleep(connectDelay)
+	go s.connect()
+}
+
 func (s *SlackService) connect() {
 	var err error
 
 	defer func() {
 		if r := recover(); r != nil {
-			s.mutex.Lock()
-			s.connected = false
-			s.logger.Errorf("Panic: %v", r)
-			s.logger.Debug("Connect closed. Sleep ", time.Duration(connectDelay).String())
-			s.mutex.Unlock()
-
-			time.Sleep(connectDelay)
-			go s.connect()
+			s.reconnect(r)
 		}
 	}()
 
@@ -209,6 +216,7 @@ func (s *SlackService) connect() {
 	s.Bot = s.Rtm.GetInfo().User
 
 	s.mutex.Lock()
+	s.pingAttempts = 0
 	s.connected = true
 	s.logger.WithField("token", s.config.GetString("slack-token")).Infof("Connect slack as %s", s.Bot.Name)
 	s.mutex.Unlock()
@@ -256,16 +264,19 @@ func (s *SlackService) keepalive() {
 		select {
 		case <-ticker.C:
 			s.mutex.RLock()
-			if s.connected {
-				s.mutex.RUnlock()
+			s.pingAttempts = s.pingAttempts + 1
 
+			if s.connected {
 				if err := s.Rtm.Ping(); err != nil {
-					s.mutex.Lock()
 					s.logger.Errorf("Ping error: %s ", err.Error())
-					s.mutex.Unlock()
+				} else {
+					s.pingAttempts = 0
 				}
-			} else {
-				s.mutex.RUnlock()
+			}
+			s.mutex.RUnlock()
+
+			if s.pingAttempts >= pingMaxAttempts {
+				s.reconnect("Reconnect max attempts")
 			}
 		}
 	}
