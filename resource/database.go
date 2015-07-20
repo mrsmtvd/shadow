@@ -148,6 +148,14 @@ func (s *SqlStorage) Update(list ...interface{}) (int64, error) {
 	return count, err
 }
 
+func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result, error) {
+    result, err := s.executor.Exec(query, args...)
+    if err != nil {
+        return result, errors.Wrapf(err, "Error executing DB query, query: '%s'", query)
+    }
+    return result, nil
+}
+
 func (s *SqlStorage) ExecUpdate(builder *squirrel.UpdateBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
