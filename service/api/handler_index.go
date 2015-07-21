@@ -24,4 +24,5 @@ func (h *IndexHandler) Handle() {
 	}
 
 	h.View.Context["ApiUrl"] = fmt.Sprintf("ws://%s:%d/", host, service.config.GetInt64("api-port"))
+	h.View.Context["Procedures"] = service.GetProcedures()
 }

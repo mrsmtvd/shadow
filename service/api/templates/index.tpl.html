@@ -6,8 +6,15 @@
     <h1>Api</h1>
 </div>
 
+<style type="text/css">
+    table td {
+        cursor: pointer;
+    }
+</style>
+
 <script>
     AUTOBAHN_DEBUG = true;
+    var session = null;
 
     try {
         var autobahn = require('autobahn');
@@ -21,20 +28,143 @@
         realm: 'api'
     });
 
-    connection.onopen = function (session) {
-        session.call('api.version').then(
-            function (res) {
-                console.log("api.version() called with result: ", res);
-            },
-            function (err) {
-                if (err.error !== 'wamp.error.no_such_procedure') {
-                    console.log('call of api.version() failed: ' + err);
-                }
-            }
-        );
+    connection.onopen = function (s) {
+        session = s;
     };
+    connection.onclose = function () {
+        session = null;
+    }
 
     connection.open();
+
+    $(function () {
+        var procedure = $('#procedure');
+        var result = $('#result');
+        var args = $('#arg>div:nth-child(2)');
+        var kwargs = $('#kwarg>div:nth-child(2)');
+
+        function remove() {
+            $('.remove').click(function () {
+                $(this).parent().remove();
+            });
+        }
+
+        $('table td').click(function () {
+            procedure.val($(this).text())
+        });
+
+        $('#arg-add').click(function () {
+            var row = $('<div class="form-group form-inline">');
+            row.append('<button type="button" class="btn btn-danger btn-small remove">Remove</button>');
+            row.append('<input type="text" class="form-control">');
+
+            args.append(row);
+            remove();
+        });
+        $('#kwarg-add').click(function () {
+            var row = $('<div class="form-group form-inline">');
+            row.append('<button type="button" class="btn btn-danger btn-small remove">Remove</button>');
+            row.append('<input type="text" class="form-control">');
+            row.append('<input type="text" class="form-control">');
+
+            kwargs.append(row);
+            remove();
+        });
+
+        $('#call').submit(function () {
+            var a = [];
+            var k = {};
+
+            args.find('input').each(function(i, e) {
+                var value = $(e).val();
+                if (value.length) {
+                    a.push(value);
+                }
+            });
+            kwargs.find('input:even').each(function(i, e) {
+                var key = $(e).val();
+                var value = $(e).next().val();
+
+                if (key.length && value.length) {
+                    k[key] = value;
+                }
+            });
+
+            session.call($('#procedure').val(), a, k).then(
+                    function (r) {
+                        result.find('pre').html(JSON.stringify(r, null, '\t'));
+                        result.show();
+                    },
+                    function (e) {
+                        result.find('pre').html(JSON.stringify(e, null, '\t'));
+                        result.show();
+                    }
+            );
+
+            return false;
+        });
+
+        remove();
+    })
 </script>
+
+<div class="page-header">
+    <h1>Procedures</h1>
+</div>
+
+<table class="table table-striped table-condensed table-hover">
+    <thead>
+    <tr>
+        <th>Procedure</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range $i, $procedure := .Procedures }}
+    <tr>
+        <td>{{ $procedure.GetName }}</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+
+<form id="call">
+    <div class="form-group">
+        <label for="procedure">Procedure</label>
+        <input type="text" class="form-control" id="procedure" required="required"
+               placeholder="{{ (index .Procedures 0).GetName }}">
+    </div>
+    <div id="arg" class="form-group">
+        <div>
+            <label for="arg">Args</label>
+            <button type="button" class="btn btn-info btn-xs" id="arg-add">Add</button>
+        </div>
+        <div>
+            <div class="form-group form-inline">
+                <button type="button" class="btn btn-danger btn-small remove">Remove</button>
+                <input type="text" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div id="kwarg" class="form-group">
+        <div>
+            <label for="kwarg">Kwargs</label>
+            <button type="button" class="btn btn-info btn-xs" id="kwarg-add">Add</button>
+        </div>
+        <div>
+            <div class="form-group form-inline">
+                <button type="button" class="btn btn-danger btn-small remove">Remove</button>
+                <input type="text" class="form-control">
+                <input type="text" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-success">Call procedure</button>
+    </div>
+    <div id="result" style="display:none">
+        <h5>Response</h5>
+        <pre></pre>
+    </div>
+</form>
 
 {{ include "frontend" "layout/footer.tpl.html" }}

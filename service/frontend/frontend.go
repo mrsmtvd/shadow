@@ -40,12 +40,14 @@ func (s *FrontendService) SetFrontendHandlers(router *Router) {
 		Prefix:   "public/js",
 	})
 
-	bytes, err := publicFaviconSvgBytes()
-	if err == nil {
-		router.GET(s, "/favicon.svg", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
-			out.Write(bytes)
-		}))
+	asset := &assetfs.AssetFS{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "public",
 	}
+	router.GET(s, "/favicon.svg", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
+		http.FileServer(asset).ServeHTTP(out, in)
+	}))
 
 	router.GET(s, "/", &IndexHandler{})
 }
