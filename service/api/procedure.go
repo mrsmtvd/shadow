@@ -6,13 +6,24 @@ import (
 )
 
 const (
-	ErrorInvalidArgument = "api.invalid-argument"
+	ErrorUnknownProcedure = "api.unknown-procedure"
+	ErrorInvalidArgument  = "api.invalid-argument"
 )
 
 type ApiProcedure interface {
 	Init(shadow.Service, *shadow.Application)
 	GetName() string
+}
+
+type ApiProcedureSimple interface {
+	ApiProcedure
 	Run([]interface{}, map[string]interface{}) *turnpike.CallResult
+}
+
+type ApiProcedureRequest interface {
+	ApiProcedure
+	GetRequest() interface{}
+	Run(interface{}) *turnpike.CallResult
 }
 
 type AbstractApiProcedure struct {

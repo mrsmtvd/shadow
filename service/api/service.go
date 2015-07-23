@@ -73,7 +73,31 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 				}
 
 				procedure.Init(s, s.application)
-				if err = client.Register(name, procedure.Run); err != nil {
+				procedureWrapper := func(procedure ApiProcedure) turnpike.MethodHandler {
+					return func(args []interface{}, kwargs map[string]interface{}) *turnpike.CallResult {
+						if validator, ok := procedure.(ApiProcedureRequest); ok {
+							request := validator.GetRequest()
+							if err := RequestFillAndValidate(request, args, kwargs); err != nil {
+								return &turnpike.CallResult{
+									Err: turnpike.URI(err.Error()),
+								}
+							}
+
+							return validator.Run(request)
+						}
+
+						if simple, ok := procedure.(ApiProcedureSimple); ok {
+							return simple.Run(args, kwargs)
+						}
+
+						logEntry.WithField("error", err.Error()).Error("Error procedure interace")
+						return &turnpike.CallResult{
+							Err: turnpike.URI(ErrorUnknownProcedure),
+						}
+					}
+				}
+
+				if err = client.Register(name, procedureWrapper(procedure)); err != nil {
 					logEntry.WithField("error", err.Error()).Error("Error register api procedure")
 					// ignore error
 				} else {
