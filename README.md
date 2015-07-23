@@ -1,6 +1,8 @@
 Shadow framework
 ================
 
+[![Build Status](https://drone.io/github.com/kihamo/shadow/status.png)](https://drone.io/github.com/kihamo/shadow/latest)
+
 Create application
 ------------------
 ```go
