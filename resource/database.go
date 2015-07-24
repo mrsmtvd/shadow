@@ -63,10 +63,6 @@ func (r *Database) GetStorage() *SqlStorage {
 	return r.storage
 }
 
-func NewDbMapWrapper(dbMap *gorp.DbMap) *SqlStorage {
-	return &SqlStorage{dbMap}
-}
-
 func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 	db, err := sql.Open(driver, dataSourceName)
 
@@ -87,7 +83,9 @@ func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 		return nil, errors.Newf("Storage driver %s not found", driver)
 	}
 
-	return NewDbMapWrapper(dbMap), nil
+	return &SqlStorage{
+		executor: dbMap,
+	}, nil
 }
 
 func (s *SqlStorage) CreateTablesIfNotExists() error {
@@ -96,6 +94,35 @@ func (s *SqlStorage) CreateTablesIfNotExists() error {
 
 func (s *SqlStorage) AddTableWithName(i interface{}, name string) *gorp.TableMap {
 	return s.executor.(*gorp.DbMap).AddTableWithName(i, name)
+}
+
+func (s *SqlStorage) Begin() (*SqlStorage, error) {
+	transaction, err := s.executor.(*gorp.DbMap).Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	return &SqlStorage{
+		executor: transaction,
+	}, nil
+}
+
+func (s *SqlStorage) Commit() error {
+	transaction, ok := s.executor.(*gorp.Transaction)
+	if !ok {
+		return errors.New("Executor is not grop.Transaction")
+	}
+
+	return transaction.Commit()
+}
+
+func (s *SqlStorage) Rollback() error {
+	transaction, ok := s.executor.(*gorp.Transaction)
+	if !ok {
+		return errors.New("Executor is not grop.Transaction")
+	}
+
+	return transaction.Rollback()
 }
 
 func (s *SqlStorage) SelectByQuery(i interface{}, query string, args ...interface{}) ([]interface{}, error) {
