@@ -75,15 +75,19 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 				procedure.Init(s, s.application)
 				procedureWrapper := func(procedure ApiProcedure) turnpike.MethodHandler {
 					return func(args []interface{}, kwargs map[string]interface{}) *turnpike.CallResult {
-						if validator, ok := procedure.(ApiProcedureRequest); ok {
-							request := validator.GetRequest()
-							if err := RequestFillAndValidate(request, args, kwargs); err != nil {
+						if autoValidation, ok := procedure.(ApiProcedureRequest); ok {
+							out := autoValidation.GetRequest()
+							request := NewRequest(out, args, kwargs)
+							if ok, errors := request.Valid(); !ok {
 								return &turnpike.CallResult{
-									Err: turnpike.URI(err.Error()),
+									Kwargs: map[string]interface{}{
+										"errors": errors,
+									},
+									Err: turnpike.URI(ErrorInvalidArgument),
 								}
 							}
 
-							return validator.Run(request)
+							return autoValidation.Run(out)
 						}
 
 						if simple, ok := procedure.(ApiProcedureSimple); ok {
