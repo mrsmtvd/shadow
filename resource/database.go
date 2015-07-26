@@ -92,6 +92,10 @@ func (s *SqlStorage) CreateTablesIfNotExists() error {
 	return s.executor.(*gorp.DbMap).CreateTablesIfNotExists()
 }
 
+func (s *SqlStorage) SetTypeConverter(converter gorp.TypeConverter) {
+    s.executor.(*gorp.DbMap).TypeConverter = converter
+}
+
 func (s *SqlStorage) AddTableWithName(i interface{}, name string) *gorp.TableMap {
 	return s.executor.(*gorp.DbMap).AddTableWithName(i, name)
 }
