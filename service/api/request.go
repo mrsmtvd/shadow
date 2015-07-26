@@ -8,10 +8,6 @@ import (
 	"github.com/kihamo/shadow"
 )
 
-const (
-	ParamNameTag = "param"
-)
-
 type Request struct {
 	zeros  map[string]bool
 	errors []string
@@ -80,6 +76,17 @@ func (r *Request) setZero(val reflect.Value, path string) {
 	}
 }
 
+func (r *Request) getName(field reflect.StructField) string {
+	name := field.Tag.Get("json")
+	if name == "" {
+		name = strings.ToLower(field.Name)
+	} else {
+		name = strings.Replace(name, ",omitempty", "", 1)
+	}
+
+	return name
+}
+
 func (r *Request) getPath(parentPath string, childPath string) string {
 	prefix := "."
 	if parentPath == "" {
@@ -110,12 +117,9 @@ func (r *Request) fill(out reflect.Value, in interface{}, path string) {
 			for i := 0; i < out.NumField(); i++ {
 				f := out.Type().Field(i)
 
-				name := f.Tag.Get(ParamNameTag)
-				if name == "" {
-					name = strings.ToLower(f.Name)
-				}
-
+				name := r.getName(f)
 				childPath := r.getPath(path, name)
+
 				if value, ok := in[name]; ok {
 					r.fill(out.Field(i), value, childPath)
 				}
@@ -237,11 +241,7 @@ func (r *Request) validateStruct(value reflect.Value, path string) {
 		f := value.Type().Field(i)
 		val := value.FieldByName(f.Name)
 
-		name := f.Tag.Get(ParamNameTag)
-		if name == "" {
-			name = strings.ToLower(f.Name)
-		}
-
+		name := r.getName(f)
 		childPath := r.getPath(path, name)
 		invalid := false
 
