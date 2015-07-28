@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
 )
 
@@ -82,6 +83,8 @@ type Worker struct {
 	task     *Task
 	status   int
 	created  time.Time
+
+	logger *logrus.Entry
 }
 
 // GetID возвращает уникальный идентифкатор исполнителя
@@ -124,8 +127,18 @@ func (w *Worker) work(done chan<- *Worker) {
 
 				defer func() {
 					if err := recover(); err != nil {
+						w.logger.WithFields(logrus.Fields{
+							"task":  w.task.GetName(),
+							"args":  w.task.args,
+							"error": err,
+						}).Warn("Failed")
+
 						w.task.status = taskStatusFail
 					} else {
+						w.logger.WithFields(logrus.Fields{
+							"task": w.task.GetName(),
+							"args": w.task.args,
+						}).Debug("Success")
 						w.task.status = taskStatusSuccess
 					}
 
@@ -138,6 +151,10 @@ func (w *Worker) work(done chan<- *Worker) {
 				if repeat, duration := w.task.fn(w.task.args...); repeat {
 					t := w.task
 					t.status = taskStatusRepeatWait
+					w.logger.WithFields(logrus.Fields{
+						"task": w.task.GetName(),
+						"args": w.task.args,
+					}).Debug("Repeat")
 
 					time.AfterFunc(duration, func() {
 						w.dispatcher.sendTask(t)
@@ -211,7 +228,9 @@ type Dispatcher struct {
 	workersBusy     int          // количество занятых исполнителей
 	tasksWait       []*Task      // задачи, ожидающие назначения исполнителя
 
-	waitGroup *sync.WaitGroup
+	waitGroup   *sync.WaitGroup
+	application *shadow.Application
+	logger      *logrus.Entry
 }
 
 func (d *Dispatcher) GetName() string {
@@ -219,6 +238,8 @@ func (d *Dispatcher) GetName() string {
 }
 
 func (d *Dispatcher) Init(a *shadow.Application) error {
+	d.application = a
+
 	d.newTasks = make(chan *Task)
 	d.queue = make(chan *Task)
 	d.workers = make(Pool, 0)
@@ -233,6 +254,12 @@ func (d *Dispatcher) Init(a *shadow.Application) error {
 }
 
 func (d *Dispatcher) Run() error {
+	resourceLogger, err := d.application.GetResource("logger")
+	if err != nil {
+		return err
+	}
+	d.logger = resourceLogger.(*Logger).Get(d.GetName())
+
 	// отслеживание квоты на занятость исполнителей
 	go func() {
 		for {
@@ -255,14 +282,17 @@ func (d *Dispatcher) Run() error {
 
 // AddWorker добавляет еще одного исполнителя в пулл
 func (d *Dispatcher) AddWorker() {
+	id := uuid.New()
+
 	w := &Worker{
 		dispatcher:     d,
 		localWaitGroup: new(sync.WaitGroup),
 		newTask:        make(chan *Task),
 		quit:           make(chan bool),
-		workerID:       uuid.New(),
+		workerID:       id,
 		status:         workerStatusWait,
 		created:        time.Now(),
+		logger:         d.logger.WithField("worker", id),
 	}
 
 	heap.Push(&d.workers, w)
