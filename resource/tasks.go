@@ -39,6 +39,7 @@ const (
  */
 type Task struct {
 	taskID  string
+    name    string
 	fn      func(...interface{}) (bool, time.Duration)
 	args    []interface{}
 	status  int
@@ -52,11 +53,7 @@ func (j *Task) GetID() string {
 
 // GetName возвращает имя выполняемой задачи
 func (t *Task) GetName() string {
-	funcName := runtime.FuncForPC(reflect.ValueOf(t.fn).Pointer()).Name()
-
-	//parts := strings.Split(funcName, "(")
-
-	return funcName
+	return t.name
 }
 
 // GetStatus возвращает статус задачи
@@ -300,9 +297,10 @@ func (d *Dispatcher) AddWorker() {
 }
 
 // AddTask добавляет задание в очередь на выполнение и возвращает саму задачу
-func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
 	t := &Task{
 		taskID:  uuid.New(),
+        name:    name,
 		fn:      fn,
 		args:    args,
 		status:  taskStatusWait,
@@ -310,6 +308,10 @@ func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args
 	}
 
 	d.sendTask(t)
+}
+
+func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
+    d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
 }
 
 func (d *Dispatcher) sendTask(t *Task) {
