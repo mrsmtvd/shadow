@@ -25,8 +25,38 @@ func ToString(in interface{}) string {
 	var castIn string
 
 	switch v := in.(type) {
+	case bool:
+		castIn = strconv.FormatBool(v)
+
 	case int:
 		castIn = strconv.Itoa(v)
+
+	case int8:
+		castIn = strconv.FormatInt(int64(v), 10)
+
+	case int16:
+		castIn = strconv.FormatInt(int64(v), 10)
+
+	case int32:
+		castIn = strconv.FormatInt(int64(v), 10)
+
+	case int64:
+		castIn = strconv.FormatInt(v, 10)
+
+	case uint:
+		castIn = strconv.FormatUint(uint64(v), 10)
+
+	case uint8:
+		castIn = strconv.FormatUint(uint64(v), 10)
+
+	case uint16:
+		castIn = strconv.FormatUint(uint64(v), 10)
+
+	case uint32:
+		castIn = strconv.FormatUint(uint64(v), 10)
+
+	case uint64:
+		castIn = strconv.FormatUint(v, 10)
 
 	case float32:
 		castIn = strconv.FormatFloat(float64(v), 'f', 6, 32)

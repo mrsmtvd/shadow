@@ -4,10 +4,10 @@ import (
 	"database/sql"
 
 	"github.com/dropbox/godropbox/errors"
+	"github.com/go-gorp/gorp"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/kihamo/shadow"
 	"github.com/lann/squirrel"
-	_ "github.com/ziutek/mymysql/godrv"
-	"gopkg.in/gorp.v1"
 )
 
 type SqlStorage struct {
@@ -27,12 +27,12 @@ func (r *Database) GetConfigVariables() []ConfigVariable {
 	return []ConfigVariable{
 		ConfigVariable{
 			Key:   "database-driver",
-			Value: "mymysql",
+			Value: "mysql",
 			Usage: "Database driver",
 		},
 		ConfigVariable{
 			Key:   "database-dsn",
-			Value: "tcp:localhost:3306*shadow/root/",
+			Value: "root:@tcp(localhost:3306)/shadow",
 			Usage: "Database DSN",
 		},
 	}
@@ -75,7 +75,7 @@ func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 	}
 
 	switch driver {
-	case "mymysql":
+	case "mysql":
 		dbMap.Dialect = gorp.MySQLDialect{"InnoDB", "UTF8"}
 		break
 
@@ -93,7 +93,7 @@ func (s *SqlStorage) CreateTablesIfNotExists() error {
 }
 
 func (s *SqlStorage) SetTypeConverter(converter gorp.TypeConverter) {
-    s.executor.(*gorp.DbMap).TypeConverter = converter
+	s.executor.(*gorp.DbMap).TypeConverter = converter
 }
 
 func (s *SqlStorage) AddTableWithName(i interface{}, name string) *gorp.TableMap {
