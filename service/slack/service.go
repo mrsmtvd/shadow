@@ -65,13 +65,13 @@ func (s *SlackService) Init(a *shadow.Application) error {
 }
 
 func (s *SlackService) Run(wg *sync.WaitGroup) (err error) {
-	token := s.config.GetString("slack-token")
+	token := s.config.GetString("slack.token")
 	if token == "" {
 		s.logger.Error("Slack token is empty")
 		return nil
 	}
 
-	s.api = slack.New(s.config.GetString("slack-token"))
+	s.api = slack.New(s.config.GetString("slack.token"))
 	s.api.SetDebug(s.config.GetBool("debug"))
 
 	s.senderChannel = make(chan slack.OutgoingMessage)
@@ -218,7 +218,7 @@ func (s *SlackService) connect() {
 	s.mutex.Lock()
 	s.pingAttempts = 0
 	s.connected = true
-	s.logger.WithField("token", s.config.GetString("slack-token")).Infof("Connect slack as %s", s.Bot.Name)
+	s.logger.WithField("token", s.config.GetString("slack.token")).Infof("Connect slack as %s", s.Bot.Name)
 	s.mutex.Unlock()
 
 	s.Rtm.HandleIncomingEvents(s.receiverChannel)

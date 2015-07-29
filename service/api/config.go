@@ -19,27 +19,27 @@ func (s *ApiService) GetConfigVariables() []resource.ConfigVariable {
 
 	return []resource.ConfigVariable{
 		resource.ConfigVariable{
-			Key:   "api-host",
+			Key:   "api.host",
 			Value: "0.0.0.0",
 			Usage: "API socket host",
 		},
 		resource.ConfigVariable{
-			Key:   "api-port",
+			Key:   "api.port",
 			Value: 8001,
 			Usage: "API socket port",
 		},
 		resource.ConfigVariable{
-			Key:   "api-secure",
+			Key:   "api.secure",
 			Value: false,
 			Usage: "API enable SSL",
 		},
 		resource.ConfigVariable{
-			Key:   "api-secure-crt",
+			Key:   "api.secure-crt",
 			Value: pathCrt,
 			Usage: "API path to SSL crt file",
 		},
 		resource.ConfigVariable{
-			Key:   "api-secure-key",
+			Key:   "api.secure-key",
 			Value: pathKey,
 			Usage: "API path to SSL key file",
 		},

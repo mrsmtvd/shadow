@@ -65,7 +65,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 
 	s.middleware = alice.New(
 		LoggerMiddleware(s.logger),
-		BasicAuthMiddleware(s.config.GetString("auth-user"), s.config.GetString("auth-password")),
+		BasicAuthMiddleware(s.config.GetString("frontend.auth-user"), s.config.GetString("frontend.auth-password")),
 	)
 	s.router = NewRouter(s.application)
 
@@ -135,7 +135,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 
 		// TODO: ssl
 
-		addr := fmt.Sprintf("%s:%d", s.config.GetString("host"), s.config.GetInt64("port"))
+		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt64("frontend.port"))
 		fields := logrus.Fields{
 			"addr": addr,
 			"pid":  os.Getpid(),

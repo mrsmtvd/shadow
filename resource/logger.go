@@ -17,7 +17,7 @@ func (r *Logger) GetName() string {
 func (r *Logger) GetConfigVariables() []ConfigVariable {
 	return []ConfigVariable{
 		ConfigVariable{
-			Key:   "logger-level",
+			Key:   "logger.level",
 			Value: 5,
 			Usage: "Log level",
 		},
@@ -44,7 +44,7 @@ func (r *Logger) Run() (err error) {
 	if r.config.GetBool("debug") {
 		r.logger.Level = logrus.DebugLevel
 	} else {
-		switch r.config.GetInt64("logger-level") {
+		switch r.config.GetInt64("logger.level") {
 		case 1:
 			r.logger.Level = logrus.PanicLevel
 		case 2:

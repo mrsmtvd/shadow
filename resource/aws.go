@@ -22,17 +22,17 @@ func (r *Aws) GetName() string {
 func (r *Aws) GetConfigVariables() []ConfigVariable {
 	return []ConfigVariable{
 		ConfigVariable{
-			Key:   "aws-key",
+			Key:   "aws.key",
 			Value: "",
 			Usage: "AWS access key ID",
 		},
 		ConfigVariable{
-			Key:   "aws-secret",
+			Key:   "aws.secret",
 			Value: "",
 			Usage: "AWS secret access key",
 		},
 		ConfigVariable{
-			Key:   "aws-region",
+			Key:   "aws.region",
 			Value: "us-east-1",
 			Usage: "AWS region",
 		},
@@ -61,8 +61,8 @@ func (r *Aws) Run() error {
 	logger := resourceLogger.(*Logger).Get(r.GetName())
 
 	awsConfig := &aws.Config{
-		Credentials: credentials.NewStaticCredentials(r.config.GetString("aws-key"), r.config.GetString("aws-secret"), ""),
-		Region:      r.config.GetString("aws-region"),
+		Credentials: credentials.NewStaticCredentials(r.config.GetString("aws.key"), r.config.GetString("aws.secret"), ""),
+		Region:      r.config.GetString("aws.region"),
 	}
 
 	if r.config.GetBool("debug") {

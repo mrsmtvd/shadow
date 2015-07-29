@@ -117,7 +117,7 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 
 		// TODO: ssl
 
-		addr := fmt.Sprintf("%s:%d", s.config.GetString("api-host"), s.config.GetInt64("api-port"))
+		addr := fmt.Sprintf("%s:%d", s.config.GetString("api.host"), s.config.GetInt64("api.port"))
 		fields := logrus.Fields{
 			"addr": addr,
 			"pid":  os.Getpid(),
@@ -164,7 +164,7 @@ func (s *ApiService) HasProcedure(procedure string) bool {
 }
 
 func (s *ApiService) GetClient() (*turnpike.Client, error) {
-	addr := fmt.Sprintf("ws://%s:%d/", s.config.GetString("api-host"), s.config.GetInt64("api-port"))
+	addr := fmt.Sprintf("ws://%s:%d/", s.config.GetString("api.host"), s.config.GetInt64("api.port"))
 
 	client, err := turnpike.NewWebsocketClient(turnpike.JSON, addr)
 	if err != nil {

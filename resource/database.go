@@ -26,12 +26,12 @@ func (r *Database) GetName() string {
 func (r *Database) GetConfigVariables() []ConfigVariable {
 	return []ConfigVariable{
 		ConfigVariable{
-			Key:   "database-driver",
+			Key:   "database.driver",
 			Value: "mysql",
 			Usage: "Database driver",
 		},
 		ConfigVariable{
-			Key:   "database-dsn",
+			Key:   "database.dsn",
 			Value: "root:@tcp(localhost:3306)/shadow",
 			Usage: "Database DSN",
 		},
@@ -50,7 +50,7 @@ func (r *Database) Init(a *shadow.Application) error {
 }
 
 func (r *Database) Run() (err error) {
-	r.storage, err = NewSQLStorage(r.config.GetString("database-driver"), r.config.GetString("database-dsn"))
+	r.storage, err = NewSQLStorage(r.config.GetString("database.driver"), r.config.GetString("database.dsn"))
 
 	if err != nil {
 		return err
