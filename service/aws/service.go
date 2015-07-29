@@ -51,7 +51,7 @@ func (s *AwsService) Init(a *shadow.Application) error {
 func (s *AwsService) Run() error {
 	if s.application.HasResource("tasks") {
 		tasks, _ := s.application.GetResource("tasks")
-		tasks.(*resource.Dispatcher).AddTask(s.getStatsJob)
+		tasks.(*resource.Dispatcher).AddNamedTask("aws.updater", s.getStatsJob)
 	}
 
 	return nil
