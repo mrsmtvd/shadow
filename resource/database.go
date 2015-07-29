@@ -15,8 +15,9 @@ type SqlStorage struct {
 }
 
 type Database struct {
-	config  *Config
-	storage *SqlStorage
+	application *shadow.Application
+	config      *Config
+	storage     *SqlStorage
 }
 
 func (r *Database) GetName() string {
@@ -39,6 +40,7 @@ func (r *Database) GetConfigVariables() []ConfigVariable {
 }
 
 func (r *Database) Init(a *shadow.Application) error {
+	r.application = a
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
@@ -54,6 +56,16 @@ func (r *Database) Run() (err error) {
 
 	if err != nil {
 		return err
+	}
+
+	if r.config.GetBool("debug") {
+		resourceLogger, err := r.application.GetResource("logger")
+		if err != nil {
+			return err
+		}
+
+		logger := resourceLogger.(*Logger).Get(r.GetName())
+		r.storage.executor.(*gorp.DbMap).TraceOn("", logger)
 	}
 
 	return nil
