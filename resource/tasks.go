@@ -39,7 +39,7 @@ const (
  */
 type Task struct {
 	taskID  string
-    name    string
+	name    string
 	fn      func(...interface{}) (bool, time.Duration)
 	args    []interface{}
 	status  int
@@ -300,7 +300,7 @@ func (d *Dispatcher) AddWorker() {
 func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
 	t := &Task{
 		taskID:  uuid.New(),
-        name:    name,
+		name:    name,
 		fn:      fn,
 		args:    args,
 		status:  taskStatusWait,
@@ -311,7 +311,7 @@ func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, ti
 }
 
 func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
-    d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
+	d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
 }
 
 func (d *Dispatcher) sendTask(t *Task) {
