@@ -18,5 +18,5 @@ func (c *VersionCommand) GetDescription() string {
 
 func (c *VersionCommand) Run(m *slack.MessageEvent, args ...string) {
 	service := c.Service.(*SlackService)
-	c.SendMessagef(m.ChannelId, "%s v.%s build %s / %s", service.Bot.Name, c.Application.Version, c.Application.Build, service.config.GetString("env"))
+	c.SendMessagef(m.Channel, "%s v.%s build %s / %s", service.Bot.Name, c.Application.Version, c.Application.Build, service.config.GetString("env"))
 }

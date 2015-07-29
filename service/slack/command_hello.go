@@ -17,5 +17,5 @@ func (c *HelloCommand) GetDescription() string {
 }
 
 func (c *HelloCommand) Run(m *slack.MessageEvent, args ...string) {
-	c.SendMessage(m.ChannelId, "Привет! Спроси у меня")
+	c.SendMessage(m.Channel, "Привет! Спроси у меня")
 }

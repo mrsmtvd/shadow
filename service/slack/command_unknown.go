@@ -17,5 +17,5 @@ func (c *UnknownCommand) GetDescription() string {
 }
 
 func (c *UnknownCommand) Run(m *slack.MessageEvent, args ...string) {
-	c.SendMessagef(m.ChannelId, "Я не знаю такой команды :wink:. Попробуй набрать: <@%s>: help", c.Service.(*SlackService).Bot.Name)
+	c.SendMessagef(m.Channel, "Я не знаю такой команды :wink:. Попробуй набрать: <@%s>: help", c.Service.(*SlackService).Bot.Name)
 }

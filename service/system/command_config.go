@@ -30,14 +30,14 @@ func (c *ConfigCommand) Run(m *sl.MessageEvent, args ...string) {
 			values = append(values, fmt.Sprintf("*%s* = %s", name, fmt.Sprint(service.Config.Get(name))))
 		}
 
-		c.SendMessage(m.ChannelId, strings.Join(values, "\n"))
+		c.SendMessage(m.Channel, strings.Join(values, "\n"))
 		return
 	}
 
 	if !service.Config.Has(args[0]) {
-		c.SendMessagef(m.ChannelId, "Настройки *%s* не существует", args[0])
+		c.SendMessagef(m.Channel, "Настройки *%s* не существует", args[0])
 		return
 	}
 
-	c.SendMessagef(m.ChannelId, "*%s* = %s", args[0], fmt.Sprint(service.Config.Get(args[0])))
+	c.SendMessagef(m.Channel, "*%s* = %s", args[0], fmt.Sprint(service.Config.Get(args[0])))
 }

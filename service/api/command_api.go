@@ -46,12 +46,12 @@ func (c *ApiCommand) Run(m *sl.MessageEvent, args ...string) {
 			})
 		}
 
-		c.SendPostMessage(m.ChannelId, "Available api procedures", params)
+		c.SendPostMessage(m.Channel, "Available api procedures", params)
 		return
 	}
 
 	if !c.Service.HasProcedure(args[0]) {
-		c.SendMessagef(m.ChannelId, "Procedure *%s* does't exists", args[0])
+		c.SendMessagef(m.Channel, "Procedure *%s* does't exists", args[0])
 		return
 	}
 
@@ -69,7 +69,7 @@ func (c *ApiCommand) Run(m *sl.MessageEvent, args ...string) {
 	apiSet.Var(&apiKwargs, "k", "Kwargs")
 
 	if err = apiSet.Parse(args[1:]); err != nil {
-		c.SendMessage(m.ChannelId, err.Error())
+		c.SendMessage(m.Channel, err.Error())
 		return
 	}
 
@@ -104,5 +104,5 @@ func (c *ApiCommand) Run(m *sl.MessageEvent, args ...string) {
 		}}
 	}
 
-	c.SendPostMessage(m.ChannelId, "", params)
+	c.SendPostMessage(m.Channel, "", params)
 }

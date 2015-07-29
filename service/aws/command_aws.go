@@ -31,5 +31,5 @@ func (c *AwsCommand) Run(m *sl.MessageEvent, args ...string) {
 
 	service.mutex.RUnlock()
 
-	c.SendMessage(m.ChannelId, text)
+	c.SendMessage(m.Channel, text)
 }

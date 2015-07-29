@@ -38,7 +38,7 @@ func (c *LogCommand) Run(m *sl.MessageEvent, args ...string) {
 			})
 		}
 
-		c.SendPostMessage(m.ChannelId, "Available components", params)
+		c.SendPostMessage(m.Channel, "Available components", params)
 		return
 	}
 
@@ -46,19 +46,19 @@ func (c *LogCommand) Run(m *sl.MessageEvent, args ...string) {
 	if len(args) == 2 {
 		var err error
 		if showItemsCount, err = strconv.Atoi(args[1]); err != nil {
-			c.SendMessage(m.ChannelId, "Specified number of records to display is not a number")
+			c.SendMessage(m.Channel, "Specified number of records to display is not a number")
 			return
 		}
 	}
 
 	component, ok := loggers[args[0]]
 	if !ok {
-		c.SendMessagef(m.ChannelId, "Component *%s* does't exists", args[0])
+		c.SendMessagef(m.Channel, "Component *%s* does't exists", args[0])
 		return
 	}
 
 	if len(component) == 0 {
-		c.SendMessagef(m.ChannelId, "Log empty for *%s* component", args[0])
+		c.SendMessagef(m.Channel, "Log empty for *%s* component", args[0])
 		return
 	}
 
@@ -123,5 +123,5 @@ func (c *LogCommand) Run(m *sl.MessageEvent, args ...string) {
 		index = index + 1
 	}
 
-	c.SendPostMessage(m.ChannelId, fmt.Sprintf("Show last *%d* entries for *%s* component", showItemsCount, args[0]), params)
+	c.SendPostMessage(m.Channel, fmt.Sprintf("Show last *%d* entries for *%s* component", showItemsCount, args[0]), params)
 }

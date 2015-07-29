@@ -17,5 +17,5 @@ func (c *PingCommand) GetDescription() string {
 }
 
 func (c *PingCommand) Run(m *slack.MessageEvent, args ...string) {
-	c.SendMessagef(m.ChannelId, "Pong. <@%s>: твой ход!", m.UserId)
+	c.SendMessagef(m.Channel, "Pong. <@%s>: твой ход!", m.User)
 }

@@ -28,6 +28,6 @@ func (c *ServicesCommand) Run(m *sl.MessageEvent, args ...string) {
 		values = append(values, s.GetName())
 	}
 
-	c.SendMessage(m.ChannelId, strings.Join(values, "\n"))
+	c.SendMessage(m.Channel, strings.Join(values, "\n"))
 	return
 }

@@ -62,11 +62,11 @@ func (r *Aws) Run() error {
 
 	awsConfig := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(r.config.GetString("aws.key"), r.config.GetString("aws.secret"), ""),
-		Region:      r.config.GetString("aws.region"),
+		Region:      aws.String(r.config.GetString("aws.region")),
 	}
 
 	if r.config.GetBool("debug") {
-		awsConfig.LogLevel = 5
+		awsConfig.LogLevel = aws.LogLevel(aws.LogDebug)
 	}
 
 	aws.DefaultConfig = aws.DefaultConfig.Merge(awsConfig)

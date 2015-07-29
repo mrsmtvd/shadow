@@ -29,7 +29,7 @@ type SlackService struct {
 	logger      *logrus.Entry
 
 	Commands map[string]SlackCommand
-	Rtm      *slack.SlackWS
+	Rtm      *slack.WS
 	Bot      *slack.UserDetails
 
 	mutex           sync.RWMutex
@@ -123,7 +123,7 @@ func (s *SlackService) RegisterCommand(command SlackCommand, service shadow.Serv
 
 func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	// ignore self messages
-	if m.UserId == s.Bot.Id {
+	if m.User == s.Bot.ID {
 		return
 	}
 
@@ -132,12 +132,12 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	name := f.Arg(0)
 	args := f.Args()[1:]
 
-	botTag := "<@" + s.Bot.Id + ">"
+	botTag := "<@" + s.Bot.ID + ">"
 	appeal := name == s.Bot.Name || strings.HasPrefix(name, s.Bot.Name+":") || strings.HasPrefix(name, botTag) || strings.HasPrefix(name, botTag+":")
 	name = strings.ToLower(name)
 
 	// Not direct message
-	ch, _ := s.Rtm.GetChannelInfo(m.ChannelId)
+	ch, _ := s.Rtm.GetChannelInfo(m.Channel)
 	if ch != nil {
 		if !appeal {
 			if _, ok := s.Commands["hello"]; ok && strings.Contains(m.Text, botTag) {
@@ -151,7 +151,12 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	// ignore bot name
 	if appeal {
 		name = strings.ToLower(f.Arg(1))
-		args = args[1:]
+
+        if len(args) > 1 {
+            args = args[1:]
+        } else {
+            args = []string{}
+        }
 	}
 
 	var (

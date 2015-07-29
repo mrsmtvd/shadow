@@ -37,9 +37,9 @@ func (c *HelpCommand) Run(m *slack.MessageEvent, args ...string) {
 			Value: command.GetDescription(),
 		})
 	} else {
-		c.SendMessagef(m.ChannelId, "Команда %s не найдена", args[0])
+		c.SendMessagef(m.Channel, "Команда %s не найдена", args[0])
 		return
 	}
 
-	c.SendPostMessage(m.ChannelId, "Мои команды", params)
+	c.SendPostMessage(m.Channel, "Мои команды", params)
 }
