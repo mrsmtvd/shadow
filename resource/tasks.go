@@ -17,9 +17,6 @@ import (
 // http://habrahabr.ru/post/198150/
 
 const (
-	// количество исполнителей, запускаемых по умолчанию
-	defaultWorkers = 1
-
 	// статусы исполнителя
 	workerStatusWait = iota
 	workerStatusBusy
@@ -227,6 +224,7 @@ type Dispatcher struct {
 
 	waitGroup   *sync.WaitGroup
 	application *shadow.Application
+	config      *Config
 	logger      *logrus.Entry
 }
 
@@ -234,8 +232,24 @@ func (d *Dispatcher) GetName() string {
 	return "tasks"
 }
 
+func (d *Dispatcher) GetConfigVariables() []ConfigVariable {
+	return []ConfigVariable{
+		ConfigVariable{
+			Key:   "tasks.workers",
+			Value: 2,
+			Usage: "Default workers count",
+		},
+	}
+}
+
 func (d *Dispatcher) Init(a *shadow.Application) error {
 	d.application = a
+
+	resourceConfig, err := a.GetResource("config")
+	if err != nil {
+		return err
+	}
+	d.config = resourceConfig.(*Config)
 
 	d.newTasks = make(chan *Task)
 	d.queue = make(chan *Task)
@@ -269,7 +283,9 @@ func (d *Dispatcher) Run() error {
 
 	// инициализируем исполнителей
 	heap.Init(&d.workers)
-	for i := 0; i < defaultWorkers; i++ {
+
+	var i int64
+	for i = 0; i < d.config.GetInt64("tasks.workers"); i++ {
 		d.AddWorker()
 	}
 

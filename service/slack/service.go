@@ -152,11 +152,11 @@ func (s *SlackService) handleCommand(m *slack.MessageEvent) {
 	if appeal {
 		name = strings.ToLower(f.Arg(1))
 
-        if len(args) > 1 {
-            args = args[1:]
-        } else {
-            args = []string{}
-        }
+		if len(args) > 1 {
+			args = args[1:]
+		} else {
+			args = []string{}
+		}
 	}
 
 	var (

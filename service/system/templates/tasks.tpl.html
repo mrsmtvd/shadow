@@ -35,7 +35,7 @@
 </table>
 
 <div class="page-header">
-    <h1>Wait tasks</h1>
+    <h1 id="tasks-title">0 wait tasks</h1>
 </div>
 
 <table class="table table-hover" id="tasks">
@@ -126,6 +126,8 @@
               + '<td>' + new Date(task.created).toLocaleString() + '</td>'
             + '</tr>');
           }
+
+          $('#tasks-title').text(r.tasks_wait.length + ' wait tasks')
         }
       });
     }
