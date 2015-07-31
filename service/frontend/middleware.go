@@ -62,15 +62,21 @@ func LoggerMiddleware(logger *logrus.Entry) alice.Constructor {
 
 			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.RequestURI, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
 
+			entry := logger.WithFields(logrus.Fields{
+				"method":      r.Method,
+				"request-uri": r.RequestURI,
+				"code":        writer.GetStatusCode(),
+			})
+
 			switch writer.GetStatusCode() {
 			case 500:
-				logger.Error(message)
+				entry.Error(message)
 
 			case 404:
-				logger.Warn(message)
+				entry.Warn(message)
 
 			default:
-				logger.Info(message)
+				entry.Info(message)
 			}
 		})
 	}
