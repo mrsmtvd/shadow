@@ -71,3 +71,9 @@ $ boot2docker stop
 $ boot2docker start
 $ boot2docker ssh 'sudo /etc/init.d/docker restart'
 ```
+
+Debug mode
+----------
+```bash
+$ make DEBUG=true
+```

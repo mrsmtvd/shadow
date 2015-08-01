@@ -1,6 +1,8 @@
 package system
 
 import (
+	"runtime"
+
 	"github.com/kihamo/shadow/resource"
 	"github.com/kihamo/shadow/service/frontend"
 )
@@ -12,7 +14,10 @@ type TasksHandler struct {
 func (h *TasksHandler) Handle() {
 	if h.IsAjax() {
 		tasks, _ := h.Application.GetResource("tasks")
-		h.SendJSON(tasks.(*resource.Dispatcher).GetStats())
+		stats := tasks.(*resource.Dispatcher).GetStats()
+		stats["goroutines"] = runtime.NumGoroutine()
+
+		h.SendJSON(stats)
 		return
 	}
 

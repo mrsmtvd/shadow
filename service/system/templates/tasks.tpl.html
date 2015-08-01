@@ -15,6 +15,16 @@
     </div>
 </div>
 
+<table class="table table-hover" id="stats">
+    <thead>
+    <tbody>
+        <tr>
+            <th>Goroutines</th>
+            <td id="goroutines"></td>
+        </tr>
+    </tbody>
+</table>
+
 <div class="page-header">
     <h1>Workers</h1>
 </div>
@@ -127,7 +137,8 @@
             + '</tr>');
           }
 
-          $('#tasks-title').text(r.tasks_wait.length + ' wait tasks')
+          $('#tasks-title').text(r.tasks_wait.length + ' wait tasks');
+          $('#goroutines').text(r.goroutines);
         }
       });
     }
