@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -14,7 +15,12 @@ func (a *procedureArgs) String() string {
 }
 
 func (a *procedureArgs) Set(value string) error {
-	*a = append(*a, value)
+	var target interface{}
+	if err := json.Unmarshal([]byte(value), &target); err != nil {
+		return err
+	}
+
+	*a = append(*a, target)
 	return nil
 }
 
@@ -29,6 +35,11 @@ func (k *procedureKwargs) Set(value string) error {
 		return errors.New("Not valid format. Use \"key=value\"")
 	}
 
-	(*k)[v[0]] = v[1]
+	var target interface{}
+	if err := json.Unmarshal([]byte(v[1]), &target); err != nil {
+		return err
+	}
+
+	(*k)[v[0]] = target
 	return nil
 }
