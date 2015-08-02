@@ -25,6 +25,9 @@ func ToString(in interface{}) string {
 	var castIn string
 
 	switch v := in.(type) {
+	case string:
+		castIn = v
+
 	case bool:
 		castIn = strconv.FormatBool(v)
 

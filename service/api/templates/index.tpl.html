@@ -15,12 +15,13 @@
 <script>
     AUTOBAHN_DEBUG = true;
     var session = null;
+    var when;
 
     try {
         var autobahn = require('autobahn');
-        var when = require('when');
+        when = require('when');
     } catch (e) {
-        var when = autobahn.when;
+        when = autobahn.when;
     }
 
     var connection = new autobahn.Connection({
@@ -33,7 +34,7 @@
     };
     connection.onclose = function () {
         session = null;
-    }
+    };
 
     connection.open();
 
@@ -75,17 +76,27 @@
             var a = [];
             var k = {};
 
-            args.find('input').each(function(i, e) {
+            args.find('input').each(function (i, e) {
                 var value = $(e).val();
                 if (value.length) {
+                    try {
+                        value = JSON.parse(value);
+                    } catch (e) {
+                    }
+
                     a.push(value);
                 }
             });
-            kwargs.find('input:even').each(function(i, e) {
+            kwargs.find('input:even').each(function (i, e) {
                 var key = $(e).val();
                 var value = $(e).next().val();
 
                 if (key.length && value.length) {
+                    try {
+                        value = JSON.parse(value);
+                    } catch (e) {
+                    }
+
                     k[key] = value;
                 }
             });
