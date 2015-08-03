@@ -25,11 +25,11 @@ type ServiceFrontendHandlers interface {
 }
 
 type FrontendService struct {
+	Logger      *logrus.Entry
 	config      *resource.Config
 	template    *resource.Template
 	application *shadow.Application
 	router      *Router
-	logger      *logrus.Entry
 	middleware  alice.Chain
 }
 
@@ -58,13 +58,13 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 		return err
 	}
 	logger := resourceLogger.(*resource.Logger)
-	s.logger = logger.Get(s.GetName())
+	s.Logger = logger.Get(s.GetName())
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
 
 	s.middleware = alice.New(
-		LoggerMiddleware(s.logger),
+		LoggerMiddleware(s.Logger),
 		BasicAuthMiddleware(s.config.GetString("frontend.auth-user"), s.config.GetString("frontend.auth-password")),
 	)
 	s.router = NewRouter(s.application)
@@ -140,10 +140,10 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 			"addr": addr,
 			"pid":  os.Getpid(),
 		}
-		s.logger.WithFields(fields).Info("Running service")
+		s.Logger.WithFields(fields).Info("Running service")
 
 		if err := http.ListenAndServe(addr, s.middleware.Then(http.DefaultServeMux)); err != nil {
-			s.logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
+			s.Logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}(s.router)
 

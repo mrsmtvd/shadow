@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type PanicHandler struct {
@@ -28,12 +30,16 @@ func (h *PanicHandler) Handle() {
 
 	_, filePath, line, _ := runtime.Caller(0)
 
-	data := map[string]interface{}{
+	fields := logrus.Fields{
 		"error": fmt.Sprintf("%s", h.error),
 		"stack": string(stack),
 		"file":  filePath,
 		"line":  line,
 	}
 
-	h.View.Context["panic"] = data
+	h.Service.(*FrontendService).Logger.
+		WithFields(fields).
+		Error("Frontend reguest error")
+
+	h.View.Context["panic"] = fields
 }
