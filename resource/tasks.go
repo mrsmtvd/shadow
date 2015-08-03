@@ -66,7 +66,7 @@ func (t *Task) GetCreated() time.Time {
 /*
  * Worker
  */
-type Worker struct {
+type worker struct {
 	dispatcher     *Dispatcher
 	index          int
 	localWaitGroup *sync.WaitGroup
@@ -82,32 +82,32 @@ type Worker struct {
 }
 
 // GetID возвращает уникальный идентифкатор исполнителя
-func (w *Worker) GetID() string {
+func (w *worker) GetID() string {
 	return w.workerID
 }
 
 // GetStatus возвращает статус исполнителя
-func (w *Worker) GetStatus() int {
+func (w *worker) GetStatus() int {
 	return w.status
 }
 
 // GetTask возвращает текущее задание
-func (w *Worker) GetTask() *Task {
+func (w *worker) GetTask() *Task {
 	return w.task
 }
 
 // Kill завершает работу исполнителя
-func (w *Worker) Kill() {
+func (w *worker) Kill() {
 	w.quit <- true
 }
 
 // GetCreated возвращает дату создания исполнителя
-func (w *Worker) GetCreated() time.Time {
+func (w *worker) GetCreated() time.Time {
 	return w.created
 }
 
 // work выполняет задачу
-func (w *Worker) work(done chan<- *Worker) {
+func (w *worker) work(done chan<- *worker) {
 	for {
 		select {
 		// пришло новое задание на выполнение
@@ -170,17 +170,17 @@ func (w *Worker) work(done chan<- *Worker) {
 /*
  * Pool
  */
-type Pool []*Worker
+type pool []*worker
 
-func (p Pool) Len() int {
+func (p pool) Len() int {
 	return len(p)
 }
 
-func (p Pool) Less(i, j int) bool {
+func (p pool) Less(i, j int) bool {
 	return p[i].status < p[j].status
 }
 
-func (p *Pool) Swap(i, j int) {
+func (p *pool) Swap(i, j int) {
 	a := *p
 
 	if i >= 0 && i < len(a) && j >= 0 && j < len(a) {
@@ -190,14 +190,14 @@ func (p *Pool) Swap(i, j int) {
 	}
 }
 
-func (p *Pool) Push(x interface{}) {
+func (p *pool) Push(x interface{}) {
 	n := len(*p)
-	worker := x.(*Worker)
+	worker := x.(*worker)
 	worker.index = n
 	*p = append(*p, worker)
 }
 
-func (p *Pool) Pop() interface{} {
+func (p *pool) Pop() interface{} {
 	a := *p
 	n := len(a)
 
@@ -215,8 +215,8 @@ func (p *Pool) Pop() interface{} {
 type Dispatcher struct {
 	newTasks        chan *Task   // очередь новых заданий
 	queue           chan *Task   // очередь выполняемых заданий
-	workers         Pool         // пул исполнителей
-	done            chan *Worker // канал уведомления о завершении выполнения заданий
+	workers         pool         // пул исполнителей
+	done            chan *worker // канал уведомления о завершении выполнения заданий
 	allowProcessing chan bool    // канал для блокировки выполнения новых задач для случая, когда все исполнители заняты
 	quit            chan bool    // канал для завершения диспетчера
 	workersBusy     int          // количество занятых исполнителей
@@ -254,8 +254,8 @@ func (d *Dispatcher) Init(a *shadow.Application) error {
 
 	d.newTasks = make(chan *Task)
 	d.queue = make(chan *Task)
-	d.workers = make(Pool, 0)
-	d.done = make(chan *Worker)
+	d.workers = make(pool, 0)
+	d.done = make(chan *worker)
 	d.allowProcessing = make(chan bool)
 	d.quit = make(chan bool)
 	d.waitGroup = new(sync.WaitGroup)
@@ -301,7 +301,7 @@ func (d *Dispatcher) Run() error {
 func (d *Dispatcher) AddWorker() {
 	id := uuid.New()
 
-	w := &Worker{
+	w := &worker{
 		dispatcher:     d,
 		localWaitGroup: new(sync.WaitGroup),
 		newTask:        make(chan *Task),
@@ -352,7 +352,7 @@ func (d *Dispatcher) Kill() {
 // GetStats возвращает статистику
 func (d *Dispatcher) GetStats() map[string]interface{} {
 	d.mutex.RLock()
-	defer d.mutex.Unlock()
+	defer d.mutex.RUnlock()
 
 	workers := make([]map[string]interface{}, 0, d.workers.Len())
 	for i := range d.workers {
@@ -403,7 +403,7 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 
 // dispatch отправляет задание свободному исполнителю
 func (d *Dispatcher) dispatch(t *Task) {
-	worker := heap.Pop(&d.workers).(*Worker)
+	worker := heap.Pop(&d.workers).(*worker)
 	worker.newTask <- t
 	heap.Push(&d.workers, worker)
 
@@ -413,7 +413,7 @@ func (d *Dispatcher) dispatch(t *Task) {
 	}
 }
 
-func (d *Dispatcher) completed(w *Worker) {
+func (d *Dispatcher) completed(w *worker) {
 	heap.Remove(&d.workers, w.index)
 	w.status = workerStatusWait
 	heap.Push(&d.workers, w)
