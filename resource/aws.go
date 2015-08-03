@@ -84,7 +84,7 @@ func (r *Aws) Run() error {
 	aws.DefaultConfig = aws.DefaultConfig.Merge(awsConfig)
 
 	fields := logrus.Fields{
-		"region": aws.DefaultConfig.Region,
+		"region": *aws.DefaultConfig.Region,
 	}
 
 	credentials, err := aws.DefaultConfig.Credentials.Get()
