@@ -223,6 +223,7 @@ type Dispatcher struct {
 	tasksWait       []*Task      // задачи, ожидающие назначения исполнителя
 
 	waitGroup   *sync.WaitGroup
+	mutex       sync.RWMutex
 	application *shadow.Application
 	config      *Config
 	logger      *logrus.Entry
@@ -275,7 +276,10 @@ func (d *Dispatcher) Run() error {
 	go func() {
 		for {
 			d.queue <- <-d.newTasks
+
+			d.mutex.Lock()
 			d.tasksWait = append(d.tasksWait[1:])
+			d.mutex.Unlock()
 
 			<-d.allowProcessing
 		}
@@ -332,7 +336,10 @@ func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args
 
 func (d *Dispatcher) sendTask(t *Task) {
 	go func() {
+		d.mutex.Lock()
 		d.tasksWait = append(d.tasksWait, t)
+		d.mutex.Unlock()
+
 		d.newTasks <- t
 	}()
 }
@@ -344,6 +351,9 @@ func (d *Dispatcher) Kill() {
 
 // GetStats возвращает статистику
 func (d *Dispatcher) GetStats() map[string]interface{} {
+	d.mutex.RLock()
+	defer d.mutex.Unlock()
+
 	workers := make([]map[string]interface{}, 0, d.workers.Len())
 	for i := range d.workers {
 		worker := d.workers[i]
