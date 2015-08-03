@@ -278,11 +278,12 @@ func (s *SlackService) keepalive() {
 					s.pingAttempts = 0
 				}
 			}
-			s.mutex.RUnlock()
 
 			if s.pingAttempts >= pingMaxAttempts {
 				s.reconnect("Reconnect max attempts")
 			}
+
+			s.mutex.RUnlock()
 		}
 	}
 }
