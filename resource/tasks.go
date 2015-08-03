@@ -34,33 +34,13 @@ const (
 /*
  * Task
  */
-type Task struct {
+type task struct {
 	taskID  string
 	name    string
 	fn      func(...interface{}) (bool, time.Duration)
 	args    []interface{}
 	status  int
 	created time.Time
-}
-
-// GetID возвращает уникальный идентификатор задачи
-func (j *Task) GetID() string {
-	return j.taskID
-}
-
-// GetName возвращает имя выполняемой задачи
-func (t *Task) GetName() string {
-	return t.name
-}
-
-// GetStatus возвращает статус задачи
-func (t *Task) GetStatus() int {
-	return t.status
-}
-
-// GetCreated возвращает дату создания задания
-func (t *Task) GetCreated() time.Time {
-	return t.created
 }
 
 /*
@@ -70,40 +50,20 @@ type worker struct {
 	dispatcher     *Dispatcher
 	index          int
 	localWaitGroup *sync.WaitGroup
-	newTask        chan *Task
+	newTask        chan *task
 	quit           chan bool // канал для завершения исполнителя
 
 	workerID string
-	task     *Task
+	task     *task
 	status   int
 	created  time.Time
 
 	logger *logrus.Entry
 }
 
-// GetID возвращает уникальный идентифкатор исполнителя
-func (w *worker) GetID() string {
-	return w.workerID
-}
-
-// GetStatus возвращает статус исполнителя
-func (w *worker) GetStatus() int {
-	return w.status
-}
-
-// GetTask возвращает текущее задание
-func (w *worker) GetTask() *Task {
-	return w.task
-}
-
-// Kill завершает работу исполнителя
-func (w *worker) Kill() {
+// kill worker shutdown
+func (w *worker) kill() {
 	w.quit <- true
-}
-
-// GetCreated возвращает дату создания исполнителя
-func (w *worker) GetCreated() time.Time {
-	return w.created
 }
 
 // work выполняет задачу
@@ -122,7 +82,7 @@ func (w *worker) work(done chan<- *worker) {
 				defer func() {
 					if err := recover(); err != nil {
 						w.logger.WithFields(logrus.Fields{
-							"task":  w.task.GetName(),
+							"task":  w.task.name,
 							"args":  w.task.args,
 							"error": err,
 						}).Warn("Failed")
@@ -130,7 +90,7 @@ func (w *worker) work(done chan<- *worker) {
 						w.task.status = taskStatusFail
 					} else {
 						w.logger.WithFields(logrus.Fields{
-							"task": w.task.GetName(),
+							"task": w.task.name,
 							"args": w.task.args,
 						}).Debug("Success")
 						w.task.status = taskStatusSuccess
@@ -146,7 +106,7 @@ func (w *worker) work(done chan<- *worker) {
 					t := w.task
 					t.status = taskStatusRepeatWait
 					w.logger.WithFields(logrus.Fields{
-						"task": w.task.GetName(),
+						"task": w.task.name,
 						"args": w.task.args,
 					}).Debug("Repeat")
 
@@ -213,14 +173,14 @@ func (p *pool) Pop() interface{} {
  * Dispatcher
  */
 type Dispatcher struct {
-	newTasks        chan *Task   // очередь новых заданий
-	queue           chan *Task   // очередь выполняемых заданий
+	newTasks        chan *task   // очередь новых заданий
+	queue           chan *task   // очередь выполняемых заданий
 	workers         pool         // пул исполнителей
 	done            chan *worker // канал уведомления о завершении выполнения заданий
 	allowProcessing chan bool    // канал для блокировки выполнения новых задач для случая, когда все исполнители заняты
 	quit            chan bool    // канал для завершения диспетчера
 	workersBusy     int          // количество занятых исполнителей
-	tasksWait       []*Task      // задачи, ожидающие назначения исполнителя
+	tasksWait       []*task      // задачи, ожидающие назначения исполнителя
 
 	waitGroup   *sync.WaitGroup
 	mutex       sync.RWMutex
@@ -252,15 +212,15 @@ func (d *Dispatcher) Init(a *shadow.Application) error {
 	}
 	d.config = resourceConfig.(*Config)
 
-	d.newTasks = make(chan *Task)
-	d.queue = make(chan *Task)
+	d.newTasks = make(chan *task)
+	d.queue = make(chan *task)
 	d.workers = make(pool, 0)
 	d.done = make(chan *worker)
 	d.allowProcessing = make(chan bool)
 	d.quit = make(chan bool)
 	d.waitGroup = new(sync.WaitGroup)
 	d.workersBusy = 0
-	d.tasksWait = make([]*Task, 0)
+	d.tasksWait = make([]*task, 0)
 
 	return nil
 }
@@ -304,7 +264,7 @@ func (d *Dispatcher) AddWorker() {
 	w := &worker{
 		dispatcher:     d,
 		localWaitGroup: new(sync.WaitGroup),
-		newTask:        make(chan *Task),
+		newTask:        make(chan *task),
 		quit:           make(chan bool),
 		workerID:       id,
 		status:         workerStatusWait,
@@ -318,7 +278,7 @@ func (d *Dispatcher) AddWorker() {
 
 // AddTask добавляет задание в очередь на выполнение и возвращает саму задачу
 func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
-	t := &Task{
+	t := &task{
 		taskID:  uuid.New(),
 		name:    name,
 		fn:      fn,
@@ -334,7 +294,7 @@ func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args
 	d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
 }
 
-func (d *Dispatcher) sendTask(t *Task) {
+func (d *Dispatcher) sendTask(t *task) {
 	go func() {
 		d.mutex.Lock()
 		d.tasksWait = append(d.tasksWait, t)
@@ -344,7 +304,7 @@ func (d *Dispatcher) sendTask(t *Task) {
 	}()
 }
 
-// Kill завершает работы диспетчера
+// Kill dispatcher shutdown
 func (d *Dispatcher) Kill() {
 	d.quit <- true
 }
@@ -358,17 +318,17 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 	for i := range d.workers {
 		worker := d.workers[i]
 		stat := map[string]interface{}{
-			"id":      worker.GetID(),
-			"status":  worker.GetStatus(),
-			"created": worker.GetCreated(),
+			"id":      worker.workerID,
+			"status":  worker.status,
+			"created": worker.created,
 		}
 
 		if worker.task != nil {
 			stat["task"] = map[string]interface{}{
-				"id":      worker.task.GetID(),
-				"name":    worker.task.GetName(),
-				"status":  worker.task.GetStatus(),
-				"created": worker.task.GetCreated(),
+				"id":      worker.task.taskID,
+				"name":    worker.task.name,
+				"status":  worker.task.status,
+				"created": worker.task.created,
 			}
 		} else {
 			stat["task"] = nil
@@ -381,10 +341,10 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 	for i := range d.tasksWait {
 		task := d.tasksWait[i]
 		stat := map[string]interface{}{
-			"id":      task.GetID(),
-			"name":    task.GetName(),
-			"status":  task.GetStatus(),
-			"created": task.GetCreated(),
+			"id":      task.taskID,
+			"name":    task.name,
+			"status":  task.status,
+			"created": task.created,
 		}
 
 		tasksWait = append(tasksWait, stat)
@@ -402,7 +362,7 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 }
 
 // dispatch отправляет задание свободному исполнителю
-func (d *Dispatcher) dispatch(t *Task) {
+func (d *Dispatcher) dispatch(t *task) {
 	worker := heap.Pop(&d.workers).(*worker)
 	worker.newTask <- t
 	heap.Push(&d.workers, worker)
