@@ -17,10 +17,11 @@ func (a *procedureArgs) String() string {
 func (a *procedureArgs) Set(value string) error {
 	var target interface{}
 	if err := json.Unmarshal([]byte(value), &target); err != nil {
-		return err
+		*a = append(*a, value)
+	} else {
+		*a = append(*a, target)
 	}
 
-	*a = append(*a, target)
 	return nil
 }
 
@@ -37,9 +38,10 @@ func (k *procedureKwargs) Set(value string) error {
 
 	var target interface{}
 	if err := json.Unmarshal([]byte(v[1]), &target); err != nil {
-		return err
+		(*k)[v[0]] = v[1]
+	} else {
+		(*k)[v[0]] = target
 	}
 
-	(*k)[v[0]] = target
 	return nil
 }
