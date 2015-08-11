@@ -12,6 +12,7 @@ import (
 
 type Aws struct {
 	application *shadow.Application
+	awsConfig   *aws.Config
 	config      *Config
 	logger      *logrus.Entry
 	services    map[string]interface{}
@@ -72,22 +73,19 @@ func (r *Aws) Run() error {
 	}
 	logger := resourceLogger.(*Logger).Get(r.GetName())
 
-	awsConfig := &aws.Config{
-		Credentials: credentials.NewStaticCredentials(r.config.GetString("aws.key"), r.config.GetString("aws.secret"), ""),
-		Region:      aws.String(r.config.GetString("aws.region")),
-	}
+	r.awsConfig = aws.NewConfig().
+		WithCredentials(credentials.NewStaticCredentials(r.config.GetString("aws.key"), r.config.GetString("aws.secret"), "")).
+		WithRegion(r.config.GetString("aws.region"))
 
 	if r.config.GetBool("debug") {
-		awsConfig.LogLevel = aws.LogLevel(aws.LogDebug)
+		r.awsConfig.WithLogLevel(aws.LogDebug)
 	}
-
-	aws.DefaultConfig = aws.DefaultConfig.Merge(awsConfig)
 
 	fields := logrus.Fields{
-		"region": *aws.DefaultConfig.Region,
+		"region": *r.awsConfig.Region,
 	}
 
-	credentials, err := aws.DefaultConfig.Credentials.Get()
+	credentials, err := r.awsConfig.Credentials.Get()
 	if err == nil {
 		fields["key"] = credentials.AccessKeyID
 		fields["secret"] = credentials.SecretAccessKey
@@ -99,7 +97,7 @@ func (r *Aws) Run() error {
 
 func (r *Aws) GetSNS() *sns.SNS {
 	if _, ok := r.services["sns"]; !ok {
-		r.services["sns"] = sns.New(aws.DefaultConfig)
+		r.services["sns"] = sns.New(r.awsConfig)
 	}
 
 	return r.services["sns"].(*sns.SNS)
