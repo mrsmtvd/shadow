@@ -45,7 +45,7 @@ func (r *Template) Init(a *shadow.Application) error {
 func (r *Template) Run() (err error) {
 	config, err := r.Application.GetResource("config")
 	if err == nil {
-		r.Globals["Config"] = config.(*Config)
+		r.Globals["Config"] = config.(*Config).GetAll()
 	}
 
 	return nil
