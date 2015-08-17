@@ -53,18 +53,18 @@ func (c *AbstractSlackCommand) Init(s shadow.Service, a *shadow.Application) {
 	panic("Slack service not found")
 }
 
-func (c *AbstractSlackCommand) SendMessage(channelId string, message string) error {
-	return c.SlackService.Rtm.SendMessage(c.SlackService.Rtm.NewOutgoingMessage(message, channelId))
+func (c *AbstractSlackCommand) SendMessage(channelId string, message string) {
+	c.SlackService.Rtm.SendMessage(c.SlackService.Rtm.NewOutgoingMessage(message, channelId))
 }
 
-func (c *AbstractSlackCommand) SendMessagef(channelId string, message string, args ...interface{}) error {
+func (c *AbstractSlackCommand) SendMessagef(channelId string, message string, args ...interface{}) {
 	message = fmt.Sprintf(message, args...)
-	return c.SlackService.Rtm.SendMessage(c.SlackService.Rtm.NewOutgoingMessage(message, channelId))
+	c.SlackService.Rtm.SendMessage(c.SlackService.Rtm.NewOutgoingMessage(message, channelId))
 }
 
 func (c *AbstractSlackCommand) SendPostMessage(channelId string, message string, params slack.PostMessageParameters) error {
 	params.AsUser = true
 
-	_, _, err := c.SlackService.Rtm.Slack.PostMessage(channelId, message, params)
+	_, _, err := c.SlackService.Rtm.Client.PostMessage(channelId, message, params)
 	return err
 }
