@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"code.google.com/p/go-uuid/uuid"
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
+	"github.com/satori/go.uuid"
 )
 
 // https://talks.golang.org/2010/io/balance.go
@@ -259,7 +259,7 @@ func (d *Dispatcher) Run() error {
 
 // AddWorker добавляет еще одного исполнителя в пулл
 func (d *Dispatcher) AddWorker() {
-	id := uuid.New()
+	id := uuid.NewV4().String()
 
 	w := &worker{
 		dispatcher:     d,
@@ -279,7 +279,7 @@ func (d *Dispatcher) AddWorker() {
 // AddTask добавляет задание в очередь на выполнение и возвращает саму задачу
 func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
 	t := &task{
-		taskID:  uuid.New(),
+		taskID:  uuid.NewV4().String(),
 		name:    name,
 		fn:      fn,
 		args:    args,
