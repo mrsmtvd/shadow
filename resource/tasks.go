@@ -9,7 +9,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
-	"github.com/satori/go.uuid"
+	"github.com/nu7hatch/gouuid"
 )
 
 // https://talks.golang.org/2010/io/balance.go
@@ -259,14 +259,14 @@ func (d *Dispatcher) Run() error {
 
 // AddWorker добавляет еще одного исполнителя в пулл
 func (d *Dispatcher) AddWorker() {
-	id := uuid.NewV4().String()
+	id, _ := uuid.NewV4()
 
 	w := &worker{
 		dispatcher:     d,
 		localWaitGroup: new(sync.WaitGroup),
 		newTask:        make(chan *task),
 		quit:           make(chan bool),
-		workerID:       id,
+		workerID:       id.String(),
 		status:         workerStatusWait,
 		created:        time.Now(),
 		logger:         d.logger.WithField("worker", id),
@@ -278,8 +278,10 @@ func (d *Dispatcher) AddWorker() {
 
 // AddTask добавляет задание в очередь на выполнение и возвращает саму задачу
 func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
+	id, _ := uuid.NewV4()
+
 	t := &task{
-		taskID:  uuid.NewV4().String(),
+		taskID:  id.String(),
 		name:    name,
 		fn:      fn,
 		args:    args,
