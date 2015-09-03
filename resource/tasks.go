@@ -35,30 +35,28 @@ const (
  * Task
  */
 type task struct {
-	taskID  string
-	name    string
-	fn      func(...interface{}) (bool, time.Duration)
-	args    []interface{}
-	status  int
-	created time.Time
+	id       string
+	name     string
+	status   int
+	created  time.Time
+	duration time.Duration
+	fn       func(...interface{}) (bool, time.Duration)
+	args     []interface{}
 }
 
 /*
  * Worker
  */
 type worker struct {
-	dispatcher     *Dispatcher
-	index          int
-	localWaitGroup *sync.WaitGroup
-	newTask        chan *task
-	quit           chan bool // канал для завершения исполнителя
-
-	workerID string
-	task     *task
-	status   int
-	created  time.Time
-
-	logger *logrus.Entry
+	id          string
+	status      int
+	index       int
+	created     time.Time
+	waitGroup   *sync.WaitGroup
+	newTask     chan *task
+	quit        chan bool // канал для завершения исполнителя
+	executeTask *task
+	logger      *logrus.Entry
 }
 
 // kill worker shutdown
@@ -67,61 +65,49 @@ func (w *worker) kill() {
 }
 
 // work выполняет задачу
-func (w *worker) work(done chan<- *worker) {
+func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 	for {
 		select {
 		// пришло новое задание на выполнение
-		case w.task = <-w.newTask:
-			w.status = workerStatusBusy
-			w.task.status = taskStatusProcess
+		case w.executeTask = <-w.newTask:
+			w.executeTask.status = taskStatusProcess
 
 			func() {
-				w.dispatcher.waitGroup.Add(1)
-				w.localWaitGroup.Add(1)
+				w.waitGroup.Add(1)
 
 				defer func() {
 					if err := recover(); err != nil {
 						w.logger.WithFields(logrus.Fields{
-							"task":  w.task.name,
-							"args":  w.task.args,
+							"task":  w.executeTask.name,
+							"args":  w.executeTask.args,
 							"error": err,
 						}).Warn("Failed")
 
-						w.task.status = taskStatusFail
+						w.executeTask.status = taskStatusFail
 					} else {
 						w.logger.WithFields(logrus.Fields{
-							"task": w.task.name,
-							"args": w.task.args,
+							"task": w.executeTask.name,
+							"args": w.executeTask.args,
 						}).Debug("Success")
-						w.task.status = taskStatusSuccess
+						w.executeTask.status = taskStatusSuccess
 					}
 
-					w.localWaitGroup.Done()
-					w.dispatcher.waitGroup.Done()
+					w.executeTask = nil
+					w.waitGroup.Done()
 
-					w.task = nil
+					done <- w
 				}()
 
-				if repeat, duration := w.task.fn(w.task.args...); repeat {
-					t := w.task
-					t.status = taskStatusRepeatWait
-					w.logger.WithFields(logrus.Fields{
-						"task": w.task.name,
-						"args": w.task.args,
-					}).Debug("Repeat")
-
-					time.AfterFunc(duration, func() {
-						w.dispatcher.sendTask(t)
-					})
+				var repeated bool
+				if repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.args...); repeated {
+					repeat <- w.executeTask
 				}
 			}()
-
-			done <- w
 
 		// пришел сигнал на завершение исполнителя
 		case <-w.quit:
 			// ждем завершения текущего задания, если таковое есть и выходим
-			w.localWaitGroup.Wait()
+			w.waitGroup.Wait()
 			return
 		}
 	}
@@ -173,20 +159,25 @@ func (p *pool) Pop() interface{} {
  * Dispatcher
  */
 type Dispatcher struct {
-	newTasks        chan *task   // очередь новых заданий
-	queue           chan *task   // очередь выполняемых заданий
-	workers         pool         // пул исполнителей
-	done            chan *worker // канал уведомления о завершении выполнения заданий
-	allowProcessing chan bool    // канал для блокировки выполнения новых задач для случая, когда все исполнители заняты
-	quit            chan bool    // канал для завершения диспетчера
-	workersBusy     int          // количество занятых исполнителей
-	tasksWait       []*task      // задачи, ожидающие назначения исполнителя
+	workers pool // пул исполнителей
+
+	workersBusy int     // количество занятых исполнителей
+	tasksWait   []*task // задачи, ожидающие назначения исполнителя
 
 	waitGroup   *sync.WaitGroup
 	mutex       sync.RWMutex
 	application *shadow.Application
 	config      *Config
 	logger      *logrus.Entry
+
+	waitQueue    chan *task // очередь новых заданий
+	executeQueue chan *task // очередь выполняемых заданий
+	repeatQueue  chan *task // канал уведомления о повторном выполнении заданий
+
+	done chan *worker // канал уведомления о завершении выполнения заданий
+
+	quit            chan bool // канал для завершения диспетчера
+	allowProcessing chan bool // канал для блокировки выполнения новых задач для случая, когда все исполнители заняты
 }
 
 func (d *Dispatcher) GetName() string {
@@ -212,20 +203,21 @@ func (d *Dispatcher) Init(a *shadow.Application) error {
 	}
 	d.config = resourceConfig.(*Config)
 
-	d.newTasks = make(chan *task)
-	d.queue = make(chan *task)
 	d.workers = make(pool, 0)
-	d.done = make(chan *worker)
-	d.allowProcessing = make(chan bool)
-	d.quit = make(chan bool)
 	d.waitGroup = new(sync.WaitGroup)
 	d.workersBusy = 0
 	d.tasksWait = make([]*task, 0)
+	d.waitQueue = make(chan *task)
+	d.executeQueue = make(chan *task)
+	d.repeatQueue = make(chan *task)
+	d.done = make(chan *worker)
+	d.quit = make(chan bool)
+	d.allowProcessing = make(chan bool)
 
 	return nil
 }
 
-func (d *Dispatcher) Run() error {
+func (d *Dispatcher) Run(wg *sync.WaitGroup) error {
 	resourceLogger, err := d.application.GetResource("logger")
 	if err != nil {
 		return err
@@ -235,7 +227,7 @@ func (d *Dispatcher) Run() error {
 	// отслеживание квоты на занятость исполнителей
 	go func() {
 		for {
-			d.queue <- <-d.newTasks
+			d.executeQueue <- <-d.waitQueue
 
 			d.mutex.Lock()
 			d.tasksWait = append(d.tasksWait[1:])
@@ -248,12 +240,44 @@ func (d *Dispatcher) Run() error {
 	// инициализируем исполнителей
 	heap.Init(&d.workers)
 
-	var i int64
-	for i = 0; i < d.config.GetInt64("tasks.workers"); i++ {
+	maxWorkers := int(d.config.GetInt64("tasks.workers"))
+	for len(d.workers) < maxWorkers {
 		d.AddWorker()
 	}
 
-	go d.process()
+	go func() {
+		defer wg.Done()
+
+		for {
+			select {
+			// пришел новый таск на выполнение от flow контроллера
+			case task := <-d.executeQueue:
+				d.dispatch(task)
+
+			// пришло уведомление, что рабочий закончил выполнение задачи
+			case worker := <-d.done:
+				d.completed(worker)
+
+			// пришло уведомление, что необходимо повторить задачу
+			case task := <-d.repeatQueue:
+				task.status = taskStatusRepeatWait
+
+				d.logger.WithFields(logrus.Fields{
+					"task": task.name,
+					"args": task.args,
+				}).Debug("Repeat")
+
+				d.sendTask(task)
+
+			// завершение работы диспетчера
+			case <-d.quit:
+				// ждем завершения всех заданий и всех исполнителей
+				d.waitGroup.Wait()
+				return
+			}
+		}
+	}()
+
 	return nil
 }
 
@@ -262,31 +286,29 @@ func (d *Dispatcher) AddWorker() {
 	id, _ := uuid.NewV4()
 
 	w := &worker{
-		dispatcher:     d,
-		localWaitGroup: new(sync.WaitGroup),
-		newTask:        make(chan *task),
-		quit:           make(chan bool),
-		workerID:       id.String(),
-		status:         workerStatusWait,
-		created:        time.Now(),
-		logger:         d.logger.WithField("worker", id),
+		id:        id.String(),
+		status:    workerStatusWait,
+		created:   time.Now(),
+		waitGroup: d.waitGroup,
+		newTask:   make(chan *task, 1),
+		quit:      make(chan bool),
+		logger:    d.logger.WithField("worker", id),
 	}
 
+	go w.work(d.done, d.repeatQueue)
 	heap.Push(&d.workers, w)
-	go w.work(d.done)
 }
 
-// AddTask добавляет задание в очередь на выполнение и возвращает саму задачу
 func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
 	id, _ := uuid.NewV4()
 
 	t := &task{
-		taskID:  id.String(),
+		id:      id.String(),
 		name:    name,
-		fn:      fn,
-		args:    args,
 		status:  taskStatusWait,
 		created: time.Now(),
+		fn:      fn,
+		args:    args,
 	}
 
 	d.sendTask(t)
@@ -297,13 +319,15 @@ func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args
 }
 
 func (d *Dispatcher) sendTask(t *task) {
-	go func() {
-		d.mutex.Lock()
-		d.tasksWait = append(d.tasksWait, t)
-		d.mutex.Unlock()
+	time.AfterFunc(t.duration, func() {
+		go func() {
+			d.mutex.Lock()
+			d.tasksWait = append(d.tasksWait, t)
+			d.mutex.Unlock()
 
-		d.newTasks <- t
-	}()
+			d.waitQueue <- t
+		}()
+	})
 }
 
 // Kill dispatcher shutdown
@@ -320,17 +344,17 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 	for i := range d.workers {
 		worker := d.workers[i]
 		stat := map[string]interface{}{
-			"id":      worker.workerID,
+			"id":      worker.id,
 			"status":  worker.status,
 			"created": worker.created,
 		}
 
-		if worker.task != nil {
+		if worker.executeTask != nil {
 			stat["task"] = map[string]interface{}{
-				"id":      worker.task.taskID,
-				"name":    worker.task.name,
-				"status":  worker.task.status,
-				"created": worker.task.created,
+				"id":      worker.executeTask.id,
+				"name":    worker.executeTask.name,
+				"status":  worker.executeTask.status,
+				"created": worker.executeTask.created,
 			}
 		} else {
 			stat["task"] = nil
@@ -343,7 +367,7 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 	for i := range d.tasksWait {
 		task := d.tasksWait[i]
 		stat := map[string]interface{}{
-			"id":      task.taskID,
+			"id":      task.id,
 			"name":    task.name,
 			"status":  task.status,
 			"created": task.created,
@@ -367,6 +391,7 @@ func (d *Dispatcher) GetStats() map[string]interface{} {
 func (d *Dispatcher) dispatch(t *task) {
 	worker := heap.Pop(&d.workers).(*worker)
 	worker.newTask <- t
+	worker.status = workerStatusBusy
 	heap.Push(&d.workers, worker)
 
 	// проверяем есть ли еще свободные исполнители для задач
@@ -383,25 +408,5 @@ func (d *Dispatcher) completed(w *worker) {
 	// проверяем не освободился ли какой-нибудь исполнитель
 	if d.workersBusy--; d.workersBusy == d.workers.Len()-1 {
 		d.allowProcessing <- true
-	}
-}
-
-func (d *Dispatcher) process() {
-	for {
-		select {
-		// пришел новый таск на выполнение от flow контроллера
-		case task := <-d.queue:
-			d.dispatch(task)
-
-		// пришло уведомление, что рабочий закончил выполнение задачи
-		case worker := <-d.done:
-			d.completed(worker)
-
-		// завершение работы диспетчера
-		case <-d.quit:
-			// ждем завершения всех заданий и всех исполнителей
-			d.waitGroup.Wait()
-			return
-		}
 	}
 }
