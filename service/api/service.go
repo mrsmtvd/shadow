@@ -52,7 +52,7 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 	}
 
 	handler := turnpike.NewBasicWebsocketServer(s.GetName())
-	client, err := handler.GetLocalClient(s.GetName())
+	client, err := handler.GetLocalClient(s.GetName(), nil)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 				}
 
 				procedure.Init(s, s.application)
-				procedureWrapper := func(procedure ApiProcedure) turnpike.MethodHandler {
+				procedureWrapper := func(procedure ApiProcedure) turnpike.BasicMethodHandler {
 					return func(args []interface{}, kwargs map[string]interface{}) *turnpike.CallResult {
 						if autoValidation, ok := procedure.(ApiProcedureRequest); ok {
 							out := autoValidation.GetRequest()
@@ -101,7 +101,7 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 					}
 				}
 
-				if err = client.Register(name, procedureWrapper(procedure)); err != nil {
+				if err = client.BasicRegister(name, procedureWrapper(procedure)); err != nil {
 					logEntry.WithField("error", err.Error()).Error("Error register api procedure")
 					// ignore error
 				} else {
@@ -171,7 +171,7 @@ func (s *ApiService) GetClient() (*turnpike.Client, error) {
 		return nil, err
 	}
 
-	_, err = client.JoinRealm("api", turnpike.ALLROLES, nil)
+	_, err = client.JoinRealm("api", nil)
 	if err != nil {
 		return nil, err
 	}
