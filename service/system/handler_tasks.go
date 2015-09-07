@@ -23,4 +23,5 @@ func (h *TasksHandler) Handle() {
 
 	h.SetTemplate("tasks.tpl.html")
 	h.View.Context["PageTitle"] = "Tasks"
+	h.View.Context["PageHeader"] = "Tasks"
 }

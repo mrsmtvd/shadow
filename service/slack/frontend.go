@@ -17,6 +17,7 @@ func (s *SlackService) GetFrontendMenu() *frontend.FrontendMenu {
 	return &frontend.FrontendMenu{
 		Name: "Slack",
 		Url:  "/slack",
+		Icon: "slack",
 	}
 }
 

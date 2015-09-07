@@ -16,7 +16,7 @@ func (s *SystemService) GetTemplates() *assetfs.AssetFS {
 func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 	menu := []*frontend.FrontendMenu{
 		&frontend.FrontendMenu{
-			Name: "Config",
+			Name: "Configuration",
 			Url:  "/system/config",
 		},
 	}
@@ -38,6 +38,7 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 	return &frontend.FrontendMenu{
 		Name:    "System",
 		SubMenu: menu,
+		Icon:    "gear",
 	}
 }
 

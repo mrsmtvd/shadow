@@ -18,26 +18,15 @@ func (s *FrontendService) GetFrontendMenu() *FrontendMenu {
 	return &FrontendMenu{
 		Name: "Main",
 		Url:  "/",
+		Icon: "dashboard",
 	}
 }
 
 func (s *FrontendService) SetFrontendHandlers(router *Router) {
-	router.ServeFiles("/css/*filepath", &assetfs.AssetFS{
+	router.ServeFiles("/vendor/*filepath", &assetfs.AssetFS{
 		Asset:    Asset,
 		AssetDir: AssetDir,
-		Prefix:   "public/css",
-	})
-
-	router.ServeFiles("/fonts/*filepath", &assetfs.AssetFS{
-		Asset:    Asset,
-		AssetDir: AssetDir,
-		Prefix:   "public/fonts",
-	})
-
-	router.ServeFiles("/js/frontend/*filepath", &assetfs.AssetFS{
-		Asset:    Asset,
-		AssetDir: AssetDir,
-		Prefix:   "public/js",
+		Prefix:   "public/vendor",
 	})
 
 	asset := &assetfs.AssetFS{
@@ -46,6 +35,9 @@ func (s *FrontendService) SetFrontendHandlers(router *Router) {
 		Prefix:   "public",
 	}
 	router.GET(s, "/favicon.svg", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
+		http.FileServer(asset).ServeHTTP(out, in)
+	}))
+	router.GET(s, "/frontend.css", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
 		http.FileServer(asset).ServeHTTP(out, in)
 	}))
 

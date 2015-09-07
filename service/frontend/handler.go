@@ -50,6 +50,8 @@ func (h *AbstractFrontendHandler) InitRequest(out http.ResponseWriter, in *http.
 func (h *AbstractFrontendHandler) SetTemplate(name string) {
 	h.View = h.Template.NewView(h.Service.GetName(), name)
 	h.View.Context["Request"] = h.Input
+	h.View.Context["PageTitle"] = ""
+	h.View.Context["PageHeader"] = ""
 }
 
 func (h *AbstractFrontendHandler) Render() {

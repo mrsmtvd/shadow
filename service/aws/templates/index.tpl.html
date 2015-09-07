@@ -1,9 +1,5 @@
 {{ include "frontend" "layout/header.tpl.html" }}
 
-<div class="page-header">
-    <h1>Aws</h1>
-</div>
-
 <div role="tabpanel">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#services" aria-controls="services" role="tab" data-toggle="tab">Services</a></li>
@@ -14,70 +10,78 @@
 
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="services">
-            <table class="table table-striped table-condensed">
-                <thead>
-                <th>Active services</th>
-                </thead>
-                <tbody>
-                {{ range $name, $service := .Services }}
-                <tr>
-                    <td>{{ $name }}</td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <th>Active services</th>
+                    </thead>
+                    <tbody>
+                    {{ range $name, $service := .Services }}
+                    <tr>
+                        <td>{{ $name }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="applications">
-            <table class="table table-striped table-condensed">
-                <thead>
-                    <th>#</th>
-                    <th>Application ARN</th>
-                </thead>
-                <tbody>
-                {{ range $i, $application := .Applications }}
-                <tr>
-                    <td>{{ add $i 1 }}</td>
-                    <td>{{ $application.PlatformApplicationARN }}</td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <th>#</th>
+                        <th>Application ARN</th>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $application := .Applications }}
+                    <tr>
+                        <td>{{ add $i 1 }}</td>
+                        <td>{{ $application.PlatformApplicationARN }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="topics">
-            <table class="table table-striped table-condensed">
-                <thead>
-                    <th>#</th>
-                    <th>Topic ARN</th>
-                </thead>
-                <tbody>
-                {{ range $i, $topic := .Topics }}
-                <tr>
-                    <td>{{ add $i 1 }}</td>
-                    <td>{{ $topic.TopicARN }}</td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <th>#</th>
+                        <th>Topic ARN</th>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $topic := .Topics }}
+                    <tr>
+                        <td>{{ add $i 1 }}</td>
+                        <td>{{ $topic.TopicARN }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="subscriptions">
-            <table class="table table-striped table-condensed">
-                <thead>
-                    <th>#</th>
-                    <th>Subscription ARN</th>
-                    <th>Endpoint</th>
-                </thead>
-                <tbody>
-                {{ range $i, $subscription := .Subscriptions }}
-                <tr>
-                    <td>{{ add $i 1 }}</td>
-                    <td>{{ $subscription.SubscriptionARN }}</td>
-                    <td>{{ $subscription.Endpoint }}</td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <th>#</th>
+                        <th>Subscription ARN</th>
+                        <th>Endpoint</th>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $subscription := .Subscriptions }}
+                    <tr>
+                        <td>{{ add $i 1 }}</td>
+                        <td>{{ $subscription.SubscriptionARN }}</td>
+                        <td>{{ $subscription.Endpoint }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

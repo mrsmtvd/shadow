@@ -16,6 +16,7 @@ import (
 type FrontendMenu struct {
 	Name    string
 	Url     string
+	Icon    string
 	SubMenu []*FrontendMenu
 }
 
@@ -113,13 +114,17 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 
 func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	menus := make([]*FrontendMenu, 0, len(s.application.GetServices()))
+	menus = append(menus, s.GetFrontendMenu())
+
 	for _, service := range s.application.GetServices() {
 		if serviceCast, ok := service.(ServiceFrontendHandlers); ok {
 			serviceCast.SetFrontendHandlers(s.router)
 
-			menu := serviceCast.GetFrontendMenu()
-			if menu != nil {
-				menus = append(menus, menu)
+			if service != s {
+				menu := serviceCast.GetFrontendMenu()
+				if menu != nil {
+					menus = append(menus, menu)
+				}
 			}
 		}
 	}

@@ -14,6 +14,7 @@ func (h *IndexHandler) Handle() {
 
 	h.SetTemplate("index.tpl.html")
 	h.View.Context["PageTitle"] = "Slack"
+	h.View.Context["PageHeader"] = "Slack bot"
 	h.View.Context["Commands"] = service.Commands
 
 	var (

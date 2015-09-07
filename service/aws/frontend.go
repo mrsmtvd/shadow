@@ -17,6 +17,7 @@ func (s *AwsService) GetFrontendMenu() *frontend.FrontendMenu {
 	return &frontend.FrontendMenu{
 		Name: "Aws",
 		Url:  "/aws",
+		Icon: "cloud",
 	}
 }
 

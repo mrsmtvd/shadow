@@ -11,6 +11,7 @@ type IndexHandler struct {
 func (h *IndexHandler) Handle() {
 	h.SetTemplate("index.tpl.html")
 	h.View.Context["PageTitle"] = "Aws"
+	h.View.Context["PageHeader"] = "Amazon Web Service"
 
 	service := h.Service.(*AwsService)
 	h.View.Context["Services"] = service.Aws.GetServices()

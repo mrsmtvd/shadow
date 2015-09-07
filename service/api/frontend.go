@@ -17,6 +17,7 @@ func (s *ApiService) GetFrontendMenu() *frontend.FrontendMenu {
 	return &frontend.FrontendMenu{
 		Name: "Api",
 		Url:  "/api",
+		Icon: "exchange",
 	}
 }
 
