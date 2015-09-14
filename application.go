@@ -6,6 +6,13 @@ import (
 	"github.com/dropbox/godropbox/errors"
 )
 
+//go:generate goimports -w ./
+//go:generate sh -c "cd service/api && go-bindata-assetfs -pkg=api templates/... public/..."
+//go:generate sh -c "cd service/aws && go-bindata-assetfs -pkg=aws templates/..."
+//go:generate sh -c "cd service/frontend && go-bindata-assetfs -pkg=frontend templates/... public/..."
+//go:generate sh -c "cd service/slack && go-bindata-assetfs -pkg=slack templates/..."
+//go:generate sh -c "cd service/system && go-bindata-assetfs -pkg=system templates/..."
+
 type ContextItem interface {
 	GetName() string
 	Init(*Application) error
