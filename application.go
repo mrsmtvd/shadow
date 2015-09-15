@@ -7,7 +7,6 @@ import (
 )
 
 //go:generate goimports -w ./
-//go:generate sh -c "cd service/api && go-bindata-assetfs -pkg=api templates/... public/..."
 //go:generate sh -c "cd service/frontend && go-bindata-assetfs -pkg=frontend templates/... public/..."
 //go:generate sh -c "cd service/system && go-bindata-assetfs -pkg=system templates/..."
 
