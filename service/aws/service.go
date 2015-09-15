@@ -57,7 +57,7 @@ func (s *AwsService) Run() error {
 	return nil
 }
 
-func (s *AwsService) getStatsJob(args ...interface{}) (bool, time.Duration) {
+func (s *AwsService) getStatsJob(args ...interface{}) (int64, time.Duration) {
 	var stop bool
 
 	// applications
@@ -131,5 +131,5 @@ func (s *AwsService) getStatsJob(args ...interface{}) (bool, time.Duration) {
 	s.topics = topics
 	s.mutex.Unlock()
 
-	return true, time.Hour
+	return -1, time.Hour
 }

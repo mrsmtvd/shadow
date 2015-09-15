@@ -40,8 +40,9 @@ type task struct {
 	status   int
 	created  time.Time
 	duration time.Duration
-	fn       func(...interface{}) (bool, time.Duration)
+	fn       func(...interface{}) (int64, time.Duration)
 	args     []interface{}
+	attempts int64
 }
 
 /*
@@ -76,18 +77,22 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 				w.waitGroup.Add(1)
 
 				defer func() {
+					w.executeTask.attempts += 1
+
 					if err := recover(); err != nil {
 						w.logger.WithFields(logrus.Fields{
-							"task":  w.executeTask.name,
-							"args":  w.executeTask.args,
-							"error": err,
+							"task":     w.executeTask.name,
+							"args":     w.executeTask.args,
+							"attempts": w.executeTask.attempts,
+							"error":    err,
 						}).Warn("Failed")
 
 						w.executeTask.status = taskStatusFail
 					} else {
 						w.logger.WithFields(logrus.Fields{
-							"task": w.executeTask.name,
-							"args": w.executeTask.args,
+							"task":     w.executeTask.name,
+							"args":     w.executeTask.args,
+							"attempts": w.executeTask.attempts,
 						}).Debug("Success")
 						w.executeTask.status = taskStatusSuccess
 					}
@@ -98,8 +103,8 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 					done <- w
 				}()
 
-				var repeated bool
-				if repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.args...); repeated {
+				var repeated int64
+				if repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.args...); repeated == -1 || w.executeTask.attempts < repeated-1 {
 					repeat <- w.executeTask
 				}
 			}()
@@ -299,7 +304,7 @@ func (d *Dispatcher) AddWorker() {
 	heap.Push(&d.workers, w)
 }
 
-func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (int64, time.Duration), args ...interface{}) {
 	id, _ := uuid.NewV4()
 
 	t := &task{
@@ -314,7 +319,7 @@ func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (bool, ti
 	d.sendTask(t)
 }
 
-func (d *Dispatcher) AddTask(fn func(...interface{}) (bool, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddTask(fn func(...interface{}) (int64, time.Duration), args ...interface{}) {
 	d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
 }
 
