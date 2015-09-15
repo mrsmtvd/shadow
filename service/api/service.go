@@ -72,7 +72,7 @@ func (s *ApiService) Run(wg *sync.WaitGroup) error {
 					continue
 				}
 
-				procedure.Init(s, s.application)
+				procedure.Init(service, s.application)
 				procedureWrapper := func(procedure ApiProcedure) turnpike.BasicMethodHandler {
 					return func(args []interface{}, kwargs map[string]interface{}) *turnpike.CallResult {
 						if autoValidation, ok := procedure.(ApiProcedureRequest); ok {
