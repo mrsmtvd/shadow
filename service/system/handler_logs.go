@@ -5,11 +5,11 @@ import (
 	"github.com/kihamo/shadow/service/frontend"
 )
 
-var loggerHook *LoggerHook
+var LoggerHookInstance *LoggerHook
 
 func init() {
-	loggerHook = NewLoggerHook()
-	logrus.AddHook(loggerHook)
+	LoggerHookInstance = NewLoggerHook()
+	logrus.AddHook(LoggerHookInstance)
 }
 
 type LogsHandler struct {
@@ -17,7 +17,7 @@ type LogsHandler struct {
 }
 
 func (h *LogsHandler) Handle() {
-	loggers := loggerHook.GetRecords()
+	loggers := LoggerHookInstance.GetRecords()
 	log := h.Input.URL.Query().Get("log")
 
 	if _, ok := loggers[log]; ok && log != "" {

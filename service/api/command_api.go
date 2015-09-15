@@ -7,13 +7,13 @@ import (
 	"fmt"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/service/slack"
+	slacks "github.com/kihamo/shadow-slack/service"
 	sl "github.com/nlopes/slack"
 	"gopkg.in/jcelliott/turnpike.v2"
 )
 
 type ApiCommand struct {
-	slack.AbstractSlackCommand
+	slacks.AbstractSlackCommand
 	Service *ApiService
 
 	client *turnpike.Client

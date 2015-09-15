@@ -1,11 +1,11 @@
 package api
 
 import (
-	"github.com/kihamo/shadow/service/slack"
+	slacks "github.com/kihamo/shadow-slack/service"
 )
 
-func (s *ApiService) GetSlackCommands() []slack.SlackCommand {
-	return []slack.SlackCommand{
+func (s *ApiService) GetSlackCommands() []slacks.SlackCommand {
+	return []slacks.SlackCommand{
 		&ApiCommand{},
 	}
 }
