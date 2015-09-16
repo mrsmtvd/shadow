@@ -4,6 +4,10 @@ $(function() {
             type: 'GET',
             url: '/alerts',
             success: function(r){
+                if (!r.length) {
+                    return;
+                }
+
                 r = r.reverse();
 
                 var nav = $('#navbar-alerts ul');
@@ -32,7 +36,9 @@ $(function() {
 
     if ($('#navbar-alerts').length) {
         $('#navbar-alerts>li').click(function(){
-            $(this).addClass('disabled');
+            if ($('#navbar-alerts ul li').length) {
+                $(this).addClass('disabled');
+            }
         });
 
         alertUpdate();
