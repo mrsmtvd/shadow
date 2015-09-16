@@ -40,6 +40,9 @@ func (s *FrontendService) SetFrontendHandlers(router *Router) {
 	router.GET(s, "/frontend.css", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
 		http.FileServer(asset).ServeHTTP(out, in)
 	}))
+	router.GET(s, "/frontend.js", http.HandlerFunc(func(out http.ResponseWriter, in *http.Request) {
+		http.FileServer(asset).ServeHTTP(out, in)
+	}))
 
 	router.GET(s, "/alerts", &AlertsHandler{})
 	router.GET(s, "/", &IndexHandler{})
