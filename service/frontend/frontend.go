@@ -41,5 +41,6 @@ func (s *FrontendService) SetFrontendHandlers(router *Router) {
 		http.FileServer(asset).ServeHTTP(out, in)
 	}))
 
+	router.GET(s, "/alerts", &AlertsHandler{})
 	router.GET(s, "/", &IndexHandler{})
 }

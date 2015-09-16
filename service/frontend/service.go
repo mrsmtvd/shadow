@@ -109,6 +109,8 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 		s.router.HandlerFunc("GET", "/debug/pprof/", pprof.Index)
 	}
 
+	s.initAlerts()
+
 	return nil
 }
 
