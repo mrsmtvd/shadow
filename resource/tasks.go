@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -84,6 +85,7 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 							"task":     w.executeTask.name,
 							"args":     w.executeTask.args,
 							"attempts": w.executeTask.attempts,
+							"stack":    string(debug.Stack()[:]),
 							"error":    err,
 						}).Warn("Failed")
 
