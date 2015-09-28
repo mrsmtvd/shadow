@@ -16,7 +16,7 @@ $(function() {
                 $('#navbar-alerts>li').removeClass('disabled');
 
                 for(var i in r) {
-                    var item = $('<div></div>').text(r[i].message);
+                    var item = $('<div></div>').text(r[i].title);
 
                     if (r[i].icon.length) {
                         item.prepend($('<i class="fa fa-fw"></i>').addClass('fa-' + r[i].icon));

@@ -6,8 +6,8 @@ type IndexHandler struct {
 
 func (h *IndexHandler) Handle() {
 	h.SetTemplate("index.tpl.html")
-	h.View.Context["PageTitle"] = "Application"
-	h.View.Context["PageHeader"] = "Application"
-	h.View.Context["Services"] = h.Application.GetServices()
-	h.View.Context["Resources"] = h.Application.GetResources()
+	h.SetPageTitle("Application")
+	h.SetPageHeader("Application")
+	h.SetVar("Services", h.Application.GetServices())
+	h.SetVar("Resources", h.Application.GetResources())
 }

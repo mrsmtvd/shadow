@@ -8,6 +8,11 @@ import (
 	"github.com/kihamo/shadow/resource"
 )
 
+const (
+	PageTitleVar = "PageTitle"
+	PageHeadeVar = "PageHeader"
+)
+
 type Handler interface {
 	http.Handler
 
@@ -49,9 +54,21 @@ func (h *AbstractFrontendHandler) InitRequest(out http.ResponseWriter, in *http.
 
 func (h *AbstractFrontendHandler) SetTemplate(name string) {
 	h.View = h.Template.NewView(h.Service.GetName(), name)
-	h.View.Context["Request"] = h.Input
-	h.View.Context["PageTitle"] = ""
-	h.View.Context["PageHeader"] = ""
+	h.SetPageHeader("")
+	h.SetPageTitle("")
+	h.SetVar("Request", h.Input)
+}
+
+func (h *AbstractFrontendHandler) SetVar(name string, value interface{}) {
+	h.View.Context[name] = value
+}
+
+func (h *AbstractFrontendHandler) SetPageTitle(title string) {
+	h.SetVar(PageTitleVar, title)
+}
+
+func (h *AbstractFrontendHandler) SetPageHeader(header string) {
+	h.SetVar(PageHeadeVar, header)
 }
 
 func (h *AbstractFrontendHandler) Render() {

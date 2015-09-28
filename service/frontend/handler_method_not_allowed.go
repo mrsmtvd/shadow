@@ -10,7 +10,7 @@ type MethodNotAllowedHandler struct {
 
 func (h *MethodNotAllowedHandler) Handle() {
 	h.SetTemplate("405.tpl.html")
-	h.View.Context["PageTitle"] = "Method not allowed"
+	h.SetPageTitle("Method not allowed")
 
 	h.Output.Header().Set("Content-Type", "text/html; charset=utf-8")
 	h.Output.WriteHeader(http.StatusMethodNotAllowed)

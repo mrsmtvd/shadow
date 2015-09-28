@@ -17,7 +17,7 @@ func (h *ConfigHandler) Handle() {
 	})
 
 	h.SetTemplate("config.tpl.html")
-	h.View.Context["PageTitle"] = "Configuration"
-	h.View.Context["PageHeader"] = "Configuration"
-	h.View.Context["Flags"] = flags
+	h.SetPageTitle("Configuration")
+	h.SetPageHeader("Configuration")
+	h.SetVar("Flags", flags)
 }

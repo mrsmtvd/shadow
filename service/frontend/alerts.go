@@ -18,6 +18,7 @@ var (
 
 type alert struct {
 	Icon    string
+	Title   string
 	Message string
 	Date    time.Time
 }
@@ -47,9 +48,10 @@ func (s *FrontendService) initAlerts() {
 	}()
 }
 
-func (s *FrontendService) SendAlert(message string, icon string) {
+func (s *FrontendService) SendAlert(title string, message string, icon string) {
 	alertsQueue <- &alert{
 		Icon:    icon,
+		Title:   title,
 		Message: message,
 		Date:    time.Now(),
 	}

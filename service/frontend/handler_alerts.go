@@ -13,6 +13,7 @@ func (h *AlertsHandler) Handle() {
 		for i := range alerts {
 			alert := map[string]interface{}{
 				"icon":    alerts[i].Icon,
+				"title":   alerts[i].Title,
 				"message": alerts[i].Message,
 				"elapsed": alerts[i].DateAsMessage(),
 				"date":    alerts[i].Date,
@@ -26,7 +27,7 @@ func (h *AlertsHandler) Handle() {
 	}
 
 	h.SetTemplate("alerts.tpl.html")
-	h.View.Context["PageTitle"] = "Alerts"
-	h.View.Context["PageHeader"] = "Alerts"
-	h.View.Context["Alerts"] = alerts
+	h.SetPageTitle("Alerts")
+	h.SetPageHeader("Alerts")
+	h.SetVar("Alerts", alerts)
 }

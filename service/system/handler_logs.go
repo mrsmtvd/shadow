@@ -44,7 +44,7 @@ func (h *LogsHandler) Handle() {
 	}
 
 	h.SetTemplate("logs.tpl.html")
-	h.View.Context["PageTitle"] = "Log view"
-	h.View.Context["PageHeader"] = "Log view"
-	h.View.Context["Loggers"] = loggers
+	h.SetPageTitle("Log view")
+	h.SetPageHeader("Log view")
+	h.SetVar("Loggers", loggers)
 }
