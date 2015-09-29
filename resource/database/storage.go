@@ -135,6 +135,16 @@ func (s *SqlStorage) Delete(list ...interface{}) (int64, error) {
 	return count, err
 }
 
+func (s *SqlStorage) Prepare(query string) (*sql.Stmt, error) {
+	if transaction, ok := s.executor.(*gorp.Transaction); ok {
+		return transaction.Prepare(query)
+	} else if dbMap, ok := s.executor.(*gorp.DbMap); ok {
+		return dbMap.Prepare(query)
+	}
+
+	return nil, errors.New("Executor is not grop.Transaction or gorp.DbMap")
+}
+
 func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result, error) {
 	result, err := s.executor.Exec(query, args...)
 	if err != nil {
@@ -143,18 +153,66 @@ func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result,
 	return result, nil
 }
 
+func (s *SqlStorage) Exec(query interface{}, args ...interface{}) (sql.Result, error) {
+	if b, ok := query.(*squirrel.SelectBuilder); ok {
+		return s.ExecSelect(b)
+	}
+
+	if b, ok := query.(*squirrel.InsertBuilder); ok {
+		return s.ExecInsert(b)
+	}
+
+	if b, ok := query.(*squirrel.UpdateBuilder); ok {
+		return s.ExecUpdate(b)
+	}
+
+	if b, ok := query.(*squirrel.DeleteBuilder); ok {
+		return s.ExecDelete(b)
+	}
+
+	if b, ok := query.(*squirrel.CaseBuilder); ok {
+		return s.ExecCase(b)
+	}
+
+	return nil, errors.New("could not prepare SQL query")
+}
+
+func (s *SqlStorage) ExecSelect(builder *squirrel.SelectBuilder) (sql.Result, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "could not prepare SQL query")
+	}
+	return s.ExecByQuery(query, args...)
+}
+
+func (s *SqlStorage) ExecInsert(builder *squirrel.InsertBuilder) (sql.Result, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "could not prepare SQL query")
+	}
+	return s.ExecByQuery(query, args...)
+}
+
 func (s *SqlStorage) ExecUpdate(builder *squirrel.UpdateBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
 	}
-	return s.executor.Exec(query, args...)
+	return s.ExecByQuery(query, args...)
 }
 
-func (s *SqlStorage) ExecDelete(queryBuilder *squirrel.DeleteBuilder) (sql.Result, error) {
-	query, args, err := queryBuilder.ToSql()
+func (s *SqlStorage) ExecDelete(builder *squirrel.DeleteBuilder) (sql.Result, error) {
+	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
 	}
-	return s.executor.Exec(query, args...)
+	return s.ExecByQuery(query, args...)
+}
+
+func (s *SqlStorage) ExecCase(builder *squirrel.CaseBuilder) (sql.Result, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "could not prepare SQL query")
+	}
+	return s.ExecByQuery(query, args...)
 }
