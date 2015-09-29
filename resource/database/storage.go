@@ -125,6 +125,16 @@ func (s *SqlStorage) Update(list ...interface{}) (int64, error) {
 	return count, err
 }
 
+func (s *SqlStorage) Delete(list ...interface{}) (int64, error) {
+	count, err := s.executor.Delete(list...)
+
+	if err != nil {
+		err = errors.Wrap(err, "Error deleting data in DB")
+	}
+
+	return count, err
+}
+
 func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result, error) {
 	result, err := s.executor.Exec(query, args...)
 	if err != nil {
