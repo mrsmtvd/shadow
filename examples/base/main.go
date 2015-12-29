@@ -1,14 +1,11 @@
-package main // import "github.com/kihamo/shadow/examples/shadow-full"
+package main // import "github.com/kihamo/shadow/examples/base"
 
 import (
 	"log"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
-	"github.com/kihamo/shadow/service/api"
-	"github.com/kihamo/shadow/service/aws"
 	"github.com/kihamo/shadow/service/frontend"
-	"github.com/kihamo/shadow/service/slack"
 	"github.com/kihamo/shadow/service/system"
 )
 
@@ -22,10 +19,7 @@ func main() {
 		},
 		[]shadow.Service{
 			new(system.SystemService),
-			new(aws.AwsService),
 			new(frontend.FrontendService),
-			new(api.ApiService),
-			new(slack.SlackService),
 		},
 		"Shadow full",
 		"1.0",
