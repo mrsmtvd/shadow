@@ -2,13 +2,19 @@ package resource
 
 import (
 	"flag"
+	"strings"
 
 	"github.com/kihamo/shadow"
-	"github.com/vharitonsky/iniflags"
+	"github.com/rakyll/globalconf"
+)
+
+const (
+	flagConfig = "config"
 )
 
 type Config struct {
 	application *shadow.Application
+	config      *globalconf.GlobalConf
 	values      map[string]interface{}
 }
 
@@ -26,17 +32,29 @@ func (r *Config) GetName() string {
 	return "config"
 }
 
-func (r *Config) Init(a *shadow.Application) error {
+func (r *Config) Init(a *shadow.Application) (err error) {
 	r.application = a
 
-	r.values = map[string]interface{}{}
-	r.Add("debug", false, "Debug mode")
-	r.Add("env", "stable", "Environment")
+	config := flag.String(flagConfig, "", "Config file which which override default config parameters")
+	flag.Parse()
 
-	return nil
+	opts := globalconf.Options{
+		EnvPrefix: strings.ToUpper(a.Name) + "_",
+		Filename:  *config,
+	}
+
+	if r.config, err = globalconf.NewWithOptions(&opts); err != nil {
+		return err
+	}
+
+	r.values = map[string]interface{}{}
+
+	return err
 }
 
 func (r *Config) Run() error {
+	r.Add("debug", false, "Debug mode")
+
 	for _, resource := range r.application.GetResources() {
 		if configurable, ok := resource.(ContextItemConfigurable); ok {
 			for _, variable := range configurable.GetConfigVariables() {
@@ -53,16 +71,18 @@ func (r *Config) Run() error {
 		}
 	}
 
-	iniflags.Parse()
+	r.config.ParseAll()
 
 	resourceLogger, err := r.application.GetResource("logger")
 	if err == nil {
+		logger := resourceLogger.(*Logger).Get(r.GetName())
+		logger.Infof("Config env prefix %s", r.config.EnvPrefix)
+
 		flag.VisitAll(func(f *flag.Flag) {
-			if f.Name == "config" && f.Value.String() != "" {
-				resourceLogger.(*Logger).Get(r.GetName()).Infof("Use config from %s", f.Value.String())
+			if f.Name == flagConfig && f.Value.String() != "" {
+				logger.Infof("Use config from %s", f.Value.String())
 			}
 		})
-
 	}
 
 	return nil
