@@ -1,6 +1,8 @@
 package system
 
 import (
+	"time"
+
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
 )
@@ -22,6 +24,13 @@ func (s *SystemService) Init(a *shadow.Application) error {
 		return err
 	}
 	s.Config = resourceConfig.(*resource.Config)
+
+	location, err := time.LoadLocation(s.Config.GetString("system.timezone"))
+	if err != nil {
+		return err
+	}
+
+	time.Local = location
 
 	return nil
 }

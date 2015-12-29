@@ -68,8 +68,6 @@ func NewApplication(resources []Resource, services []Service, name string, versi
 }
 
 func (a *Application) Run() (err error) {
-	defer a.wg.Wait()
-
 	// Resources
 	resources := a.GetResources()
 
@@ -100,6 +98,7 @@ func (a *Application) Run() (err error) {
 		}
 	}
 
+	a.wg.Wait()
 	return nil
 }
 
