@@ -6,7 +6,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/go-gorp/gorp"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/lann/squirrel"
+	sq "gopkg.in/Masterminds/squirrel.v1"
 )
 
 func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
@@ -83,7 +83,7 @@ func (s *SqlStorage) SelectByQuery(i interface{}, query string, args ...interfac
 	return data, nil
 }
 
-func (s *SqlStorage) Select(i interface{}, builder *squirrel.SelectBuilder) ([]interface{}, error) {
+func (s *SqlStorage) Select(i interface{}, builder *sq.SelectBuilder) ([]interface{}, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
@@ -99,7 +99,7 @@ func (s *SqlStorage) SelectOneByQuery(holder interface{}, query string, args ...
 	return err
 }
 
-func (s *SqlStorage) SelectOne(holder interface{}, builder *squirrel.SelectBuilder) error {
+func (s *SqlStorage) SelectOne(holder interface{}, builder *sq.SelectBuilder) error {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return errors.Wrap(err, "could not prepare SQL query")
@@ -154,30 +154,30 @@ func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result,
 }
 
 func (s *SqlStorage) Exec(query interface{}, args ...interface{}) (sql.Result, error) {
-	if b, ok := query.(*squirrel.SelectBuilder); ok {
+	if b, ok := query.(*sq.SelectBuilder); ok {
 		return s.ExecSelect(b)
 	}
 
-	if b, ok := query.(*squirrel.InsertBuilder); ok {
+	if b, ok := query.(*sq.InsertBuilder); ok {
 		return s.ExecInsert(b)
 	}
 
-	if b, ok := query.(*squirrel.UpdateBuilder); ok {
+	if b, ok := query.(*sq.UpdateBuilder); ok {
 		return s.ExecUpdate(b)
 	}
 
-	if b, ok := query.(*squirrel.DeleteBuilder); ok {
+	if b, ok := query.(*sq.DeleteBuilder); ok {
 		return s.ExecDelete(b)
 	}
 
-	if b, ok := query.(*squirrel.CaseBuilder); ok {
+	if b, ok := query.(*sq.CaseBuilder); ok {
 		return s.ExecCase(b)
 	}
 
 	return nil, errors.New("could not prepare SQL query")
 }
 
-func (s *SqlStorage) ExecSelect(builder *squirrel.SelectBuilder) (sql.Result, error) {
+func (s *SqlStorage) ExecSelect(builder *sq.SelectBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
@@ -185,7 +185,7 @@ func (s *SqlStorage) ExecSelect(builder *squirrel.SelectBuilder) (sql.Result, er
 	return s.ExecByQuery(query, args...)
 }
 
-func (s *SqlStorage) ExecInsert(builder *squirrel.InsertBuilder) (sql.Result, error) {
+func (s *SqlStorage) ExecInsert(builder *sq.InsertBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
@@ -193,7 +193,7 @@ func (s *SqlStorage) ExecInsert(builder *squirrel.InsertBuilder) (sql.Result, er
 	return s.ExecByQuery(query, args...)
 }
 
-func (s *SqlStorage) ExecUpdate(builder *squirrel.UpdateBuilder) (sql.Result, error) {
+func (s *SqlStorage) ExecUpdate(builder *sq.UpdateBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
@@ -201,7 +201,7 @@ func (s *SqlStorage) ExecUpdate(builder *squirrel.UpdateBuilder) (sql.Result, er
 	return s.ExecByQuery(query, args...)
 }
 
-func (s *SqlStorage) ExecDelete(builder *squirrel.DeleteBuilder) (sql.Result, error) {
+func (s *SqlStorage) ExecDelete(builder *sq.DeleteBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
@@ -209,7 +209,7 @@ func (s *SqlStorage) ExecDelete(builder *squirrel.DeleteBuilder) (sql.Result, er
 	return s.ExecByQuery(query, args...)
 }
 
-func (s *SqlStorage) ExecCase(builder *squirrel.CaseBuilder) (sql.Result, error) {
+func (s *SqlStorage) ExecCase(builder *sq.CaseBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare SQL query")
