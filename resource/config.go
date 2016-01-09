@@ -39,7 +39,7 @@ func (r *Config) Init(a *shadow.Application) (err error) {
 	flag.Parse()
 
 	opts := globalconf.Options{
-		EnvPrefix: strings.ToUpper(a.Name) + "_",
+		EnvPrefix: strings.ToUpper(strings.Replace(a.Name, " ", "_", -1)) + "_",
 		Filename:  *config,
 	}
 
