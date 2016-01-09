@@ -8,6 +8,9 @@ go:
   - 1.5
   - tip
 
+install:
+  - go get -t ./...
+
 script:
   - go build -v ./examples/base/main.go
   - go test -v ./...
