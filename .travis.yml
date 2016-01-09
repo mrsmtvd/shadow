@@ -9,7 +9,7 @@ go:
   - tip
 
 install:
-  - go get -t ./...
+  - go get ./...
 
 script:
   - go build -v ./examples/base/main.go
