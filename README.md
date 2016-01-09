@@ -2,6 +2,7 @@ Shadow framework
 ================
 
 [![Build Status](https://drone.io/github.com/kihamo/shadow/status.png)](https://drone.io/github.com/kihamo/shadow/latest)
+[![Coverage Status](https://coveralls.io/repos/kihamo/shadow/badge.svg?branch=master&service=github)](https://coveralls.io/github/kihamo/shadow?branch=master)
 
 Create application
 ------------------
