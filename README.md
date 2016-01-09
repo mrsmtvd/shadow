@@ -1,7 +1,7 @@
 Shadow framework
 ================
 
-[![Build Status](https://drone.io/github.com/kihamo/shadow/status.png)](https://drone.io/github.com/kihamo/shadow/latest)
+[![Build Status](https://travis-ci.org/kihamo/shadow.svg)](https://travis-ci.org/kihamo/shadow)
 [![Coverage Status](https://coveralls.io/repos/kihamo/shadow/badge.svg?branch=master&service=github)](https://coveralls.io/github/kihamo/shadow?branch=master)
 [![GoDoc](https://godoc.org/github.com/kihamo/shadow?status.svg)](https://godoc.org/github.com/kihamo/shadow)
 
