@@ -5,8 +5,8 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/go-gorp/gorp"
 	"github.com/kihamo/gotypes"
+	"gopkg.in/gorp.v1"
 )
 
 type StructType map[string]interface{}

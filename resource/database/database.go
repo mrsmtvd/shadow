@@ -1,14 +1,11 @@
 package database
 
 import (
-	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
+	"github.com/rubenv/sql-migrate"
+	"gopkg.in/gorp.v1"
 )
-
-type SqlStorage struct {
-	executor gorp.SqlExecutor
-}
 
 type Database struct {
 	application *shadow.Application
@@ -32,6 +29,11 @@ func (r *Database) GetConfigVariables() []resource.ConfigVariable {
 			Value: "root:@tcp(localhost:3306)/shadow",
 			Usage: "Database DSN",
 		},
+		resource.ConfigVariable{
+			Key:   "database.migrations.table",
+			Value: "migrations",
+			Usage: "Database migrations table name",
+		},
 	}
 }
 
@@ -54,17 +56,27 @@ func (r *Database) Run() (err error) {
 		return err
 	}
 
-	if r.config.GetBool("debug") {
-		resourceLogger, err := r.application.GetResource("logger")
-		if err != nil {
-			return err
-		}
+	resourceLogger, err := r.application.GetResource("logger")
+	if err != nil {
+		return err
+	}
 
-		logger := resourceLogger.(*resource.Logger).Get(r.GetName())
+	logger := resourceLogger.(*resource.Logger).Get(r.GetName())
+
+	if r.config.GetBool("debug") {
 		r.storage.executor.(*gorp.DbMap).TraceOn("", logger)
 	}
 
 	r.storage.SetTypeConverter(TypeConverter{})
+
+	migrate.SetTable(r.config.GetString("database.migrations.table"))
+
+	n, err := r.UpMigrations()
+	if err != nil {
+		return err
+	}
+
+	logger.Debugf("Applied %d migrations", n)
 
 	return nil
 }

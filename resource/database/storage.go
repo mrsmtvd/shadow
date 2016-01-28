@@ -4,10 +4,14 @@ import (
 	"database/sql"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/go-gorp/gorp"
 	_ "github.com/go-sql-driver/mysql"
 	sq "gopkg.in/Masterminds/squirrel.v1"
+	"gopkg.in/gorp.v1"
 )
+
+type SqlStorage struct {
+	executor gorp.SqlExecutor
+}
 
 func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 	db, err := sql.Open(driver, dataSourceName)
