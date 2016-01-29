@@ -22,7 +22,7 @@ func (r *Database) GetConfigVariables() []resource.ConfigVariable {
 		resource.ConfigVariable{
 			Key:   "database.driver",
 			Value: "mysql",
-			Usage: "Database driver",
+			Usage: "Database driver (sqlite3, postgres, mysql, mssql and oci8)",
 		},
 		resource.ConfigVariable{
 			Key:   "database.dsn",

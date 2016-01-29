@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/rubenv/sql-migrate"
 	sq "gopkg.in/Masterminds/squirrel.v1"
 	"gopkg.in/gorp.v1"
 )
@@ -24,12 +25,9 @@ func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 		Db: db,
 	}
 
-	switch driver {
-	case "mysql":
-		dbMap.Dialect = gorp.MySQLDialect{"InnoDB", "UTF8"}
-		break
-
-	default:
+	if dialect, ok := migrate.MigrationDialects[driver]; ok {
+		dbMap.Dialect = migrate.MigrationDialects[driver]
+	} else {
 		return nil, errors.New("Storage driver " + driver + " not found")
 	}
 
