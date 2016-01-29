@@ -26,7 +26,7 @@ func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 	}
 
 	if dialect, ok := migrate.MigrationDialects[driver]; ok {
-		dbMap.Dialect = migrate.MigrationDialects[driver]
+		dbMap.Dialect = dialect
 	} else {
 		return nil, errors.New("Storage driver " + driver + " not found")
 	}
