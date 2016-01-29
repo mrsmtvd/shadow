@@ -4,10 +4,14 @@ import (
 	"database/sql"
 	"errors"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/rubenv/sql-migrate"
 	sq "gopkg.in/Masterminds/squirrel.v1"
 	"gopkg.in/gorp.v1"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/ziutek/mymysql/godrv"
 )
 
 type SqlStorage struct {
@@ -15,20 +19,19 @@ type SqlStorage struct {
 }
 
 func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
-	db, err := sql.Open(driver, dataSourceName)
+	dialect, ok := migrate.MigrationDialects[driver]
+	if !ok {
+		return nil, errors.New("Storage driver " + driver + " not found")
+	}
 
+	db, err := sql.Open(driver, dataSourceName)
 	if err != nil {
 		return nil, err
 	}
 
 	dbMap := &gorp.DbMap{
-		Db: db,
-	}
-
-	if dialect, ok := migrate.MigrationDialects[driver]; ok {
-		dbMap.Dialect = dialect
-	} else {
-		return nil, errors.New("Storage driver " + driver + " not found")
+		Db:      db,
+		Dialect: dialect,
 	}
 
 	return &SqlStorage{
