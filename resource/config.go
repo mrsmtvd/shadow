@@ -4,6 +4,7 @@ import (
 	"flag"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
 	"github.com/rakyll/globalconf"
 )
@@ -75,8 +76,13 @@ func (r *Config) Run() error {
 
 	resourceLogger, err := r.application.GetResource("logger")
 	if err == nil {
+		fields := logrus.Fields{}
+		for key := range r.GetAll() {
+			fields[key] = r.Get(key)
+		}
+
 		logger := resourceLogger.(*Logger).Get(r.GetName())
-		logger.Infof("Config env prefix %s", r.config.EnvPrefix)
+		logger.WithFields(fields).Infof("Config env prefix %s", r.config.EnvPrefix)
 
 		flag.VisitAll(func(f *flag.Flag) {
 			if f.Name == flagConfig && f.Value.String() != "" {
