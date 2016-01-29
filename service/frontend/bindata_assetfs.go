@@ -157,7 +157,7 @@ func templates500TplHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/500.tpl.html", size: 217, mode: os.FileMode(420), modTime: time.Unix(1435004621, 0)}
+	info := bindataFileInfo{name: "templates/500.tpl.html", size: 217, mode: os.FileMode(420), modTime: time.Unix(1454081756, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -237,7 +237,7 @@ func templatesLayoutHeaderTplHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/layout/header.tpl.html", size: 3896, mode: os.FileMode(420), modTime: time.Unix(1451423714, 0)}
+	info := bindataFileInfo{name: "templates/layout/header.tpl.html", size: 3896, mode: os.FileMode(420), modTime: time.Unix(1453244697, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
