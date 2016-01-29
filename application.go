@@ -1,9 +1,8 @@
 package shadow // import "github.com/kihamo/shadow"
 
 import (
+	"errors"
 	"sync"
-
-	"github.com/dropbox/godropbox/errors"
 )
 
 //go:generate goimports -w ./
@@ -125,7 +124,7 @@ func (a *Application) GetResource(name string) (Resource, error) {
 		}
 	}
 
-	return nil, errors.Newf("Resource \"%s\" not found", name)
+	return nil, errors.New("Resource \"" + name + "\" not found")
 }
 
 func (a *Application) GetResources() []Resource {
@@ -139,7 +138,7 @@ func (a *Application) HasResource(name string) bool {
 
 func (a *Application) RegisterResource(resource Resource) error {
 	if _, err := a.GetResource(resource.GetName()); err == nil {
-		return errors.Newf("Resource \"%s\" already exists", resource.GetName())
+		return errors.New("Resource \"" + resource.GetName() + "\" already exists")
 	}
 
 	a.resources = append(a.resources, resource)
@@ -153,7 +152,7 @@ func (a *Application) GetService(name string) (Service, error) {
 		}
 	}
 
-	return nil, errors.Newf("Service \"%s\" not found", name)
+	return nil, errors.New("Service \"" + name + "\" not found")
 }
 
 func (a *Application) GetServices() []Service {
@@ -167,7 +166,7 @@ func (a *Application) HasService(name string) bool {
 
 func (a *Application) RegisterService(service Service) error {
 	if _, err := a.GetService(service.GetName()); err == nil {
-		return errors.Newf("Service \"%s\" already exists", service.GetName())
+		return errors.New("Service \"" + service.GetName() + "\" already exists")
 	}
 
 	a.services = append(a.services, service)

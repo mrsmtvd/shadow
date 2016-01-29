@@ -2,11 +2,11 @@ package resource
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"text/template"
 
-	"github.com/dropbox/godropbox/errors"
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow"
 )
@@ -89,7 +89,7 @@ func (v *TemplateView) Render(w io.Writer) error {
 	}
 
 	if _, ok := file.(*assetfs.AssetDirectory); ok {
-		return errors.Newf("%s is directory", v.name)
+		return errors.New(v.name + " is directory")
 	}
 
 	buf := new(bytes.Buffer)

@@ -1,10 +1,10 @@
 package system
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/dropbox/godropbox/errors"
 )
 
 const (
