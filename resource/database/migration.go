@@ -1,30 +1,17 @@
 package database
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 
+	"github.com/go-gorp/gorp"
 	"github.com/rubenv/sql-migrate"
-	"gopkg.in/gorp.v1"
 )
 
 var idRegexp = regexp.MustCompile(`^(\d+)(.*)$`)
 
 type ServiceMigrations interface {
 	GetMigrations() migrate.MigrationSource
-}
-
-func (r *Database) GetDialect() (string, error) {
-	dialect := r.GetStorage().executor.(*gorp.DbMap).Dialect
-
-	for key := range migrate.MigrationDialects {
-		if migrate.MigrationDialects[key] == dialect {
-			return key, nil
-		}
-	}
-
-	return "", errors.New("Unknown dialect")
 }
 
 func (r *Database) FindMigrations() ([]*migrate.Migration, error) {
@@ -53,7 +40,7 @@ func (r *Database) FindMigrations() ([]*migrate.Migration, error) {
 }
 
 func (r *Database) UpMigrations() (int, error) {
-	dialect, err := r.GetDialect()
+	dialect, err := r.GetStorage().GetDialect()
 	if err != nil {
 		return 0, err
 	}
@@ -62,7 +49,7 @@ func (r *Database) UpMigrations() (int, error) {
 }
 
 func (r *Database) DownMigrations() (int, error) {
-	dialect, err := r.GetDialect()
+	dialect, err := r.GetStorage().GetDialect()
 	if err != nil {
 		return 0, err
 	}

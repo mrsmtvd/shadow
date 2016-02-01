@@ -1,10 +1,10 @@
 package database
 
 import (
+	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
 	"github.com/rubenv/sql-migrate"
-	"gopkg.in/gorp.v1"
 )
 
 type Database struct {

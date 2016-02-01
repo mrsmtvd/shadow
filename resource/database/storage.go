@@ -3,25 +3,32 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
-	"github.com/rubenv/sql-migrate"
+	"github.com/go-gorp/gorp"
 	sq "gopkg.in/Masterminds/squirrel.v1"
-	"gopkg.in/gorp.v1"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-	_ "github.com/ziutek/mymysql/godrv"
 )
+
+var StorageDialects = map[string]gorp.Dialect{
+	"sqlite3":  gorp.SqliteDialect{},
+	"postgres": gorp.PostgresDialect{},
+	"mysql":    gorp.MySQLDialect{"InnoDB", "UTF8"},
+	// "mssql":    gorp.SqlServerDialect{},
+	// "oci8":     gorp.OracleDialect{},
+}
 
 type SqlStorage struct {
 	executor gorp.SqlExecutor
 }
 
 func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
-	dialect, ok := migrate.MigrationDialects[driver]
+	dialect, ok := StorageDialects[driver]
 	if !ok {
-		return nil, errors.New("Storage driver " + driver + " not found")
+		return nil, fmt.Errorf("Storage driver %s not found", driver)
 	}
 
 	db, err := sql.Open(driver, dataSourceName)
@@ -37,6 +44,18 @@ func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 	return &SqlStorage{
 		executor: dbMap,
 	}, nil
+}
+
+func (s *SqlStorage) GetDialect() (string, error) {
+	dialect := s.executor.(*gorp.DbMap).Dialect
+
+	for key := range StorageDialects {
+		if StorageDialects[key] == dialect {
+			return key, nil
+		}
+	}
+
+	return "", errors.New("Unknown dialect")
 }
 
 func (s *SqlStorage) CreateTablesIfNotExists() error {
@@ -83,7 +102,7 @@ func (s *SqlStorage) Rollback() error {
 func (s *SqlStorage) SelectByQuery(i interface{}, query string, args ...interface{}) ([]interface{}, error) {
 	data, err := s.executor.Select(i, query, args...)
 	if err != nil {
-		return data, errors.New("Error getting collection from DB, query: '" + query + "', error: '" + err.Error() + "'")
+		return data, fmt.Errorf("Error getting collection from DB, query: '%s', error: '%s'", query, err.Error())
 	}
 	return data, nil
 }
@@ -99,7 +118,7 @@ func (s *SqlStorage) Select(i interface{}, builder *sq.SelectBuilder) ([]interfa
 func (s *SqlStorage) SelectOneByQuery(holder interface{}, query string, args ...interface{}) error {
 	err := s.executor.SelectOne(holder, query, args...)
 	if err != nil && err != sql.ErrNoRows {
-		return errors.New("Error getting value from DB, query: '" + query + "', error: '" + err.Error() + "'")
+		return fmt.Errorf("Error getting value from DB, query: '%s', error: '%s'", query, err.Error())
 	}
 	return err
 }
@@ -107,14 +126,14 @@ func (s *SqlStorage) SelectOneByQuery(holder interface{}, query string, args ...
 func (s *SqlStorage) SelectOne(holder interface{}, builder *sq.SelectBuilder) error {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
+		return fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return s.SelectOneByQuery(holder, query, args...)
 }
 
 func (s *SqlStorage) Insert(list ...interface{}) error {
 	if err := s.executor.Insert(list...); err != nil {
-		return errors.New("Error inserting data into DB, error: '" + err.Error() + "'")
+		return fmt.Errorf("Error inserting data into DB, error: '%s'", err.Error())
 	}
 
 	return nil
@@ -124,7 +143,7 @@ func (s *SqlStorage) Update(list ...interface{}) (int64, error) {
 	count, err := s.executor.Update(list...)
 
 	if err != nil {
-		err = errors.New("Error updating data in DB, error: '" + err.Error() + "'")
+		err = fmt.Errorf("Error updating data in DB, error: '%s'", err.Error())
 	}
 
 	return count, err
@@ -134,7 +153,7 @@ func (s *SqlStorage) Delete(list ...interface{}) (int64, error) {
 	count, err := s.executor.Delete(list...)
 
 	if err != nil {
-		err = errors.New("Error deleting data in DB, error: '" + err.Error() + "'")
+		err = fmt.Errorf("Error deleting data in DB, error: '%s'", err.Error())
 	}
 
 	return count, err
@@ -153,7 +172,7 @@ func (s *SqlStorage) Prepare(query string) (*sql.Stmt, error) {
 func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result, error) {
 	result, err := s.executor.Exec(query, args...)
 	if err != nil {
-		return result, errors.New("Error executing DB query, query: '" + query + "', error: '" + err.Error() + "'")
+		return result, fmt.Errorf("Error executing DB query, query: '%s', error: '%s'", query, err.Error())
 	}
 	return result, nil
 }
@@ -185,7 +204,7 @@ func (s *SqlStorage) Exec(query interface{}, args ...interface{}) (sql.Result, e
 func (s *SqlStorage) ExecSelect(builder *sq.SelectBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return s.ExecByQuery(query, args...)
 }
@@ -193,7 +212,7 @@ func (s *SqlStorage) ExecSelect(builder *sq.SelectBuilder) (sql.Result, error) {
 func (s *SqlStorage) ExecInsert(builder *sq.InsertBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return s.ExecByQuery(query, args...)
 }
@@ -201,7 +220,7 @@ func (s *SqlStorage) ExecInsert(builder *sq.InsertBuilder) (sql.Result, error) {
 func (s *SqlStorage) ExecUpdate(builder *sq.UpdateBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return s.ExecByQuery(query, args...)
 }
@@ -209,7 +228,7 @@ func (s *SqlStorage) ExecUpdate(builder *sq.UpdateBuilder) (sql.Result, error) {
 func (s *SqlStorage) ExecDelete(builder *sq.DeleteBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return s.ExecByQuery(query, args...)
 }
@@ -217,7 +236,7 @@ func (s *SqlStorage) ExecDelete(builder *sq.DeleteBuilder) (sql.Result, error) {
 func (s *SqlStorage) ExecCase(builder *sq.CaseBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return s.ExecByQuery(query, args...)
 }
