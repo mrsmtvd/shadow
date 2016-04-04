@@ -7,6 +7,10 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
+const (
+	defaultMigrationsTableName = "migrations"
+)
+
 type Database struct {
 	application *shadow.Application
 	config      *resource.Config
@@ -31,7 +35,7 @@ func (r *Database) GetConfigVariables() []resource.ConfigVariable {
 		},
 		resource.ConfigVariable{
 			Key:   "database.migrations.table",
-			Value: "migrations",
+			Value: defaultMigrationsTableName,
 			Usage: "Database migrations table name",
 		},
 	}
@@ -69,7 +73,11 @@ func (r *Database) Run() (err error) {
 
 	r.storage.SetTypeConverter(TypeConverter{})
 
-	migrate.SetTable(r.config.GetString("database.migrations.table"))
+	tableName := r.config.GetString("database.migrations.table")
+	if tableName == "" {
+		tableName = defaultMigrationsTableName
+	}
+	migrate.SetTable(tableName)
 
 	n, err := r.UpMigrations()
 	if err != nil {
