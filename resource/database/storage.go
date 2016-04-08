@@ -131,6 +131,66 @@ func (s *SqlStorage) SelectOne(holder interface{}, builder *sq.SelectBuilder) er
 	return s.SelectOneByQuery(holder, query, args...)
 }
 
+func (s *SqlStorage) SelectInt(query string, args ...interface{}) (int64, error) {
+	result, err := s.executor.SelectInt(query, args...)
+
+	if err != nil {
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
+	}
+
+	return result, err
+}
+
+func (s *SqlStorage) SelectNullInt(query string, args ...interface{}) (sql.NullInt64, error) {
+	result, err := s.executor.SelectNullInt(query, args...)
+
+	if err != nil {
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
+	}
+
+	return result, err
+}
+
+func (s *SqlStorage) SelectFloat(query string, args ...interface{}) (float64, error) {
+	result, err := s.executor.SelectFloat(query, args...)
+
+	if err != nil {
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
+	}
+
+	return result, err
+}
+
+func (s *SqlStorage) SelectNullFloat(query string, args ...interface{}) (sql.NullFloat64, error) {
+	result, err := s.executor.SelectNullFloat(query, args...)
+
+	if err != nil {
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
+	}
+
+	return result, err
+}
+
+func (s *SqlStorage) SelectStr(query string, args ...interface{}) (string, error) {
+	result, err := s.executor.SelectStr(query, args...)
+
+	if err != nil {
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
+	}
+
+	return result, err
+}
+
+func (s *SqlStorage) SelectNullStr(query string, args ...interface{}) (sql.NullString, error) {
+	result, err := s.executor.SelectNullStr(query, args...)
+
+	if err != nil {
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
+	}
+
+	return result, err
+}
+
 func (s *SqlStorage) Insert(list ...interface{}) error {
 	if err := s.executor.Insert(list...); err != nil {
 		return fmt.Errorf("Error inserting data into DB, error: '%s'", err.Error())
