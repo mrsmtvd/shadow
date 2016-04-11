@@ -191,6 +191,16 @@ func (s *SqlStorage) SelectNullStr(query string, args ...interface{}) (sql.NullS
 	return result, err
 }
 
+func (s *SqlStorage) Get(i interface{}, keys ...interface{}) (interface{}, error) {
+	entity, err := s.executor.Get(i, keys...)
+
+	if err != nil {
+		err = fmt.Errorf("Error get data in DB, error: '%s'", err.Error())
+	}
+
+	return entity, err
+}
+
 func (s *SqlStorage) Insert(list ...interface{}) error {
 	if err := s.executor.Insert(list...); err != nil {
 		return fmt.Errorf("Error inserting data into DB, error: '%s'", err.Error())
