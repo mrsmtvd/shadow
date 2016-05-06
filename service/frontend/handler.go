@@ -23,6 +23,10 @@ type Handler interface {
 	Render()
 }
 
+type HandlerAuth interface {
+	IsAuth() bool
+}
+
 type AbstractFrontendHandler struct {
 	Handler
 
@@ -33,6 +37,10 @@ type AbstractFrontendHandler struct {
 
 	Output http.ResponseWriter
 	Input  *http.Request
+}
+
+func (h *AbstractFrontendHandler) IsAuth() bool {
+	return true
 }
 
 func (h *AbstractFrontendHandler) Init(a *shadow.Application, s shadow.Service) {

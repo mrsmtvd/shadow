@@ -36,6 +36,14 @@ func (w *ResponseWriter) GetStatusCode() int {
 }
 
 func BasicAuthMiddleware(user string, password string) alice.Constructor {
+	if user == "" {
+		return func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				next.ServeHTTP(w, r)
+			})
+		}
+	}
+
 	token := "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
 
 	return func(next http.Handler) http.Handler {

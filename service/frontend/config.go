@@ -18,12 +18,12 @@ func (s *FrontendService) GetConfigVariables() []resource.ConfigVariable {
 		},
 		resource.ConfigVariable{
 			Key:   "frontend.auth-user",
-			Value: "admin",
+			Value: "",
 			Usage: "User login",
 		},
 		resource.ConfigVariable{
 			Key:   "frontend.auth-password",
-			Value: "password",
+			Value: "",
 			Usage: "User password",
 		},
 	}

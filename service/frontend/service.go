@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/justinas/alice"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
 )
@@ -22,6 +21,9 @@ type FrontendMenu struct {
 
 type ServiceFrontendHandlers interface {
 	SetFrontendHandlers(*Router)
+}
+
+type ServiceFrontendMenu interface {
 	GetFrontendMenu() *FrontendMenu
 }
 
@@ -31,7 +33,6 @@ type FrontendService struct {
 	template    *resource.Template
 	application *shadow.Application
 	router      *Router
-	middleware  alice.Chain
 }
 
 func (c *FrontendService) GetName() string {
@@ -64,11 +65,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
 
-	s.middleware = alice.New(
-		LoggerMiddleware(s.Logger),
-		BasicAuthMiddleware(s.config.GetString("frontend.auth-user"), s.config.GetString("frontend.auth-password")),
-	)
-	s.router = NewRouter(s.application)
+	s.router = NewRouter(s.application, s.Logger, s.config)
 
 	panicHandler := &PanicHandler{}
 	panicHandler.Init(s.application, s)
@@ -116,15 +113,18 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 
 func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	menus := make([]*FrontendMenu, 0, len(s.application.GetServices()))
-	menus = append(menus, s.GetFrontendMenu())
 
 	for _, service := range s.application.GetServices() {
-		if serviceCast, ok := service.(ServiceFrontendHandlers); ok {
-			serviceCast.SetFrontendHandlers(s.router)
+		if serviceHandlers, ok := service.(ServiceFrontendHandlers); ok {
+			serviceHandlers.SetFrontendHandlers(s.router)
+		}
 
-			if service != s {
-				menu := serviceCast.GetFrontendMenu()
-				if menu != nil {
+		if serviceMenu, ok := service.(ServiceFrontendMenu); ok {
+			menu := serviceMenu.GetFrontendMenu()
+			if menu != nil {
+				if service == s {
+					menus = append([]*FrontendMenu{menu}, menus...)
+				} else {
 					menus = append(menus, menu)
 				}
 			}
@@ -149,7 +149,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		}
 		s.Logger.WithFields(fields).Info("Running service")
 
-		if err := http.ListenAndServe(addr, s.middleware.Then(http.DefaultServeMux)); err != nil {
+		if err := http.ListenAndServe(addr, s.router); err != nil {
 			s.Logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}(s.router)
