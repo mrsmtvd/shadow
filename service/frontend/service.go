@@ -66,33 +66,9 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	http.DefaultServeMux = http.NewServeMux()
 
 	s.router = NewRouter(s.application, s.Logger, s.config)
-
-	panicHandler := &PanicHandler{}
-	panicHandler.Init(s.application, s)
-	s.router.PanicHandler = func(out http.ResponseWriter, in *http.Request, error interface{}) {
-		panicHandler.InitRequest(out, in)
-		panicHandler.SetError(error)
-		panicHandler.Handle()
-		panicHandler.Render()
-	}
-
-	methodNotAllowedHandler := MethodNotAllowedHandler{}
-	methodNotAllowedHandler.Init(s.application, s)
-	methodNotAllowed := func(out http.ResponseWriter, in *http.Request) {
-		methodNotAllowedHandler.InitRequest(out, in)
-		methodNotAllowedHandler.Handle()
-		methodNotAllowedHandler.Render()
-	}
-	s.router.MethodNotAllowed = http.HandlerFunc(methodNotAllowed)
-
-	notFoundHandler := &NotFoundHandler{}
-	notFoundHandler.Init(s.application, s)
-	notFound := func(out http.ResponseWriter, in *http.Request) {
-		notFoundHandler.InitRequest(out, in)
-		notFoundHandler.Handle()
-		notFoundHandler.Render()
-	}
-	s.router.NotFound = http.HandlerFunc(notFound)
+	s.router.SetPanicHandler(s, &PanicHandler{})
+	s.router.SetNotAllowedHandler(s, &MethodNotAllowedHandler{})
+	s.router.SetNotFoundHandler(s, &NotFoundHandler{})
 
 	if s.config.GetBool("debug") {
 		s.router.HandlerFunc("GET", "/debug/pprof/cmdline", pprof.Cmdline)

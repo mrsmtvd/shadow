@@ -27,6 +27,10 @@ type HandlerAuth interface {
 	IsAuth() bool
 }
 
+type HandlerPanic interface {
+	SetError(interface{})
+}
+
 type AbstractFrontendHandler struct {
 	Handler
 
