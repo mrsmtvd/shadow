@@ -290,8 +290,10 @@ func (d *Dispatcher) Run(wg *sync.WaitGroup) error {
 
 // AddWorker добавляет еще одного исполнителя в пулл
 func (d *Dispatcher) AddWorker() {
+	id := uuid.New()
+
 	w := &worker{
-		id:        uuid.New(),
+		id:        id,
 		status:    workerStatusWait,
 		created:   time.Now(),
 		waitGroup: d.waitGroup,
