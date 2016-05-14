@@ -10,7 +10,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
-	"github.com/nu7hatch/gouuid"
+	"github.com/pborman/uuid"
 )
 
 // https://talks.golang.org/2010/io/balance.go
@@ -290,10 +290,8 @@ func (d *Dispatcher) Run(wg *sync.WaitGroup) error {
 
 // AddWorker добавляет еще одного исполнителя в пулл
 func (d *Dispatcher) AddWorker() {
-	id, _ := uuid.NewV4()
-
 	w := &worker{
-		id:        id.String(),
+		id:        uuid.New(),
 		status:    workerStatusWait,
 		created:   time.Now(),
 		waitGroup: d.waitGroup,
@@ -307,10 +305,8 @@ func (d *Dispatcher) AddWorker() {
 }
 
 func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (int64, time.Duration), args ...interface{}) {
-	id, _ := uuid.NewV4()
-
 	t := &task{
-		id:      id.String(),
+		id:      uuid.New(),
 		name:    name,
 		status:  taskStatusWait,
 		created: time.Now(),
