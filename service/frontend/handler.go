@@ -2,8 +2,10 @@ package frontend
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
+	"github.com/kihamo/gotypes"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
 )
@@ -104,4 +106,23 @@ func (h *AbstractFrontendHandler) SendJSON(reply interface{}) {
 
 	h.Output.Header().Set("Content-Type", "application/json; charset=utf-8")
 	h.Output.Write(response)
+}
+
+func (h *AbstractFrontendHandler) DecodeJSON(output interface{}) error {
+	decoder := json.NewDecoder(h.Input.Body)
+
+	var in interface{}
+	err := decoder.Decode(&in)
+
+	if err != nil {
+		return err
+	}
+
+	converter := gotypes.NewConverter(in, &output)
+
+	if !converter.Valid() {
+		return errors.New("Convert fail")
+	}
+
+	return nil
 }
