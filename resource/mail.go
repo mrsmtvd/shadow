@@ -13,10 +13,16 @@ const (
 	mailDaemonTimeOut = 5 * time.Minute
 )
 
+type mailTask struct {
+	message *gomail.Message
+	result  chan error
+}
+
 type Mail struct {
 	config *Config
 	logger *logrus.Entry
-	queue  chan *gomail.Message
+	dialer *gomail.Dialer
+	queue  chan *mailTask
 }
 
 func (r *Mail) GetName() string {
@@ -70,7 +76,7 @@ func (r *Mail) Init(a *shadow.Application) error {
 }
 
 func (r *Mail) Run(wg *sync.WaitGroup) error {
-	r.queue = make(chan *gomail.Message)
+	r.queue = make(chan *mailTask)
 
 	go func() {
 		defer wg.Done()
@@ -90,7 +96,7 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 
 		for {
 			select {
-			case message, ok := <-r.queue:
+			case task, ok := <-r.queue:
 				if !ok {
 					return
 				}
@@ -105,14 +111,16 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 					}
 				}
 
-				if len(message.GetHeader("From")) == 0 {
-					message.SetHeader("From", r.config.GetString("mail.from"))
+				if len(task.message.GetHeader("From")) == 0 {
+					task.message.SetHeader("From", r.config.GetString("mail.from"))
 				}
 
-				if err := gomail.Send(closer, message); err != nil {
-					r.logger.WithField("message", message).Error(err.Error())
+				if err := gomail.Send(closer, task.message); err != nil {
+					r.logger.WithField("message", task.message).Error(err.Error())
+					task.result <- err
 				} else {
-					r.logger.WithField("message", message).Debug("Send message success")
+					r.logger.WithField("message", task.message).Debug("Send message success")
+					task.result <- nil
 				}
 
 			case <-time.After(mailDaemonTimeOut):
@@ -132,6 +140,22 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 }
 
 func (r *Mail) Send(message *gomail.Message) {
+	task := &mailTask{
+		message: message,
+		result:  make(chan error),
+	}
+	r.queue <- task
+
 	r.logger.WithField("message", message).Debug("Send new message to queue")
-	r.queue <- message
+
+}
+
+func (r *Mail) SendAndReturn(message *gomail.Message) error {
+	task := &mailTask{
+		message: message,
+		result:  make(chan error),
+	}
+	r.queue <- task
+
+	return <-task.result
 }

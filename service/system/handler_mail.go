@@ -23,7 +23,13 @@ func (h *MailHandler) Handle() {
 		}
 
 		resourceMail, _ := h.Application.GetResource("mail")
-		resourceMail.(*resource.Mail).Send(message)
+		if err := resourceMail.(*resource.Mail).SendAndReturn(message); err != nil {
+			h.SendJSON(map[string]interface{}{
+				"error": err.Error(),
+			})
+		} else {
+			h.SendJSON(map[string]string{})
+		}
 
 		return
 	}

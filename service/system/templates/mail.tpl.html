@@ -6,10 +6,17 @@
 
         form.submit(function () {
             $.post(form.attr('action'), form.serialize()).done(function(data) {
-                form.prepend('<div class="alert alert-success alert-dismissable">' +
+                if (data.hasOwnProperty('error') && data['error'] !== null && data['error'].length) {
+                    form.prepend('<div class="alert alert-danger alert-dismissable">' +
                             '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-                            'Message add to queue' +
+                            data['error'] +
                             '</div>')
+                } else {
+                    form.prepend('<div class="alert alert-success alert-dismissable">' +
+                            '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                            'Message send success' +
+                            '</div>')
+                }
             }).fail(function() {
                 form.prepend('<div class="alert alert-danger alert-dismissable">' +
                         '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
