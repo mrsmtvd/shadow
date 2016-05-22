@@ -94,6 +94,14 @@ func (h *AbstractFrontendHandler) Render() {
 	}
 }
 
+func (h *AbstractFrontendHandler) IsGet() bool {
+	return h.Input.Method == "GET"
+}
+
+func (h *AbstractFrontendHandler) IsPost() bool {
+	return h.Input.Method == "POST"
+}
+
 func (h *AbstractFrontendHandler) IsAjax() bool {
 	return h.Input.Header.Get("X-Requested-With") == "XMLHttpRequest"
 }

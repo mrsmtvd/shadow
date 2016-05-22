@@ -16,6 +16,7 @@ func main() {
 			new(resource.Logger),
 			new(resource.Template),
 			new(resource.Dispatcher),
+			new(resource.Mail),
 		},
 		[]shadow.Service{
 			new(system.SystemService),

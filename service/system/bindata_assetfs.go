@@ -2,6 +2,7 @@
 // sources:
 // templates/config.tpl.html
 // templates/logs.tpl.html
+// templates/mail.tpl.html
 // templates/tasks.tpl.html
 // DO NOT EDIT!
 
@@ -13,11 +14,11 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"strings"
-	"os"
-	"time"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func bindataRead(data []byte, name string) ([]byte, error) {
@@ -46,9 +47,9 @@ type asset struct {
 }
 
 type bindataFileInfo struct {
-	name string
-	size int64
-	mode os.FileMode
+	name    string
+	size    int64
+	mode    os.FileMode
 	modTime time.Time
 }
 
@@ -87,7 +88,7 @@ func templatesConfigTplHtml() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/config.tpl.html", size: 648, mode: os.FileMode(420), modTime: time.Unix(1441722307, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -107,7 +108,27 @@ func templatesLogsTplHtml() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/logs.tpl.html", size: 2054, mode: os.FileMode(420), modTime: time.Unix(1441722307, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _templatesMailTplHtml = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xbc\x56\xcd\x4e\xdc\x30\x10\xbe\xef\x53\x58\x6e\xd5\x6c\x54\x92\x14\xd4\x1b\x49\x54\xa9\x97\x1e\x8a\x5a\x09\x5e\xc0\x9b\x4c\x58\x23\x3b\x4e\x6d\x87\xb2\x20\xde\xbd\xe3\x9f\x0d\x01\xb6\x6c\xa1\xa5\x91\x20\xf6\xec\x78\xe6\x9b\x6f\xfc\x39\xbe\xb9\x21\xbc\x6f\xc4\xd8\x02\xa1\x9d\x56\xbd\x85\xbe\xa5\x84\x0a\xb6\x51\xa3\x2d\xd6\xc0\x5a\xd0\xb9\x1d\x44\xbe\xb6\x52\x50\x72\x7b\xbb\x58\x94\xa6\xd1\x7c\xb0\x44\xb0\xfe\x7c\x64\xe7\x50\xd1\x0b\x76\xc9\x82\x91\xd6\x0b\x82\xcf\xdb\x65\x37\xf6\x8d\xe5\xaa\x27\xcb\x94\xdc\x78\x9b\x7b\x2e\x99\x26\x9d\xd2\x92\x54\xe8\x92\xbc\x31\x98\x2c\x93\x8c\x8b\x24\x3d\x5e\x4c\x4e\xce\x21\x37\xe3\x4a\x72\xfb\x9b\x30\x3e\x45\x3e\x28\x83\x0e\xce\x99\x59\xab\x97\x09\xf3\x9e\x49\x7a\x10\x23\x80\xe6\x4c\xf0\x6b\x58\xa6\x69\xde\xaa\x1e\xa6\x60\xcb\x96\x59\xf6\x30\xde\x94\x79\xd0\x30\x20\xae\x65\x52\xb6\xfc\x92\x34\x82\x19\x53\x51\x26\x40\x5b\xe2\xff\x67\x66\x6c\x1a\x30\x26\xce\x5a\x6e\x24\x37\x86\xad\x04\xd0\x3a\x21\xef\x1f\x05\x9d\x3f\x49\xb9\x1a\xad\xc5\x72\xec\x66\x40\xde\xc2\x84\x6e\x93\x34\x42\x19\xa0\xc4\xa1\xdb\x86\x8d\x99\x69\xfd\xce\x72\x09\xe6\xb8\x2c\xc2\x9a\xfd\x99\x4e\x10\x22\x36\x87\xb0\xb6\x25\x56\x91\x1f\x23\x8c\xb0\x1f\x5e\x81\x35\xd7\x49\x7a\xcf\xeb\x36\xcd\x3b\xec\xd1\x1d\x7d\x2f\xa7\xae\xc5\x2d\x03\xfa\xb9\xcc\xfd\x1f\xd6\x76\x32\x46\x5c\xe5\xd0\x3e\x8d\x6e\x37\x69\xb3\x1d\xed\x1e\x0d\x76\xd4\x3d\xc6\x13\x06\x8e\x17\x73\xb7\xed\xbb\x2c\x82\x86\x6a\x94\x98\x17\x49\x2c\xd0\x8d\xb3\xb5\xd2\xfc\x1a\xe5\xc9\x50\x84\x5a\x09\x08\x66\x4a\x24\xd8\xb5\x6a\x2b\xea\xc4\x40\x09\xc7\xd1\x24\x2a\x4a\x82\x22\x2a\x5a\x98\x8d\xb1\x20\x0b\x6f\x0d\x0a\x9d\x77\xc8\x27\x38\xd7\x6a\x1c\xe2\x8f\xde\x41\xb0\x15\x08\xd7\xd7\x8a\x5a\x75\xc7\xb6\x12\x99\x91\xd9\x11\x69\x10\x0c\x02\xc9\xbc\x1b\xad\xcf\xbe\x95\x85\x1f\xce\x22\xcc\x52\xc4\x65\x87\x1f\x66\x19\xbc\x0f\xef\x87\xd1\xc6\xc6\x5a\xb8\xb2\xf4\x1e\xa8\x98\x24\x14\xe6\x50\xf4\x4c\x42\x18\x0d\x82\x35\xb0\x56\x02\xcf\xa7\x8a\xc2\x15\x93\x83\x80\xc3\x4f\xad\xc2\x1a\xfb\xbc\x51\xf2\x80\x44\xe3\xd1\xcc\x48\xf1\x04\x12\x23\x46\x98\x17\xea\xdb\xb7\x78\x38\x7c\x0e\x3f\x78\x58\x5d\x40\x63\xf7\x92\x74\x1a\xfc\x5e\x9d\xa9\x09\x4f\xa0\x6b\x9a\xbe\x4a\xf1\x0e\xd1\xde\xca\x3f\xfb\x2f\x4b\x80\xff\xb2\xf2\x0d\x08\xac\x61\x77\xcd\x5a\xfd\x44\xdb\xc7\x69\x7b\x38\x44\xf5\x23\xc1\x96\x6a\xf0\x9f\x92\xc8\x02\x6e\x20\xde\xd3\xfa\xbb\x7b\x11\x47\x68\x59\x04\x87\xbd\x2b\xfd\xa7\xb0\xfe\x72\x76\xf2\x75\xf7\x12\x14\xb2\x07\xfb\x4f\x69\x96\xe1\x74\xda\xcb\x74\x3c\xc5\x5e\x46\xb2\xa3\x81\x69\x60\x7f\x44\xf3\x16\x51\x5d\x16\xdb\x75\x7f\x5f\xf1\x2e\x94\x24\x8e\x54\xd7\x19\xb0\xd9\xd1\x6e\x65\xc4\x8d\x8f\xb7\x86\xd9\xbe\xf7\xb3\xa0\x99\xed\x2c\x36\xf1\xd4\x5f\x74\x62\xaa\x95\xed\x09\xfe\x65\x83\xe6\x92\xe9\xcd\x93\x02\x29\x0b\x87\x1c\x0f\xe9\xa7\xaf\x4e\x9d\x52\xf6\xc1\xd5\xe9\x57\x00\x00\x00\xff\xff\x9e\xc0\x78\x51\x6c\x09\x00\x00")
+
+func templatesMailTplHtmlBytes() ([]byte, error) {
+	return bindataRead(
+		_templatesMailTplHtml,
+		"templates/mail.tpl.html",
+	)
+}
+
+func templatesMailTplHtml() (*asset, error) {
+	bytes, err := templatesMailTplHtmlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "templates/mail.tpl.html", size: 2412, mode: os.FileMode(420), modTime: time.Unix(1463929452, 0)}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -127,7 +148,7 @@ func templatesTasksTplHtml() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/tasks.tpl.html", size: 6433, mode: os.FileMode(420), modTime: time.Unix(1441722307, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -150,7 +171,7 @@ func Asset(name string) ([]byte, error) {
 // It simplifies safe initialization of global variables.
 func MustAsset(name string) []byte {
 	a, err := Asset(name)
-	if (err != nil) {
+	if err != nil {
 		panic("asset: Asset(" + name + "): " + err.Error())
 	}
 
@@ -185,6 +206,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"templates/config.tpl.html": templatesConfigTplHtml,
 	"templates/logs.tpl.html": templatesLogsTplHtml,
+	"templates/mail.tpl.html": templatesMailTplHtml,
 	"templates/tasks.tpl.html": templatesTasksTplHtml,
 }
 
@@ -224,71 +246,69 @@ func AssetDir(name string) ([]string, error) {
 }
 
 type bintree struct {
-	Func func() (*asset, error)
+	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
 var _bintree = &bintree{nil, map[string]*bintree{
 	"templates": &bintree{nil, map[string]*bintree{
-		"config.tpl.html": &bintree{templatesConfigTplHtml, map[string]*bintree{
-		}},
-		"logs.tpl.html": &bintree{templatesLogsTplHtml, map[string]*bintree{
-		}},
-		"tasks.tpl.html": &bintree{templatesTasksTplHtml, map[string]*bintree{
-		}},
+		"config.tpl.html": &bintree{templatesConfigTplHtml, map[string]*bintree{}},
+		"logs.tpl.html": &bintree{templatesLogsTplHtml, map[string]*bintree{}},
+		"mail.tpl.html": &bintree{templatesMailTplHtml, map[string]*bintree{}},
+		"tasks.tpl.html": &bintree{templatesTasksTplHtml, map[string]*bintree{}},
 	}},
 }}
 
 // RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
-        data, err := Asset(name)
-        if err != nil {
-                return err
-        }
-        info, err := AssetInfo(name)
-        if err != nil {
-                return err
-        }
-        err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
-        if err != nil {
-                return err
-        }
-        err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
-        if err != nil {
-                return err
-        }
-        err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
-        if err != nil {
-                return err
-        }
-        return nil
+	data, err := Asset(name)
+	if err != nil {
+		return err
+	}
+	info, err := AssetInfo(name)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	if err != nil {
+		return err
+	}
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
-        children, err := AssetDir(name)
-        // File
-        if err != nil {
-                return RestoreAsset(dir, name)
-        }
-        // Dir
-        for _, child := range children {
-                err = RestoreAssets(dir, filepath.Join(name, child))
-                if err != nil {
-                        return err
-                }
-        }
-        return nil
+	children, err := AssetDir(name)
+	// File
+	if err != nil {
+		return RestoreAsset(dir, name)
+	}
+	// Dir
+	for _, child := range children {
+		err = RestoreAssets(dir, filepath.Join(name, child))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func _filePath(dir, name string) string {
-        cannonicalName := strings.Replace(name, "\\", "/", -1)
-        return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
 
 
 func assetFS() *assetfs.AssetFS {
 	for k := range _bintree.Children {
-		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, Prefix: k}
+		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: k}
 	}
 	panic("unreachable")
 }

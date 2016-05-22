@@ -36,6 +36,13 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 		})
 	}
 
+	if s.Application.HasResource("mail") {
+		menu = append(menu, &frontend.FrontendMenu{
+			Name: "Mail",
+			Url:  "/system/mail",
+		})
+	}
+
 	return &frontend.FrontendMenu{
 		Name:    "System",
 		SubMenu: menu,
@@ -52,5 +59,12 @@ func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 
 	if s.Application.HasResource("tasks") {
 		router.GET(s, "/system/tasks", &TasksHandler{})
+	}
+
+	if s.Application.HasResource("mail") {
+		handlerMail := &MailHandler{}
+
+		router.GET(s, "/system/mail", handlerMail)
+		router.POST(s, "/system/mail", handlerMail)
 	}
 }
