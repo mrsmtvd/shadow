@@ -48,7 +48,7 @@ func (r *Mail) GetConfigVariables() []ConfigVariable {
 		},
 		{
 			Key:   "mail.smtp.port",
-			Value: int64(465),
+			Value: int64(25),
 			Usage: "SMTP port",
 		},
 		{
@@ -103,7 +103,7 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 
 				if !open {
 					if closer, err = dialer.Dial(); err != nil {
-						r.logger.WithField("error", err).Panicf("Dialer dial failed", err.Error())
+						r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
 						open = false
 					} else {
 						r.logger.Debug("Dialer open success")
@@ -126,7 +126,7 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 			case <-time.After(mailDaemonTimeOut):
 				if open {
 					if err := closer.Close(); err != nil {
-						r.logger.WithField("error", err).Panicf("Dialer close failed", err.Error())
+						r.logger.WithField("error", err).Error("Dialer close failed", err.Error())
 					} else {
 						r.logger.Debug("Dialer close success")
 					}
