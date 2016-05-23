@@ -103,11 +103,15 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 
 				if !open {
 					if closer, err = dialer.Dial(); err != nil {
-						r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
 						open = false
+
+						r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
+						task.result <- err
+						return
 					} else {
-						r.logger.Debug("Dialer open success")
 						open = true
+
+						r.logger.Debug("Dialer open success")
 					}
 				}
 
