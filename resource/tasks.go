@@ -35,13 +35,15 @@ const (
 /*
  * Task
  */
+type TaskFunction func(int64, ...interface{}) (int64, time.Duration)
+
 type task struct {
 	id       string
 	name     string
 	status   int
 	created  time.Time
 	duration time.Duration
-	fn       func(int64, ...interface{}) (int64, time.Duration)
+	fn       TaskFunction
 	args     []interface{}
 	attempts int64
 }
@@ -82,8 +84,8 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 
 					if err := recover(); err != nil {
 						w.logger.WithFields(logrus.Fields{
+							"id":       w.executeTask.id,
 							"task":     w.executeTask.name,
-							"args":     w.executeTask.args,
 							"attempts": w.executeTask.attempts,
 							"stack":    string(debug.Stack()[:]),
 							"error":    err,
@@ -92,8 +94,8 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 						w.executeTask.status = taskStatusFail
 					} else {
 						w.logger.WithFields(logrus.Fields{
+							"id":       w.executeTask.id,
 							"task":     w.executeTask.name,
-							"args":     w.executeTask.args,
 							"attempts": w.executeTask.attempts,
 						}).Debug("Success")
 						w.executeTask.status = taskStatusSuccess
@@ -106,7 +108,22 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 				}()
 
 				var repeated int64
-				if repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.attempts, w.executeTask.args...); repeated == -1 || w.executeTask.attempts < repeated-1 {
+
+				w.logger.WithFields(logrus.Fields{
+					"id":       w.executeTask.id,
+					"task":     w.executeTask.name,
+					"attempts": w.executeTask.attempts,
+				}).Debug("Start execute task")
+
+				repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.attempts+1, w.executeTask.args...)
+
+				w.logger.WithFields(logrus.Fields{
+					"id":       w.executeTask.id,
+					"task":     w.executeTask.name,
+					"attempts": w.executeTask.attempts,
+				}).Debug("Stop execute task")
+
+				if repeated == -1 || w.executeTask.attempts < repeated-1 {
 					repeat <- w.executeTask
 				}
 			}()
@@ -270,10 +287,10 @@ func (d *Dispatcher) Run(wg *sync.WaitGroup) error {
 				task.status = taskStatusRepeatWait
 
 				d.logger.WithFields(logrus.Fields{
+					"id":       task.id,
 					"task":     task.name,
-					"args":     task.args,
-					"duration": task.duration,
 					"attempts": task.attempts,
+					"duration": task.duration,
 				}).Debug("Repeat")
 
 				d.sendTask(task)
@@ -308,7 +325,7 @@ func (d *Dispatcher) AddWorker() {
 	heap.Push(&d.workers, w)
 }
 
-func (d *Dispatcher) AddNamedTask(name string, fn func(int64, ...interface{}) (int64, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddNamedTask(name string, fn TaskFunction, args ...interface{}) {
 	t := &task{
 		id:      uuid.New(),
 		name:    name,
@@ -321,11 +338,19 @@ func (d *Dispatcher) AddNamedTask(name string, fn func(int64, ...interface{}) (i
 	d.sendTask(t)
 }
 
-func (d *Dispatcher) AddTask(fn func(int64, ...interface{}) (int64, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddTask(fn TaskFunction, args ...interface{}) {
 	d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
 }
 
 func (d *Dispatcher) sendTask(t *task) {
+	d.logger.WithFields(logrus.Fields{
+		"id":       t.id,
+		"task":     t.name,
+		"attempts": t.attempts,
+		"duration": t.duration,
+		"args":     t.args,
+	}).Debug("Add task to queue")
+
 	time.AfterFunc(t.duration, func() {
 		go func() {
 			d.mutex.Lock()

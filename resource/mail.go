@@ -107,7 +107,6 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 
 						r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
 						task.result <- err
-						return
 					} else {
 						open = true
 
@@ -115,16 +114,18 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 					}
 				}
 
-				if len(task.message.GetHeader("From")) == 0 {
-					task.message.SetHeader("From", r.config.GetString("mail.from"))
-				}
+				if open {
+					if len(task.message.GetHeader("From")) == 0 {
+						task.message.SetHeader("From", r.config.GetString("mail.from"))
+					}
 
-				if err := gomail.Send(closer, task.message); err != nil {
-					r.logger.WithField("message", task.message).Error(err.Error())
-					task.result <- err
-				} else {
-					r.logger.WithField("message", task.message).Debug("Send message success")
-					task.result <- nil
+					if err := gomail.Send(closer, task.message); err != nil {
+						r.logger.WithField("message", task.message).Error(err.Error())
+						task.result <- err
+					} else {
+						r.logger.WithField("message", task.message).Debug("Send message success")
+						task.result <- nil
+					}
 				}
 
 			case <-time.After(mailDaemonTimeOut):
