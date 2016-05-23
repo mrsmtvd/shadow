@@ -41,7 +41,7 @@ type task struct {
 	status   int
 	created  time.Time
 	duration time.Duration
-	fn       func(...interface{}) (int64, time.Duration)
+	fn       func(int64, ...interface{}) (int64, time.Duration)
 	args     []interface{}
 	attempts int64
 }
@@ -106,7 +106,7 @@ func (w *worker) work(done chan<- *worker, repeat chan<- *task) {
 				}()
 
 				var repeated int64
-				if repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.args...); repeated == -1 || w.executeTask.attempts < repeated-1 {
+				if repeated, w.executeTask.duration = w.executeTask.fn(w.executeTask.attempts, w.executeTask.args...); repeated == -1 || w.executeTask.attempts < repeated-1 {
 					repeat <- w.executeTask
 				}
 			}()
@@ -306,7 +306,7 @@ func (d *Dispatcher) AddWorker() {
 	heap.Push(&d.workers, w)
 }
 
-func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (int64, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddNamedTask(name string, fn func(int64, ...interface{}) (int64, time.Duration), args ...interface{}) {
 	t := &task{
 		id:      uuid.New(),
 		name:    name,
@@ -319,7 +319,7 @@ func (d *Dispatcher) AddNamedTask(name string, fn func(...interface{}) (int64, t
 	d.sendTask(t)
 }
 
-func (d *Dispatcher) AddTask(fn func(...interface{}) (int64, time.Duration), args ...interface{}) {
+func (d *Dispatcher) AddTask(fn func(int64, ...interface{}) (int64, time.Duration), args ...interface{}) {
 	d.AddNamedTask(runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name(), fn, args...)
 }
 
