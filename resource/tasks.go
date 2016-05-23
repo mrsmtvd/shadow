@@ -270,8 +270,10 @@ func (d *Dispatcher) Run(wg *sync.WaitGroup) error {
 				task.status = taskStatusRepeatWait
 
 				d.logger.WithFields(logrus.Fields{
-					"task": task.name,
-					"args": task.args,
+					"task":     task.name,
+					"args":     task.args,
+					"duration": task.duration,
+					"attempts": task.attempts,
 				}).Debug("Repeat")
 
 				d.sendTask(task)
