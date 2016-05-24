@@ -22,7 +22,9 @@ type mailTask struct {
 type Mail struct {
 	config *Config
 	logger *logrus.Entry
+	open   bool
 	dialer *gomail.Dialer
+	closer gomail.SendCloser
 	queue  chan *mailTask
 }
 
@@ -77,23 +79,17 @@ func (r *Mail) Init(a *shadow.Application) error {
 }
 
 func (r *Mail) Run(wg *sync.WaitGroup) error {
+	r.open = false
+	r.dialer = gomail.NewDialer(
+		r.config.GetString("mail.smtp.host"),
+		int(r.config.GetInt64("mail.smtp.port")),
+		r.config.GetString("mail.smtp.username"),
+		r.config.GetString("mail.smtp.password"),
+	)
 	r.queue = make(chan *mailTask)
 
 	go func() {
 		defer wg.Done()
-
-		var (
-			closer gomail.SendCloser
-			err    error
-		)
-
-		open := false
-		dialer := gomail.NewDialer(
-			r.config.GetString("mail.smtp.host"),
-			int(r.config.GetInt64("mail.smtp.port")),
-			r.config.GetString("mail.smtp.username"),
-			r.config.GetString("mail.smtp.password"),
-		)
 
 		for {
 			select {
@@ -102,57 +98,61 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 					return
 				}
 
-				if !open {
-					if closer, err = dialer.Dial(); err != nil {
-						open = false
-
-						r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
-						task.result <- err
-					} else {
-						open = true
-
-						r.logger.Debug("Dialer open success")
-					}
-				}
-
-				if open {
-					if len(task.message.GetHeader("From")) == 0 {
-						task.message.SetHeader("From", r.config.GetString("mail.from"))
-					}
-
-					if err := gomail.Send(closer, task.message); err != nil {
-						if strings.Contains(err.Error(), "4.4.2") {
-							r.logger.WithFields(logrus.Fields{
-								"message": task.message,
-								"error":   err.Error(),
-							}).Debug("SMTP server response timeout exceeded")
-
-							open = false
-							r.queue <- task
-						} else {
-							r.logger.WithField("message", task.message).Error(err.Error())
-							task.result <- err
-						}
-					} else {
-						r.logger.WithField("message", task.message).Debug("Send message success")
-						task.result <- nil
-					}
-				}
+				r.execute(task)
 
 			case <-time.After(mailDaemonTimeOut):
-				if open {
-					if err := closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
+				if r.open {
+					if err := r.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
 						r.logger.WithField("error", err).Error("Dialer close failed", err.Error())
 					} else {
 						r.logger.Debug("Dialer close success")
 					}
-					open = false
+
+					r.open = false
 				}
 			}
 		}
 	}()
 
 	return nil
+}
+
+func (r *Mail) execute(task *mailTask) {
+	var err error
+
+	if !r.open {
+		if r.closer, err = r.dialer.Dial(); err != nil {
+			r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
+			task.result <- err
+		} else {
+			r.logger.Debug("Dialer open success")
+			r.open = true
+		}
+	}
+
+	if r.open {
+		if len(task.message.GetHeader("From")) == 0 {
+			task.message.SetHeader("From", r.config.GetString("mail.from"))
+		}
+
+		if err = gomail.Send(r.closer, task.message); err != nil {
+			if strings.Contains(err.Error(), "4.4.2") {
+				r.logger.WithFields(logrus.Fields{
+					"message": task.message,
+					"error":   err.Error(),
+				}).Debug("SMTP server response timeout exceeded")
+
+				r.open = false
+				r.execute(task)
+			} else {
+				r.logger.WithField("message", task.message).Error(err.Error())
+				task.result <- err
+			}
+		} else {
+			r.logger.WithField("message", task.message).Debug("Send message success")
+			task.result <- nil
+		}
+	}
 }
 
 func (r *Mail) Send(message *gomail.Message) {
