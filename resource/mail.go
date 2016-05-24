@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -120,8 +121,18 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 					}
 
 					if err := gomail.Send(closer, task.message); err != nil {
-						r.logger.WithField("message", task.message).Error(err.Error())
-						task.result <- err
+						if strings.Contains(err.Error(), "4.4.2") {
+							r.logger.WithFields(logrus.Fields{
+								"message": task.message,
+								"error":   err.Error(),
+							}).Debug("SMTP server response timeout exceeded")
+
+							open = false
+							r.queue <- task
+						} else {
+							r.logger.WithField("message", task.message).Error(err.Error())
+							task.result <- err
+						}
 					} else {
 						r.logger.WithField("message", task.message).Debug("Send message success")
 						task.result <- nil
@@ -130,7 +141,7 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 
 			case <-time.After(mailDaemonTimeOut):
 				if open {
-					if err := closer.Close(); err != nil {
+					if err := closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
 						r.logger.WithField("error", err).Error("Dialer close failed", err.Error())
 					} else {
 						r.logger.Debug("Dialer close success")
