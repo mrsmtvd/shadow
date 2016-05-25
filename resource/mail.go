@@ -55,9 +55,14 @@ func (r *Mail) GetConfigVariables() []ConfigVariable {
 			Usage: "SMTP port",
 		},
 		{
-			Key:   "mail.from",
+			Key:   "mail.from.address",
 			Value: "",
-			Usage: "Mail from",
+			Usage: "Mail from address",
+		},
+		{
+			Key:   "mail.from.name",
+			Value: "",
+			Usage: "Mail from name",
 		},
 	}
 }
@@ -132,7 +137,7 @@ func (r *Mail) execute(task *mailTask) {
 
 	if r.open {
 		if len(task.message.GetHeader("From")) == 0 {
-			task.message.SetHeader("From", r.config.GetString("mail.from"))
+			task.message.SetAddressHeader("From", r.config.GetString("mail.from.address"), r.config.GetString("mail.from.name"))
 		}
 
 		if err = gomail.Send(r.closer, task.message); err != nil {
