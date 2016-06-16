@@ -15,16 +15,16 @@ func main() {
 			new(resource.Config),
 			new(resource.Logger),
 			new(resource.Template),
-			new(resource.Dispatcher),
+			new(resource.Workers),
 			new(resource.Mail),
 		},
 		[]shadow.Service{
 			new(system.SystemService),
 			new(frontend.FrontendService),
 		},
-		"Shadow full",
+		"Shadow base",
 		"1.0",
-		"12345-full",
+		"12345-base",
 	)
 
 	if err != nil {

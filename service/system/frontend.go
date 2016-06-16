@@ -29,10 +29,10 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 		})
 	}
 
-	if s.Application.HasResource("tasks") {
+	if s.Application.HasResource("workers") {
 		menu = append(menu, &frontend.FrontendMenu{
-			Name: "Tasks",
-			Url:  "/system/tasks",
+			Name: "Workers",
+			Url:  "/system/workers",
 		})
 	}
 
@@ -57,8 +57,8 @@ func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 		router.GET(s, "/system/logs", &LogsHandler{})
 	}
 
-	if s.Application.HasResource("tasks") {
-		router.GET(s, "/system/tasks", &TasksHandler{})
+	if s.Application.HasResource("workers") {
+		router.GET(s, "/system/workers", &WorkersHandler{})
 	}
 
 	if s.Application.HasResource("mail") {

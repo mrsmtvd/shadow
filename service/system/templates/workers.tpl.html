@@ -63,9 +63,6 @@
             </div>
         </div>
     </div>
-    <div class="col-xs-6">
-        <div id="stats"></div>
-    </div>
 </div>
 
 <div class="panel panel-default" id="workers">
@@ -143,66 +140,58 @@
     function update() {
       $.ajax({
         type: 'GET',
-        url: '/system/tasks',
+        url: '/system/workers',
         success: function(r){
-          if (!Array.isArray(r.workers)) {
-            return;
-          }
-
           var tW = $('#workers tbody').empty();
           var tT = $('#tasks tbody').empty();
 
-          for(var i in r.workers) {
-            var worker = r.workers[i];
-            var task = worker.task;
+          var workers = r.workers_count || 0;
+          var tasks_wait = 0;
+          var workers_wait = r.workers_wait || 0;
+          var workers_busy = r.workers_busy || 0;
+          var goroutines = r.goroutines || 0
 
-            tW.append('<tr>'
-              + '<td>' + worker.id + '</td>'
-              + '<td>' + new Date(worker.created).toLocaleString() + '</td>'
-              + '<td>' + (task ? task.id : '') + '</td>'
-              + '<td>' + (task ? task.name : '') + '</td>'
-              + '<td>' + (task ? getTaskStatusName(task.status) : '') + '</td>'
-              + '<td>' + (task ? new Date(task.created).toLocaleString() : '') + '</td>'
-            + '</tr>');
+          if (Array.isArray(r.workers)) {
+              for (var i in r.workers) {
+                  var worker = r.workers[i];
+                  var task = worker.task;
+
+                  tW.append('<tr>'
+                          + '<td>' + worker.id + '</td>'
+                          + '<td>' + new Date(worker.created).toLocaleString() + '</td>'
+                          + '<td>' + (task ? task.id : '') + '</td>'
+                          + '<td>' + (task ? task.name : '') + '</td>'
+                          + '<td>' + (task ? getTaskStatusName(task.status) : '') + '</td>'
+                          + '<td>' + (task ? new Date(task.created).toLocaleString() : '') + '</td>'
+                          + '</tr>');
+              }
+
+              workers = r.workers.length
           }
 
-          for(var i in r.tasks_wait) {
-            var task = r.tasks_wait[i];
+          if (Array.isArray(r.tasks_wait)) {
+              for (var i in r.tasks_wait) {
+                  var task = r.tasks_wait[i];
 
-            tT.append('<tr>'
-              + '<td>' + task.id + '</td>'
-              + '<td>' + task.name + '</td>'
-              + '<td>' + new Date(task.created).toLocaleString() + '</td>'
-            + '</tr>');
+                  tT.append('<tr>'
+                          + '<td>' + task.id + '</td>'
+                          + '<td>' + task.name + '</td>'
+                          + '<td>' + new Date(task.created).toLocaleString() + '</td>'
+                          + '</tr>');
+              }
+
+              tasks_wait = r.tasks_wait.length
           }
 
-          $('#tasks-title').text(r.tasks_wait.length + ' wait tasks');
-          $('#goroutines').text(r.goroutines);
-          $('#workers-count').text(r.workers.length);
-          $('#tasks-wait-count').text(r.tasks_wait.length);
-
-          statsDonut.data[0].value = r.workers_wait;
-          statsDonut.values[0] = r.workers_wait;
-          statsDonut.data[1].value = r.workers_busy;
-          statsDonut.values[1] = r.workers_busy;
-          statsDonut.resizeHandler();
+          $('#tasks-title').text(tasks_wait + ' wait tasks');
+          $('#goroutines').text(goroutines);
+          $('#workers-count').text(workers);
+          $('#tasks-wait-count').text(tasks_wait);
         }
       });
     }
 
     $(function() {
-      statsDonut = new Morris.Donut({
-        element: 'stats',
-        data: [{
-            label: 'Wait workers',
-            value: 1
-        }, {
-            label: 'Busy workers',
-            value: 1
-        }],
-        resize: true
-      });
-
       update();
       setInterval(update, 1000 * 5);
     });

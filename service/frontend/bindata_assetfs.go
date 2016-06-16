@@ -217,7 +217,7 @@ func templatesLayoutFooterTplHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/layout/footer.tpl.html", size: 403, mode: os.FileMode(420), modTime: time.Unix(1442416710, 0)}
+	info := bindataFileInfo{name: "templates/layout/footer.tpl.html", size: 403, mode: os.FileMode(420), modTime: time.Unix(1466119174, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -717,7 +717,7 @@ func publicVendorRaphaelRaphaelMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "public/vendor/raphael/raphael-min.js", size: 92651, mode: os.FileMode(493), modTime: time.Unix(1441722307, 0)}
+	info := bindataFileInfo{name: "public/vendor/raphael/raphael-min.js", size: 92651, mode: os.FileMode(420), modTime: time.Unix(1441722307, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
