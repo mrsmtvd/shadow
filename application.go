@@ -6,7 +6,7 @@ import (
 )
 
 //go:generate goimports -w ./
-//go:generate sh -c "cd service/frontend && go-bindata-assetfs -pkg=frontend templates/... public/..."
+//go:generate sh -c "cd service/frontend && go-bindata-assetfs -pkg=frontend --ignore=blur-admin templates/... public/..."
 //go:generate sh -c "cd service/system && go-bindata-assetfs -pkg=system templates/..."
 
 type ContextItem interface {

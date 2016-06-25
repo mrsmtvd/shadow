@@ -3,13 +3,13 @@ package resource
 import (
 	"sync"
 
-	"github.com/kihamo/go-workers"
+	"github.com/kihamo/go-workers/dispatcher"
 	"github.com/kihamo/shadow"
 )
 
 type Workers struct {
 	config     *Config
-	dispatcher *workers.Dispatcher
+	dispatcher *dispatcher.Dispatcher
 }
 
 func (r *Workers) GetName() string {
@@ -33,7 +33,7 @@ func (r *Workers) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*Config)
 
-	r.dispatcher = workers.NewDispatcher()
+	r.dispatcher = dispatcher.NewDispatcher()
 
 	return nil
 }
@@ -52,6 +52,6 @@ func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
 	return nil
 }
 
-func (r *Workers) GetDispatcher() *workers.Dispatcher {
+func (r *Workers) GetDispatcher() *dispatcher.Dispatcher {
 	return r.dispatcher
 }

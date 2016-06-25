@@ -3,7 +3,7 @@ package system
 import (
 	"runtime"
 
-	"github.com/kihamo/go-workers"
+	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow/resource"
 	"github.com/kihamo/shadow/service/frontend"
 )
@@ -17,16 +17,16 @@ func (h *WorkersHandler) Handle() {
 		resourceWorkers, _ := h.Application.GetResource("workers")
 		dispatcher := resourceWorkers.(*resource.Workers).GetDispatcher()
 
-		members := dispatcher.GetTeam().GetMembers()
+		members := dispatcher.GetWorkers().GetItems()
 		workersList := []map[string]interface{}{}
 		workersWait := 0
 		workersBusy := 0
 
 		for _, member := range members {
 			switch member.GetStatus() {
-			case workers.WorkerStatusWait:
+			case worker.WorkerStatusWait:
 				workersWait += 1
-			case workers.WorkerStatusBusy:
+			case worker.WorkerStatusBusy:
 				workersBusy += 1
 			}
 

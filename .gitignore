@@ -2,3 +2,5 @@
 *.iml
 *-box.go
 src
+service/frontend/blur-admin
+.DS_Store
