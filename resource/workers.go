@@ -4,9 +4,9 @@ import (
 	"sync"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/kihamo/go-workers/collection"
 	"github.com/kihamo/go-workers/dispatcher"
 	"github.com/kihamo/go-workers/task"
+	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow"
 )
 
@@ -137,11 +137,11 @@ func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Task
 func (r *Workers) AddWorker() {
 	w := r.dispatcher.AddWorker()
 
-	r.logger.WithField("worker.id", w.GetId()).Info("Add task")
+	r.logger.WithField("worker.id", w.GetId()).Info("Add worker")
 }
 
-func (r *Workers) GetWorkers() *collection.Workers {
-	return r.dispatcher.GetWorkers()
+func (r *Workers) GetWorkers() []worker.Worker {
+	return r.dispatcher.GetWorkers().GetItems()
 }
 
 func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
