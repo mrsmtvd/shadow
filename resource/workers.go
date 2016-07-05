@@ -149,7 +149,7 @@ func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
 		"task.id":        t.GetId(),
 		"task.function":  t.GetFunctionName(),
 		"task.arguments": t.GetArguments(),
-		"priority":       t.GetPriority(),
+		"task.priority":  t.GetPriority(),
 		"task.name":      t.GetName(),
 		"task.duration":  t.GetDuration(),
 		"task.repeats":   t.GetRepeats(),
