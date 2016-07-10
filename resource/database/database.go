@@ -72,7 +72,7 @@ func (r *Database) Run() (err error) {
 
 	dbMap := r.storage.executor.(*gorp.DbMap)
 	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_idle_conns"))
-	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_open_conns"))
+	dbMap.Db.SetMaxOpenConns(r.config.GetInt("database.max_open_conns"))
 
 	resourceLogger, err := r.application.GetResource("logger")
 	if err != nil {
