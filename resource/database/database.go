@@ -38,6 +38,16 @@ func (r *Database) GetConfigVariables() []resource.ConfigVariable {
 			Value: defaultMigrationsTableName,
 			Usage: "Database migrations table name",
 		},
+		resource.ConfigVariable{
+			Key:   "database.max_idle_conns",
+			Value: 0,
+			Usage: "Database maximum number of connections in the idle connection pool",
+		},
+		resource.ConfigVariable{
+			Key:   "database.max_open_conns",
+			Value: 0,
+			Usage: "Database maximum number of connections in the idle connection pool",
+		},
 	}
 }
 
@@ -60,6 +70,10 @@ func (r *Database) Run() (err error) {
 		return err
 	}
 
+	dbMap := r.storage.executor.(*gorp.DbMap)
+	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_idle_conns"))
+	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_open_conns"))
+
 	resourceLogger, err := r.application.GetResource("logger")
 	if err != nil {
 		return err
@@ -68,7 +82,7 @@ func (r *Database) Run() (err error) {
 	logger := resourceLogger.(*resource.Logger).Get(r.GetName())
 
 	if r.config.GetBool("debug") {
-		r.storage.executor.(*gorp.DbMap).TraceOn("", logger)
+		dbMap.TraceOn("", logger)
 	}
 
 	r.storage.SetTypeConverter(TypeConverter{})

@@ -51,7 +51,7 @@ func (r *Mail) GetConfigVariables() []ConfigVariable {
 		},
 		{
 			Key:   "mail.smtp.port",
-			Value: int64(25),
+			Value: 25,
 			Usage: "SMTP port",
 		},
 		{
@@ -87,7 +87,7 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 	r.open = false
 	r.dialer = gomail.NewDialer(
 		r.config.GetString("mail.smtp.host"),
-		int(r.config.GetInt64("mail.smtp.port")),
+		r.config.GetInt("mail.smtp.port"),
 		r.config.GetString("mail.smtp.username"),
 		r.config.GetString("mail.smtp.password"),
 	)

@@ -44,7 +44,7 @@ func (r *Logger) Run() (err error) {
 	if r.config.GetBool("debug") {
 		r.logger.Level = logrus.DebugLevel
 	} else {
-		switch r.config.GetInt64("logger.level") {
+		switch r.config.GetInt("logger.level") {
 		case 1:
 			r.logger.Level = logrus.PanicLevel
 		case 2:

@@ -13,7 +13,7 @@ func (s *FrontendService) GetConfigVariables() []resource.ConfigVariable {
 		},
 		resource.ConfigVariable{
 			Key:   "frontend.port",
-			Value: int64(8080),
+			Value: 8080,
 			Usage: "Frontend port number",
 		},
 		resource.ConfigVariable{

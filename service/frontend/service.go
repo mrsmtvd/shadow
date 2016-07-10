@@ -118,7 +118,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 
 		// TODO: ssl
 
-		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt64("frontend.port"))
+		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt("frontend.port"))
 		fields := logrus.Fields{
 			"addr": addr,
 			"pid":  os.Getpid(),

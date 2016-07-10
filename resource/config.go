@@ -2,9 +2,12 @@ package resource
 
 import (
 	"flag"
+	"reflect"
 	"strings"
+	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/kihamo/gotypes"
 	"github.com/kihamo/shadow"
 	"github.com/rakyll/globalconf"
 )
@@ -99,11 +102,19 @@ func (r *Config) Add(key string, value interface{}, usage string) {
 	case bool:
 		r.values[key] = flag.Bool(key, value.(bool), usage)
 	case int:
-		r.values[key] = flag.Int64(key, int64(value.(int)), usage)
+		r.values[key] = flag.Int(key, value.(int), usage)
 	case int64:
 		r.values[key] = flag.Int64(key, value.(int64), usage)
+	case uint:
+		r.values[key] = flag.Uint(key, value.(uint), usage)
+	case uint64:
+		r.values[key] = flag.Uint64(key, value.(uint64), usage)
+	case float64:
+		r.values[key] = flag.Float64(key, value.(float64), usage)
 	case string:
 		r.values[key] = flag.String(key, value.(string), usage)
+	case time.Duration:
+		r.values[key] = flag.Duration(key, value.(time.Duration), usage)
 	}
 }
 
@@ -117,14 +128,7 @@ func (r *Config) Has(key string) bool {
 
 func (r *Config) Get(key string) interface{} {
 	if val, ok := r.values[key]; ok {
-		switch val.(type) {
-		case *bool:
-			return *(val.(*bool))
-		case *int64:
-			return *(val.(*int64))
-		case *string:
-			return *(val.(*string))
-		}
+		return reflect.Indirect(reflect.ValueOf(val)).Interface()
 	}
 
 	return nil
@@ -136,19 +140,47 @@ func (r *Config) GetAll() map[string]interface{} {
 
 func (r *Config) GetBool(key string) bool {
 	if val, ok := r.values[key]; ok {
-		if res, okCast := val.(*bool); okCast {
-			return *res
-		}
+		return gotypes.ToBool(val)
 	}
 
 	return false
 }
 
+func (r *Config) GetInt(key string) int {
+	if val, ok := r.values[key]; ok {
+		return gotypes.ToInt(val)
+	}
+
+	return -1
+}
+
 func (r *Config) GetInt64(key string) int64 {
 	if val, ok := r.values[key]; ok {
-		if res, okCast := val.(*int64); okCast {
-			return *res
-		}
+		return gotypes.ToInt64(val)
+	}
+
+	return -1
+}
+
+func (r *Config) GetUint(key string) uint {
+	if val, ok := r.values[key]; ok {
+		return gotypes.ToUint(val)
+	}
+
+	return 0
+}
+
+func (r *Config) GetUint64(key string) uint64 {
+	if val, ok := r.values[key]; ok {
+		return gotypes.ToUint64(val)
+	}
+
+	return 0
+}
+
+func (r *Config) GetFloat64(key string) float64 {
+	if val, ok := r.values[key]; ok {
+		return gotypes.ToFloat64(val)
 	}
 
 	return -1
@@ -156,9 +188,7 @@ func (r *Config) GetInt64(key string) int64 {
 
 func (r *Config) GetString(key string) string {
 	if val, ok := r.values[key]; ok {
-		if res, okCast := val.(*string); okCast {
-			return *res
-		}
+		return gotypes.ToString(val)
 	}
 
 	return ""
