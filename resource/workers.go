@@ -144,6 +144,14 @@ func (r *Workers) GetWorkers() []worker.Worker {
 	return r.dispatcher.GetWorkers().GetItems()
 }
 
+func (r *Workers) SetTaskDoneChannel(c chan task.Tasker) {
+	r.dispatcher.SetTaskDoneChannel(c)
+}
+
+func (r *Workers) AddTaskDoneChannel(c chan task.Tasker) {
+	r.dispatcher.AddTaskDoneChannel(c)
+}
+
 func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
 	entry := r.logger.WithFields(logrus.Fields{
 		"task.id":        t.GetId(),
