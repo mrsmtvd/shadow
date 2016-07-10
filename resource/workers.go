@@ -144,12 +144,11 @@ func (r *Workers) GetWorkers() []worker.Worker {
 	return r.dispatcher.GetWorkers().GetItems()
 }
 
-func (r *Workers) SetTaskDoneChannel(c chan task.Tasker) {
-	r.dispatcher.SetTaskDoneChannel(c)
-}
+func (r *Workers) AddTaskDoneChannel() chan task.Tasker {
+	done := make(chan task.Tasker, r.config.GetInt64("workers.done.size"))
+	r.dispatcher.AddTaskDoneChannel(done)
 
-func (r *Workers) AddTaskDoneChannel(c chan task.Tasker) {
-	r.dispatcher.AddTaskDoneChannel(c)
+	return done
 }
 
 func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
