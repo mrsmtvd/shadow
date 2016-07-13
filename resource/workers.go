@@ -13,7 +13,6 @@ import (
 type Workers struct {
 	config     *Config
 	logger     *logrus.Entry
-	finish     chan task.Tasker
 	dispatcher *dispatcher.Dispatcher
 }
 
@@ -43,24 +42,37 @@ func (r *Workers) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*Config)
 
-	resourceLogger, err := a.GetResource("logger")
-	if err != nil {
-		return err
+	if a.HasResource("logger") {
+		resourceLogger, _ := a.GetResource("logger")
+		r.logger = resourceLogger.(*Logger).Get(r.GetName())
 	}
-	r.logger = resourceLogger.(*Logger).Get(r.GetName())
 
 	return nil
 }
 
 func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
-	r.finish = make(chan task.Tasker, r.config.GetInt64("workers.done.size"))
-
 	r.dispatcher = dispatcher.NewDispatcher()
-	r.dispatcher.SetTaskDoneChannel(r.finish)
+	r.setLogListener(wg)
 
-	for i := 1; i <= int(r.config.GetInt64("workers.count")); i++ {
+	for i := 1; i <= r.config.GetInt("workers.count"); i++ {
 		r.AddWorker()
 	}
+
+	go func() {
+		defer wg.Done()
+		r.dispatcher.Run()
+	}()
+
+	return nil
+}
+
+func (r *Workers) setLogListener(wg *sync.WaitGroup) {
+	if r.logger == nil {
+		return
+	}
+
+	listener := dispatcher.NewDefaultListener(r.config.GetInt("workers.count"))
+	r.dispatcher.AddListener(listener)
 
 	// logger for finished tasks
 	wg.Add(1)
@@ -69,7 +81,7 @@ func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
 
 		for {
 			select {
-			case t := <-r.finish:
+			case t := <-listener.TaskDone:
 				switch t.GetStatus() {
 				case task.TaskStatusWait:
 					r.getLogEntryForTask(t).
@@ -103,25 +115,22 @@ func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
 			}
 		}
 	}()
-
-	go func() {
-		defer wg.Done()
-		r.dispatcher.Run()
-	}()
-
-	return nil
 }
 
 func (r *Workers) AddTask(t task.Tasker) {
 	r.dispatcher.AddTask(t)
 
-	r.getLogEntryForTask(t).Info("Add task")
+	if r.logger != nil {
+		r.getLogEntryForTask(t).Info("Add task")
+	}
 }
 
 func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddNamedTaskByFunc(n, f, a...)
 
-	r.getLogEntryForTask(t).Info("Add task")
+	if r.logger != nil {
+		r.getLogEntryForTask(t).Info("Add task")
+	}
 
 	return t
 }
@@ -129,7 +138,9 @@ func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interfa
 func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddTaskByFunc(f, a...)
 
-	r.getLogEntryForTask(t).Info("Add task")
+	if r.logger != nil {
+		r.getLogEntryForTask(t).Info("Add task")
+	}
 
 	return t
 }
@@ -137,18 +148,13 @@ func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Task
 func (r *Workers) AddWorker() {
 	w := r.dispatcher.AddWorker()
 
-	r.logger.WithField("worker.id", w.GetId()).Info("Add worker")
+	if r.logger != nil {
+		r.logger.WithField("worker.id", w.GetId()).Info("Add worker")
+	}
 }
 
 func (r *Workers) GetWorkers() []worker.Worker {
 	return r.dispatcher.GetWorkers().GetItems()
-}
-
-func (r *Workers) AddTaskDoneChannel() chan task.Tasker {
-	done := make(chan task.Tasker, r.config.GetInt64("workers.done.size"))
-	r.dispatcher.AddTaskDoneChannel(done)
-
-	return done
 }
 
 func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
