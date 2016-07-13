@@ -176,3 +176,11 @@ func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
 
 	return entry
 }
+
+func (r *Workers) AddListener(l dispatcher.Listener) {
+	r.dispatcher.AddListener(l)
+}
+
+func (r *Workers) RemoveListener(l dispatcher.Listener) {
+	r.dispatcher.RemoveListener(l)
+}
