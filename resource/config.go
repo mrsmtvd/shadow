@@ -193,3 +193,13 @@ func (r *Config) GetString(key string) string {
 
 	return ""
 }
+
+func (r *Config) GetDuration(key string) time.Duration {
+	if val := r.GetString(key); val != "" {
+		if r, err := time.ParseDuration(val); err == nil {
+			return r
+		}
+	}
+
+	return 0
+}
