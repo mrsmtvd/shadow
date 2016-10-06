@@ -1,6 +1,8 @@
 package resource
 
 import (
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
 )
@@ -35,6 +37,7 @@ func (r *Logger) Init(a *shadow.Application) error {
 	formatter := r.logger.Formatter
 	if textFormatter, ok := formatter.(*logrus.TextFormatter); ok {
 		textFormatter.FullTimestamp = true
+		textFormatter.TimestampFormat = time.RFC3339Nano
 	}
 
 	return nil
