@@ -4,6 +4,7 @@ import (
 	"flag"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -17,6 +18,7 @@ const (
 )
 
 type Config struct {
+	mutex       sync.RWMutex
 	application *shadow.Application
 	config      *globalconf.GlobalConf
 	values      map[string]interface{}
@@ -51,7 +53,9 @@ func (r *Config) Init(a *shadow.Application) (err error) {
 		return err
 	}
 
+	r.mutex.Lock()
 	r.values = map[string]interface{}{}
+	r.mutex.Unlock()
 
 	return err
 }
@@ -98,6 +102,9 @@ func (r *Config) Run() error {
 }
 
 func (r *Config) Add(key string, value interface{}, usage string) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
 	switch value.(type) {
 	case bool:
 		r.values[key] = flag.Bool(key, value.(bool), usage)
@@ -119,6 +126,9 @@ func (r *Config) Add(key string, value interface{}, usage string) {
 }
 
 func (r *Config) Has(key string) bool {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if _, ok := r.values[key]; ok {
 		return true
 	}
@@ -127,6 +137,9 @@ func (r *Config) Has(key string) bool {
 }
 
 func (r *Config) Get(key string) interface{} {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return reflect.Indirect(reflect.ValueOf(val)).Interface()
 	}
@@ -135,10 +148,16 @@ func (r *Config) Get(key string) interface{} {
 }
 
 func (r *Config) GetAll() map[string]interface{} {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	return r.values
 }
 
 func (r *Config) GetBool(key string) bool {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToBool(val)
 	}
@@ -147,6 +166,9 @@ func (r *Config) GetBool(key string) bool {
 }
 
 func (r *Config) GetInt(key string) int {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToInt(val)
 	}
@@ -155,6 +177,9 @@ func (r *Config) GetInt(key string) int {
 }
 
 func (r *Config) GetInt64(key string) int64 {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToInt64(val)
 	}
@@ -163,6 +188,9 @@ func (r *Config) GetInt64(key string) int64 {
 }
 
 func (r *Config) GetUint(key string) uint {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToUint(val)
 	}
@@ -171,6 +199,9 @@ func (r *Config) GetUint(key string) uint {
 }
 
 func (r *Config) GetUint64(key string) uint64 {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToUint64(val)
 	}
@@ -179,6 +210,9 @@ func (r *Config) GetUint64(key string) uint64 {
 }
 
 func (r *Config) GetFloat64(key string) float64 {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToFloat64(val)
 	}
@@ -187,6 +221,9 @@ func (r *Config) GetFloat64(key string) float64 {
 }
 
 func (r *Config) GetString(key string) string {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	if val, ok := r.values[key]; ok {
 		return gotypes.ToString(val)
 	}
