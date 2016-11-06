@@ -158,7 +158,7 @@ func (r *Config) GetBool(key string) bool {
 	return r.GetBoolDefault(key, false)
 }
 
-func (r *Config) GetBoolDefault(key string, value bool) bool {
+func (r *Config) GetBoolDefault(key string, value interface{}) bool {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -166,14 +166,14 @@ func (r *Config) GetBoolDefault(key string, value bool) bool {
 		return gotypes.ToBool(val)
 	}
 
-	return value
+	return gotypes.ToBool(value)
 }
 
 func (r *Config) GetInt(key string) int {
 	return r.GetIntDefault(key, -1)
 }
 
-func (r *Config) GetIntDefault(key string, value int) int {
+func (r *Config) GetIntDefault(key string, value interface{}) int {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -181,14 +181,14 @@ func (r *Config) GetIntDefault(key string, value int) int {
 		return gotypes.ToInt(val)
 	}
 
-	return value
+	return gotypes.ToInt(value)
 }
 
 func (r *Config) GetInt64(key string) int64 {
 	return r.GetInt64Default(key, -1)
 }
 
-func (r *Config) GetInt64Default(key string, value int64) int64 {
+func (r *Config) GetInt64Default(key string, value interface{}) int64 {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -196,14 +196,14 @@ func (r *Config) GetInt64Default(key string, value int64) int64 {
 		return gotypes.ToInt64(val)
 	}
 
-	return value
+	return gotypes.ToInt64(value)
 }
 
 func (r *Config) GetUint(key string) uint {
 	return r.GetUintDefault(key, 0)
 }
 
-func (r *Config) GetUintDefault(key string, value uint) uint {
+func (r *Config) GetUintDefault(key string, value interface{}) uint {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -211,14 +211,14 @@ func (r *Config) GetUintDefault(key string, value uint) uint {
 		return gotypes.ToUint(val)
 	}
 
-	return value
+	return gotypes.ToUint(value)
 }
 
 func (r *Config) GetUint64(key string) uint64 {
 	return r.GetUint64Default(key, 0)
 }
 
-func (r *Config) GetUint64Default(key string, value uint64) uint64 {
+func (r *Config) GetUint64Default(key string, value interface{}) uint64 {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -226,14 +226,14 @@ func (r *Config) GetUint64Default(key string, value uint64) uint64 {
 		return gotypes.ToUint64(val)
 	}
 
-	return value
+	return gotypes.ToUint64(value)
 }
 
 func (r *Config) GetFloat64(key string) float64 {
 	return r.GetFloat64Default(key, -1)
 }
 
-func (r *Config) GetFloat64Default(key string, value float64) float64 {
+func (r *Config) GetFloat64Default(key string, value interface{}) float64 {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -241,14 +241,14 @@ func (r *Config) GetFloat64Default(key string, value float64) float64 {
 		return gotypes.ToFloat64(val)
 	}
 
-	return value
+	return gotypes.ToFloat64(value)
 }
 
 func (r *Config) GetString(key string) string {
 	return r.GetStringDefault(key, "")
 }
 
-func (r *Config) GetStringDefault(key string, value string) string {
+func (r *Config) GetStringDefault(key string, value interface{}) string {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -256,7 +256,7 @@ func (r *Config) GetStringDefault(key string, value string) string {
 		return gotypes.ToString(val)
 	}
 
-	return value
+	return gotypes.ToString(value)
 }
 
 func (r *Config) GetDuration(key string) time.Duration {
