@@ -17,12 +17,12 @@ func (s *SystemService) GetTemplates() *assetfs.AssetFS {
 func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 	menu := []*frontend.FrontendMenu{
 		&frontend.FrontendMenu{
-			Name: "Environment",
-			Url:  "/system/environment",
-		},
-		&frontend.FrontendMenu{
 			Name: "Configuration",
 			Url:  "/system/config",
+		},
+		&frontend.FrontendMenu{
+			Name: "Environment",
+			Url:  "/system/environment",
 		},
 	}
 

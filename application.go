@@ -67,30 +67,31 @@ func NewApplication(resources []Resource, services []Service, name string, versi
 }
 
 func (a *Application) Run() (err error) {
-	// Resources
 	resources := a.GetResources()
+	services := a.GetServices()
 
+	// Resources init
 	for i := range resources {
 		if err = resources[i].Init(a); err != nil {
 			return err
 		}
 	}
 
-	for i := range resources {
-		if err = a.run(resources[i]); err != nil {
-			return err
-		}
-	}
-
-	// Services
-	services := a.GetServices()
-
+	// Services init
 	for i := range services {
 		if err = services[i].Init(a); err != nil {
 			return err
 		}
 	}
 
+	// Resources run
+	for i := range resources {
+		if err = a.run(resources[i]); err != nil {
+			return err
+		}
+	}
+
+	// Services run
 	for i := range services {
 		if err = a.run(services[i]); err != nil {
 			return err

@@ -28,5 +28,8 @@ func (h *EnvironmentHandler) Handle() {
 	h.SetVar("GoOS", runtime.GOOS)
 	h.SetVar("GoArch", runtime.GOARCH)
 	h.SetVar("GoRoot", runtime.GOROOT())
+	h.SetVar("GoNumCPU", runtime.NumCPU())
+	h.SetVar("GoNumGoroutine", runtime.NumGoroutine())
+	h.SetVar("GoNumCgoCall", runtime.NumCgoCall())
 	h.SetVar("EnvVars", vars)
 }
