@@ -131,7 +131,7 @@ func (s *SqlStorage) SelectOne(holder interface{}, builder *sq.SelectBuilder) er
 	return s.SelectOneByQuery(holder, query, args...)
 }
 
-func (s *SqlStorage) SelectInt(query string, args ...interface{}) (int64, error) {
+func (s *SqlStorage) SelectIntByQuery(query string, args ...interface{}) (int64, error) {
 	result, err := s.executor.SelectInt(query, args...)
 
 	if err != nil {
@@ -141,7 +141,15 @@ func (s *SqlStorage) SelectInt(query string, args ...interface{}) (int64, error)
 	return result, err
 }
 
-func (s *SqlStorage) SelectNullInt(query string, args ...interface{}) (sql.NullInt64, error) {
+func (s *SqlStorage) SelectInt(builder *sq.SelectBuilder) (int64, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return -1, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
+	}
+	return s.SelectIntByQuery(query, args...)
+}
+
+func (s *SqlStorage) SelectNullIntByQuery(query string, args ...interface{}) (sql.NullInt64, error) {
 	result, err := s.executor.SelectNullInt(query, args...)
 
 	if err != nil {
@@ -151,7 +159,17 @@ func (s *SqlStorage) SelectNullInt(query string, args ...interface{}) (sql.NullI
 	return result, err
 }
 
-func (s *SqlStorage) SelectFloat(query string, args ...interface{}) (float64, error) {
+func (s *SqlStorage) SelectNullInt(builder *sq.SelectBuilder) (sql.NullInt64, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		var h sql.NullInt64
+
+		return h, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
+	}
+	return s.SelectNullIntByQuery(query, args...)
+}
+
+func (s *SqlStorage) SelectFloatByQuery(query string, args ...interface{}) (float64, error) {
 	result, err := s.executor.SelectFloat(query, args...)
 
 	if err != nil {
@@ -161,7 +179,15 @@ func (s *SqlStorage) SelectFloat(query string, args ...interface{}) (float64, er
 	return result, err
 }
 
-func (s *SqlStorage) SelectNullFloat(query string, args ...interface{}) (sql.NullFloat64, error) {
+func (s *SqlStorage) SelectFloat(builder *sq.SelectBuilder) (float64, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return -1, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
+	}
+	return s.SelectFloatByQuery(query, args...)
+}
+
+func (s *SqlStorage) SelectNullFloatByQuery(query string, args ...interface{}) (sql.NullFloat64, error) {
 	result, err := s.executor.SelectNullFloat(query, args...)
 
 	if err != nil {
@@ -171,7 +197,17 @@ func (s *SqlStorage) SelectNullFloat(query string, args ...interface{}) (sql.Nul
 	return result, err
 }
 
-func (s *SqlStorage) SelectStr(query string, args ...interface{}) (string, error) {
+func (s *SqlStorage) SelectNullFloat(builder *sq.SelectBuilder) (sql.NullFloat64, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		var h sql.NullFloat64
+
+		return h, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
+	}
+	return s.SelectNullFloatByQuery(query, args...)
+}
+
+func (s *SqlStorage) SelectStrByQuery(query string, args ...interface{}) (string, error) {
 	result, err := s.executor.SelectStr(query, args...)
 
 	if err != nil {
@@ -181,7 +217,15 @@ func (s *SqlStorage) SelectStr(query string, args ...interface{}) (string, error
 	return result, err
 }
 
-func (s *SqlStorage) SelectNullStr(query string, args ...interface{}) (sql.NullString, error) {
+func (s *SqlStorage) SelectStr(builder *sq.SelectBuilder) (string, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return "", fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
+	}
+	return s.SelectStrByQuery(query, args...)
+}
+
+func (s *SqlStorage) SelectNullStrByQuery(query string, args ...interface{}) (sql.NullString, error) {
 	result, err := s.executor.SelectNullStr(query, args...)
 
 	if err != nil {
@@ -189,6 +233,16 @@ func (s *SqlStorage) SelectNullStr(query string, args ...interface{}) (sql.NullS
 	}
 
 	return result, err
+}
+
+func (s *SqlStorage) SelectNullStr(builder *sq.SelectBuilder) (sql.NullString, error) {
+	query, args, err := builder.ToSql()
+	if err != nil {
+		var h sql.NullString
+
+		return h, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
+	}
+	return s.SelectNullStrByQuery(query, args...)
 }
 
 func (s *SqlStorage) Get(i interface{}, keys ...interface{}) (interface{}, error) {
