@@ -39,6 +39,7 @@
             <a class="navbar-brand" href="/">{{ .Application.Name }}</a>
         </div>
 
+        {{ if .AlertsEnabled }}
         <ul class="nav navbar-top-links navbar-right" id="navbar-alerts">
             <li class="dropdown disabled">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -54,6 +55,7 @@
                 </ul>
             </li>
         </ul>
+        {{ end }}
 
         <div class="navbar-default sidebar" role="navigation">
             <div class="sidebar-nav navbar-collapse">

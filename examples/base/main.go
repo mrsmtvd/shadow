@@ -5,6 +5,7 @@ import (
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/alerts"
 	"github.com/kihamo/shadow/service/frontend"
 	"github.com/kihamo/shadow/service/system"
 )
@@ -17,6 +18,7 @@ func main() {
 			new(resource.Template),
 			new(resource.Workers),
 			new(resource.Mail),
+			new(alerts.Alerts),
 		},
 		[]shadow.Service{
 			new(system.SystemService),

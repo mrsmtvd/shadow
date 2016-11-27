@@ -62,6 +62,8 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	logger := resourceLogger.(*resource.Logger)
 	s.Logger = logger.Get(s.GetName())
 
+	s.template.Globals["AlertsEnabled"] = a.HasResource("alerts")
+
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
 
@@ -81,8 +83,6 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 		s.router.HandlerFunc("GET", "/debug/pprof/threadcreate", pprof.Index)
 		s.router.HandlerFunc("GET", "/debug/pprof/", pprof.Index)
 	}
-
-	s.initAlerts()
 
 	return nil
 }

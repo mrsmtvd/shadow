@@ -4,13 +4,13 @@
     <div class="list-group">
         {{ range $i, $alert := .Alerts }}
         <a href="#" class="list-group-item">
-            {{ if $alert.Icon }}
-            <i class="fa fa-{{ $alert.Icon }} fa-fw"></i>
+            {{ if $alert.GetIcon }}
+            <i class="fa fa-{{ $alert.GetIcon }} fa-fw"></i>
             {{ end }}
-            <span class="pull-right text-muted small"><em>{{ $alert.DateAsMessage }}</em></span>
+            <span class="pull-right text-muted small"><em>{{ $alert.GetDateAsMessage }}</em></span>
 
-            <strong>{{ $alert.Title }}</strong><br />
-            {{ $alert.Message }}
+            <strong>{{ $alert.GetTitle }}</strong><br />
+            {{ $alert.GetMessage }}
         </a>
         {{ end }}
 </div>

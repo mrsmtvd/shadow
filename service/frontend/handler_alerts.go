@@ -1,22 +1,27 @@
 package frontend
 
+import (
+	"github.com/kihamo/shadow/resource/alerts"
+)
+
 type AlertsHandler struct {
 	AbstractFrontendHandler
 }
 
 func (h *AlertsHandler) Handle() {
-	alerts := h.Service.(*FrontendService).GetAlerts()
+	resourceAlerts, _ := h.Application.GetResource("alerts")
+	list := resourceAlerts.(*alerts.Alerts).GetAlerts()
 
 	if h.IsAjax() {
-		alertsShort := make([]map[string]interface{}, 0, cap(alerts))
+		alertsShort := make([]map[string]interface{}, 0, cap(list))
 
-		for i := range alerts {
+		for i := range list {
 			alert := map[string]interface{}{
-				"icon":    alerts[i].Icon,
-				"title":   alerts[i].Title,
-				"message": alerts[i].Message,
-				"elapsed": alerts[i].DateAsMessage(),
-				"date":    alerts[i].Date,
+				"icon":    list[i].GetIcon(),
+				"title":   list[i].GetTitle(),
+				"message": list[i].GetMessage(),
+				"elapsed": list[i].GetDateAsMessage(),
+				"date":    list[i].GetDate(),
 			}
 
 			alertsShort = append(alertsShort, alert)
@@ -29,5 +34,5 @@ func (h *AlertsHandler) Handle() {
 	h.SetTemplate("alerts.tpl.html")
 	h.SetPageTitle("Alerts")
 	h.SetPageHeader("Alerts")
-	h.SetVar("Alerts", alerts)
+	h.SetVar("Alerts", list)
 }
