@@ -6,14 +6,15 @@ import (
 	"sync"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/config"
+	"github.com/kihamo/shadow/resource/logger"
 	"github.com/rcrowley/go-metrics"
 	"github.com/vrischmann/go-metrics-influxdb"
 )
 
 type Metrics struct {
 	application *shadow.Application
-	config      *resource.Config
+	config      *config.Config
 	registry    metrics.Registry
 }
 
@@ -21,34 +22,34 @@ func (r *Metrics) GetName() string {
 	return "metrics"
 }
 
-func (r *Metrics) GetConfigVariables() []resource.ConfigVariable {
-	return []resource.ConfigVariable{
-		resource.ConfigVariable{
+func (r *Metrics) GetConfigVariables() []config.ConfigVariable {
+	return []config.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "metrics.url",
 			Value: "",
 			Usage: "InfluxDB url",
 		},
-		resource.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "metrics.database",
 			Value: "metrics",
 			Usage: "InfluxDB database name",
 		},
-		resource.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "metrics.username",
 			Value: "",
 			Usage: "InfluxDB username",
 		},
-		resource.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "metrics.password",
 			Value: "",
 			Usage: "InfluxDB password",
 		},
-		resource.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "metrics.interval",
 			Value: "20s",
 			Usage: "Flush interval",
 		},
-		resource.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "metrics.tags",
 			Value: "",
 			Usage: "Tags list with format: tag1_name=tag1_value,tag2_name=tag2_value",
@@ -61,7 +62,7 @@ func (r *Metrics) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*resource.Config)
+	r.config = resourceConfig.(*config.Config)
 
 	r.application = a
 
@@ -137,7 +138,7 @@ func (r *Metrics) getRegistry() metrics.Registry {
 				metrics.Log(
 					r.registry,
 					r.config.GetDuration("metrics.interval"),
-					resourceLogger.(*resource.Logger).Get(r.GetName()))
+					resourceLogger.(*logger.Logger).Get(r.GetName()))
 			}()
 		}
 	}

@@ -1,4 +1,4 @@
-package resource
+package config
 
 import (
 	"flag"
@@ -7,14 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/gotypes"
 	"github.com/kihamo/shadow"
 	"github.com/rakyll/globalconf"
 )
 
 const (
-	flagConfig = "config"
+	FlagConfig = "config"
 )
 
 type Config struct {
@@ -41,7 +40,7 @@ func (r *Config) GetName() string {
 func (r *Config) Init(a *shadow.Application) (err error) {
 	r.application = a
 
-	config := flag.String(flagConfig, "", "Config file which which override default config parameters")
+	config := flag.String(FlagConfig, "", "Config file which which override default config parameters")
 	flag.Parse()
 
 	opts := globalconf.Options{
@@ -80,23 +79,6 @@ func (r *Config) Run() error {
 	}
 
 	r.config.ParseAll()
-
-	resourceLogger, err := r.application.GetResource("logger")
-	if err == nil {
-		fields := logrus.Fields{}
-		for key := range r.GetAll() {
-			fields[key] = r.Get(key)
-		}
-
-		logger := resourceLogger.(*Logger).Get(r.GetName())
-		logger.WithFields(fields).Infof("Config env prefix %s", r.config.EnvPrefix)
-
-		flag.VisitAll(func(f *flag.Flag) {
-			if f.Name == flagConfig && f.Value.String() != "" {
-				logger.Infof("Use config from %s", f.Value.String())
-			}
-		})
-	}
 
 	return nil
 }
@@ -152,6 +134,10 @@ func (r *Config) GetAll() map[string]interface{} {
 	defer r.mutex.RUnlock()
 
 	return r.values
+}
+
+func (r *Config) GetGlobalConf() *globalconf.GlobalConf {
+	return r.config
 }
 
 func (r *Config) GetBool(key string) bool {

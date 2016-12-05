@@ -1,7 +1,7 @@
 package system
 
 import (
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/mail"
 	"github.com/kihamo/shadow/service/frontend"
 	"gopkg.in/gomail.v2"
 )
@@ -23,7 +23,7 @@ func (h *MailHandler) Handle() {
 		}
 
 		resourceMail, _ := h.Application.GetResource("mail")
-		if err := resourceMail.(*resource.Mail).SendAndReturn(message); err != nil {
+		if err := resourceMail.(*mail.Mail).SendAndReturn(message); err != nil {
 			h.SendJSON(map[string]interface{}{
 				"error": err.Error(),
 			})

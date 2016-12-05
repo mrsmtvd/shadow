@@ -9,7 +9,9 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/config"
+	"github.com/kihamo/shadow/resource/logger"
+	"github.com/kihamo/shadow/resource/template"
 )
 
 type FrontendMenu struct {
@@ -29,8 +31,8 @@ type ServiceFrontendMenu interface {
 
 type FrontendService struct {
 	Logger      *logrus.Entry
-	config      *resource.Config
-	template    *resource.Template
+	config      *config.Config
+	template    *template.Template
 	application *shadow.Application
 	router      *Router
 }
@@ -46,21 +48,20 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	if err != nil {
 		return err
 	}
-	s.template = resourceTemplate.(*resource.Template)
+	s.template = resourceTemplate.(*template.Template)
 	s.template.Globals["Menu"] = make([]*FrontendMenu, 0, len(s.application.GetServices()))
 
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
-	s.config = resourceConfig.(*resource.Config)
+	s.config = resourceConfig.(*config.Config)
 
 	resourceLogger, err := a.GetResource("logger")
 	if err != nil {
 		return err
 	}
-	logger := resourceLogger.(*resource.Logger)
-	s.Logger = logger.Get(s.GetName())
+	s.Logger = resourceLogger.(*logger.Logger).Get(s.GetName())
 
 	s.template.Globals["AlertsEnabled"] = a.HasResource("alerts")
 

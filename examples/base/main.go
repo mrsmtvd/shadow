@@ -4,9 +4,12 @@ import (
 	"log"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
 	"github.com/kihamo/shadow/resource/alerts"
+	"github.com/kihamo/shadow/resource/config"
+	"github.com/kihamo/shadow/resource/logger"
+	"github.com/kihamo/shadow/resource/mail"
 	"github.com/kihamo/shadow/resource/metrics"
+	"github.com/kihamo/shadow/resource/template"
 	"github.com/kihamo/shadow/resource/workers"
 	"github.com/kihamo/shadow/service/frontend"
 	"github.com/kihamo/shadow/service/system"
@@ -15,11 +18,11 @@ import (
 func main() {
 	application, err := shadow.NewApplication(
 		[]shadow.Resource{
-			new(resource.Config),
-			new(resource.Logger),
-			new(resource.Template),
+			new(config.Config),
+			new(logger.Logger),
+			new(template.Template),
 			new(workers.Workers),
-			new(resource.Mail),
+			new(mail.Mail),
 			new(metrics.Metrics),
 			new(alerts.Alerts),
 		},

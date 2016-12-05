@@ -1,4 +1,4 @@
-package resource
+package mail
 
 import (
 	"strings"
@@ -7,6 +7,8 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
+	"github.com/kihamo/shadow/resource/config"
+	"github.com/kihamo/shadow/resource/logger"
 	"gopkg.in/gomail.v2"
 )
 
@@ -20,7 +22,7 @@ type mailTask struct {
 }
 
 type Mail struct {
-	config *Config
+	config *config.Config
 	logger *logrus.Entry
 	open   bool
 	dialer *gomail.Dialer
@@ -32,8 +34,8 @@ func (r *Mail) GetName() string {
 	return "mail"
 }
 
-func (r *Mail) GetConfigVariables() []ConfigVariable {
-	return []ConfigVariable{
+func (r *Mail) GetConfigVariables() []config.ConfigVariable {
+	return []config.ConfigVariable{
 		{
 			Key:   "mail.smtp.username",
 			Value: "",
@@ -72,13 +74,13 @@ func (r *Mail) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*Config)
+	r.config = resourceConfig.(*config.Config)
 
 	resourceLogger, err := a.GetResource("logger")
 	if err != nil {
 		return err
 	}
-	r.logger = resourceLogger.(*Logger).Get(r.GetName())
+	r.logger = resourceLogger.(*logger.Logger).Get(r.GetName())
 
 	return nil
 }

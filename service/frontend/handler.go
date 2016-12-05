@@ -7,7 +7,7 @@ import (
 
 	"github.com/kihamo/gotypes"
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/template"
 )
 
 const (
@@ -38,8 +38,8 @@ type AbstractFrontendHandler struct {
 
 	Application *shadow.Application
 	Service     shadow.Service
-	Template    *resource.Template
-	View        *resource.TemplateView
+	Template    *template.Template
+	View        *template.TemplateView
 
 	Output http.ResponseWriter
 	Input  *http.Request
@@ -54,7 +54,7 @@ func (h *AbstractFrontendHandler) Init(a *shadow.Application, s shadow.Service) 
 
 	h.Application = a
 	h.Service = s
-	h.Template = templateResource.(*resource.Template)
+	h.Template = templateResource.(*template.Template)
 }
 
 func (h *AbstractFrontendHandler) InitRequest(out http.ResponseWriter, in *http.Request) {

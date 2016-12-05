@@ -8,12 +8,13 @@ import (
 	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/config"
+	"github.com/kihamo/shadow/resource/logger"
 	"github.com/kihamo/shadow/resource/metrics"
 )
 
 type Workers struct {
-	config     *resource.Config
+	config     *config.Config
 	logger     *logrus.Entry
 	metrics    *metrics.Metrics
 	dispatcher *dispatcher.Dispatcher
@@ -23,14 +24,14 @@ func (r *Workers) GetName() string {
 	return "workers"
 }
 
-func (r *Workers) GetConfigVariables() []resource.ConfigVariable {
-	return []resource.ConfigVariable{
-		resource.ConfigVariable{
+func (r *Workers) GetConfigVariables() []config.ConfigVariable {
+	return []config.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "workers.count",
 			Value: 2,
 			Usage: "Default workers count",
 		},
-		resource.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "workers.done.size",
 			Value: 1000,
 			Usage: "Size buffer of done task channel",
@@ -43,11 +44,11 @@ func (r *Workers) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*resource.Config)
+	r.config = resourceConfig.(*config.Config)
 
 	if a.HasResource("logger") {
 		resourceLogger, _ := a.GetResource("logger")
-		r.logger = resourceLogger.(*resource.Logger).Get(r.GetName())
+		r.logger = resourceLogger.(*logger.Logger).Get(r.GetName())
 	}
 
 	if a.HasResource("metrics") {

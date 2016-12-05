@@ -1,14 +1,16 @@
-package resource
+package logger
 
 import (
+	"flag"
 	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
+	"github.com/kihamo/shadow/resource/config"
 )
 
 type Logger struct {
-	config *Config
+	config *config.Config
 	logger *logrus.Logger
 }
 
@@ -16,9 +18,9 @@ func (r *Logger) GetName() string {
 	return "logger"
 }
 
-func (r *Logger) GetConfigVariables() []ConfigVariable {
-	return []ConfigVariable{
-		ConfigVariable{
+func (r *Logger) GetConfigVariables() []config.ConfigVariable {
+	return []config.ConfigVariable{
+		config.ConfigVariable{
 			Key:   "logger.level",
 			Value: 5,
 			Usage: "Log level",
@@ -31,7 +33,7 @@ func (r *Logger) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*Config)
+	r.config = resourceConfig.(*config.Config)
 
 	r.logger = logrus.StandardLogger()
 	formatter := r.logger.Formatter
@@ -63,7 +65,22 @@ func (r *Logger) Run() (err error) {
 		}
 	}
 
-	r.Get(r.GetName()).Info("Logger start")
+	fields := logrus.Fields{}
+	for key := range r.config.GetAll() {
+		fields[key] = r.config.Get(key)
+	}
+
+	logger := r.Get("config").WithFields(fields)
+	logger.WithFields(logrus.Fields{
+		"prefix": r.config.GetGlobalConf().EnvPrefix,
+		"file":   r.config.GetGlobalConf().Filename,
+	}).Info("Init config")
+
+	flag.VisitAll(func(f *flag.Flag) {
+		if f.Name == config.FlagConfig && f.Value.String() != "" {
+			logger.Infof("Use config from %s", f.Value.String())
+		}
+	})
 
 	return nil
 }

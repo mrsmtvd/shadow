@@ -1,4 +1,4 @@
-package resource
+package template
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow"
+	"github.com/kihamo/shadow/resource/config"
 )
 
 type ServiceTemplate interface {
@@ -43,9 +44,9 @@ func (r *Template) Init(a *shadow.Application) error {
 }
 
 func (r *Template) Run() (err error) {
-	config, err := r.Application.GetResource("config")
+	conf, err := r.Application.GetResource("config")
 	if err == nil {
-		r.Globals["Config"] = config.(*Config).GetAll()
+		r.Globals["Config"] = conf.(*config.Config).GetAll()
 	}
 
 	return nil

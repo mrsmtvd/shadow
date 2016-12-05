@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/config"
 )
 
 type SystemService struct {
 	Application *shadow.Application
-	Config      *resource.Config
+	Config      *config.Config
 }
 
 func (s *SystemService) GetName() string {
@@ -23,7 +23,7 @@ func (s *SystemService) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	s.Config = resourceConfig.(*resource.Config)
+	s.Config = resourceConfig.(*config.Config)
 
 	location, err := time.LoadLocation(s.Config.GetString("system.timezone"))
 	if err != nil {
