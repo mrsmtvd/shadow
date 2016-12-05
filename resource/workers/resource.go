@@ -97,7 +97,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Info("Finished")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInWaitStatus).Inc(1)
 					}
 				case task.TaskStatusProcess:
@@ -106,7 +105,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Info("Finished")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInProccessStatus).Inc(1)
 					}
 				case task.TaskStatusSuccess:
@@ -115,7 +113,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Info("Success finished")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInSuccessStatus).Inc(1)
 					}
 				case task.TaskStatusFail:
@@ -124,7 +121,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Error("Fail finished")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInFailStatus).Inc(1)
 					}
 				case task.TaskStatusFailByTimeout:
@@ -133,7 +129,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Error("Fail by timeout finished")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInFailByTimeOutStatus).Inc(1)
 					}
 				case task.TaskStatusKill:
@@ -142,7 +137,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Warn("Execute killed")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInKillStatus).Inc(1)
 					}
 				case task.TaskStatusRepeatWait:
@@ -151,7 +145,6 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 						Info("Repeat execute")
 
 					if r.metrics != nil {
-						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
 						r.metrics.NewCounter(MetricWorkersInRepeatWaitStatus).Inc(1)
 					}
 				}
