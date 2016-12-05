@@ -1,4 +1,4 @@
-package resource
+package workers
 
 import (
 	"sync"
@@ -8,11 +8,14 @@ import (
 	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow"
+	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/metrics"
 )
 
 type Workers struct {
-	config     *Config
+	config     *resource.Config
 	logger     *logrus.Entry
+	metrics    *metrics.Metrics
 	dispatcher *dispatcher.Dispatcher
 }
 
@@ -20,14 +23,14 @@ func (r *Workers) GetName() string {
 	return "workers"
 }
 
-func (r *Workers) GetConfigVariables() []ConfigVariable {
-	return []ConfigVariable{
-		ConfigVariable{
+func (r *Workers) GetConfigVariables() []resource.ConfigVariable {
+	return []resource.ConfigVariable{
+		resource.ConfigVariable{
 			Key:   "workers.count",
 			Value: 2,
 			Usage: "Default workers count",
 		},
-		ConfigVariable{
+		resource.ConfigVariable{
 			Key:   "workers.done.size",
 			Value: 1000,
 			Usage: "Size buffer of done task channel",
@@ -40,11 +43,16 @@ func (r *Workers) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*Config)
+	r.config = resourceConfig.(*resource.Config)
 
 	if a.HasResource("logger") {
 		resourceLogger, _ := a.GetResource("logger")
-		r.logger = resourceLogger.(*Logger).Get(r.GetName())
+		r.logger = resourceLogger.(*resource.Logger).Get(r.GetName())
+	}
+
+	if a.HasResource("metrics") {
+		resourceMetrics, _ := a.GetResource("metrics")
+		r.metrics = resourceMetrics.(*metrics.Metrics)
 	}
 
 	return nil
@@ -87,30 +95,65 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 					r.getLogEntryForTask(t).
 						WithField("task.status", "wait").
 						Info("Finished")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInWaitStatus).Inc(1)
+					}
 				case task.TaskStatusProcess:
 					r.getLogEntryForTask(t).
 						WithField("task.status", "process").
 						Info("Finished")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInProccessStatus).Inc(1)
+					}
 				case task.TaskStatusSuccess:
 					r.getLogEntryForTask(t).
 						WithField("task.status", "success").
 						Info("Success finished")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInSuccessStatus).Inc(1)
+					}
 				case task.TaskStatusFail:
 					r.getLogEntryForTask(t).
 						WithField("task.status", "fail").
 						Error("Fail finished")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInFailStatus).Inc(1)
+					}
 				case task.TaskStatusFailByTimeout:
 					r.getLogEntryForTask(t).
 						WithField("task.status", "fail-by-timeout").
 						Error("Fail by timeout finished")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInFailByTimeOutStatus).Inc(1)
+					}
 				case task.TaskStatusKill:
 					r.getLogEntryForTask(t).
-						WithField("task.status", "fail-by-timeout").
+						WithField("task.status", "kill").
 						Warn("Execute killed")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInKillStatus).Inc(1)
+					}
 				case task.TaskStatusRepeatWait:
 					r.getLogEntryForTask(t).
 						WithField("task.status", "repeat-wait").
 						Info("Repeat execute")
+
+					if r.metrics != nil {
+						r.metrics.NewCounter(MetricTotalTasks).Dec(1)
+						r.metrics.NewCounter(MetricWorkersInRepeatWaitStatus).Inc(1)
+					}
 				}
 			}
 		}
@@ -123,6 +166,10 @@ func (r *Workers) AddTask(t task.Tasker) {
 	if r.logger != nil {
 		r.getLogEntryForTask(t).Info("Add task")
 	}
+
+	if r.metrics != nil {
+		r.metrics.NewCounter(MetricTotalTasks).Inc(1)
+	}
 }
 
 func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
@@ -130,6 +177,10 @@ func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interfa
 
 	if r.logger != nil {
 		r.getLogEntryForTask(t).Info("Add task")
+	}
+
+	if r.metrics != nil {
+		r.metrics.NewCounter(MetricTotalTasks).Inc(1)
 	}
 
 	return t
@@ -142,6 +193,10 @@ func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Task
 		r.getLogEntryForTask(t).Info("Add task")
 	}
 
+	if r.metrics != nil {
+		r.metrics.NewCounter(MetricTotalTasks).Inc(1)
+	}
+
 	return t
 }
 
@@ -150,6 +205,10 @@ func (r *Workers) AddWorker() {
 
 	if r.logger != nil {
 		r.logger.WithField("worker.id", w.GetId()).Info("Add worker")
+	}
+
+	if r.metrics != nil {
+		r.metrics.NewCounter(MetricTotalWorkers).Inc(1)
 	}
 }
 

@@ -64,10 +64,14 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 
 	s.template.Globals["AlertsEnabled"] = a.HasResource("alerts")
 
+	return nil
+}
+
+func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
 
-	s.router = NewRouter(s.application, s.Logger, s.config)
+	s.router = NewRouter(s)
 	s.router.SetPanicHandler(s, &PanicHandler{})
 	s.router.SetNotAllowedHandler(s, &MethodNotAllowedHandler{})
 	s.router.SetNotFoundHandler(s, &NotFoundHandler{})
@@ -84,10 +88,6 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 		s.router.HandlerFunc("GET", "/debug/pprof/", pprof.Index)
 	}
 
-	return nil
-}
-
-func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	menus := make([]*FrontendMenu, 0, len(s.application.GetServices()))
 
 	for _, service := range s.application.GetServices() {

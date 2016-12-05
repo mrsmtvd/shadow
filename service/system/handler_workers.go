@@ -4,7 +4,7 @@ import (
 	"runtime"
 
 	"github.com/kihamo/go-workers/worker"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/workers"
 	"github.com/kihamo/shadow/service/frontend"
 )
 
@@ -15,7 +15,7 @@ type WorkersHandler struct {
 func (h *WorkersHandler) Handle() {
 	if h.IsAjax() {
 		resourceWorkers, _ := h.Application.GetResource("workers")
-		dispatcher := resourceWorkers.(*resource.Workers)
+		dispatcher := resourceWorkers.(*workers.Workers)
 
 		workersList := []map[string]interface{}{}
 		workersWait := 0

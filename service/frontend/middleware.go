@@ -4,9 +4,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/justinas/alice"
+	"github.com/kihamo/shadow/resource/metrics"
 )
 
 type ResponseWriter struct {
@@ -35,7 +37,8 @@ func (w *ResponseWriter) GetStatusCode() int {
 	return w.status
 }
 
-func BasicAuthMiddleware(user string, password string) alice.Constructor {
+func BasicAuthMiddleware(service *FrontendService) alice.Constructor {
+	user := service.config.GetString("frontend.auth-user")
 	if user == "" {
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +47,7 @@ func BasicAuthMiddleware(user string, password string) alice.Constructor {
 		}
 	}
 
+	password := service.config.GetString("frontend.auth-password")
 	token := "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
 
 	return func(next http.Handler) http.Handler {
@@ -59,7 +63,7 @@ func BasicAuthMiddleware(user string, password string) alice.Constructor {
 	}
 }
 
-func LoggerMiddleware(logger *logrus.Entry) alice.Constructor {
+func LoggerMiddleware(service *FrontendService) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := &ResponseWriter{
@@ -70,7 +74,7 @@ func LoggerMiddleware(logger *logrus.Entry) alice.Constructor {
 
 			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.RequestURI, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
 
-			entry := logger.WithFields(logrus.Fields{
+			entry := service.Logger.WithFields(logrus.Fields{
 				"method":      r.Method,
 				"request-uri": r.RequestURI,
 				"code":        writer.GetStatusCode(),
@@ -86,6 +90,27 @@ func LoggerMiddleware(logger *logrus.Entry) alice.Constructor {
 			default:
 				entry.Info(message)
 			}
+		})
+	}
+}
+
+func MetricsMiddleware(service *FrontendService) alice.Constructor {
+	resourceMetrics, err := service.application.GetResource("metrics")
+	if err == nil {
+		timer := resourceMetrics.(*metrics.Metrics).NewTimer(MetricHandlerExecuteTime)
+
+		return func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				beforeTime := time.Now()
+				next.ServeHTTP(w, r)
+				timer.UpdateSince(beforeTime)
+			})
+		}
+	}
+
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			next.ServeHTTP(w, r)
 		})
 	}
 }
