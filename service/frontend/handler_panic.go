@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/rs/xlog"
 )
 
 type PanicHandler struct {
@@ -30,16 +30,14 @@ func (h *PanicHandler) Handle() {
 
 	_, filePath, line, _ := runtime.Caller(0)
 
-	fields := logrus.Fields{
+	fields := xlog.F{
 		"error": fmt.Sprintf("%s", h.error),
 		"stack": string(stack),
 		"file":  filePath,
 		"line":  line,
 	}
 
-	h.Service.(*FrontendService).Logger.
-		WithFields(fields).
-		Error("Frontend reguest error")
+	h.Service.(*FrontendService).Logger.Error("Frontend reguest error", fields)
 
 	h.SetVar("panic", fields)
 }

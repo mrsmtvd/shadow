@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -135,10 +136,13 @@ func (r *Metrics) getRegistry() metrics.Registry {
 		resourceLogger, err := r.application.GetResource("logger")
 		if err == nil {
 			go func() {
+				resourceLogger := resourceLogger.(*logger.Logger).Get(r.GetName())
+				metricsLogger := log.New(resourceLogger, "", 0)
+
 				metrics.Log(
 					r.registry,
 					r.config.GetDuration("metrics.interval"),
-					resourceLogger.(*logger.Logger).Get(r.GetName()))
+					metricsLogger)
 			}()
 		}
 	}

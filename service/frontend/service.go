@@ -7,11 +7,11 @@ import (
 	"os"
 	"sync"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
 	"github.com/kihamo/shadow/resource/template"
+	"github.com/rs/xlog"
 )
 
 type FrontendMenu struct {
@@ -30,7 +30,7 @@ type ServiceFrontendMenu interface {
 }
 
 type FrontendService struct {
-	Logger      *logrus.Entry
+	Logger      xlog.Logger
 	config      *config.Config
 	template    *template.Template
 	application *shadow.Application
@@ -57,11 +57,9 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	}
 	s.config = resourceConfig.(*config.Config)
 
-	resourceLogger, err := a.GetResource("logger")
-	if err != nil {
+	if _, err := a.GetResource("logger"); err != nil {
 		return err
 	}
-	s.Logger = resourceLogger.(*logger.Logger).Get(s.GetName())
 
 	s.template.Globals["AlertsEnabled"] = a.HasResource("alerts")
 
@@ -69,6 +67,9 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 }
 
 func (s *FrontendService) Run(wg *sync.WaitGroup) error {
+	resourceLogger, _ := s.application.GetResource("logger")
+	s.Logger = resourceLogger.(*logger.Logger).Get(s.GetName())
+
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
 
@@ -118,13 +119,12 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		})
 
 		// TODO: ssl
-
 		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt("frontend.port"))
-		fields := logrus.Fields{
+
+		s.Logger.Info("Running service", xlog.F{
 			"addr": addr,
 			"pid":  os.Getpid(),
-		}
-		s.Logger.WithFields(fields).Info("Running service")
+		})
 
 		if err := http.ListenAndServe(addr, s.router); err != nil {
 			s.Logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())

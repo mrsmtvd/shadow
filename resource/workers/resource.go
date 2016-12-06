@@ -3,7 +3,6 @@ package workers
 import (
 	"sync"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/go-workers/dispatcher"
 	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
@@ -11,11 +10,12 @@ import (
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
 	"github.com/kihamo/shadow/resource/metrics"
+	"github.com/rs/xlog"
 )
 
 type Workers struct {
 	config     *config.Config
-	logger     *logrus.Entry
+	logger     xlog.Logger
 	metrics    *metrics.Metrics
 	dispatcher *dispatcher.Dispatcher
 }
@@ -93,57 +93,43 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 			case t := <-listener.TaskDone:
 				switch t.GetStatus() {
 				case task.TaskStatusWait:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "wait").
-						Info("Finished")
+					r.logger.Info("Finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "wait"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInWaitStatus).Inc(1)
 					}
 				case task.TaskStatusProcess:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "process").
-						Info("Finished")
+					r.logger.Info("Finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "process"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInProccessStatus).Inc(1)
 					}
 				case task.TaskStatusSuccess:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "success").
-						Info("Success finished")
+					r.logger.Info("Success finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "success"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInSuccessStatus).Inc(1)
 					}
 				case task.TaskStatusFail:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "fail").
-						Error("Fail finished")
+					r.logger.Error("Fail finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "fail"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInFailStatus).Inc(1)
 					}
 				case task.TaskStatusFailByTimeout:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "fail-by-timeout").
-						Error("Fail by timeout finished")
+					r.logger.Error("Fail by timeout finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "fail-by-timeout"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInFailByTimeOutStatus).Inc(1)
 					}
 				case task.TaskStatusKill:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "kill").
-						Warn("Execute killed")
+					r.logger.Warn("Execute killed", r.getLogFieldsForTask(t), xlog.F{"task.status": "kill"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInKillStatus).Inc(1)
 					}
 				case task.TaskStatusRepeatWait:
-					r.getLogEntryForTask(t).
-						WithField("task.status", "repeat-wait").
-						Info("Repeat execute")
+					r.logger.Info("Repeat execute", r.getLogFieldsForTask(t), xlog.F{"task.status": "repeat-wait"})
 
 					if r.metrics != nil {
 						r.metrics.NewCounter(MetricWorkersInRepeatWaitStatus).Inc(1)
@@ -158,7 +144,7 @@ func (r *Workers) AddTask(t task.Tasker) {
 	r.dispatcher.AddTask(t)
 
 	if r.logger != nil {
-		r.getLogEntryForTask(t).Info("Add task")
+		r.logger.Info("Add task", r.getLogFieldsForTask(t))
 	}
 
 	if r.metrics != nil {
@@ -170,7 +156,7 @@ func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interfa
 	t := r.dispatcher.AddNamedTaskByFunc(n, f, a...)
 
 	if r.logger != nil {
-		r.getLogEntryForTask(t).Info("Add task")
+		r.logger.Info("Add task", r.getLogFieldsForTask(t))
 	}
 
 	if r.metrics != nil {
@@ -184,7 +170,7 @@ func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Task
 	t := r.dispatcher.AddTaskByFunc(f, a...)
 
 	if r.logger != nil {
-		r.getLogEntryForTask(t).Info("Add task")
+		r.logger.Info("Add task", r.getLogFieldsForTask(t))
 	}
 
 	if r.metrics != nil {
@@ -198,7 +184,7 @@ func (r *Workers) AddWorker() {
 	w := r.dispatcher.AddWorker()
 
 	if r.logger != nil {
-		r.logger.WithField("worker.id", w.GetId()).Info("Add worker")
+		r.logger.Infof("Add worker", xlog.F{"worker.id": w.GetId()})
 	}
 
 	if r.metrics != nil {
@@ -210,8 +196,8 @@ func (r *Workers) GetWorkers() []worker.Worker {
 	return r.dispatcher.GetWorkers().GetItems()
 }
 
-func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
-	entry := r.logger.WithFields(logrus.Fields{
+func (r *Workers) getLogFieldsForTask(t task.Tasker) xlog.F {
+	fields := xlog.F{
 		"task.id":        t.GetId(),
 		"task.function":  t.GetFunctionName(),
 		"task.arguments": t.GetArguments(),
@@ -220,14 +206,13 @@ func (r *Workers) getLogEntryForTask(t task.Tasker) *logrus.Entry {
 		"task.duration":  t.GetDuration(),
 		"task.repeats":   t.GetRepeats(),
 		"task.attemps":   t.GetAttempts(),
-	})
-
-	lastError := t.GetLastError()
-	if lastError != nil {
-		entry = entry.WithField("task.error", lastError)
 	}
 
-	return entry
+	if lastError := t.GetLastError(); lastError != nil {
+		fields["task.error"] = lastError
+	}
+
+	return fields
 }
 
 func (r *Workers) AddListener(l dispatcher.Listener) {

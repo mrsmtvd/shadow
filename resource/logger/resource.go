@@ -2,16 +2,17 @@ package logger
 
 import (
 	"flag"
-	"time"
+	"log"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
+	"github.com/rs/xlog"
 )
 
 type Logger struct {
-	config *config.Config
-	logger *logrus.Logger
+	config       *config.Config
+	logger       xlog.Logger
+	loggerConfig xlog.Config
 }
 
 func (r *Logger) GetName() string {
@@ -35,56 +36,76 @@ func (r *Logger) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*config.Config)
 
-	r.logger = logrus.StandardLogger()
-	formatter := r.logger.Formatter
-	if textFormatter, ok := formatter.(*logrus.TextFormatter); ok {
-		textFormatter.FullTimestamp = true
-		textFormatter.TimestampFormat = time.RFC3339Nano
+	r.loggerConfig = xlog.Config{
+		Output: xlog.NewConsoleOutput(),
 	}
+
+	r.initLogger()
 
 	return nil
 }
 
 func (r *Logger) Run() (err error) {
+	var level xlog.Level
+
 	if r.config.GetBool("debug") {
-		r.logger.Level = logrus.DebugLevel
+		level = xlog.LevelDebug
 	} else {
 		switch r.config.GetInt("logger.level") {
 		case 1:
-			r.logger.Level = logrus.PanicLevel
+			level = xlog.LevelFatal
 		case 2:
-			r.logger.Level = logrus.FatalLevel
+			level = xlog.LevelFatal
 		case 3:
-			r.logger.Level = logrus.ErrorLevel
+			level = xlog.LevelError
 		case 4:
-			r.logger.Level = logrus.WarnLevel
+			level = xlog.LevelWarn
 		case 5:
-			r.logger.Level = logrus.InfoLevel
+			level = xlog.LevelInfo
 		case 6:
-			r.logger.Level = logrus.DebugLevel
+			level = xlog.LevelDebug
 		}
 	}
 
-	fields := logrus.Fields{}
+	if level != r.loggerConfig.Level {
+		r.loggerConfig.Level = level
+		r.initLogger()
+	}
+
+	r.logConfig()
+
+	return nil
+}
+
+func (r *Logger) initLogger() {
+	r.logger = xlog.New(r.loggerConfig)
+	log.SetOutput(r.logger)
+}
+
+func (r *Logger) logConfig() {
+	globalConfig := r.config.GetGlobalConf()
+	fields := xlog.F{
+		"config.prefix": globalConfig.EnvPrefix,
+		"config.file":   globalConfig.Filename,
+	}
+
 	for key := range r.config.GetAll() {
 		fields[key] = r.config.Get(key)
 	}
 
-	logger := r.Get("config").WithFields(fields)
-	logger.WithFields(logrus.Fields{
-		"prefix": r.config.GetGlobalConf().EnvPrefix,
-		"file":   r.config.GetGlobalConf().Filename,
-	}).Info("Init config")
+	logger := r.Get("config")
+	logger.Info("Init config", fields)
 
 	flag.VisitAll(func(f *flag.Flag) {
 		if f.Name == config.FlagConfig && f.Value.String() != "" {
 			logger.Infof("Use config from %s", f.Value.String())
 		}
 	})
-
-	return nil
 }
 
-func (r *Logger) Get(key string) *logrus.Entry {
-	return r.logger.WithField("component", key)
+func (r *Logger) Get(key string) xlog.Logger {
+	logger := xlog.Copy(r.logger)
+	logger.SetField("component", key)
+
+	return logger
 }

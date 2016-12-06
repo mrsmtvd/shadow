@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/resource/metrics"
+	"github.com/rs/xlog"
 )
 
 type ResponseWriter struct {
@@ -74,21 +74,21 @@ func LoggerMiddleware(service *FrontendService) alice.Constructor {
 
 			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.RequestURI, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
 
-			entry := service.Logger.WithFields(logrus.Fields{
+			fields := xlog.F{
 				"method":      r.Method,
 				"request-uri": r.RequestURI,
 				"code":        writer.GetStatusCode(),
-			})
+			}
 
 			switch writer.GetStatusCode() {
 			case 500:
-				entry.Error(message)
+				service.Logger.Error(message, fields)
 
 			case 404:
-				entry.Warn(message)
+				service.Logger.Warn(message, fields)
 
 			default:
-				entry.Info(message)
+				service.Logger.Info(message, fields)
 			}
 		})
 	}

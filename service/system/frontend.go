@@ -26,13 +26,6 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 		},
 	}
 
-	if s.Application.HasResource("logger") {
-		menu = append(menu, &frontend.FrontendMenu{
-			Name: "Logs",
-			Url:  "/system/logs",
-		})
-	}
-
 	if s.Application.HasResource("workers") {
 		menu = append(menu, &frontend.FrontendMenu{
 			Name: "Workers",
@@ -57,10 +50,6 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 	router.GET(s, "/system/config", &ConfigHandler{})
 	router.GET(s, "/system/environment", &EnvironmentHandler{})
-
-	if s.Application.HasResource("logger") {
-		router.GET(s, "/system/logs", &LogsHandler{})
-	}
 
 	if s.Application.HasResource("workers") {
 		router.GET(s, "/system/workers", &WorkersHandler{})

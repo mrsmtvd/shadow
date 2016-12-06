@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
+	"github.com/rs/xlog"
 	"gopkg.in/gomail.v2"
 )
 
@@ -23,7 +23,7 @@ type mailTask struct {
 
 type Mail struct {
 	config *config.Config
-	logger *logrus.Entry
+	logger xlog.Logger
 	open   bool
 	dialer *gomail.Dialer
 	closer gomail.SendCloser
@@ -110,7 +110,9 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 			case <-time.After(mailDaemonTimeOut):
 				if r.open {
 					if err := r.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
-						r.logger.WithField("error", err).Error("Dialer close failed", err.Error())
+						r.logger.Error("Dialer close failed", xlog.F{
+							"error": err.Error(),
+						})
 					} else {
 						r.logger.Debug("Dialer close success")
 					}
@@ -129,7 +131,7 @@ func (r *Mail) execute(task *mailTask) {
 
 	if !r.open {
 		if r.closer, err = r.dialer.Dial(); err != nil {
-			r.logger.WithField("error", err).Error("Dialer dial failed", err.Error())
+			r.logger.Error("Dialer dial failed", xlog.F{"error": err.Error()})
 			task.result <- err
 		} else {
 			r.logger.Debug("Dialer open success")
@@ -144,19 +146,19 @@ func (r *Mail) execute(task *mailTask) {
 
 		if err = gomail.Send(r.closer, task.message); err != nil {
 			if strings.Contains(err.Error(), "4.4.2") {
-				r.logger.WithFields(logrus.Fields{
+				r.logger.Debug("SMTP server response timeout exceeded", xlog.F{
 					"message": task.message,
 					"error":   err.Error(),
-				}).Debug("SMTP server response timeout exceeded")
+				})
 
 				r.open = false
 				r.execute(task)
 			} else {
-				r.logger.WithField("message", task.message).Error(err.Error())
+				r.logger.Error(err.Error(), xlog.F{"message": task.message})
 				task.result <- err
 			}
 		} else {
-			r.logger.WithField("message", task.message).Debug("Send message success")
+			r.logger.Debug("Send message success", xlog.F{"message": task.message})
 			task.result <- nil
 		}
 	}
@@ -169,7 +171,7 @@ func (r *Mail) Send(message *gomail.Message) {
 	}
 	r.queue <- task
 
-	r.logger.WithField("message", message).Debug("Send new message to queue")
+	r.logger.Debug("Send new message to queue", xlog.F{"message": message})
 
 }
 
