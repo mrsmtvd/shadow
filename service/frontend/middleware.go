@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/resource/metrics"
@@ -97,13 +96,13 @@ func LoggerMiddleware(service *FrontendService) alice.Constructor {
 func MetricsMiddleware(service *FrontendService) alice.Constructor {
 	resourceMetrics, err := service.application.GetResource("metrics")
 	if err == nil {
-		timer := resourceMetrics.(*metrics.Metrics).NewTimer(MetricHandlerExecuteTime)
+		metric := resourceMetrics.(*metrics.Metrics).NewTimer(MetricHandlerExecuteTime)
 
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				beforeTime := time.Now()
 				next.ServeHTTP(w, r)
-				timer.UpdateSince(beforeTime)
+
+				metric.ObserveDuration()
 			})
 		}
 	}

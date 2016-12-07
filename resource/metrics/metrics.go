@@ -1,29 +1,21 @@
 package metrics
 
 import (
-	"github.com/rcrowley/go-metrics"
+	"github.com/go-kit/kit/metrics/influx"
 )
 
-func (r *Metrics) NewCounter(name string) metrics.Counter {
-	return metrics.GetOrRegisterCounter(name, r.getRegistry())
+func (r *Metrics) NewCounter(name string) *influx.Counter {
+	return r.connector.NewCounter(name)
 }
 
-func (r *Metrics) NewGauge(name string) metrics.Gauge {
-	return metrics.GetOrRegisterGauge(name, r.getRegistry())
+func (r *Metrics) NewGauge(name string) *influx.Gauge {
+	return r.connector.NewGauge(name)
 }
 
-func (r *Metrics) NewGaugeFloat64(name string) metrics.GaugeFloat64 {
-	return metrics.GetOrRegisterGaugeFloat64(name, r.getRegistry())
+func (r *Metrics) NewHistogram(name string) *influx.Histogram {
+	return r.connector.NewHistogram(name)
 }
 
-func (r *Metrics) NewGaugeHistogram(name string, sample metrics.Sample) metrics.Histogram {
-	return metrics.GetOrRegisterHistogram(name, r.getRegistry(), sample)
-}
-
-func (r *Metrics) NewMeter(name string) metrics.Meter {
-	return metrics.GetOrRegisterMeter(name, r.getRegistry())
-}
-
-func (r *Metrics) NewTimer(name string) metrics.Timer {
-	return metrics.GetOrRegisterTimer(name, r.getRegistry())
+func (r *Metrics) NewTimer(name string) *Timer {
+	return NewTimer(r.NewHistogram(name))
 }

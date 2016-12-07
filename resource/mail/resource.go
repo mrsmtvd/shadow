@@ -5,9 +5,11 @@ import (
 	"sync"
 	"time"
 
+	kitmetrics "github.com/go-kit/kit/metrics"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
+	"github.com/kihamo/shadow/resource/metrics"
 	"github.com/rs/xlog"
 	"gopkg.in/gomail.v2"
 )
@@ -22,8 +24,10 @@ type mailTask struct {
 }
 
 type Mail struct {
-	config *config.Config
-	logger xlog.Logger
+	config  *config.Config
+	logger  xlog.Logger
+	metrics *metrics.Metrics
+
 	open   bool
 	dialer *gomail.Dialer
 	closer gomail.SendCloser
@@ -76,11 +80,15 @@ func (r *Mail) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*config.Config)
 
-	resourceLogger, err := a.GetResource("logger")
-	if err != nil {
-		return err
+	if a.HasResource("logger") {
+		resourceLogger, _ := a.GetResource("logger")
+		r.logger = resourceLogger.(*logger.Logger).Get(r.GetName())
 	}
-	r.logger = resourceLogger.(*logger.Logger).Get(r.GetName())
+
+	if a.HasResource("metrics") {
+		resourceMetrics, _ := a.GetResource("metrics")
+		r.metrics = resourceMetrics.(*metrics.Metrics)
+	}
 
 	return nil
 }
@@ -98,6 +106,12 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
 
+		var metricTotal kitmetrics.Counter
+
+		if r.metrics != nil {
+			metricTotal = r.metrics.NewCounter(MetricMailTotal)
+		}
+
 		for {
 			select {
 			case task, ok := <-r.queue:
@@ -105,7 +119,14 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 					return
 				}
 
-				r.execute(task)
+				err := r.execute(task)
+				if r.metrics != nil {
+					if err != nil {
+						metricTotal.With("result", "failed").Add(1)
+					} else {
+						metricTotal.With("result", "success").Add(1)
+					}
+				}
 
 			case <-time.After(mailDaemonTimeOut):
 				if r.open {
@@ -126,13 +147,15 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (r *Mail) execute(task *mailTask) {
+func (r *Mail) execute(task *mailTask) error {
 	var err error
 
 	if !r.open {
 		if r.closer, err = r.dialer.Dial(); err != nil {
 			r.logger.Error("Dialer dial failed", xlog.F{"error": err.Error()})
 			task.result <- err
+
+			return err
 		} else {
 			r.logger.Debug("Dialer open success")
 			r.open = true
@@ -152,16 +175,20 @@ func (r *Mail) execute(task *mailTask) {
 				})
 
 				r.open = false
-				r.execute(task)
+				return r.execute(task)
 			} else {
 				r.logger.Error(err.Error(), xlog.F{"message": task.message})
 				task.result <- err
+
+				return err
 			}
 		} else {
 			r.logger.Debug("Send message success", xlog.F{"message": task.message})
 			task.result <- nil
 		}
 	}
+
+	return nil
 }
 
 func (r *Mail) Send(message *gomail.Message) {

@@ -3,6 +3,7 @@ package workers
 import (
 	"sync"
 
+	kitmetrics "github.com/go-kit/kit/metrics"
 	"github.com/kihamo/go-workers/dispatcher"
 	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
@@ -18,6 +19,16 @@ type Workers struct {
 	logger     xlog.Logger
 	metrics    *metrics.Metrics
 	dispatcher *dispatcher.Dispatcher
+
+	metricWorkersTotal             kitmetrics.Counter
+	metricTasksTotal               kitmetrics.Counter
+	metricTasksStatusWait          kitmetrics.Counter
+	metricTasksStatusProcess       kitmetrics.Counter
+	metricTasksStatusSuccess       kitmetrics.Counter
+	metricTasksStatusFail          kitmetrics.Counter
+	metricTasksStatusFailByTimeout kitmetrics.Counter
+	metricTasksStatusKill          kitmetrics.Counter
+	metricTasksStatusRepeatWait    kitmetrics.Counter
 }
 
 func (r *Workers) GetName() string {
@@ -60,6 +71,20 @@ func (r *Workers) Init(a *shadow.Application) error {
 }
 
 func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
+	if r.metrics != nil {
+		r.metricWorkersTotal = r.metrics.NewCounter(MetricWorkersTotal)
+		r.metricTasksTotal = r.metrics.NewCounter(MetricTasksTotal)
+
+		metricTasksStatus := r.metrics.NewCounter(MetricTasksStatus)
+		r.metricTasksStatusWait = metricTasksStatus.With("status", "wait")
+		r.metricTasksStatusProcess = metricTasksStatus.With("status", "process")
+		r.metricTasksStatusSuccess = metricTasksStatus.With("status", "success")
+		r.metricTasksStatusFail = metricTasksStatus.With("status", "fail")
+		r.metricTasksStatusFailByTimeout = metricTasksStatus.With("status", "fail-by-timeout")
+		r.metricTasksStatusKill = metricTasksStatus.With("status", "kill")
+		r.metricTasksStatusRepeatWait = metricTasksStatus.With("status", "repeat-wait")
+	}
+
 	r.dispatcher = dispatcher.NewDispatcher()
 	r.setLogListener(wg)
 
@@ -95,44 +120,44 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 				case task.TaskStatusWait:
 					r.logger.Info("Finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "wait"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInWaitStatus).Inc(1)
+					if r.metricTasksStatusWait != nil {
+						r.metricTasksStatusWait.Add(1)
 					}
 				case task.TaskStatusProcess:
 					r.logger.Info("Finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "process"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInProccessStatus).Inc(1)
+					if r.metricTasksStatusProcess != nil {
+						r.metricTasksStatusProcess.Add(1)
 					}
 				case task.TaskStatusSuccess:
 					r.logger.Info("Success finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "success"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInSuccessStatus).Inc(1)
+					if r.metricTasksStatusSuccess != nil {
+						r.metricTasksStatusSuccess.Add(1)
 					}
 				case task.TaskStatusFail:
 					r.logger.Error("Fail finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "fail"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInFailStatus).Inc(1)
+					if r.metricTasksStatusFail != nil {
+						r.metricTasksStatusFail.Add(1)
 					}
 				case task.TaskStatusFailByTimeout:
 					r.logger.Error("Fail by timeout finished", r.getLogFieldsForTask(t), xlog.F{"task.status": "fail-by-timeout"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInFailByTimeOutStatus).Inc(1)
+					if r.metricTasksStatusFailByTimeout != nil {
+						r.metricTasksStatusFailByTimeout.Add(1)
 					}
 				case task.TaskStatusKill:
 					r.logger.Warn("Execute killed", r.getLogFieldsForTask(t), xlog.F{"task.status": "kill"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInKillStatus).Inc(1)
+					if r.metricTasksStatusKill != nil {
+						r.metricTasksStatusKill.Add(1)
 					}
 				case task.TaskStatusRepeatWait:
 					r.logger.Info("Repeat execute", r.getLogFieldsForTask(t), xlog.F{"task.status": "repeat-wait"})
 
-					if r.metrics != nil {
-						r.metrics.NewCounter(MetricWorkersInRepeatWaitStatus).Inc(1)
+					if r.metricTasksStatusRepeatWait != nil {
+						r.metricTasksStatusRepeatWait.Add(1)
 					}
 				}
 			}
@@ -147,8 +172,8 @@ func (r *Workers) AddTask(t task.Tasker) {
 		r.logger.Info("Add task", r.getLogFieldsForTask(t))
 	}
 
-	if r.metrics != nil {
-		r.metrics.NewCounter(MetricTotalTasks).Inc(1)
+	if r.metricTasksTotal != nil {
+		r.metricTasksTotal.Add(1)
 	}
 }
 
@@ -159,8 +184,8 @@ func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interfa
 		r.logger.Info("Add task", r.getLogFieldsForTask(t))
 	}
 
-	if r.metrics != nil {
-		r.metrics.NewCounter(MetricTotalTasks).Inc(1)
+	if r.metricTasksTotal != nil {
+		r.metricTasksTotal.Add(1)
 	}
 
 	return t
@@ -173,8 +198,8 @@ func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Task
 		r.logger.Info("Add task", r.getLogFieldsForTask(t))
 	}
 
-	if r.metrics != nil {
-		r.metrics.NewCounter(MetricTotalTasks).Inc(1)
+	if r.metricTasksTotal != nil {
+		r.metricTasksTotal.Add(1)
 	}
 
 	return t
@@ -187,8 +212,8 @@ func (r *Workers) AddWorker() {
 		r.logger.Infof("Add worker", xlog.F{"worker.id": w.GetId()})
 	}
 
-	if r.metrics != nil {
-		r.metrics.NewCounter(MetricTotalWorkers).Inc(1)
+	if r.metricWorkersTotal != nil {
+		r.metricWorkersTotal.Add(1)
 	}
 }
 

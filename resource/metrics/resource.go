@@ -1,22 +1,24 @@
 package metrics
 
 import (
-	"log"
 	"os"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/metrics/influx"
+	influxdb "github.com/influxdata/influxdb/client/v2"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/rcrowley/go-metrics"
-	"github.com/vrischmann/go-metrics-influxdb"
 )
 
 type Metrics struct {
 	application *shadow.Application
 	config      *config.Config
-	registry    metrics.Registry
+	connector   *influx.Influx
+	logger      *logger.Logger
 }
 
 func (r *Metrics) GetName() string {
@@ -71,81 +73,64 @@ func (r *Metrics) Init(a *shadow.Application) error {
 }
 
 func (r *Metrics) Run(wg *sync.WaitGroup) error {
-	registry := r.getRegistry()
+	client, err := influxdb.NewHTTPClient(influxdb.HTTPConfig{
+		Addr:     r.config.GetString("metrics.url"),
+		Username: r.config.GetString("metrics.username"),
+		Password: r.config.GetString("metrics.password"),
+	})
 
-	if r.config.GetBool("debug") {
-		metrics.RegisterDebugGCStats(registry)
-		go func() {
-			defer wg.Done()
-			metrics.CaptureDebugGCStats(registry, r.config.GetDuration("metrics.interval"))
-		}()
+	if err != nil {
+		return err
 	}
 
-	metrics.RegisterRuntimeMemStats(registry)
+	var l log.Logger
+
+	if r.application.HasResource("logger") {
+		resourceLogger, _ := r.application.GetResource("logger")
+		l = newMetricsLogger(resourceLogger.(*logger.Logger).Get("metrics"))
+	} else {
+		l = log.NewNopLogger()
+	}
+
+	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
+		Database: r.config.GetString("metrics.database"),
+	}, l)
+
 	go func() {
 		defer wg.Done()
-		metrics.CaptureRuntimeMemStats(registry, r.config.GetDuration("metrics.interval"))
+
+		ticker := time.NewTicker(r.config.GetDuration("metrics.interval"))
+		defer ticker.Stop()
+
+		r.connector.WriteLoop(ticker.C, client)
 	}()
 
 	return nil
 }
 
-func (r *Metrics) getRegistry() metrics.Registry {
-	if r.registry != nil {
-		return r.registry
+func (r *Metrics) getTags() map[string]string {
+	tags := map[string]string{
+		"app_name":    r.application.Name,
+		"app_version": r.application.Version,
+		"app_build":   r.application.Build,
 	}
 
-	r.registry = metrics.NewRegistry()
+	if hostname, err := os.Hostname(); err == nil {
+		tags["hostname"] = hostname
+	}
 
-	go func() {
-		tags := map[string]string{
-			"app_name":    r.application.Name,
-			"app_version": r.application.Version,
-			"app_build":   r.application.Build,
-		}
+	tagsFromConfig := r.config.GetString("metrics.tags")
+	if len(tagsFromConfig) > 0 {
+		var parts []string
 
-		if hostname, err := os.Hostname(); err == nil {
-			tags["hostname"] = hostname
-		}
+		for _, tag := range strings.Split(tagsFromConfig, ",") {
+			parts = strings.Split(tag, "=")
 
-		tagsFromConfig := r.config.GetString("metrics.tags")
-		if len(tagsFromConfig) > 0 {
-			var parts []string
-
-			for _, tag := range strings.Split(tagsFromConfig, ",") {
-				parts = strings.Split(tag, "=")
-
-				if len(parts) > 1 {
-					tags[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
-				}
+			if len(parts) > 1 {
+				tags[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 			}
 		}
-
-		influxdb.InfluxDBWithTags(
-			r.registry,
-			r.config.GetDuration("metrics.interval"),
-			r.config.GetString("metrics.url"),
-			r.config.GetString("metrics.database"),
-			r.config.GetString("metrics.username"),
-			r.config.GetString("metrics.password"),
-			tags)
-
-	}()
-
-	if r.config.GetBool("debug") {
-		resourceLogger, err := r.application.GetResource("logger")
-		if err == nil {
-			go func() {
-				resourceLogger := resourceLogger.(*logger.Logger).Get(r.GetName())
-				metricsLogger := log.New(resourceLogger, "", 0)
-
-				metrics.Log(
-					r.registry,
-					r.config.GetDuration("metrics.interval"),
-					metricsLogger)
-			}()
-		}
 	}
 
-	return r.registry
+	return tags
 }
