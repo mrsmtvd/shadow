@@ -9,32 +9,22 @@ import (
 	"github.com/rs/xlog"
 )
 
-type Logger struct {
-	config       *config.Config
+type Resource struct {
+	config       *config.Resource
 	logger       xlog.Logger
 	loggerConfig xlog.Config
 }
 
-func (r *Logger) GetName() string {
+func (r *Resource) GetName() string {
 	return "logger"
 }
 
-func (r *Logger) GetConfigVariables() []config.ConfigVariable {
-	return []config.ConfigVariable{
-		config.ConfigVariable{
-			Key:   "logger.level",
-			Value: 5,
-			Usage: "Log level",
-		},
-	}
-}
-
-func (r *Logger) Init(a *shadow.Application) error {
+func (r *Resource) Init(a *shadow.Application) error {
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*config.Config)
+	r.config = resourceConfig.(*config.Resource)
 
 	r.loggerConfig = xlog.Config{
 		Output: xlog.NewConsoleOutput(),
@@ -45,7 +35,7 @@ func (r *Logger) Init(a *shadow.Application) error {
 	return nil
 }
 
-func (r *Logger) Run() (err error) {
+func (r *Resource) Run() (err error) {
 	var level xlog.Level
 
 	if r.config.GetBool("debug") {
@@ -77,12 +67,12 @@ func (r *Logger) Run() (err error) {
 	return nil
 }
 
-func (r *Logger) initLogger() {
+func (r *Resource) initLogger() {
 	r.logger = xlog.New(r.loggerConfig)
 	log.SetOutput(r.logger)
 }
 
-func (r *Logger) logConfig() {
+func (r *Resource) logConfig() {
 	globalConfig := r.config.GetGlobalConf()
 	fields := xlog.F{
 		"config.prefix": globalConfig.EnvPrefix,
@@ -103,7 +93,7 @@ func (r *Logger) logConfig() {
 	})
 }
 
-func (r *Logger) Get(key string) xlog.Logger {
+func (r *Resource) Get(key string) xlog.Logger {
 	logger := xlog.Copy(r.logger)
 	logger.SetField("component", key)
 

@@ -12,24 +12,24 @@ const (
 	ClearTime = time.Minute * 15
 )
 
-type Alerts struct {
+type Resource struct {
 	mutex  sync.RWMutex
 	alerts []*Alert
 	queue  chan *Alert
 }
 
-func (r *Alerts) GetName() string {
+func (r *Resource) GetName() string {
 	return "alerts"
 }
 
-func (r *Alerts) Init(a *shadow.Application) error {
+func (r *Resource) Init(a *shadow.Application) error {
 	r.alerts = make([]*Alert, 0)
 	r.queue = make(chan *Alert)
 
 	return nil
 }
 
-func (r *Alerts) Run(wg *sync.WaitGroup) error {
+func (r *Resource) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
 
@@ -55,11 +55,11 @@ func (r *Alerts) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (r *Alerts) Send(title string, message string, icon string) {
+func (r *Resource) Send(title string, message string, icon string) {
 	r.queue <- NewAlert(title, message, icon, time.Now())
 }
 
-func (a *Alerts) GetAlerts() []*Alert {
+func (a *Resource) GetAlerts() []*Alert {
 	a.mutex.Lock()
 	a.mutex.Unlock()
 

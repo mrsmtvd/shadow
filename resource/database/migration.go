@@ -14,7 +14,7 @@ type ServiceMigrations interface {
 	GetMigrations() migrate.MigrationSource
 }
 
-func (r *Database) FindMigrations() ([]*migrate.Migration, error) {
+func (r *Resource) FindMigrations() ([]*migrate.Migration, error) {
 	list := []*migrate.Migration{}
 
 	for _, s := range r.application.GetServices() {
@@ -39,7 +39,7 @@ func (r *Database) FindMigrations() ([]*migrate.Migration, error) {
 	return list, nil
 }
 
-func (r *Database) UpMigrations() (int, error) {
+func (r *Resource) UpMigrations() (int, error) {
 	dialect, err := r.GetStorage().GetDialect()
 	if err != nil {
 		return 0, err
@@ -48,7 +48,7 @@ func (r *Database) UpMigrations() (int, error) {
 	return migrate.Exec(r.GetStorage().executor.(*gorp.DbMap).Db, dialect, r, migrate.Up)
 }
 
-func (r *Database) DownMigrations() (int, error) {
+func (r *Resource) DownMigrations() (int, error) {
 	dialect, err := r.GetStorage().GetDialect()
 	if err != nil {
 		return 0, err

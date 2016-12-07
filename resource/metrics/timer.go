@@ -6,28 +6,38 @@ import (
 	kit "github.com/go-kit/kit/metrics"
 )
 
-type Timer struct {
+type Timer interface {
+	With(...string) Timer
+	ObserveDuration()
+	ObserveDurationByTime(time.Time)
+}
+
+type MetricTimer struct {
 	h kit.Histogram
 	t time.Time
 }
 
-func NewTimer(h kit.Histogram) *Timer {
-	return &Timer{
+func NewMetricTimer(h kit.Histogram) Timer {
+	return &MetricTimer{
 		h: h,
 		t: time.Now(),
 	}
 }
 
-func (t *Timer) With(labelValues ...string) *Timer {
+func (t *MetricTimer) With(labelValues ...string) Timer {
 	t.h = t.h.With(labelValues...)
-	return &Timer{
+	return &MetricTimer{
 		h: t.h.With(labelValues...),
 		t: t.t,
 	}
 }
 
-func (t *Timer) ObserveDuration() {
-	d := time.Since(t.t).Seconds()
+func (t *MetricTimer) ObserveDuration() {
+	t.ObserveDurationByTime(t.t)
+}
+
+func (t *MetricTimer) ObserveDurationByTime(endTime time.Time) {
+	d := time.Since(endTime).Seconds()
 	if d < 0 {
 		d = 0
 	}

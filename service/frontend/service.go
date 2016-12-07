@@ -30,9 +30,9 @@ type ServiceFrontendMenu interface {
 }
 
 type FrontendService struct {
+	config      *config.Resource
+	template    *template.Resource
 	Logger      xlog.Logger
-	config      *config.Config
-	template    *template.Template
 	application *shadow.Application
 	router      *Router
 }
@@ -48,14 +48,14 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	if err != nil {
 		return err
 	}
-	s.template = resourceTemplate.(*template.Template)
+	s.template = resourceTemplate.(*template.Resource)
 	s.template.Globals["Menu"] = make([]*FrontendMenu, 0, len(s.application.GetServices()))
 
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
-	s.config = resourceConfig.(*config.Config)
+	s.config = resourceConfig.(*config.Resource)
 
 	if _, err := a.GetResource("logger"); err != nil {
 		return err
@@ -68,7 +68,7 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 
 func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	resourceLogger, _ := s.application.GetResource("logger")
-	s.Logger = resourceLogger.(*logger.Logger).Get(s.GetName())
+	s.Logger = resourceLogger.(*logger.Resource).Get(s.GetName())
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()

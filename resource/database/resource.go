@@ -3,7 +3,8 @@ package database
 import (
 	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource"
+	"github.com/kihamo/shadow/resource/config"
+	"github.com/kihamo/shadow/resource/logger"
 	"github.com/rubenv/sql-migrate"
 )
 
@@ -11,59 +12,29 @@ const (
 	defaultMigrationsTableName = "migrations"
 )
 
-type Database struct {
+type Resource struct {
 	application *shadow.Application
-	config      *resource.Config
+	config      *config.Resource
 	storage     *SqlStorage
 }
 
-func (r *Database) GetName() string {
+func (r *Resource) GetName() string {
 	return "database"
 }
 
-func (r *Database) GetConfigVariables() []resource.ConfigVariable {
-	return []resource.ConfigVariable{
-		resource.ConfigVariable{
-			Key:   "database.driver",
-			Value: "mysql",
-			Usage: "Database driver (sqlite3, postgres, mysql, mssql and oci8)",
-		},
-		resource.ConfigVariable{
-			Key:   "database.dsn",
-			Value: "root:@tcp(localhost:3306)/shadow",
-			Usage: "Database DSN",
-		},
-		resource.ConfigVariable{
-			Key:   "database.migrations.table",
-			Value: defaultMigrationsTableName,
-			Usage: "Database migrations table name",
-		},
-		resource.ConfigVariable{
-			Key:   "database.max_idle_conns",
-			Value: 0,
-			Usage: "Database maximum number of connections in the idle connection pool",
-		},
-		resource.ConfigVariable{
-			Key:   "database.max_open_conns",
-			Value: 0,
-			Usage: "Database maximum number of connections in the idle connection pool",
-		},
-	}
-}
-
-func (r *Database) Init(a *shadow.Application) error {
+func (r *Resource) Init(a *shadow.Application) error {
 	r.application = a
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
 
-	r.config = resourceConfig.(*resource.Config)
+	r.config = resourceConfig.(*config.Resource)
 
 	return nil
 }
 
-func (r *Database) Run() (err error) {
+func (r *Resource) Run() (err error) {
 	r.storage, err = NewSQLStorage(r.config.GetString("database.driver"), r.config.GetString("database.dsn"))
 
 	if err != nil {
@@ -79,10 +50,10 @@ func (r *Database) Run() (err error) {
 		return err
 	}
 
-	logger := resourceLogger.(*resource.Logger).Get(r.GetName())
+	logger := resourceLogger.(*logger.Resource).Get(r.GetName())
 
 	if r.config.GetBool("debug") {
-		dbMap.TraceOn("", logger)
+		dbMap.TraceOn("", newDatabaseLogger(logger))
 	}
 
 	r.storage.SetTypeConverter(TypeConverter{})
@@ -103,6 +74,6 @@ func (r *Database) Run() (err error) {
 	return nil
 }
 
-func (r *Database) GetStorage() *SqlStorage {
+func (r *Resource) GetStorage() *SqlStorage {
 	return r.storage
 }

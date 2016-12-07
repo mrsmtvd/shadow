@@ -16,28 +16,28 @@ const (
 	FlagConfig = "config"
 )
 
-type Config struct {
+type Resource struct {
 	mutex       sync.RWMutex
 	application *shadow.Application
 	config      *globalconf.GlobalConf
 	values      map[string]interface{}
 }
 
-type ConfigVariable struct {
+type Variable struct {
 	Key   string
 	Value interface{}
 	Usage string
 }
 
 type ContextItemConfigurable interface {
-	GetConfigVariables() []ConfigVariable
+	GetConfigVariables() []Variable
 }
 
-func (r *Config) GetName() string {
+func (r *Resource) GetName() string {
 	return "config"
 }
 
-func (r *Config) Init(a *shadow.Application) (err error) {
+func (r *Resource) Init(a *shadow.Application) (err error) {
 	r.application = a
 
 	config := flag.String(FlagConfig, "", "Config file which which override default config parameters")
@@ -59,7 +59,7 @@ func (r *Config) Init(a *shadow.Application) (err error) {
 	return err
 }
 
-func (r *Config) Run() error {
+func (r *Resource) Run() error {
 	r.Add("debug", false, "Debug mode")
 
 	for _, resource := range r.application.GetResources() {
@@ -83,7 +83,7 @@ func (r *Config) Run() error {
 	return nil
 }
 
-func (r *Config) Add(key string, value interface{}, usage string) {
+func (r *Resource) Add(key string, value interface{}, usage string) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -107,7 +107,7 @@ func (r *Config) Add(key string, value interface{}, usage string) {
 	}
 }
 
-func (r *Config) Has(key string) bool {
+func (r *Resource) Has(key string) bool {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -118,7 +118,7 @@ func (r *Config) Has(key string) bool {
 	return false
 }
 
-func (r *Config) Get(key string) interface{} {
+func (r *Resource) Get(key string) interface{} {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -129,22 +129,22 @@ func (r *Config) Get(key string) interface{} {
 	return nil
 }
 
-func (r *Config) GetAll() map[string]interface{} {
+func (r *Resource) GetAll() map[string]interface{} {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	return r.values
 }
 
-func (r *Config) GetGlobalConf() *globalconf.GlobalConf {
+func (r *Resource) GetGlobalConf() *globalconf.GlobalConf {
 	return r.config
 }
 
-func (r *Config) GetBool(key string) bool {
+func (r *Resource) GetBool(key string) bool {
 	return r.GetBoolDefault(key, false)
 }
 
-func (r *Config) GetBoolDefault(key string, value interface{}) bool {
+func (r *Resource) GetBoolDefault(key string, value interface{}) bool {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -155,11 +155,11 @@ func (r *Config) GetBoolDefault(key string, value interface{}) bool {
 	return gotypes.ToBool(value)
 }
 
-func (r *Config) GetInt(key string) int {
+func (r *Resource) GetInt(key string) int {
 	return r.GetIntDefault(key, -1)
 }
 
-func (r *Config) GetIntDefault(key string, value interface{}) int {
+func (r *Resource) GetIntDefault(key string, value interface{}) int {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -170,11 +170,11 @@ func (r *Config) GetIntDefault(key string, value interface{}) int {
 	return gotypes.ToInt(value)
 }
 
-func (r *Config) GetInt64(key string) int64 {
+func (r *Resource) GetInt64(key string) int64 {
 	return r.GetInt64Default(key, -1)
 }
 
-func (r *Config) GetInt64Default(key string, value interface{}) int64 {
+func (r *Resource) GetInt64Default(key string, value interface{}) int64 {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -185,11 +185,11 @@ func (r *Config) GetInt64Default(key string, value interface{}) int64 {
 	return gotypes.ToInt64(value)
 }
 
-func (r *Config) GetUint(key string) uint {
+func (r *Resource) GetUint(key string) uint {
 	return r.GetUintDefault(key, 0)
 }
 
-func (r *Config) GetUintDefault(key string, value interface{}) uint {
+func (r *Resource) GetUintDefault(key string, value interface{}) uint {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -200,11 +200,11 @@ func (r *Config) GetUintDefault(key string, value interface{}) uint {
 	return gotypes.ToUint(value)
 }
 
-func (r *Config) GetUint64(key string) uint64 {
+func (r *Resource) GetUint64(key string) uint64 {
 	return r.GetUint64Default(key, 0)
 }
 
-func (r *Config) GetUint64Default(key string, value interface{}) uint64 {
+func (r *Resource) GetUint64Default(key string, value interface{}) uint64 {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -215,11 +215,11 @@ func (r *Config) GetUint64Default(key string, value interface{}) uint64 {
 	return gotypes.ToUint64(value)
 }
 
-func (r *Config) GetFloat64(key string) float64 {
+func (r *Resource) GetFloat64(key string) float64 {
 	return r.GetFloat64Default(key, -1)
 }
 
-func (r *Config) GetFloat64Default(key string, value interface{}) float64 {
+func (r *Resource) GetFloat64Default(key string, value interface{}) float64 {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -230,11 +230,11 @@ func (r *Config) GetFloat64Default(key string, value interface{}) float64 {
 	return gotypes.ToFloat64(value)
 }
 
-func (r *Config) GetString(key string) string {
+func (r *Resource) GetString(key string) string {
 	return r.GetStringDefault(key, "")
 }
 
-func (r *Config) GetStringDefault(key string, value interface{}) string {
+func (r *Resource) GetStringDefault(key string, value interface{}) string {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -245,11 +245,11 @@ func (r *Config) GetStringDefault(key string, value interface{}) string {
 	return gotypes.ToString(value)
 }
 
-func (r *Config) GetDuration(key string) time.Duration {
+func (r *Resource) GetDuration(key string) time.Duration {
 	return r.GetDurationDefault(key, 0)
 }
 
-func (r *Config) GetDurationDefault(key string, value time.Duration) time.Duration {
+func (r *Resource) GetDurationDefault(key string, value time.Duration) time.Duration {
 	if val := r.GetString(key); val != "" {
 		if r, err := time.ParseDuration(val); err == nil {
 			return r

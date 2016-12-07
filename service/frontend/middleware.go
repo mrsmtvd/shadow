@@ -4,10 +4,15 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/resource/metrics"
 	"github.com/rs/xlog"
+)
+
+var (
+	metricHandlerExecuteTime metrics.Timer
 )
 
 type ResponseWriter struct {
@@ -96,13 +101,19 @@ func LoggerMiddleware(service *FrontendService) alice.Constructor {
 func MetricsMiddleware(service *FrontendService) alice.Constructor {
 	resourceMetrics, err := service.application.GetResource("metrics")
 	if err == nil {
-		metric := resourceMetrics.(*metrics.Metrics).NewTimer(MetricHandlerExecuteTime)
+		// create metrics
+		if metricHandlerExecuteTime == nil {
+			metricHandlerExecuteTime = resourceMetrics.(*metrics.Resource).
+				NewTimer(MetricHandlerExecuteTime)
+		}
 
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				now := time.Now()
+
 				next.ServeHTTP(w, r)
 
-				metric.ObserveDuration()
+				metricHandlerExecuteTime.ObserveDurationByTime(now)
 			})
 		}
 	}

@@ -15,7 +15,7 @@ type WorkersHandler struct {
 func (h *WorkersHandler) Handle() {
 	if h.IsAjax() {
 		resourceWorkers, _ := h.Application.GetResource("workers")
-		dispatcher := resourceWorkers.(*workers.Workers)
+		dispatcher := resourceWorkers.(*workers.Resource)
 
 		workersList := []map[string]interface{}{}
 		workersWait := 0

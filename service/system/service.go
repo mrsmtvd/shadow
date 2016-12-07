@@ -9,7 +9,6 @@ import (
 
 type SystemService struct {
 	Application *shadow.Application
-	Config      *config.Config
 }
 
 func (s *SystemService) GetName() string {
@@ -23,9 +22,8 @@ func (s *SystemService) Init(a *shadow.Application) error {
 	if err != nil {
 		return err
 	}
-	s.Config = resourceConfig.(*config.Config)
 
-	location, err := time.LoadLocation(s.Config.GetString("system.timezone"))
+	location, err := time.LoadLocation(resourceConfig.(*config.Resource).GetString("system.timezone"))
 	if err != nil {
 		return err
 	}

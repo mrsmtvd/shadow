@@ -1,21 +1,27 @@
 package metrics
 
 import (
-	"github.com/go-kit/kit/metrics/influx"
+	"fmt"
+
+	kit "github.com/go-kit/kit/metrics"
 )
 
-func (r *Metrics) NewCounter(name string) *influx.Counter {
-	return r.connector.NewCounter(name)
+func (r *Resource) getName(name string) string {
+	return fmt.Sprint(r.prefix, name)
 }
 
-func (r *Metrics) NewGauge(name string) *influx.Gauge {
-	return r.connector.NewGauge(name)
+func (r *Resource) NewCounter(name string) kit.Counter {
+	return r.connector.NewCounter(r.getName(name))
 }
 
-func (r *Metrics) NewHistogram(name string) *influx.Histogram {
-	return r.connector.NewHistogram(name)
+func (r *Resource) NewGauge(name string) kit.Gauge {
+	return r.connector.NewGauge(r.getName(name))
 }
 
-func (r *Metrics) NewTimer(name string) *Timer {
-	return NewTimer(r.NewHistogram(name))
+func (r *Resource) NewHistogram(name string) kit.Histogram {
+	return r.connector.NewHistogram(r.getName(name))
+}
+
+func (r *Resource) NewTimer(name string) Timer {
+	return NewMetricTimer(r.NewHistogram(name))
 }

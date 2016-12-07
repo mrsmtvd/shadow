@@ -23,10 +23,10 @@ type mailTask struct {
 	result  chan error
 }
 
-type Mail struct {
-	config  *config.Config
+type Resource struct {
+	config  *config.Resource
+	metrics *metrics.Resource
 	logger  xlog.Logger
-	metrics *metrics.Metrics
 
 	open   bool
 	dialer *gomail.Dialer
@@ -34,66 +34,31 @@ type Mail struct {
 	queue  chan *mailTask
 }
 
-func (r *Mail) GetName() string {
+func (r *Resource) GetName() string {
 	return "mail"
 }
 
-func (r *Mail) GetConfigVariables() []config.ConfigVariable {
-	return []config.ConfigVariable{
-		{
-			Key:   "mail.smtp.username",
-			Value: "",
-			Usage: "SMTP username",
-		},
-		{
-			Key:   "mail.smtp.password",
-			Value: "",
-			Usage: "SMTP password",
-		},
-		{
-			Key:   "mail.smtp.host",
-			Value: "",
-			Usage: "SMTP host",
-		},
-		{
-			Key:   "mail.smtp.port",
-			Value: 25,
-			Usage: "SMTP port",
-		},
-		{
-			Key:   "mail.from.address",
-			Value: "",
-			Usage: "Mail from address",
-		},
-		{
-			Key:   "mail.from.name",
-			Value: "",
-			Usage: "Mail from name",
-		},
-	}
-}
-
-func (r *Mail) Init(a *shadow.Application) error {
+func (r *Resource) Init(a *shadow.Application) error {
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*config.Config)
+	r.config = resourceConfig.(*config.Resource)
 
 	if a.HasResource("logger") {
 		resourceLogger, _ := a.GetResource("logger")
-		r.logger = resourceLogger.(*logger.Logger).Get(r.GetName())
+		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
 	}
 
 	if a.HasResource("metrics") {
 		resourceMetrics, _ := a.GetResource("metrics")
-		r.metrics = resourceMetrics.(*metrics.Metrics)
+		r.metrics = resourceMetrics.(*metrics.Resource)
 	}
 
 	return nil
 }
 
-func (r *Mail) Run(wg *sync.WaitGroup) error {
+func (r *Resource) Run(wg *sync.WaitGroup) error {
 	r.open = false
 	r.dialer = gomail.NewDialer(
 		r.config.GetString("mail.smtp.host"),
@@ -147,7 +112,7 @@ func (r *Mail) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (r *Mail) execute(task *mailTask) error {
+func (r *Resource) execute(task *mailTask) error {
 	var err error
 
 	if !r.open {
@@ -191,7 +156,7 @@ func (r *Mail) execute(task *mailTask) error {
 	return nil
 }
 
-func (r *Mail) Send(message *gomail.Message) {
+func (r *Resource) Send(message *gomail.Message) {
 	task := &mailTask{
 		message: message,
 		result:  make(chan error),
@@ -202,7 +167,7 @@ func (r *Mail) Send(message *gomail.Message) {
 
 }
 
-func (r *Mail) SendAndReturn(message *gomail.Message) error {
+func (r *Resource) SendAndReturn(message *gomail.Message) error {
 	task := &mailTask{
 		message: message,
 		result:  make(chan error),

@@ -17,12 +17,12 @@ type ServiceTemplate interface {
 	GetTemplates() *assetfs.AssetFS
 }
 
-type Template struct {
-	Application *shadow.Application
+type Resource struct {
+	application *shadow.Application
 	Globals     map[string]interface{}
 }
 
-type TemplateView struct {
+type View struct {
 	name     string
 	service  ServiceTemplate
 	template *template.Template
@@ -30,12 +30,12 @@ type TemplateView struct {
 	Context  map[string]interface{}
 }
 
-func (r *Template) GetName() string {
+func (r *Resource) GetName() string {
 	return "template"
 }
 
-func (r *Template) Init(a *shadow.Application) error {
-	r.Application = a
+func (r *Resource) Init(a *shadow.Application) error {
+	r.application = a
 	r.Globals = map[string]interface{}{
 		"Application": a,
 	}
@@ -43,17 +43,17 @@ func (r *Template) Init(a *shadow.Application) error {
 	return nil
 }
 
-func (r *Template) Run() (err error) {
-	conf, err := r.Application.GetResource("config")
+func (r *Resource) Run() (err error) {
+	conf, err := r.application.GetResource("config")
 	if err == nil {
-		r.Globals["Config"] = conf.(*config.Config).GetAll()
+		r.Globals["Config"] = conf.(*config.Resource).GetAll()
 	}
 
 	return nil
 }
 
-func (r *Template) NewView(s string, n string) *TemplateView {
-	service, err := r.Application.GetService(s)
+func (r *Resource) NewView(s string, n string) *View {
+	service, err := r.application.GetService(s)
 	if err != nil {
 		panic(fmt.Sprintf("Service \"%s\" not found", s))
 	}
@@ -63,7 +63,7 @@ func (r *Template) NewView(s string, n string) *TemplateView {
 		panic(fmt.Sprintf("Service \"%s\" not implement ServiceTemplate", s))
 	}
 
-	tpl := &TemplateView{
+	tpl := &View{
 		name:     n,
 		service:  serviceTemplate,
 		template: template.New(n),
@@ -79,7 +79,7 @@ func (r *Template) NewView(s string, n string) *TemplateView {
 	return tpl
 }
 
-func (v *TemplateView) Render(w io.Writer) error {
+func (v *View) Render(w io.Writer) error {
 	if v.name == "" {
 		return nil
 	}
@@ -114,7 +114,7 @@ func (v *TemplateView) Render(w io.Writer) error {
 	return tpl.ExecuteTemplate(w, v.name, context)
 }
 
-func (v *TemplateView) funcInclude(r *Template) func(args ...string) (string, error) {
+func (v *View) funcInclude(r *Resource) func(args ...string) (string, error) {
 	return func(args ...string) (string, error) {
 		var (
 			name    string
@@ -147,6 +147,6 @@ func (v *TemplateView) funcInclude(r *Template) func(args ...string) (string, er
 	}
 }
 
-func (v *TemplateView) add(x, y int) (interface{}, error) {
+func (v *View) add(x, y int) (interface{}, error) {
 	return x + y, nil
 }

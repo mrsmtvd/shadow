@@ -38,8 +38,8 @@ type AbstractFrontendHandler struct {
 
 	Application *shadow.Application
 	Service     shadow.Service
-	Template    *template.Template
-	View        *template.TemplateView
+	Template    *template.Resource
+	View        *template.View
 
 	Output http.ResponseWriter
 	Input  *http.Request
@@ -54,7 +54,7 @@ func (h *AbstractFrontendHandler) Init(a *shadow.Application, s shadow.Service) 
 
 	h.Application = a
 	h.Service = s
-	h.Template = templateResource.(*template.Template)
+	h.Template = templateResource.(*template.Resource)
 }
 
 func (h *AbstractFrontendHandler) InitRequest(out http.ResponseWriter, in *http.Request) {

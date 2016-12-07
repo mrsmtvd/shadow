@@ -14,10 +14,11 @@ import (
 	"github.com/rs/xlog"
 )
 
-type Workers struct {
-	config     *config.Config
-	logger     xlog.Logger
-	metrics    *metrics.Metrics
+type Resource struct {
+	config  *config.Resource
+	metrics *metrics.Resource
+	logger  xlog.Logger
+
 	dispatcher *dispatcher.Dispatcher
 
 	metricWorkersTotal             kitmetrics.Counter
@@ -31,46 +32,31 @@ type Workers struct {
 	metricTasksStatusRepeatWait    kitmetrics.Counter
 }
 
-func (r *Workers) GetName() string {
+func (r *Resource) GetName() string {
 	return "workers"
 }
 
-func (r *Workers) GetConfigVariables() []config.ConfigVariable {
-	return []config.ConfigVariable{
-		config.ConfigVariable{
-			Key:   "workers.count",
-			Value: 2,
-			Usage: "Default workers count",
-		},
-		config.ConfigVariable{
-			Key:   "workers.done.size",
-			Value: 1000,
-			Usage: "Size buffer of done task channel",
-		},
-	}
-}
-
-func (r *Workers) Init(a *shadow.Application) error {
+func (r *Resource) Init(a *shadow.Application) error {
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*config.Config)
+	r.config = resourceConfig.(*config.Resource)
 
 	if a.HasResource("logger") {
 		resourceLogger, _ := a.GetResource("logger")
-		r.logger = resourceLogger.(*logger.Logger).Get(r.GetName())
+		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
 	}
 
 	if a.HasResource("metrics") {
 		resourceMetrics, _ := a.GetResource("metrics")
-		r.metrics = resourceMetrics.(*metrics.Metrics)
+		r.metrics = resourceMetrics.(*metrics.Resource)
 	}
 
 	return nil
 }
 
-func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
+func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
 	if r.metrics != nil {
 		r.metricWorkersTotal = r.metrics.NewCounter(MetricWorkersTotal)
 		r.metricTasksTotal = r.metrics.NewCounter(MetricTasksTotal)
@@ -100,7 +86,7 @@ func (r *Workers) Run(wg *sync.WaitGroup) (err error) {
 	return nil
 }
 
-func (r *Workers) setLogListener(wg *sync.WaitGroup) {
+func (r *Resource) setLogListener(wg *sync.WaitGroup) {
 	if r.logger == nil {
 		return
 	}
@@ -165,7 +151,7 @@ func (r *Workers) setLogListener(wg *sync.WaitGroup) {
 	}()
 }
 
-func (r *Workers) AddTask(t task.Tasker) {
+func (r *Resource) AddTask(t task.Tasker) {
 	r.dispatcher.AddTask(t)
 
 	if r.logger != nil {
@@ -177,7 +163,7 @@ func (r *Workers) AddTask(t task.Tasker) {
 	}
 }
 
-func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
+func (r *Resource) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddNamedTaskByFunc(n, f, a...)
 
 	if r.logger != nil {
@@ -191,7 +177,7 @@ func (r *Workers) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interfa
 	return t
 }
 
-func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker {
+func (r *Resource) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddTaskByFunc(f, a...)
 
 	if r.logger != nil {
@@ -205,7 +191,7 @@ func (r *Workers) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Task
 	return t
 }
 
-func (r *Workers) AddWorker() {
+func (r *Resource) AddWorker() {
 	w := r.dispatcher.AddWorker()
 
 	if r.logger != nil {
@@ -217,11 +203,11 @@ func (r *Workers) AddWorker() {
 	}
 }
 
-func (r *Workers) GetWorkers() []worker.Worker {
+func (r *Resource) GetWorkers() []worker.Worker {
 	return r.dispatcher.GetWorkers().GetItems()
 }
 
-func (r *Workers) getLogFieldsForTask(t task.Tasker) xlog.F {
+func (r *Resource) getLogFieldsForTask(t task.Tasker) xlog.F {
 	fields := xlog.F{
 		"task.id":        t.GetId(),
 		"task.function":  t.GetFunctionName(),
@@ -240,10 +226,10 @@ func (r *Workers) getLogFieldsForTask(t task.Tasker) xlog.F {
 	return fields
 }
 
-func (r *Workers) AddListener(l dispatcher.Listener) {
+func (r *Resource) AddListener(l dispatcher.Listener) {
 	r.dispatcher.AddListener(l)
 }
 
-func (r *Workers) RemoveListener(l dispatcher.Listener) {
+func (r *Resource) RemoveListener(l dispatcher.Listener) {
 	r.dispatcher.RemoveListener(l)
 }

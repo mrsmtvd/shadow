@@ -10,7 +10,7 @@ type AlertsHandler struct {
 
 func (h *AlertsHandler) Handle() {
 	resourceAlerts, _ := h.Application.GetResource("alerts")
-	list := resourceAlerts.(*alerts.Alerts).GetAlerts()
+	list := resourceAlerts.(*alerts.Resource).GetAlerts()
 
 	if h.IsAjax() {
 		alertsShort := make([]map[string]interface{}, 0, cap(list))

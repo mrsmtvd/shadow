@@ -14,65 +14,33 @@ import (
 	"github.com/kihamo/shadow/resource/logger"
 )
 
-type Metrics struct {
+type Resource struct {
 	application *shadow.Application
-	config      *config.Config
-	connector   *influx.Influx
-	logger      *logger.Logger
+
+	config *config.Resource
+	logger *logger.Resource
+
+	connector *influx.Influx
+	prefix    string
 }
 
-func (r *Metrics) GetName() string {
+func (r *Resource) GetName() string {
 	return "metrics"
 }
 
-func (r *Metrics) GetConfigVariables() []config.ConfigVariable {
-	return []config.ConfigVariable{
-		config.ConfigVariable{
-			Key:   "metrics.url",
-			Value: "",
-			Usage: "InfluxDB url",
-		},
-		config.ConfigVariable{
-			Key:   "metrics.database",
-			Value: "metrics",
-			Usage: "InfluxDB database name",
-		},
-		config.ConfigVariable{
-			Key:   "metrics.username",
-			Value: "",
-			Usage: "InfluxDB username",
-		},
-		config.ConfigVariable{
-			Key:   "metrics.password",
-			Value: "",
-			Usage: "InfluxDB password",
-		},
-		config.ConfigVariable{
-			Key:   "metrics.interval",
-			Value: "20s",
-			Usage: "Flush interval",
-		},
-		config.ConfigVariable{
-			Key:   "metrics.tags",
-			Value: "",
-			Usage: "Tags list with format: tag1_name=tag1_value,tag2_name=tag2_value",
-		},
-	}
-}
-
-func (r *Metrics) Init(a *shadow.Application) error {
+func (r *Resource) Init(a *shadow.Application) error {
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
-	r.config = resourceConfig.(*config.Config)
+	r.config = resourceConfig.(*config.Resource)
 
 	r.application = a
 
 	return nil
 }
 
-func (r *Metrics) Run(wg *sync.WaitGroup) error {
+func (r *Resource) Run(wg *sync.WaitGroup) error {
 	client, err := influxdb.NewHTTPClient(influxdb.HTTPConfig{
 		Addr:     r.config.GetString("metrics.url"),
 		Username: r.config.GetString("metrics.username"),
@@ -87,7 +55,7 @@ func (r *Metrics) Run(wg *sync.WaitGroup) error {
 
 	if r.application.HasResource("logger") {
 		resourceLogger, _ := r.application.GetResource("logger")
-		l = newMetricsLogger(resourceLogger.(*logger.Logger).Get("metrics"))
+		l = newMetricsLogger(resourceLogger.(*logger.Resource).Get("metrics"))
 	} else {
 		l = log.NewNopLogger()
 	}
@@ -95,6 +63,8 @@ func (r *Metrics) Run(wg *sync.WaitGroup) error {
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
 		Database: r.config.GetString("metrics.database"),
 	}, l)
+
+	r.prefix = r.config.GetString("metrics.prefix")
 
 	go func() {
 		defer wg.Done()
@@ -108,7 +78,7 @@ func (r *Metrics) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (r *Metrics) getTags() map[string]string {
+func (r *Resource) getTags() map[string]string {
 	tags := map[string]string{
 		"app_name":    r.application.Name,
 		"app_version": r.application.Version,
