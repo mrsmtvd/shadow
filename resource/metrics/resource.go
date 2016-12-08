@@ -14,13 +14,14 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
+	"github.com/rs/xlog"
 )
 
 type Resource struct {
 	application *shadow.Application
 
 	config *config.Resource
-	logger *logger.Resource
+	logger xlog.Logger
 
 	connector *influx.Influx
 	prefix    string
@@ -57,7 +58,9 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 
 	if r.application.HasResource("logger") {
 		resourceLogger, _ := r.application.GetResource("logger")
-		l = newMetricsLogger(resourceLogger.(*logger.Resource).Get("metrics"))
+		r.logger = resourceLogger.(*logger.Resource).Get("metrics")
+
+		l = newMetricsLogger(r.logger)
 	} else {
 		l = log.NewNopLogger()
 	}
@@ -86,7 +89,15 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 		ticker := time.NewTicker(r.config.GetDuration("metrics.interval"))
 		defer ticker.Stop()
 
-		r.connector.WriteLoop(ticker.C, client)
+		for range ticker.C {
+			if err := r.connector.WriteTo(client); err != nil {
+				if r.logger != nil {
+					r.logger.Error("Send metric to Influx failed")
+				}
+			} else if r.logger != nil {
+				r.logger.Debug("Send metric to Influx success")
+			}
+		}
 	}()
 
 	return nil
