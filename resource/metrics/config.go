@@ -30,6 +30,16 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 			Usage: "Flush interval",
 		},
 		{
+			Key:   "metrics.debug.interval",
+			Value: "20s",
+			Usage: "Flush interval for debug metrics",
+		},
+		{
+			Key:   "metrics.runtime.interval",
+			Value: "20s",
+			Usage: "Flush interval for runtime metrics",
+		},
+		{
 			Key:   "metrics.tags",
 			Value: "",
 			Usage: "Tags list with format: tag1_name=tag1_value,tag2_name=tag2_value",

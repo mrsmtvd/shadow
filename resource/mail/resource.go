@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	kitmetrics "github.com/go-kit/kit/metrics"
+	kit "github.com/go-kit/kit/metrics"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
@@ -71,8 +71,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
 
-		var metricTotal kitmetrics.Counter
-
+		var metricTotal kit.Counter
 		if r.metrics != nil {
 			metricTotal = r.metrics.NewCounter(MetricMailTotal)
 		}
@@ -85,7 +84,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 				}
 
 				err := r.execute(task)
-				if r.metrics != nil {
+				if metricTotal != nil {
 					if err != nil {
 						metricTotal.With("result", "failed").Add(1)
 					} else {
@@ -96,9 +95,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 			case <-time.After(mailDaemonTimeOut):
 				if r.open {
 					if err := r.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
-						r.logger.Error("Dialer close failed", xlog.F{
-							"error": err.Error(),
-						})
+						r.logger.Error("Dialer close failed", xlog.F{"error": err.Error()})
 					} else {
 						r.logger.Debug("Dialer close success")
 					}

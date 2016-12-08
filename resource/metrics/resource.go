@@ -1,12 +1,14 @@
 package metrics
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/go-kit/kit/log"
+	kit "github.com/go-kit/kit/metrics"
 	"github.com/go-kit/kit/metrics/influx"
 	influxdb "github.com/influxdata/influxdb/client/v2"
 	"github.com/kihamo/shadow"
@@ -61,12 +63,23 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	}
 
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
-		Database: r.config.GetString("metrics.database"),
+		Database:  r.config.GetString("metrics.database"),
 		Precision: "s",
 	}, l)
 
 	r.prefix = r.config.GetString("metrics.prefix")
 
+	// debug metrics
+	if r.config.GetBool("debug") {
+		RegisterDebugMetrics(r)
+		CaptureMetrics(r.config.GetDuration("metrics.debug.interval"), CaptureDebugMetrics)
+	}
+
+	// runtime metrics
+	RegisterRuntimeMetrics(r)
+	CaptureMetrics(r.config.GetDuration("metrics.runtime.interval"), CaptureRuntimeMetrics)
+
+	// send to influx
 	go func() {
 		defer wg.Done()
 
@@ -77,6 +90,26 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	}()
 
 	return nil
+}
+
+func (r *Resource) getName(name string) string {
+	return fmt.Sprint(r.prefix, name)
+}
+
+func (r *Resource) NewCounter(name string) kit.Counter {
+	return r.connector.NewCounter(r.getName(name))
+}
+
+func (r *Resource) NewGauge(name string) kit.Gauge {
+	return r.connector.NewGauge(r.getName(name))
+}
+
+func (r *Resource) NewHistogram(name string) kit.Histogram {
+	return r.connector.NewHistogram(r.getName(name))
+}
+
+func (r *Resource) NewTimer(name string) Timer {
+	return NewMetricTimer(r.NewHistogram(name))
 }
 
 func (r *Resource) getTags() map[string]string {
