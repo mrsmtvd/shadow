@@ -50,4 +50,4 @@ func (n nop) Panicf(_ string, _ ...interface{}) { os.Exit(0) }
 
 func (n nop) Panicln(_ ...interface{}) { os.Exit(0) }
 
-func (n nop) Log(_ ...interface{}) error { return nil }
+func (n nop) Log(_ ...interface{}) {}

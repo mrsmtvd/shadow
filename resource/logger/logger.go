@@ -13,7 +13,7 @@ type Logger interface {
 	Panic(...interface{})
 	Panicf(string, ...interface{})
 	Panicln(...interface{})
-	Log(...interface{}) error
+	Log(...interface{})
 }
 
 type logger struct {
@@ -100,7 +100,6 @@ func (l *logger) Panicln(v ...interface{}) {
 	l.x.Fatal(v...)
 }
 
-func (l *logger) Log(v ...interface{}) error {
+func (l *logger) Log(v ...interface{}) {
 	l.x.Info(v...)
-	return nil
 }

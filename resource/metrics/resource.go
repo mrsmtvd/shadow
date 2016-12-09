@@ -69,7 +69,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
 		Database:  r.config.GetString("metrics.database"),
 		Precision: "s",
-	}, r.logger)
+	}, logger.NewGoKitLogger(r.logger))
 
 	r.prefix = r.config.GetString("metrics.prefix")
 
