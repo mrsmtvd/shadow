@@ -9,13 +9,12 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/rs/xlog"
 )
 
 type Resource struct {
 	application *shadow.Application
 	config      *config.Resource
-	logger      xlog.Logger
+	logger      logger.Logger
 
 	dispatcher *dispatcher.Dispatcher
 }
@@ -40,7 +39,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
 	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
 		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
 	} else {
-		r.logger = xlog.NopLogger
+		r.logger = logger.NopLogger
 	}
 
 	r.dispatcher = dispatcher.NewDispatcher()
@@ -110,15 +109,15 @@ func (r *Resource) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tas
 
 func (r *Resource) AddWorker() {
 	w := r.dispatcher.AddWorker()
-	r.logger.Infof("Add worker", xlog.F{"worker.id": w.GetId()})
+	r.logger.Infof("Add worker", map[string]interface{}{"worker.id": w.GetId()})
 }
 
 func (r *Resource) GetWorkers() []worker.Worker {
 	return r.dispatcher.GetWorkers().GetItems()
 }
 
-func (r *Resource) getLogFieldsForTask(t task.Tasker, l map[string]interface{}) xlog.F {
-	fields := xlog.F{
+func (r *Resource) getLogFieldsForTask(t task.Tasker, l map[string]interface{}) map[string]interface{} {
+	fields := map[string]interface{}{
 		"task.id":       t.GetId(),
 		"task.function": t.GetFunctionName(),
 		"task.priority": t.GetPriority(),

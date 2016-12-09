@@ -13,14 +13,13 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/rs/xlog"
 )
 
 type Resource struct {
 	application *shadow.Application
 
 	config *config.Resource
-	logger xlog.Logger
+	logger logger.Logger
 
 	connector *influx.Influx
 	prefix    string
@@ -64,13 +63,13 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
 		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
 	} else {
-		r.logger = xlog.NopLogger
+		r.logger = logger.NopLogger
 	}
 
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
 		Database:  r.config.GetString("metrics.database"),
 		Precision: "s",
-	}, newMetricsLogger(r.logger))
+	}, r.logger)
 
 	r.prefix = r.config.GetString("metrics.prefix")
 

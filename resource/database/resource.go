@@ -5,7 +5,6 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/rs/xlog"
 	"github.com/rubenv/sql-migrate"
 )
 
@@ -47,15 +46,15 @@ func (r *Resource) Run() (err error) {
 	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_idle_conns"))
 	dbMap.Db.SetMaxOpenConns(r.config.GetInt("database.max_open_conns"))
 
-	var l xlog.Logger
+	var l logger.Logger
 	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
 		l = resourceLogger.(*logger.Resource).Get(r.GetName())
 	} else {
-		l = xlog.NopLogger
+		l = logger.NopLogger
 	}
 
 	if r.config.GetBool("debug") {
-		dbMap.TraceOn("", newDatabaseLogger(l))
+		dbMap.TraceOn("", l)
 	}
 
 	r.storage.SetTypeConverter(TypeConverter{})

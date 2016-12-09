@@ -8,7 +8,6 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/rs/xlog"
 	"gopkg.in/gomail.v2"
 )
 
@@ -24,7 +23,7 @@ type mailTask struct {
 type Resource struct {
 	application *shadow.Application
 	config      *config.Resource
-	logger      xlog.Logger
+	logger      logger.Logger
 
 	open   bool
 	dialer *gomail.Dialer
@@ -52,7 +51,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
 		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
 	} else {
-		r.logger = xlog.NopLogger
+		r.logger = logger.NopLogger
 	}
 
 	r.open = false
@@ -86,7 +85,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 			case <-time.After(mailDaemonTimeOut):
 				if r.open {
 					if err := r.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
-						r.logger.Error("Dialer close failed", xlog.F{"error": err.Error()})
+						r.logger.Error("Dialer close failed", map[string]interface{}{"error": err.Error()})
 					} else {
 						r.logger.Debug("Dialer close success")
 					}
@@ -105,7 +104,7 @@ func (r *Resource) execute(task *mailTask) error {
 
 	if !r.open {
 		if r.closer, err = r.dialer.Dial(); err != nil {
-			r.logger.Error("Dialer dial failed", xlog.F{"error": err.Error()})
+			r.logger.Error("Dialer dial failed", map[string]interface{}{"error": err.Error()})
 			task.result <- err
 
 			return err
@@ -122,7 +121,7 @@ func (r *Resource) execute(task *mailTask) error {
 
 		if err = gomail.Send(r.closer, task.message); err != nil {
 			if strings.Contains(err.Error(), "4.4.2") {
-				r.logger.Debug("SMTP server response timeout exceeded", xlog.F{
+				r.logger.Debug("SMTP server response timeout exceeded", map[string]interface{}{
 					"message": task.message,
 					"error":   err.Error(),
 				})
@@ -130,13 +129,13 @@ func (r *Resource) execute(task *mailTask) error {
 				r.open = false
 				return r.execute(task)
 			} else {
-				r.logger.Error(err.Error(), xlog.F{"message": task.message})
+				r.logger.Error(err.Error(), map[string]interface{}{"message": task.message})
 				task.result <- err
 
 				return err
 			}
 		} else {
-			r.logger.Debug("Send message success", xlog.F{"message": task.message})
+			r.logger.Debug("Send message success", map[string]interface{}{"message": task.message})
 			task.result <- nil
 		}
 	}
@@ -151,7 +150,7 @@ func (r *Resource) Send(message *gomail.Message) {
 	}
 	r.queue <- task
 
-	r.logger.Debug("Send new message to queue", xlog.F{"message": message})
+	r.logger.Debug("Send new message to queue", map[string]interface{}{"message": message})
 
 }
 

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/justinas/alice"
-	"github.com/rs/xlog"
 )
 
 type ResponseWriter struct {
@@ -73,7 +72,7 @@ func LoggerMiddleware(service *FrontendService) alice.Constructor {
 
 			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.RequestURI, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
 
-			fields := xlog.F{
+			fields := map[string]interface{}{
 				"method":      r.Method,
 				"request-uri": r.RequestURI,
 				"code":        writer.GetStatusCode(),

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
-
-	"github.com/rs/xlog"
 )
 
 type PanicHandler struct {
@@ -30,7 +28,7 @@ func (h *PanicHandler) Handle() {
 
 	_, filePath, line, _ := runtime.Caller(0)
 
-	fields := xlog.F{
+	fields := map[string]interface{}{
 		"error": fmt.Sprintf("%s", h.error),
 		"stack": string(stack),
 		"file":  filePath,

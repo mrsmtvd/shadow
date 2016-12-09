@@ -11,7 +11,6 @@ import (
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
 	"github.com/kihamo/shadow/resource/template"
-	"github.com/rs/xlog"
 )
 
 type FrontendMenu struct {
@@ -33,7 +32,7 @@ type FrontendService struct {
 	application *shadow.Application
 	config      *config.Resource
 	template    *template.Resource
-	logger      xlog.Logger
+	logger      logger.Logger
 	router      *Router
 }
 
@@ -66,7 +65,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	if resourceLogger, err := s.application.GetResource("logger"); err == nil {
 		s.logger = resourceLogger.(*logger.Resource).Get(s.GetName())
 	} else {
-		s.logger = xlog.NopLogger
+		s.logger = logger.NopLogger
 	}
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
@@ -120,7 +119,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		// TODO: ssl
 		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt("frontend.port"))
 
-		s.logger.Info("Running service", xlog.F{
+		s.logger.Info("Running service", map[string]interface{}{
 			"addr": addr,
 			"pid":  os.Getpid(),
 		})

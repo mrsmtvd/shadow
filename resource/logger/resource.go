@@ -11,7 +11,7 @@ import (
 
 type Resource struct {
 	config       *config.Resource
-	logger       xlog.Logger
+	logger       *logger
 	loggerConfig xlog.Config
 }
 
@@ -68,13 +68,16 @@ func (r *Resource) Run() (err error) {
 }
 
 func (r *Resource) initLogger() {
-	r.logger = xlog.New(r.loggerConfig)
+	r.logger = &logger{
+		x: xlog.New(r.loggerConfig),
+	}
+
 	log.SetOutput(r.logger)
 }
 
 func (r *Resource) logConfig() {
 	globalConfig := r.config.GetGlobalConf()
-	fields := xlog.F{
+	fields := map[string]interface{}{
 		"config.prefix": globalConfig.EnvPrefix,
 		"config.file":   globalConfig.Filename,
 	}
@@ -93,9 +96,11 @@ func (r *Resource) logConfig() {
 	})
 }
 
-func (r *Resource) Get(key string) xlog.Logger {
-	logger := xlog.Copy(r.logger)
-	logger.SetField("component", key)
+func (r *Resource) Get(key string) Logger {
+	x := xlog.Copy(r.logger.x)
+	x.SetField("component", key)
 
-	return logger
+	return &logger{
+		x: x,
+	}
 }
