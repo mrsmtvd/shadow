@@ -9,7 +9,6 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/kihamo/shadow/resource/metrics"
 	"github.com/rs/xlog"
 )
 
@@ -32,26 +31,20 @@ func (r *Resource) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*config.Resource)
 
-	if a.HasResource("logger") {
-		resourceLogger, _ := a.GetResource("logger")
-		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
-	}
-
 	r.application = a
 
 	return nil
 }
 
 func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
+	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
+		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
+	} else {
+		r.logger = xlog.NopLogger
+	}
+
 	r.dispatcher = dispatcher.NewDispatcher()
 	r.setLogListener(wg)
-
-	if r.application.HasResource("metrics") {
-		resourceMetrics, _ := r.application.GetResource("metrics")
-
-		RegisterMetrics(resourceMetrics.(*metrics.Resource))
-		metrics.CaptureMetrics(r.config.GetDuration("metrics.interval"), CaptureMetrics(r.dispatcher))
-	}
 
 	for i := 1; i <= r.config.GetInt("workers.count"); i++ {
 		r.AddWorker()
@@ -66,10 +59,6 @@ func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
 }
 
 func (r *Resource) setLogListener(wg *sync.WaitGroup) {
-	if r.logger == nil {
-		return
-	}
-
 	listener := dispatcher.NewDefaultListener(r.config.GetInt("workers.count"))
 	r.dispatcher.AddListener(listener)
 
@@ -103,39 +92,25 @@ func (r *Resource) setLogListener(wg *sync.WaitGroup) {
 }
 
 func (r *Resource) AddTask(t task.Tasker) {
-	if r.logger != nil {
-		r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
-	}
-
+	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
 	r.dispatcher.AddTask(t)
 }
 
 func (r *Resource) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddNamedTaskByFunc(n, f, a...)
-
-	if r.logger != nil {
-		r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
-	}
-
+	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
 	return t
 }
 
 func (r *Resource) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddTaskByFunc(f, a...)
-
-	if r.logger != nil {
-		r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
-	}
-
+	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
 	return t
 }
 
 func (r *Resource) AddWorker() {
 	w := r.dispatcher.AddWorker()
-
-	if r.logger != nil {
-		r.logger.Infof("Add worker", xlog.F{"worker.id": w.GetId()})
-	}
+	r.logger.Infof("Add worker", xlog.F{"worker.id": w.GetId()})
 }
 
 func (r *Resource) GetWorkers() []worker.Worker {

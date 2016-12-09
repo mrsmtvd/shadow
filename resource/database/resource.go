@@ -5,6 +5,7 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
+	"github.com/rs/xlog"
 	"github.com/rubenv/sql-migrate"
 )
 
@@ -23,13 +24,14 @@ func (r *Resource) GetName() string {
 }
 
 func (r *Resource) Init(a *shadow.Application) error {
-	r.application = a
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
 	}
 
 	r.config = resourceConfig.(*config.Resource)
+
+	r.application = a
 
 	return nil
 }
@@ -45,15 +47,15 @@ func (r *Resource) Run() (err error) {
 	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_idle_conns"))
 	dbMap.Db.SetMaxOpenConns(r.config.GetInt("database.max_open_conns"))
 
-	resourceLogger, err := r.application.GetResource("logger")
-	if err != nil {
-		return err
+	var l xlog.Logger
+	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
+		l = resourceLogger.(*logger.Resource).Get(r.GetName())
+	} else {
+		l = xlog.NopLogger
 	}
 
-	logger := resourceLogger.(*logger.Resource).Get(r.GetName())
-
 	if r.config.GetBool("debug") {
-		dbMap.TraceOn("", newDatabaseLogger(logger))
+		dbMap.TraceOn("", newDatabaseLogger(l))
 	}
 
 	r.storage.SetTypeConverter(TypeConverter{})
@@ -69,7 +71,7 @@ func (r *Resource) Run() (err error) {
 		return err
 	}
 
-	logger.Debugf("Applied %d migrations", n)
+	l.Infof("Applied %d migrations", n)
 
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type SystemService struct {
-	Application *shadow.Application
+	application *shadow.Application
 }
 
 func (s *SystemService) GetName() string {
@@ -16,8 +16,6 @@ func (s *SystemService) GetName() string {
 }
 
 func (s *SystemService) Init(a *shadow.Application) error {
-	s.Application = a
-
 	resourceConfig, err := a.GetResource("config")
 	if err != nil {
 		return err
@@ -29,6 +27,7 @@ func (s *SystemService) Init(a *shadow.Application) error {
 	}
 
 	time.Local = location
+	s.application = a
 
 	return nil
 }

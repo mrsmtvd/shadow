@@ -5,11 +5,9 @@ import (
 	"sync"
 	"time"
 
-	kit "github.com/go-kit/kit/metrics"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
-	"github.com/kihamo/shadow/resource/metrics"
 	"github.com/rs/xlog"
 	"gopkg.in/gomail.v2"
 )
@@ -24,9 +22,9 @@ type mailTask struct {
 }
 
 type Resource struct {
-	config  *config.Resource
-	metrics *metrics.Resource
-	logger  xlog.Logger
+	application *shadow.Application
+	config      *config.Resource
+	logger      xlog.Logger
 
 	open   bool
 	dialer *gomail.Dialer
@@ -45,20 +43,18 @@ func (r *Resource) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*config.Resource)
 
-	if a.HasResource("logger") {
-		resourceLogger, _ := a.GetResource("logger")
-		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
-	}
-
-	if a.HasResource("metrics") {
-		resourceMetrics, _ := a.GetResource("metrics")
-		r.metrics = resourceMetrics.(*metrics.Resource)
-	}
+	r.application = a
 
 	return nil
 }
 
 func (r *Resource) Run(wg *sync.WaitGroup) error {
+	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
+		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
+	} else {
+		r.logger = xlog.NopLogger
+	}
+
 	r.open = false
 	r.dialer = gomail.NewDialer(
 		r.config.GetString("mail.smtp.host"),
@@ -71,11 +67,6 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
 
-		var metricTotal kit.Counter
-		if r.metrics != nil {
-			metricTotal = r.metrics.NewCounter(MetricMailTotal)
-		}
-
 		for {
 			select {
 			case task, ok := <-r.queue:
@@ -84,11 +75,11 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 				}
 
 				err := r.execute(task)
-				if metricTotal != nil {
+				if metricMailTotal != nil {
 					if err != nil {
-						metricTotal.With("result", "failed").Add(1)
+						metricMailTotal.With("result", "failed").Add(1)
 					} else {
-						metricTotal.With("result", "success").Add(1)
+						metricMailTotal.With("result", "success").Add(1)
 					}
 				}
 

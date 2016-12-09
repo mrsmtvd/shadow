@@ -4,9 +4,7 @@ import (
 	"sync"
 	"time"
 
-	kit "github.com/go-kit/kit/metrics"
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource/metrics"
 )
 
 const (
@@ -15,7 +13,7 @@ const (
 )
 
 type Resource struct {
-	metrics *metrics.Resource
+	application *shadow.Application
 
 	mutex  sync.RWMutex
 	alerts []*Alert
@@ -30,10 +28,7 @@ func (r *Resource) Init(a *shadow.Application) error {
 	r.alerts = make([]*Alert, 0)
 	r.queue = make(chan *Alert)
 
-	if a.HasResource("metrics") {
-		resourceMetrics, _ := a.GetResource("metrics")
-		r.metrics = resourceMetrics.(*metrics.Resource)
-	}
+	r.application = a
 
 	return nil
 }
@@ -41,11 +36,6 @@ func (r *Resource) Init(a *shadow.Application) error {
 func (r *Resource) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
-
-		var metricTotal kit.Counter
-		if r.metrics != nil {
-			metricTotal = r.metrics.NewCounter(MetricAlertsTotal)
-		}
 
 		ticker := time.NewTicker(ClearTime)
 
@@ -56,8 +46,8 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 				r.alerts = append([]*Alert{alert}, r.alerts...)
 				r.mutex.Unlock()
 
-				if metricTotal != nil {
-					metricTotal.Add(1)
+				if metricAlertsTotal != nil {
+					metricAlertsTotal.Add(1)
 				}
 
 			case <-ticker.C:

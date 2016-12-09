@@ -1,8 +1,9 @@
 package workers
 
 import (
+	"time"
+
 	kit "github.com/go-kit/kit/metrics"
-	"github.com/kihamo/go-workers/dispatcher"
 	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow/resource/metrics"
@@ -32,7 +33,7 @@ var (
 	metricTasksStatusRepeatWait    kit.Gauge
 )
 
-func CaptureMetrics(d *dispatcher.Dispatcher) func() {
+func (r *Resource) MetricsCapture() (func(), time.Duration) {
 	return func() {
 		workersTotal := 0
 		tasksTotal := 0
@@ -47,7 +48,7 @@ func CaptureMetrics(d *dispatcher.Dispatcher) func() {
 		tasksStatusKill := 0
 		tasksStatusRepeatWait := 0
 
-		for _, w := range d.GetWorkers().GetItems() {
+		for _, w := range r.dispatcher.GetWorkers().GetItems() {
 			workersTotal += 1
 
 			switch w.GetStatus() {
@@ -60,7 +61,7 @@ func CaptureMetrics(d *dispatcher.Dispatcher) func() {
 			}
 		}
 
-		for _, t := range d.GetTasks().GetItems() {
+		for _, t := range r.dispatcher.GetTasks().GetItems() {
 			tasksTotal += 1
 
 			switch t.GetStatus() {
@@ -95,19 +96,19 @@ func CaptureMetrics(d *dispatcher.Dispatcher) func() {
 		metricTasksStatusFailByTimeout.Set(float64(tasksStatusFailByTimeout))
 		metricTasksStatusKill.Set(float64(tasksStatusKill))
 		metricTasksStatusRepeatWait.Set(float64(tasksStatusRepeatWait))
-	}
+	}, r.config.GetDuration("metrics.interval")
 }
 
-func RegisterMetrics(r *metrics.Resource) {
-	metricWorkersTotal = r.NewGauge(MetricWorkersTotal)
-	metricTasksTotal = r.NewGauge(MetricTasksTotal)
+func (r *Resource) MetricsRegister(m *metrics.Resource) {
+	metricWorkersTotal = m.NewGauge(MetricWorkersTotal)
+	metricTasksTotal = m.NewGauge(MetricTasksTotal)
 
-	metricWorkersStatus := r.NewGauge(MetricWorkersStatus)
+	metricWorkersStatus := m.NewGauge(MetricWorkersStatus)
 	metricWorkerStatusWait = metricWorkersStatus.With("status", "wait")
 	metricWorkerStatusProcess = metricWorkersStatus.With("status", "process")
 	metricWorkerStatusBusy = metricWorkersStatus.With("status", "busy")
 
-	metricTasksStatus := r.NewGauge(MetricTasksStatus)
+	metricTasksStatus := m.NewGauge(MetricTasksStatus)
 	metricTasksStatusWait = metricTasksStatus.With("status", "wait")
 	metricTasksStatusProcess = metricTasksStatus.With("status", "process")
 	metricTasksStatusSuccess = metricTasksStatus.With("status", "success")

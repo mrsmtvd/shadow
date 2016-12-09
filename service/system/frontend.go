@@ -16,24 +16,24 @@ func (s *SystemService) GetTemplates() *assetfs.AssetFS {
 
 func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 	menu := []*frontend.FrontendMenu{
-		&frontend.FrontendMenu{
+		{
 			Name: "Configuration",
 			Url:  "/system/config",
 		},
-		&frontend.FrontendMenu{
+		{
 			Name: "Environment",
 			Url:  "/system/environment",
 		},
 	}
 
-	if s.Application.HasResource("workers") {
+	if s.application.HasResource("workers") {
 		menu = append(menu, &frontend.FrontendMenu{
 			Name: "Workers",
 			Url:  "/system/workers",
 		})
 	}
 
-	if s.Application.HasResource("mail") {
+	if s.application.HasResource("mail") {
 		menu = append(menu, &frontend.FrontendMenu{
 			Name: "Mail",
 			Url:  "/system/mail",
@@ -51,11 +51,11 @@ func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 	router.GET(s, "/system/config", &ConfigHandler{})
 	router.GET(s, "/system/environment", &EnvironmentHandler{})
 
-	if s.Application.HasResource("workers") {
+	if s.application.HasResource("workers") {
 		router.GET(s, "/system/workers", &WorkersHandler{})
 	}
 
-	if s.Application.HasResource("mail") {
+	if s.application.HasResource("mail") {
 		handlerMail := &MailHandler{}
 
 		router.GET(s, "/system/mail", handlerMail)

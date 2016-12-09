@@ -7,12 +7,7 @@ import (
 	"time"
 
 	"github.com/justinas/alice"
-	"github.com/kihamo/shadow/resource/metrics"
 	"github.com/rs/xlog"
-)
-
-var (
-	metricHandlerExecuteTime metrics.Timer
 )
 
 type ResponseWriter struct {
@@ -86,41 +81,28 @@ func LoggerMiddleware(service *FrontendService) alice.Constructor {
 
 			switch writer.GetStatusCode() {
 			case 500:
-				service.Logger.Error(message, fields)
+				service.logger.Error(message, fields)
 
 			case 404:
-				service.Logger.Warn(message, fields)
+				service.logger.Warn(message, fields)
 
 			default:
-				service.Logger.Info(message, fields)
+				service.logger.Info(message, fields)
 			}
 		})
 	}
 }
 
 func MetricsMiddleware(service *FrontendService) alice.Constructor {
-	resourceMetrics, err := service.application.GetResource("metrics")
-	if err == nil {
-		// create metrics
-		if metricHandlerExecuteTime == nil {
-			metricHandlerExecuteTime = resourceMetrics.(*metrics.Resource).
-				NewTimer(MetricHandlerExecuteTime)
-		}
-
-		return func(next http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				now := time.Now()
-
-				next.ServeHTTP(w, r)
-
-				metricHandlerExecuteTime.ObserveDurationByTime(now)
-			})
-		}
-	}
-
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			now := time.Now()
+
 			next.ServeHTTP(w, r)
+
+			if metricHandlerExecuteTime != nil {
+				metricHandlerExecuteTime.ObserveDurationByTime(now)
+			}
 		})
 	}
 }

@@ -30,10 +30,10 @@ type ServiceFrontendMenu interface {
 }
 
 type FrontendService struct {
+	application *shadow.Application
 	config      *config.Resource
 	template    *template.Resource
-	Logger      xlog.Logger
-	application *shadow.Application
+	logger      xlog.Logger
 	router      *Router
 }
 
@@ -57,18 +57,17 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 	}
 	s.config = resourceConfig.(*config.Resource)
 
-	if _, err := a.GetResource("logger"); err != nil {
-		return err
-	}
-
 	s.template.Globals["AlertsEnabled"] = a.HasResource("alerts")
 
 	return nil
 }
 
 func (s *FrontendService) Run(wg *sync.WaitGroup) error {
-	resourceLogger, _ := s.application.GetResource("logger")
-	s.Logger = resourceLogger.(*logger.Resource).Get(s.GetName())
+	if resourceLogger, err := s.application.GetResource("logger"); err == nil {
+		s.logger = resourceLogger.(*logger.Resource).Get(s.GetName())
+	} else {
+		s.logger = xlog.NopLogger
+	}
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
@@ -121,13 +120,13 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		// TODO: ssl
 		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt("frontend.port"))
 
-		s.Logger.Info("Running service", xlog.F{
+		s.logger.Info("Running service", xlog.F{
 			"addr": addr,
 			"pid":  os.Getpid(),
 		})
 
 		if err := http.ListenAndServe(addr, s.router); err != nil {
-			s.Logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
+			s.logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}(s.router)
 

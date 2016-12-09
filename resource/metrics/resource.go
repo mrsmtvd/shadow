@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kit/kit/log"
 	kit "github.com/go-kit/kit/metrics"
 	"github.com/go-kit/kit/metrics/influx"
 	influxdb "github.com/influxdata/influxdb/client/v2"
@@ -25,6 +24,14 @@ type Resource struct {
 
 	connector *influx.Influx
 	prefix    string
+}
+
+type ContextItemMetrics interface {
+	MetricsRegister(r *Resource)
+}
+
+type ContextItemMetricsCapture interface {
+	MetricsCapture() (func(), time.Duration)
 }
 
 func (r *Resource) GetName() string {
@@ -54,33 +61,18 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 		return err
 	}
 
-	var l log.Logger
-
-	if r.application.HasResource("logger") {
-		resourceLogger, _ := r.application.GetResource("logger")
-		r.logger = resourceLogger.(*logger.Resource).Get("metrics")
-
-		l = newMetricsLogger(r.logger)
+	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
+		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
 	} else {
-		l = log.NewNopLogger()
+		r.logger = xlog.NopLogger
 	}
 
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
 		Database:  r.config.GetString("metrics.database"),
 		Precision: "s",
-	}, l)
+	}, newMetricsLogger(r.logger))
 
 	r.prefix = r.config.GetString("metrics.prefix")
-
-	// debug metrics
-	if r.config.GetBool("debug") {
-		RegisterDebugMetrics(r)
-		CaptureMetrics(r.config.GetDuration("metrics.debug.interval"), CaptureDebugMetrics)
-	}
-
-	// runtime metrics
-	RegisterRuntimeMetrics(r)
-	CaptureMetrics(r.config.GetDuration("metrics.runtime.interval"), CaptureRuntimeMetrics)
 
 	// send to influx
 	go func() {
@@ -91,14 +83,35 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 
 		for range ticker.C {
 			if err := r.connector.WriteTo(client); err != nil {
-				if r.logger != nil {
-					r.logger.Error("Send metric to Influx failed")
-				}
-			} else if r.logger != nil {
+				r.logger.Error("Send metric to Influx failed")
+			} else {
 				r.logger.Debug("Send metric to Influx success")
 			}
 		}
 	}()
+
+	// search metrics
+	for _, resource := range r.application.GetResources() {
+		if rMetrics, ok := resource.(ContextItemMetrics); ok {
+			rMetrics.MetricsRegister(r)
+		}
+
+		if rCapture, ok := resource.(ContextItemMetricsCapture); ok {
+			f, d := rCapture.MetricsCapture()
+			r.CaptureMetrics(d, f)
+		}
+	}
+
+	for _, service := range r.application.GetServices() {
+		if sMetrics, ok := service.(ContextItemMetrics); ok {
+			sMetrics.MetricsRegister(r)
+		}
+
+		if sCapture, ok := service.(ContextItemMetricsCapture); ok {
+			f, d := sCapture.MetricsCapture()
+			r.CaptureMetrics(d, f)
+		}
+	}
 
 	return nil
 }
@@ -121,6 +134,14 @@ func (r *Resource) NewHistogram(name string) kit.Histogram {
 
 func (r *Resource) NewTimer(name string) Timer {
 	return NewMetricTimer(r.NewHistogram(name))
+}
+
+func (r *Resource) CaptureMetrics(d time.Duration, f func()) {
+	go func() {
+		for range time.NewTicker(d).C {
+			f()
+		}
+	}()
 }
 
 func (r *Resource) getTags() map[string]string {

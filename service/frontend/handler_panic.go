@@ -37,7 +37,7 @@ func (h *PanicHandler) Handle() {
 		"line":  line,
 	}
 
-	h.Service.(*FrontendService).Logger.Error("Frontend reguest error", fields)
+	h.Service.(*FrontendService).logger.Error("Frontend reguest error", fields)
 
 	h.SetVar("panic", fields)
 }

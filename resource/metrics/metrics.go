@@ -113,6 +113,28 @@ var (
 	runtimeThreadCreateProfile = pprof.Lookup("threadcreate")
 )
 
+func init() {
+	debugGCStats.Pause = make([]time.Duration, 11)
+}
+
+func (r *Resource) MetricsCapture() (func(), time.Duration) {
+	return func() {
+		if r.config.GetBool("debug") {
+			CaptureDebugMetrics()
+		}
+
+		CaptureRuntimeMetrics()
+	}, r.config.GetDuration("metrics.interval")
+}
+
+func (r *Resource) MetricsRegister(_ *Resource) {
+	if r.config.GetBool("debug") {
+		RegisterDebugMetrics(r)
+	}
+
+	RegisterRuntimeMetrics(r)
+}
+
 func CaptureDebugMetrics() {
 	gcLast := debugGCStats.LastGC
 
@@ -255,8 +277,4 @@ func RegisterRuntimeMetrics(r *Resource) {
 	runtimeMetricNumCgoCall = r.NewGauge(MetricRuntimeNumCgoCall)
 	runtimeMetricNumGoroutine = r.NewGauge(MetricRuntimeNumGoroutine)
 	runtimeMetricNumThread = r.NewGauge(MetricRuntimeNumThread)
-}
-
-func init() {
-	debugGCStats.Pause = make([]time.Duration, 11)
 }
