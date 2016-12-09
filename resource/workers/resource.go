@@ -107,6 +107,12 @@ func (r *Resource) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tas
 	return t
 }
 
+func (r *Resource) AddTaskByPriorityAndFunc(p int64, f task.TaskFunction, a ...interface{}) task.Tasker {
+	t := r.dispatcher.AddTaskByPriorityAndFunc(p, f, a...)
+	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil), map[string]interface{}{"priority": p})
+	return t
+}
+
 func (r *Resource) AddWorker() {
 	w := r.dispatcher.AddWorker()
 	r.logger.Infof("Add worker", map[string]interface{}{"worker.id": w.GetId()})
