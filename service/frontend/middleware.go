@@ -2,7 +2,6 @@ package frontend
 
 import (
 	"encoding/base64"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -70,23 +69,26 @@ func LoggerMiddleware(service *FrontendService) alice.Constructor {
 
 			next.ServeHTTP(writer, r)
 
-			message := fmt.Sprintf("%s \"%s %s %s\" %d %d \"%s\" \"%s\"", r.RemoteAddr, r.Method, r.RequestURI, r.Proto, writer.GetStatusCode(), r.ContentLength, r.Referer(), r.UserAgent())
-
 			fields := map[string]interface{}{
-				"method":      r.Method,
-				"request-uri": r.RequestURI,
-				"code":        writer.GetStatusCode(),
+				"remote-addr":    r.RemoteAddr,
+				"method":         r.Method,
+				"request-uri":    r.RequestURI,
+				"prote":          r.Proto,
+				"code":           writer.GetStatusCode(),
+				"content-length": r.ContentLength,
+				"referer":        r.Referer(),
+				"user-agent":     r.UserAgent(),
 			}
 
 			switch writer.GetStatusCode() {
 			case 500:
-				service.logger.Error(message, fields)
+				service.logger.Error("Internal error", fields)
 
 			case 404:
-				service.logger.Warn(message, fields)
+				service.logger.Warn("Not found", fields)
 
 			default:
-				service.logger.Info(message, fields)
+				service.logger.Info("Request", fields)
 			}
 		})
 	}
