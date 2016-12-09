@@ -71,11 +71,11 @@ func (r *Resource) setLogListener(wg *sync.WaitGroup) {
 			case t := <-listener.TaskDone:
 				switch t.GetStatus() {
 				case task.TaskStatusWait:
-					r.logger.Info("Finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "wait"}))
+					r.logger.Debug("Finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "wait"}))
 				case task.TaskStatusProcess:
-					r.logger.Info("Finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "process"}))
+					r.logger.Debug("Finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "process"}))
 				case task.TaskStatusSuccess:
-					r.logger.Info("Success finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "success"}))
+					r.logger.Debug("Success finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "success"}))
 				case task.TaskStatusFail:
 					r.logger.Error("Fail finished", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail"}))
 				case task.TaskStatusFailByTimeout:
@@ -83,7 +83,7 @@ func (r *Resource) setLogListener(wg *sync.WaitGroup) {
 				case task.TaskStatusKill:
 					r.logger.Warn("Execute killed", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "kill"}))
 				case task.TaskStatusRepeatWait:
-					r.logger.Info("Repeat execute", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "repeat-wait"}))
+					r.logger.Debug("Repeat execute", r.getLogFieldsForTask(t, map[string]interface{}{"task.status": "repeat-wait"}))
 				}
 			}
 		}
@@ -91,31 +91,31 @@ func (r *Resource) setLogListener(wg *sync.WaitGroup) {
 }
 
 func (r *Resource) AddTask(t task.Tasker) {
-	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
+	r.logger.Debug("Add task", r.getLogFieldsForTask(t, nil))
 	r.dispatcher.AddTask(t)
 }
 
 func (r *Resource) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddNamedTaskByFunc(n, f, a...)
-	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
+	r.logger.Debug("Add task", r.getLogFieldsForTask(t, nil))
 	return t
 }
 
 func (r *Resource) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddTaskByFunc(f, a...)
-	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil))
+	r.logger.Debug("Add task", r.getLogFieldsForTask(t, nil))
 	return t
 }
 
 func (r *Resource) AddTaskByPriorityAndFunc(p int64, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := r.dispatcher.AddTaskByPriorityAndFunc(p, f, a...)
-	r.logger.Info("Add task", r.getLogFieldsForTask(t, nil), map[string]interface{}{"priority": p})
+	r.logger.Debug("Add task", r.getLogFieldsForTask(t, nil), map[string]interface{}{"priority": p})
 	return t
 }
 
 func (r *Resource) AddWorker() {
 	w := r.dispatcher.AddWorker()
-	r.logger.Infof("Add worker", map[string]interface{}{"worker.id": w.GetId()})
+	r.logger.Debug("Add worker", map[string]interface{}{"worker.id": w.GetId()})
 }
 
 func (r *Resource) GetWorkers() []worker.Worker {
