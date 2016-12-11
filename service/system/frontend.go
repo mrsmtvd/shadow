@@ -48,7 +48,13 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 }
 
 func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
-	router.GET(s, "/system/config", &ConfigHandler{})
+	handlerConfig := &ConfigHandler{
+		config: s.config,
+		logger: s.logger,
+	}
+	router.GET(s, "/system/config", handlerConfig)
+	router.POST(s, "/system/config", handlerConfig)
+
 	router.GET(s, "/system/environment", &EnvironmentHandler{})
 
 	if s.application.HasResource("workers") {

@@ -8,33 +8,34 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
 			Key:   "mail.smtp.username",
-			Value: "",
 			Usage: "SMTP username",
+			Type:  config.ValueTypeString,
 		},
 		{
 			Key:   "mail.smtp.password",
-			Value: "",
 			Usage: "SMTP password",
+			Type:  config.ValueTypeString,
 		},
 		{
 			Key:   "mail.smtp.host",
-			Value: "",
 			Usage: "SMTP host",
+			Type:  config.ValueTypeString,
 		},
 		{
-			Key:   "mail.smtp.port",
-			Value: 25,
-			Usage: "SMTP port",
+			Key:     "mail.smtp.port",
+			Default: 25,
+			Usage:   "SMTP port",
+			Type:    config.ValueTypeInt,
 		},
 		{
 			Key:   "mail.from.address",
-			Value: "",
 			Usage: "Mail from address",
+			Type:  config.ValueTypeString,
 		},
 		{
 			Key:   "mail.from.name",
-			Value: "",
 			Usage: "Mail from name",
+			Type:  config.ValueTypeString,
 		},
 	}
 }

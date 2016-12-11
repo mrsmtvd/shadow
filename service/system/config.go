@@ -7,9 +7,10 @@ import (
 func (s *SystemService) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:   "system.timezone",
-			Value: "Local",
-			Usage: "System timezone",
+			Key:     "system.timezone",
+			Default: "Local",
+			Usage:   "System timezone",
+			Type:    config.ValueTypeString,
 		},
 	}
 }

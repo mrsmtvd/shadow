@@ -82,7 +82,7 @@ func (r *Resource) logConfig() {
 		"config.file":   globalConfig.Filename,
 	}
 
-	for key := range r.config.GetAll() {
+	for key := range r.config.GetAllValues() {
 		fields[key] = r.config.Get(key)
 	}
 

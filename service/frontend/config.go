@@ -7,24 +7,26 @@ import (
 func (s *FrontendService) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:   "frontend.host",
-			Value: "localhost",
-			Usage: "Frontend host",
+			Key:     "frontend.host",
+			Default: "localhost",
+			Usage:   "Frontend host",
+			Type:    config.ValueTypeString,
 		},
 		{
-			Key:   "frontend.port",
-			Value: 8080,
-			Usage: "Frontend port number",
+			Key:     "frontend.port",
+			Default: 8080,
+			Usage:   "Frontend port number",
+			Type:    config.ValueTypeInt,
 		},
 		{
 			Key:   "frontend.auth-user",
-			Value: "",
 			Usage: "User login",
+			Type:  config.ValueTypeString,
 		},
 		{
 			Key:   "frontend.auth-password",
-			Value: "",
 			Usage: "User password",
+			Type:  config.ValueTypeString,
 		},
 	}
 }

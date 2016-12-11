@@ -7,9 +7,10 @@ import (
 func (r *Resource) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:   "logger.level",
-			Value: 5,
-			Usage: "Log level",
+			Key:     "logger.level",
+			Default: 5,
+			Usage:   "Log level",
+			Type:    config.ValueTypeInt,
 		},
 	}
 }
