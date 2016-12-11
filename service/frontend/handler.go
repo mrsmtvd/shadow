@@ -129,8 +129,12 @@ func (h *AbstractFrontendHandler) DecodeJSON(output interface{}) error {
 	converter := gotypes.NewConverter(in, &output)
 
 	if !converter.Valid() {
-		return errors.New("Convert fail")
+		return errors.New("Convert failed")
 	}
 
 	return nil
+}
+
+func (h *AbstractFrontendHandler) Redirect(location string, code int) {
+	http.Redirect(h.Output, h.Input, h.Input.RequestURI, http.StatusFound)
 }

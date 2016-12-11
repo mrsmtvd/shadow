@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/kihamo/shadow/resource/logger"
@@ -50,6 +51,11 @@ func (h *ConfigHandler) Handle() {
 
 	if h.IsPost() {
 		err = h.saveNewValue(config)
+
+		if err == nil {
+			h.Redirect(h.Input.RequestURI, http.StatusFound)
+			return
+		}
 	}
 
 	h.SetTemplate("config.tpl.html")
