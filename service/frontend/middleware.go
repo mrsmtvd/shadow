@@ -1,7 +1,6 @@
 package frontend
 
 import (
-	"encoding/base64"
 	"net/http"
 	"time"
 
@@ -35,21 +34,13 @@ func (w *ResponseWriter) GetStatusCode() int {
 }
 
 func BasicAuthMiddleware(service *FrontendService) alice.Constructor {
-	user := service.config.GetString("frontend.auth-user")
-	if user == "" {
-		return func(next http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				next.ServeHTTP(w, r)
-			})
-		}
-	}
-
-	password := service.config.GetString("frontend.auth-password")
-	token := "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
-
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Header.Get("Authorization") == token {
+			service.mutex.RLock()
+			token := service.authToken
+			service.mutex.RUnlock()
+
+			if token == "" || r.Header.Get("Authorization") == token {
 				next.ServeHTTP(w, r)
 				return
 			}

@@ -1,6 +1,7 @@
 package frontend
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"net/http/pprof"
@@ -34,6 +35,9 @@ type FrontendService struct {
 	template    *template.Resource
 	logger      logger.Logger
 	router      *Router
+
+	mutex     sync.RWMutex
+	authToken string
 }
 
 func (c *FrontendService) GetName() string {
@@ -67,6 +71,8 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	} else {
 		s.logger = logger.NopLogger
 	}
+
+	s.generateAuthToken(nil, nil)
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
@@ -130,4 +136,18 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	}(s.router)
 
 	return nil
+}
+
+func (s *FrontendService) generateAuthToken(_ interface{}, _ interface{}) {
+	token := ""
+
+	user := s.config.GetString("frontend.auth-user")
+	if user != "" {
+		password := s.config.GetString("frontend.auth-password")
+		token = "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
+	}
+
+	s.mutex.Lock()
+	s.authToken = token
+	s.mutex.Unlock()
 }
