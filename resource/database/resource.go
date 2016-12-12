@@ -8,10 +8,6 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
-const (
-	defaultMigrationsTableName = "migrations"
-)
-
 type Resource struct {
 	application *shadow.Application
 	config      *config.Resource
@@ -36,15 +32,15 @@ func (r *Resource) Init(a *shadow.Application) error {
 }
 
 func (r *Resource) Run() (err error) {
-	r.storage, err = NewSQLStorage(r.config.GetString("database.driver"), r.config.GetString("database.dsn"))
+	r.storage, err = NewSQLStorage(r.config.GetString(ConfigDatabaseDriver), r.config.GetString(ConfigDatabaseDsn))
 
 	if err != nil {
 		return err
 	}
 
 	dbMap := r.storage.executor.(*gorp.DbMap)
-	dbMap.Db.SetMaxIdleConns(r.config.GetInt("database.max_idle_conns"))
-	dbMap.Db.SetMaxOpenConns(r.config.GetInt("database.max_open_conns"))
+	dbMap.Db.SetMaxIdleConns(r.config.GetInt(ConfigDatabaseMaxIdleConns))
+	dbMap.Db.SetMaxOpenConns(r.config.GetInt(ConfigDatabaseMaxOpenConns))
 
 	var l logger.Logger
 	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
@@ -53,13 +49,13 @@ func (r *Resource) Run() (err error) {
 		l = logger.NopLogger
 	}
 
-	if r.config.GetBool("debug") {
+	if r.config.GetBool(config.ConfigDebug) {
 		dbMap.TraceOn("", l)
 	}
 
 	r.storage.SetTypeConverter(TypeConverter{})
 
-	tableName := r.config.GetString("database.migrations.table")
+	tableName := r.config.GetString(ConfigDatabaseMigrationsTable)
 	if tableName == "" {
 		tableName = defaultMigrationsTableName
 	}

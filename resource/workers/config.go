@@ -27,16 +27,14 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (r *Resource) GetConfigWatcher() map[string][]config.Watcher {
+func (r *Resource) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigWorkersCount: {
-			r.watchWorkersCount,
-		},
+		ConfigWorkersCount: {r.watchWorkersCount},
 	}
 }
 
-func (r *Resource) watchWorkersCount(newValue interface{}, lastValue interface{}) {
-	for i := r.dispatcher.GetWorkers().Len(); i < r.config.GetInt(ConfigWorkersCount); i++ {
+func (r *Resource) watchWorkersCount(newValue interface{}, _ interface{}) {
+	for i := r.dispatcher.GetWorkers().Len(); i < newValue.(int); i++ {
 		r.dispatcher.AddWorker()
 	}
 }

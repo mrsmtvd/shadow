@@ -49,7 +49,7 @@ type hasVariables interface {
 }
 
 type hasWatchers interface {
-	GetConfigWatcher() map[string][]Watcher
+	GetConfigWatchers() map[string][]Watcher
 }
 
 func (r *Resource) GetName() string {
@@ -88,7 +88,7 @@ func (r *Resource) Run() error {
 		}
 
 		if watchers, ok := resource.(hasWatchers); ok {
-			for key, list := range watchers.GetConfigWatcher() {
+			for key, list := range watchers.GetConfigWatchers() {
 				for _, watcher := range list {
 					r.WatchVariable(key, watcher)
 				}
@@ -104,7 +104,7 @@ func (r *Resource) Run() error {
 		}
 
 		if watchers, ok := service.(hasWatchers); ok {
-			for key, list := range watchers.GetConfigWatcher() {
+			for key, list := range watchers.GetConfigWatchers() {
 				for _, watcher := range list {
 					r.WatchVariable(key, watcher)
 				}
@@ -228,7 +228,7 @@ func (r *Resource) Get(key string) interface{} {
 }
 
 func (r *Resource) Set(key string, value interface{}) error {
-	old := r.Get(key)
+	oldValue := r.Get(key)
 	r.mutex.Lock()
 
 	variable, ok := r.variables[key]
@@ -245,9 +245,11 @@ func (r *Resource) Set(key string, value interface{}) error {
 	r.mutex.Unlock()
 
 	if ok {
+		newValue := r.Get(key)
+
 		go func() {
 			for _, watcher := range watchers {
-				watcher(value, old)
+				watcher(newValue, oldValue)
 			}
 		}()
 	}

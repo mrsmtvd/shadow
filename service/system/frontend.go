@@ -2,6 +2,8 @@ package system
 
 import (
 	"github.com/elazarl/go-bindata-assetfs"
+	"github.com/kihamo/shadow/resource/mail"
+	"github.com/kihamo/shadow/resource/workers"
 	"github.com/kihamo/shadow/service/frontend"
 )
 
@@ -57,12 +59,16 @@ func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 
 	router.GET(s, "/system/environment", &EnvironmentHandler{})
 
-	if s.application.HasResource("workers") {
-		router.GET(s, "/system/workers", &WorkersHandler{})
+	if resourceWorkers, err := s.application.GetResource("workers"); err == nil {
+		router.GET(s, "/system/workers", &WorkersHandler{
+			workers: resourceWorkers.(*workers.Resource),
+		})
 	}
 
-	if s.application.HasResource("mail") {
-		handlerMail := &MailHandler{}
+	if resourceMail, err := s.application.GetResource("mail"); err == nil {
+		handlerMail := &MailHandler{
+			mail: resourceMail.(*mail.Resource),
+		}
 
 		router.GET(s, "/system/mail", handlerMail)
 		router.POST(s, "/system/mail", handlerMail)

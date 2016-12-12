@@ -25,6 +25,7 @@ type Resource struct {
 	config      *config.Resource
 	logger      logger.Logger
 
+	mutex  sync.RWMutex
 	open   bool
 	dialer *gomail.Dialer
 	closer gomail.SendCloser
@@ -55,13 +56,8 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	}
 
 	r.open = false
-	r.dialer = gomail.NewDialer(
-		r.config.GetString("mail.smtp.host"),
-		r.config.GetInt("mail.smtp.port"),
-		r.config.GetString("mail.smtp.username"),
-		r.config.GetString("mail.smtp.password"),
-	)
 	r.queue = make(chan *mailTask)
+	r.initDialer()
 
 	go func() {
 		defer wg.Done()
@@ -99,7 +95,23 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
+func (r *Resource) initDialer() {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	r.dialer = gomail.NewDialer(
+		r.config.GetString(ConfigMailSmtpHost),
+		r.config.GetInt(ConfigMailSmtpPort),
+		r.config.GetString(ConfigMailSmtpUsername),
+		r.config.GetString(ConfigMailSmtpPassword),
+	)
+	r.open = false
+}
+
 func (r *Resource) execute(task *mailTask) error {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
 	var err error
 
 	if !r.open {
@@ -116,7 +128,7 @@ func (r *Resource) execute(task *mailTask) error {
 
 	if r.open {
 		if len(task.message.GetHeader("From")) == 0 {
-			task.message.SetAddressHeader("From", r.config.GetString("mail.from.address"), r.config.GetString("mail.from.name"))
+			task.message.SetAddressHeader("From", r.config.GetString(ConfigMailFromAddress), r.config.GetString(ConfigMailFromName))
 		}
 
 		if err = gomail.Send(r.closer, task.message); err != nil {

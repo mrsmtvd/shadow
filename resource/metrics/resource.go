@@ -21,6 +21,8 @@ type Resource struct {
 	config *config.Resource
 	logger logger.Logger
 
+	mutex     sync.RWMutex
+	client    influxdb.Client
 	connector *influx.Influx
 	prefix    string
 }
@@ -50,13 +52,7 @@ func (r *Resource) Init(a *shadow.Application) error {
 }
 
 func (r *Resource) Run(wg *sync.WaitGroup) error {
-	client, err := influxdb.NewHTTPClient(influxdb.HTTPConfig{
-		Addr:     r.config.GetString("metrics.url"),
-		Username: r.config.GetString("metrics.username"),
-		Password: r.config.GetString("metrics.password"),
-	})
-
-	if err != nil {
+	if err := r.initClient(); err != nil {
 		return err
 	}
 
@@ -67,22 +63,28 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	}
 
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
-		Database:  r.config.GetString("metrics.database"),
-		Precision: "s",
+		Database:  r.config.GetString(ConfigMetricsDatabase),
+		Precision: r.config.GetString(ConfigMetricsPrecision),
 	}, logger.NewGoKitLogger(r.logger))
 
-	r.prefix = r.config.GetString("metrics.prefix")
+	r.prefix = r.config.GetString(ConfigMetricsPrefix)
 
 	// send to influx
 	go func() {
 		defer wg.Done()
 
-		ticker := time.NewTicker(r.config.GetDuration("metrics.interval"))
+		ticker := time.NewTicker(r.config.GetDuration(ConfigMetricsInterval))
 		defer ticker.Stop()
 
 		for range ticker.C {
+			r.mutex.RLock()
+			client := r.client
+			r.mutex.RUnlock()
+
 			if err := r.connector.WriteTo(client); err != nil {
-				r.logger.Error("Send metric to Influx failed")
+				r.logger.Error("Send metric to Influx failed", map[string]interface{}{
+					"error": err.Error(),
+				})
 			} else {
 				r.logger.Debug("Send metric to Influx success")
 			}
@@ -113,6 +115,19 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	}
 
 	return nil
+}
+
+func (r *Resource) initClient() (err error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	r.client, err = influxdb.NewHTTPClient(influxdb.HTTPConfig{
+		Addr:     r.config.GetString(ConfigMetricsUrl),
+		Username: r.config.GetString(ConfigMetricsUsername),
+		Password: r.config.GetString(ConfigMetricsPassword),
+	})
+
+	return err
 }
 
 func (r *Resource) getName(name string) string {
@@ -154,7 +169,7 @@ func (r *Resource) getTags() map[string]string {
 		tags["hostname"] = hostname
 	}
 
-	tagsFromConfig := r.config.GetString("metrics.tags")
+	tagsFromConfig := r.config.GetString(ConfigMetricsTags)
 	if len(tagsFromConfig) > 0 {
 		var parts []string
 

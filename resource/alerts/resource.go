@@ -69,7 +69,7 @@ func (r *Resource) Send(title string, message string, icon string) {
 
 func (a *Resource) GetAlerts() []*Alert {
 	a.mutex.Lock()
-	a.mutex.Unlock()
+	defer a.mutex.Unlock()
 
 	alerts := make([]*Alert, len(a.alerts))
 	copy(alerts, a.alerts)

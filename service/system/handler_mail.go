@@ -8,6 +8,8 @@ import (
 
 type MailHandler struct {
 	frontend.AbstractFrontendHandler
+
+	mail *mail.Resource
 }
 
 func (h *MailHandler) Handle() {
@@ -22,8 +24,7 @@ func (h *MailHandler) Handle() {
 			message.SetBody("text/plain", h.Input.FormValue("message"))
 		}
 
-		resourceMail, _ := h.Application.GetResource("mail")
-		if err := resourceMail.(*mail.Resource).SendAndReturn(message); err != nil {
+		if err := h.mail.SendAndReturn(message); err != nil {
 			h.SendJSON(map[string]interface{}{
 				"error": err.Error(),
 			})

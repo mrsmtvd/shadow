@@ -20,11 +20,11 @@ func main() {
 	application, err := shadow.NewApplication(
 		[]shadow.Resource{
 			new(config.Resource),
-			new(metrics.Resource),
-			new(database.Resource),
 			new(logger.Resource),
-			new(template.Resource),
+			new(metrics.Resource),
 			new(workers.Resource),
+			new(database.Resource),
+			new(template.Resource),
 			new(mail.Resource),
 			new(alerts.Resource),
 		},

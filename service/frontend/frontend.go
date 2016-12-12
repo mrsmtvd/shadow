@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/elazarl/go-bindata-assetfs"
+	"github.com/kihamo/shadow/resource/alerts"
 )
 
 func (s *FrontendService) GetTemplates() *assetfs.AssetFS {
@@ -47,8 +48,10 @@ func (s *FrontendService) SetFrontendHandlers(router *Router) {
 		http.FileServer(asset).ServeHTTP(out, in)
 	}))
 
-	if s.application.HasResource("alerts") {
-		router.GET(s, "/alerts", &AlertsHandler{})
+	if resourceAlerts, err := s.application.GetResource("alerts"); err == nil {
+		router.GET(s, "/alerts", &AlertsHandler{
+			alerts: resourceAlerts.(*alerts.Resource),
+		})
 	}
 
 	router.GET(s, "/", &IndexHandler{})

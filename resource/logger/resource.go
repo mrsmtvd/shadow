@@ -38,10 +38,10 @@ func (r *Resource) Init(a *shadow.Application) error {
 func (r *Resource) Run() (err error) {
 	var level xlog.Level
 
-	if r.config.GetBool("debug") {
+	if r.config.GetBool(config.ConfigDebug) {
 		level = xlog.LevelDebug
 	} else {
-		switch r.config.GetInt("logger.level") {
+		switch r.config.GetInt(ConfigLoggerLevel) {
 		case 1:
 			level = xlog.LevelFatal
 		case 2:

@@ -45,7 +45,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
 	r.dispatcher = dispatcher.NewDispatcher()
 	r.setLogListener(wg)
 
-	for i := 1; i <= r.config.GetInt("workers.count"); i++ {
+	for i := 1; i <= r.config.GetInt(ConfigWorkersCount); i++ {
 		r.AddWorker()
 	}
 
@@ -58,7 +58,7 @@ func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
 }
 
 func (r *Resource) setLogListener(wg *sync.WaitGroup) {
-	listener := dispatcher.NewDefaultListener(r.config.GetInt("workers.done.size"))
+	listener := dispatcher.NewDefaultListener(r.config.GetInt(ConfigDoneSize))
 	r.dispatcher.AddListener(listener)
 
 	// logger for finished tasks

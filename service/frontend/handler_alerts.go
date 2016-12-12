@@ -6,11 +6,12 @@ import (
 
 type AlertsHandler struct {
 	AbstractFrontendHandler
+
+	alerts *alerts.Resource
 }
 
 func (h *AlertsHandler) Handle() {
-	resourceAlerts, _ := h.Application.GetResource("alerts")
-	list := resourceAlerts.(*alerts.Resource).GetAlerts()
+	list := h.alerts.GetAlerts()
 
 	if h.IsAjax() {
 		alertsShort := make([]map[string]interface{}, 0, cap(list))

@@ -40,13 +40,13 @@ func (s *FrontendService) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (s *FrontendService) GetConfigWatcher() map[string][]config.Watcher {
+func (s *FrontendService) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigFrontendAuthUser: {
-			s.generateAuthToken,
-		},
-		ConfigFrontendAuthPassword: {
-			s.generateAuthToken,
-		},
+		ConfigFrontendAuthUser:     {s.watchAuth},
+		ConfigFrontendAuthPassword: {s.watchAuth},
 	}
+}
+
+func (s *FrontendService) watchAuth(_ interface{}, _ interface{}) {
+	s.generateAuthToken()
 }

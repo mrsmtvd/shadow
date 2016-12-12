@@ -1,9 +1,13 @@
 package config
 
+const (
+	ConfigDebug = "debug"
+)
+
 func (r *Resource) GetConfigVariables() []Variable {
 	return []Variable{
 		{
-			Key:     "debug",
+			Key:     ConfigDebug,
 			Default: false,
 			Usage:   "Debug mode",
 			Type:    ValueTypeBool,

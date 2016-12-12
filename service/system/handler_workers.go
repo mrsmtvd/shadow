@@ -10,18 +10,17 @@ import (
 
 type WorkersHandler struct {
 	frontend.AbstractFrontendHandler
+
+	workers *workers.Resource
 }
 
 func (h *WorkersHandler) Handle() {
 	if h.IsAjax() {
-		resourceWorkers, _ := h.Application.GetResource("workers")
-		dispatcher := resourceWorkers.(*workers.Resource)
-
 		workersList := []map[string]interface{}{}
 		workersWait := 0
 		workersBusy := 0
 
-		for _, w := range dispatcher.GetWorkers() {
+		for _, w := range h.workers.GetWorkers() {
 			switch w.GetStatus() {
 			case worker.WorkerStatusWait:
 				workersWait += 1

@@ -72,7 +72,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		s.logger = logger.NopLogger
 	}
 
-	s.generateAuthToken(nil, nil)
+	s.generateAuthToken()
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
@@ -82,7 +82,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	s.router.SetNotAllowedHandler(s, &MethodNotAllowedHandler{})
 	s.router.SetNotFoundHandler(s, &NotFoundHandler{})
 
-	if s.config.GetBool("debug") {
+	if s.config.GetBool(config.ConfigDebug) {
 		s.router.HandlerFunc("GET", "/debug/pprof/cmdline", pprof.Cmdline)
 		s.router.HandlerFunc("GET", "/debug/pprof/profile", pprof.Profile)
 		s.router.HandlerFunc("GET", "/debug/pprof/symbol", pprof.Symbol)
@@ -123,7 +123,7 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 		})
 
 		// TODO: ssl
-		addr := fmt.Sprintf("%s:%d", s.config.GetString("frontend.host"), s.config.GetInt("frontend.port"))
+		addr := fmt.Sprintf("%s:%d", s.config.GetString(ConfigFrontendHost), s.config.GetInt(ConfigFrontendPort))
 
 		s.logger.Info("Running service", map[string]interface{}{
 			"addr": addr,
@@ -138,12 +138,12 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (s *FrontendService) generateAuthToken(_ interface{}, _ interface{}) {
+func (s *FrontendService) generateAuthToken() {
 	token := ""
 
-	user := s.config.GetString("frontend.auth-user")
+	user := s.config.GetString(ConfigFrontendAuthUser)
 	if user != "" {
-		password := s.config.GetString("frontend.auth-password")
+		password := s.config.GetString(ConfigFrontendAuthPassword)
 		token = "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
 	}
 
