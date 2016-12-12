@@ -35,8 +35,17 @@ func (h *ConfigHandler) saveNewValue() error {
 	}
 
 	currentValue := h.config.Get(key)
+
 	newValue := h.Input.PostForm.Get("value")
 	err := h.config.Set(key, newValue)
+
+	if h.logger == nil {
+		if resourceLogger, err := h.Application.GetResource("logger"); err == nil {
+			h.logger = resourceLogger.(*logger.Resource).Get(h.Service.GetName())
+		} else {
+			h.logger = logger.NopLogger
+		}
+	}
 
 	h.logger.Infof("Change value for %s with %v to %v", key, currentValue, newValue)
 
