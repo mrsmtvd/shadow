@@ -3,15 +3,30 @@ package logger
 import (
 	"flag"
 	"log"
+	"os"
+	"strings"
+	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/rs/xlog"
 )
 
+const (
+	FieldAppName    = "app-name"
+	FieldAppVersion = "app-version"
+	FieldAppBuild   = "app-build"
+	FieldComponent  = "component"
+	FieldHostname   = "hostname"
+)
+
 type Resource struct {
-	config       *config.Resource
-	logger       *logger
+	application *shadow.Application
+
+	config  *config.Resource
+	loggers map[string]Logger
+
+	mutex        sync.RWMutex
 	loggerConfig xlog.Config
 }
 
@@ -26,53 +41,23 @@ func (r *Resource) Init(a *shadow.Application) error {
 	}
 	r.config = resourceConfig.(*config.Resource)
 
+	r.application = a
+
+	r.loggers = make(map[string]Logger, 1)
+
+	return nil
+}
+
+func (r *Resource) Run() error {
 	r.loggerConfig = xlog.Config{
 		Output: xlog.NewConsoleOutput(),
+		Level:  r.getLevel(),
+		Fields: r.getDefaultFields(),
 	}
 
-	r.initLogger()
+	log.SetOutput(r.Get(r.GetName()))
 
 	return nil
-}
-
-func (r *Resource) Run() (err error) {
-	var level xlog.Level
-
-	if r.config.GetBool(config.ConfigDebug) {
-		level = xlog.LevelDebug
-	} else {
-		switch r.config.GetInt(ConfigLoggerLevel) {
-		case 1:
-			level = xlog.LevelFatal
-		case 2:
-			level = xlog.LevelFatal
-		case 3:
-			level = xlog.LevelError
-		case 4:
-			level = xlog.LevelWarn
-		case 5:
-			level = xlog.LevelInfo
-		case 6:
-			level = xlog.LevelDebug
-		}
-	}
-
-	if level != r.loggerConfig.Level {
-		r.loggerConfig.Level = level
-		r.initLogger()
-	}
-
-	r.logConfig()
-
-	return nil
-}
-
-func (r *Resource) initLogger() {
-	r.logger = &logger{
-		x: xlog.New(r.loggerConfig),
-	}
-
-	log.SetOutput(r.logger)
 }
 
 func (r *Resource) logConfig() {
@@ -97,10 +82,67 @@ func (r *Resource) logConfig() {
 }
 
 func (r *Resource) Get(key string) Logger {
-	x := xlog.Copy(r.logger.x)
-	x.SetField("component", key)
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 
-	return &logger{
-		x: x,
+	if r, ok := r.loggers[key]; ok {
+		return r
 	}
+
+	l := newLogger(r.loggerConfig)
+	l.SetField(FieldComponent, key)
+
+	r.loggers[key] = l
+
+	return l
+}
+
+func (r *Resource) getLevel() xlog.Level {
+	switch r.config.GetInt(ConfigLoggerLevel) {
+	case 0:
+		return xlog.LevelFatal
+	case 1:
+		return xlog.LevelFatal
+	case 2:
+		return xlog.LevelFatal
+	case 3:
+		return xlog.LevelError
+	case 4:
+		return xlog.LevelWarn
+	case 5:
+		return xlog.LevelInfo
+	case 6:
+		return xlog.LevelInfo
+	case 7:
+		return xlog.LevelDebug
+	}
+
+	return xlog.LevelInfo
+}
+
+func (r *Resource) getDefaultFields() map[string]interface{} {
+	fields := map[string]interface{}{
+		FieldAppName:    r.application.Name,
+		FieldAppVersion: r.application.Version,
+		FieldAppBuild:   r.application.Build,
+	}
+
+	if hostname, err := os.Hostname(); err == nil {
+		fields[FieldHostname] = hostname
+	}
+
+	fieldsFromConfig := r.config.GetString(ConfigLoggerFields)
+	if len(fieldsFromConfig) > 0 {
+		var parts []string
+
+		for _, tag := range strings.Split(fieldsFromConfig, ",") {
+			parts = strings.Split(tag, "=")
+
+			if len(parts) > 1 {
+				fields[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+			}
+		}
+	}
+
+	return fields
 }

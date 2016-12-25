@@ -4,6 +4,7 @@ import (
 	"path"
 	"runtime"
 	"strconv"
+	"sync"
 
 	"github.com/rs/xlog"
 )
@@ -22,6 +23,27 @@ type Logger interface {
 
 type logger struct {
 	x xlog.Logger
+
+	fields map[string]interface{}
+	mutex  sync.RWMutex
+}
+
+func newLogger(c xlog.Config) *logger {
+	return &logger{
+		x:      xlog.New(c),
+		fields: map[string]interface{}{},
+	}
+}
+
+func (l *logger) setConfig(c xlog.Config) {
+	x := xlog.New(c)
+	for k, v := range l.fields {
+		x.SetField(k, v)
+	}
+
+	l.mutex.Lock()
+	l.x = x
+	l.mutex.Unlock()
 }
 
 func (l *logger) setCallFile(c int, f map[string]interface{}) {
@@ -54,50 +76,88 @@ func (l *logger) getArguments(c int, v ...interface{}) []interface{} {
 
 // FIXME: file field
 func (l *logger) Write(p []byte) (n int, err error) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	return l.x.Write(p)
 }
 
 func (l *logger) SetField(n string, v interface{}) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+
+	l.fields[n] = v
+
 	l.x.SetField(n, v)
 }
 
 func (l *logger) Debug(v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Debug(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Debugf(f string, v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Debugf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Info(v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Info(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Infof(f string, v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Infof(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Warn(v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Warn(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Warnf(f string, v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Warnf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Error(v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Error(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Errorf(f string, v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Errorf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Fatal(v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Fatal(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Fatalf(f string, v ...interface{}) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
 	l.x.Fatalf(f, l.getArguments(2, v...)...)
 }
 
@@ -108,6 +168,9 @@ func (l *logger) Output(f int, s string) error {
 
 func (l *logger) OutputF(v xlog.Level, c int, m string, f map[string]interface{}) {
 	l.setCallFile(c+2, f)
+
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
 	l.x.OutputF(v, c, m, f)
 }
 

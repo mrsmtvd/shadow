@@ -15,6 +15,13 @@ import (
 	"github.com/kihamo/shadow/resource/logger"
 )
 
+const (
+	TagAppName    = "app_name"
+	TagAppVersion = "app_version"
+	TagAppBuild   = "app_build"
+	TagHostname   = "hostname"
+)
+
 type Resource struct {
 	application *shadow.Application
 
@@ -163,13 +170,13 @@ func (r *Resource) CaptureMetrics(d time.Duration, f func()) {
 
 func (r *Resource) getTags() map[string]string {
 	tags := map[string]string{
-		"app_name":    r.application.Name,
-		"app_version": r.application.Version,
-		"app_build":   r.application.Build,
+		TagAppName:    r.application.Name,
+		TagAppVersion: r.application.Version,
+		TagAppBuild:   r.application.Build,
 	}
 
 	if hostname, err := os.Hostname(); err == nil {
-		tags["hostname"] = hostname
+		tags[TagHostname] = hostname
 	}
 
 	tagsFromConfig := r.config.GetString(ConfigMetricsTags)
