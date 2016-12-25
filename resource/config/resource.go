@@ -307,7 +307,7 @@ func (r *Resource) GetBoolDefault(key string, value interface{}) bool {
 	defer r.mutex.RUnlock()
 
 	if val, ok := r.variables[key]; ok {
-		return gotypes.ToBool(val)
+		return gotypes.ToBool(val.Value)
 	}
 
 	return gotypes.ToBool(value)
