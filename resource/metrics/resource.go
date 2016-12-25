@@ -52,15 +52,11 @@ func (r *Resource) Init(a *shadow.Application) error {
 }
 
 func (r *Resource) Run(wg *sync.WaitGroup) error {
-	if err := r.initClient(); err != nil {
+	if err := r.initClient(r.config.GetString(ConfigMetricsUrl), r.config.GetString(ConfigMetricsUsername), r.config.GetString(ConfigMetricsPassword)); err != nil {
 		return err
 	}
 
-	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
-		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
-	} else {
-		r.logger = logger.NopLogger
-	}
+	r.logger = logger.NewOrNop(r.GetName(), r.application)
 
 	r.connector = influx.New(r.getTags(), influxdb.BatchPointsConfig{
 		Database:  r.config.GetString(ConfigMetricsDatabase),
@@ -117,14 +113,14 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (r *Resource) initClient() (err error) {
+func (r *Resource) initClient(url, username, password string) (err error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	r.client, err = influxdb.NewHTTPClient(influxdb.HTTPConfig{
-		Addr:     r.config.GetString(ConfigMetricsUrl),
-		Username: r.config.GetString(ConfigMetricsUsername),
-		Password: r.config.GetString(ConfigMetricsPassword),
+		Addr:     url,
+		Username: username,
+		Password: password,
 	})
 
 	return err

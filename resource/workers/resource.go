@@ -36,11 +36,7 @@ func (r *Resource) Init(a *shadow.Application) error {
 }
 
 func (r *Resource) Run(wg *sync.WaitGroup) (err error) {
-	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
-		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
-	} else {
-		r.logger = logger.NopLogger
-	}
+	r.logger = logger.NewOrNop(r.GetName(), r.application)
 
 	r.dispatcher = dispatcher.NewDispatcher()
 	r.setLogListener(wg)

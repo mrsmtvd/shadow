@@ -35,6 +35,6 @@ func (r *Resource) GetConfigWatchers() map[string][]config.Watcher {
 
 func (r *Resource) watchWorkersCount(newValue interface{}, _ interface{}) {
 	for i := r.dispatcher.GetWorkers().Len(); i < newValue.(int); i++ {
-		r.dispatcher.AddWorker()
+		r.AddWorker()
 	}
 }

@@ -49,15 +49,16 @@ func (r *Resource) Init(a *shadow.Application) error {
 }
 
 func (r *Resource) Run(wg *sync.WaitGroup) error {
-	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
-		r.logger = resourceLogger.(*logger.Resource).Get(r.GetName())
-	} else {
-		r.logger = logger.NopLogger
-	}
+	r.logger = logger.NewOrNop(r.GetName(), r.application)
 
 	r.open = false
 	r.queue = make(chan *mailTask)
-	r.initDialer()
+	r.initDialer(
+		r.config.GetString(ConfigMailSmtpHost),
+		r.config.GetInt(ConfigMailSmtpPort),
+		r.config.GetString(ConfigMailSmtpUsername),
+		r.config.GetString(ConfigMailSmtpPassword),
+	)
 
 	go func() {
 		defer wg.Done()
@@ -95,16 +96,11 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (r *Resource) initDialer() {
+func (r *Resource) initDialer(host string, port int, username, password string) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.dialer = gomail.NewDialer(
-		r.config.GetString(ConfigMailSmtpHost),
-		r.config.GetInt(ConfigMailSmtpPort),
-		r.config.GetString(ConfigMailSmtpUsername),
-		r.config.GetString(ConfigMailSmtpPassword),
-	)
+	r.dialer = gomail.NewDialer(host, port, username, password)
 	r.open = false
 }
 

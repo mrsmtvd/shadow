@@ -57,13 +57,45 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 
 func (r *Resource) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigMailSmtpUsername: {r.watchSmtp},
-		ConfigMailSmtpPassword: {r.watchSmtp},
-		ConfigMailSmtpHost:     {r.watchSmtp},
-		ConfigMailSmtpPort:     {r.watchSmtp},
+		ConfigMailSmtpHost:     {r.watchHost},
+		ConfigMailSmtpPort:     {r.watchPort},
+		ConfigMailSmtpUsername: {r.watchUsername},
+		ConfigMailSmtpPassword: {r.watchPassword},
 	}
 }
 
-func (r *Resource) watchSmtp(_ interface{}, _ interface{}) {
-	r.initDialer()
+func (r *Resource) watchHost(newValue interface{}, _ interface{}) {
+	r.initDialer(
+		newValue.(string),
+		r.config.GetInt(ConfigMailSmtpPort),
+		r.config.GetString(ConfigMailSmtpUsername),
+		r.config.GetString(ConfigMailSmtpPassword),
+	)
+}
+
+func (r *Resource) watchPort(newValue interface{}, _ interface{}) {
+	r.initDialer(
+		r.config.GetString(ConfigMailSmtpHost),
+		newValue.(int),
+		r.config.GetString(ConfigMailSmtpUsername),
+		r.config.GetString(ConfigMailSmtpPassword),
+	)
+}
+
+func (r *Resource) watchUsername(newValue interface{}, _ interface{}) {
+	r.initDialer(
+		r.config.GetString(ConfigMailSmtpHost),
+		r.config.GetInt(ConfigMailSmtpPort),
+		newValue.(string),
+		r.config.GetString(ConfigMailSmtpPassword),
+	)
+}
+
+func (r *Resource) watchPassword(newValue interface{}, _ interface{}) {
+	r.initDialer(
+		r.config.GetString(ConfigMailSmtpHost),
+		r.config.GetInt(ConfigMailSmtpPort),
+		r.config.GetString(ConfigMailSmtpUsername),
+		newValue.(string),
+	)
 }

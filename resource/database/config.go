@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/resource/config"
 	"github.com/rubenv/sql-migrate"
 )
@@ -55,10 +54,15 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 
 func (r *Resource) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
+		config.ConfigDebug:            {r.watchDebug},
 		ConfigDatabaseMigrationsTable: {r.watchMigrationsTable},
 		ConfigDatabaseMaxIdleConns:    {r.watchMaxIdleConns},
 		ConfigDatabaseMaxOpenConns:    {r.watchMaxOpenConns},
 	}
+}
+
+func (r *Resource) watchDebug(newValue interface{}, _ interface{}) {
+	r.initTrace(newValue.(bool))
 }
 
 func (r *Resource) watchMigrationsTable(newValue interface{}, _ interface{}) {
@@ -66,9 +70,9 @@ func (r *Resource) watchMigrationsTable(newValue interface{}, _ interface{}) {
 }
 
 func (r *Resource) watchMaxIdleConns(newValue interface{}, _ interface{}) {
-	r.storage.executor.(*gorp.DbMap).Db.SetMaxIdleConns(newValue.(int))
+	r.initConns(newValue.(int), r.config.GetInt(ConfigDatabaseMaxOpenConns))
 }
 
 func (r *Resource) watchMaxOpenConns(newValue interface{}, _ interface{}) {
-	r.storage.executor.(*gorp.DbMap).Db.SetMaxIdleConns(newValue.(int))
+	r.initConns(r.config.GetInt(ConfigDatabaseMaxIdleConns), newValue.(int))
 }

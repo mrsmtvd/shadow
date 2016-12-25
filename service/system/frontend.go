@@ -2,6 +2,7 @@ package system
 
 import (
 	"github.com/elazarl/go-bindata-assetfs"
+	"github.com/kihamo/shadow/resource/logger"
 	"github.com/kihamo/shadow/resource/mail"
 	"github.com/kihamo/shadow/resource/workers"
 	"github.com/kihamo/shadow/service/frontend"
@@ -52,6 +53,7 @@ func (s *SystemService) GetFrontendMenu() *frontend.FrontendMenu {
 func (s *SystemService) SetFrontendHandlers(router *frontend.Router) {
 	handlerConfig := &ConfigHandler{
 		config: s.config,
+		logger: logger.NewOrNop(s.GetName(), s.application),
 	}
 	router.GET(s, "/system/config", handlerConfig)
 	router.POST(s, "/system/config", handlerConfig)

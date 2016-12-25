@@ -67,12 +67,32 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 
 func (r *Resource) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigMetricsUrl:      {r.watchClient},
-		ConfigMetricsUsername: {r.watchClient},
-		ConfigMetricsPassword: {r.watchClient},
+		ConfigMetricsUrl:      {r.watchUrl},
+		ConfigMetricsUsername: {r.watchUsername},
+		ConfigMetricsPassword: {r.watchPassword},
 	}
 }
 
-func (r *Resource) watchClient(_ interface{}, _ interface{}) {
-	r.initClient()
+func (r *Resource) watchUrl(newValue interface{}, _ interface{}) {
+	r.initClient(
+		newValue.(string),
+		r.config.GetString(ConfigMetricsUsername),
+		r.config.GetString(ConfigMetricsPassword),
+	)
+}
+
+func (r *Resource) watchUsername(newValue interface{}, _ interface{}) {
+	r.initClient(
+		r.config.GetString(ConfigMetricsUrl),
+		newValue.(string),
+		r.config.GetString(ConfigMetricsPassword),
+	)
+}
+
+func (r *Resource) watchPassword(newValue interface{}, _ interface{}) {
+	r.initClient(
+		r.config.GetString(ConfigMetricsUrl),
+		r.config.GetString(ConfigMetricsUsername),
+		newValue.(string),
+	)
 }

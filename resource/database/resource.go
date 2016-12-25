@@ -12,6 +12,7 @@ type Resource struct {
 	application *shadow.Application
 	config      *config.Resource
 	storage     *SqlStorage
+	logger      logger.Logger
 }
 
 func (r *Resource) GetName() string {
@@ -32,26 +33,15 @@ func (r *Resource) Init(a *shadow.Application) error {
 }
 
 func (r *Resource) Run() (err error) {
+	r.logger = logger.NewOrNop(r.GetName(), r.application)
 	r.storage, err = NewSQLStorage(r.config.GetString(ConfigDatabaseDriver), r.config.GetString(ConfigDatabaseDsn))
 
 	if err != nil {
 		return err
 	}
 
-	dbMap := r.storage.executor.(*gorp.DbMap)
-	dbMap.Db.SetMaxIdleConns(r.config.GetInt(ConfigDatabaseMaxIdleConns))
-	dbMap.Db.SetMaxOpenConns(r.config.GetInt(ConfigDatabaseMaxOpenConns))
-
-	var l logger.Logger
-	if resourceLogger, err := r.application.GetResource("logger"); err == nil {
-		l = resourceLogger.(*logger.Resource).Get(r.GetName())
-	} else {
-		l = logger.NopLogger
-	}
-
-	if r.config.GetBool(config.ConfigDebug) {
-		dbMap.TraceOn("", l)
-	}
+	r.initConns(r.config.GetInt(ConfigDatabaseMaxIdleConns), r.config.GetInt(ConfigDatabaseMaxOpenConns))
+	r.initTrace(r.config.GetBool(config.ConfigDebug))
 
 	r.storage.SetTypeConverter(TypeConverter{})
 
@@ -66,11 +56,28 @@ func (r *Resource) Run() (err error) {
 		return err
 	}
 
-	l.Infof("Applied %d migrations", n)
+	r.logger.Infof("Applied %d migrations", n)
 
 	return nil
 }
 
 func (r *Resource) GetStorage() *SqlStorage {
 	return r.storage
+}
+
+func (r *Resource) initConns(idle int, open int) {
+	dbMap := r.storage.executor.(*gorp.DbMap)
+
+	dbMap.Db.SetMaxIdleConns(idle)
+	dbMap.Db.SetMaxOpenConns(open)
+}
+
+func (r *Resource) initTrace(enable bool) {
+	dbMap := r.storage.executor.(*gorp.DbMap)
+
+	if enable {
+		dbMap.TraceOn("", r.logger)
+	} else {
+		dbMap.TraceOff()
+	}
 }

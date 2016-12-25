@@ -66,13 +66,9 @@ func (s *FrontendService) Init(a *shadow.Application) (err error) {
 }
 
 func (s *FrontendService) Run(wg *sync.WaitGroup) error {
-	if resourceLogger, err := s.application.GetResource("logger"); err == nil {
-		s.logger = resourceLogger.(*logger.Resource).Get(s.GetName())
-	} else {
-		s.logger = logger.NopLogger
-	}
+	s.logger = logger.NewOrNop(s.GetName(), s.application)
 
-	s.generateAuthToken()
+	s.generateAuthToken(s.config.GetString(ConfigFrontendAuthUser), s.config.GetString(ConfigFrontendAuthPassword))
 
 	// скидывает mux по-умолчанию, так как pprof добавил свои хэндлеры
 	http.DefaultServeMux = http.NewServeMux()
@@ -138,12 +134,9 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (s *FrontendService) generateAuthToken() {
+func (s *FrontendService) generateAuthToken(user, password string) {
 	token := ""
-
-	user := s.config.GetString(ConfigFrontendAuthUser)
 	if user != "" {
-		password := s.config.GetString(ConfigFrontendAuthPassword)
 		token = "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
 	}
 
