@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"time"
+
 	"github.com/kihamo/shadow/resource/config"
 )
 
@@ -47,10 +49,11 @@ func (r *Resource) GetConfigVariables() []config.Variable {
 			Type:    config.ValueTypeString,
 		},
 		{
-			Key:     ConfigMetricsInterval,
-			Default: "30s",
-			Usage:   "Flush interval",
-			Type:    config.ValueTypeDuration,
+			Key:      ConfigMetricsInterval,
+			Default:  "30s",
+			Usage:    "Flush interval",
+			Type:     config.ValueTypeDuration,
+			Editable: true,
 		},
 		{
 			Key:   ConfigMetricsTags,
@@ -70,6 +73,7 @@ func (r *Resource) GetConfigWatchers() map[string][]config.Watcher {
 		ConfigMetricsUrl:      {r.watchUrl},
 		ConfigMetricsUsername: {r.watchUsername},
 		ConfigMetricsPassword: {r.watchPassword},
+		ConfigMetricsInterval: {r.watchInterval},
 	}
 }
 
@@ -95,4 +99,8 @@ func (r *Resource) watchPassword(newValue interface{}, _ interface{}) {
 		r.config.GetString(ConfigMetricsUsername),
 		newValue.(string),
 	)
+}
+
+func (r *Resource) watchInterval(newValue interface{}, _ interface{}) {
+	r.changeTicker <- newValue.(time.Duration)
 }

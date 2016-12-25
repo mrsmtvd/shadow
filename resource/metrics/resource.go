@@ -21,10 +21,11 @@ type Resource struct {
 	config *config.Resource
 	logger logger.Logger
 
-	mutex     sync.RWMutex
-	client    influxdb.Client
-	connector *influx.Influx
-	prefix    string
+	mutex        sync.RWMutex
+	client       influxdb.Client
+	connector    *influx.Influx
+	prefix       string
+	changeTicker chan time.Duration
 }
 
 type ContextItemMetrics interface {
@@ -48,6 +49,8 @@ func (r *Resource) Init(a *shadow.Application) error {
 
 	r.application = a
 
+	r.changeTicker = make(chan time.Duration)
+
 	return nil
 }
 
@@ -70,19 +73,23 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 		defer wg.Done()
 
 		ticker := time.NewTicker(r.config.GetDuration(ConfigMetricsInterval))
-		defer ticker.Stop()
 
-		for range ticker.C {
-			r.mutex.RLock()
-			client := r.client
-			r.mutex.RUnlock()
+		for {
+			select {
+			case <-ticker.C:
+				r.mutex.RLock()
+				client := r.client
+				r.mutex.RUnlock()
 
-			if err := r.connector.WriteTo(client); err != nil {
-				r.logger.Error("Send metric to Influx failed", map[string]interface{}{
-					"error": err.Error(),
-				})
-			} else {
-				r.logger.Debug("Send metric to Influx success")
+				if err := r.connector.WriteTo(client); err != nil {
+					r.logger.Error("Send metric to Influx failed", map[string]interface{}{
+						"error": err.Error(),
+					})
+				} else {
+					r.logger.Debug("Send metric to Influx success")
+				}
+			case d := <-r.changeTicker:
+				ticker = time.NewTicker(d)
 			}
 		}
 	}()
