@@ -79,15 +79,15 @@ func (s *FrontendService) Run(wg *sync.WaitGroup) error {
 	s.router.SetNotFoundHandler(s, &NotFoundHandler{})
 
 	if s.config.GetBool(config.ConfigDebug) {
-		s.router.HandlerFunc("GET", "/debug/pprof/cmdline", pprof.Cmdline)
-		s.router.HandlerFunc("GET", "/debug/pprof/profile", pprof.Profile)
-		s.router.HandlerFunc("GET", "/debug/pprof/symbol", pprof.Symbol)
-		s.router.HandlerFunc("POST", "/debug/pprof/symbol", pprof.Symbol)
-		s.router.HandlerFunc("GET", "/debug/pprof/block", pprof.Index)
-		s.router.HandlerFunc("GET", "/debug/pprof/goroutine", pprof.Index)
-		s.router.HandlerFunc("GET", "/debug/pprof/heap", pprof.Index)
-		s.router.HandlerFunc("GET", "/debug/pprof/threadcreate", pprof.Index)
-		s.router.HandlerFunc("GET", "/debug/pprof/", pprof.Index)
+		s.router.Handler("GET", "/debug/pprof/cmdline", s.debugHandler(pprof.Cmdline))
+		s.router.Handler("GET", "/debug/pprof/profile", s.debugHandler(pprof.Profile))
+		s.router.Handler("GET", "/debug/pprof/symbol", s.debugHandler(pprof.Symbol))
+		s.router.Handler("POST", "/debug/pprof/symbol", s.debugHandler(pprof.Symbol))
+		s.router.Handler("GET", "/debug/pprof/block", s.debugHandler(pprof.Index))
+		s.router.Handler("GET", "/debug/pprof/goroutine", s.debugHandler(pprof.Index))
+		s.router.Handler("GET", "/debug/pprof/heap", s.debugHandler(pprof.Index))
+		s.router.Handler("GET", "/debug/pprof/threadcreate", s.debugHandler(pprof.Index))
+		s.router.Handler("GET", "/debug/pprof/", s.debugHandler(pprof.Index))
 	}
 
 	menus := make([]*FrontendMenu, 0, len(s.application.GetServices()))
@@ -143,4 +143,14 @@ func (s *FrontendService) generateAuthToken(user, password string) {
 	s.mutex.Lock()
 	s.authToken = token
 	s.mutex.Unlock()
+}
+
+func (s *FrontendService) debugHandler(h http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if s.config.GetBool(config.ConfigDebug) {
+			h.ServeHTTP(w, r)
+		} else {
+			s.router.NotFound.ServeHTTP(w, r)
+		}
+	})
 }
