@@ -7,7 +7,6 @@ import (
 	"time"
 
 	kit "github.com/go-kit/kit/metrics"
-	"github.com/kihamo/shadow/resource/config"
 )
 
 const (
@@ -118,21 +117,13 @@ func init() {
 	debugGCStats.Pause = make([]time.Duration, 11)
 }
 
-func (r *Resource) MetricsCapture() (func(), time.Duration) {
-	return func() {
-		if r.config.GetBool(config.ConfigDebug) {
-			CaptureDebugMetrics()
-		}
-
-		CaptureRuntimeMetrics()
-	}, r.config.GetDuration(ConfigMetricsInterval)
+func (r *Resource) MetricsCapture() {
+	CaptureDebugMetrics()
+	CaptureRuntimeMetrics()
 }
 
 func (r *Resource) MetricsRegister(_ *Resource) {
-	if r.config.GetBool(config.ConfigDebug) {
-		RegisterDebugMetrics(r)
-	}
-
+	RegisterDebugMetrics(r)
 	RegisterRuntimeMetrics(r)
 }
 

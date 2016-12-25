@@ -40,7 +40,7 @@ type ContextItemMetrics interface {
 }
 
 type ContextItemMetricsCapture interface {
-	MetricsCapture() (func(), time.Duration)
+	MetricsCapture()
 }
 
 func (r *Resource) GetName() string {
@@ -75,6 +75,19 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 
 	r.prefix = r.config.GetString(ConfigMetricsPrefix)
 
+	// search metrics
+	for _, resource := range r.application.GetResources() {
+		if rMetrics, ok := resource.(ContextItemMetrics); ok {
+			rMetrics.MetricsRegister(r)
+		}
+	}
+
+	for _, service := range r.application.GetServices() {
+		if sMetrics, ok := service.(ContextItemMetrics); ok {
+			sMetrics.MetricsRegister(r)
+		}
+	}
+
 	// send to influx
 	go func() {
 		defer wg.Done()
@@ -84,6 +97,34 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 		for {
 			select {
 			case <-ticker.C:
+				// collect metrics
+				wg := new(sync.WaitGroup)
+
+				for _, resource := range r.application.GetResources() {
+					if rCapture, ok := resource.(ContextItemMetricsCapture); ok {
+						wg.Add(1)
+
+						go func() {
+							defer wg.Done()
+							rCapture.MetricsCapture()
+						}()
+					}
+				}
+
+				for _, service := range r.application.GetServices() {
+					if sCapture, ok := service.(ContextItemMetricsCapture); ok {
+						wg.Add(1)
+
+						go func() {
+							defer wg.Done()
+							sCapture.MetricsCapture()
+						}()
+					}
+				}
+
+				wg.Wait()
+
+				// send metrics
 				r.mutex.RLock()
 				client := r.client
 				r.mutex.RUnlock()
@@ -100,29 +141,6 @@ func (r *Resource) Run(wg *sync.WaitGroup) error {
 			}
 		}
 	}()
-
-	// search metrics
-	for _, resource := range r.application.GetResources() {
-		if rMetrics, ok := resource.(ContextItemMetrics); ok {
-			rMetrics.MetricsRegister(r)
-		}
-
-		if rCapture, ok := resource.(ContextItemMetricsCapture); ok {
-			f, d := rCapture.MetricsCapture()
-			r.CaptureMetrics(d, f)
-		}
-	}
-
-	for _, service := range r.application.GetServices() {
-		if sMetrics, ok := service.(ContextItemMetrics); ok {
-			sMetrics.MetricsRegister(r)
-		}
-
-		if sCapture, ok := service.(ContextItemMetricsCapture); ok {
-			f, d := sCapture.MetricsCapture()
-			r.CaptureMetrics(d, f)
-		}
-	}
 
 	return nil
 }
