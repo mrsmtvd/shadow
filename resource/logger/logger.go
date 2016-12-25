@@ -1,6 +1,10 @@
 package logger
 
 import (
+	"path"
+	"runtime"
+	"strconv"
+
 	"github.com/rs/xlog"
 )
 
@@ -20,6 +24,35 @@ type logger struct {
 	x xlog.Logger
 }
 
+func (l *logger) setCallFile(c int, f map[string]interface{}) {
+	if _, ok := f[xlog.KeyFile]; !ok {
+		if _, file, line, ok := runtime.Caller(c); ok {
+			f[xlog.KeyFile] = path.Base(file) + ":" + strconv.FormatInt(int64(line), 10)
+		}
+	}
+}
+
+func (l *logger) getArguments(c int, v ...interface{}) []interface{} {
+	fields := map[string]interface{}{}
+	args := make([]interface{}, 0)
+
+	// merge field maps
+	for i := range v {
+		if set, ok := v[i].(map[string]interface{}); ok {
+			for key, val := range set {
+				fields[key] = val
+			}
+		} else {
+			args = append(args, v[i])
+		}
+	}
+
+	l.setCallFile(c+1, fields)
+
+	return append(args, fields)
+}
+
+// FIXME: file field
 func (l *logger) Write(p []byte) (n int, err error) {
 	return l.x.Write(p)
 }
@@ -29,50 +62,52 @@ func (l *logger) SetField(n string, v interface{}) {
 }
 
 func (l *logger) Debug(v ...interface{}) {
-	l.x.Debug(v...)
+	l.x.Debug(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Debugf(f string, v ...interface{}) {
-	l.x.Debugf(f, v...)
+	l.x.Debugf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Info(v ...interface{}) {
-	l.x.Info(v...)
+	l.x.Info(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Infof(f string, v ...interface{}) {
-	l.x.Infof(f, v...)
+	l.x.Infof(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Warn(v ...interface{}) {
-	l.x.Warn(v...)
+	l.x.Warn(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Warnf(f string, v ...interface{}) {
-	l.x.Warnf(f, v...)
+	l.x.Warnf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Error(v ...interface{}) {
-	l.x.Error(v...)
+	l.x.Error(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Errorf(f string, v ...interface{}) {
-	l.x.Errorf(f, v...)
+	l.x.Errorf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Fatal(v ...interface{}) {
-	l.x.Fatal(v...)
+	l.x.Fatal(l.getArguments(2, v...)...)
 }
 
 func (l *logger) Fatalf(f string, v ...interface{}) {
-	l.x.Fatalf(f, v...)
+	l.x.Fatalf(f, l.getArguments(2, v...)...)
 }
 
 func (l *logger) Output(f int, s string) error {
-	return l.x.Output(f, s)
+	l.Info(s)
+	return nil
 }
 
 func (l *logger) OutputF(v xlog.Level, c int, m string, f map[string]interface{}) {
+	l.setCallFile(c+2, f)
 	l.x.OutputF(v, c, m, f)
 }
 
@@ -97,9 +132,9 @@ func (l *logger) Panicf(f string, v ...interface{}) {
 }
 
 func (l *logger) Panicln(v ...interface{}) {
-	l.x.Fatal(v...)
+	l.Fatal(v...)
 }
 
 func (l *logger) Log(v ...interface{}) {
-	l.x.Info(v...)
+	l.Info(v...)
 }
