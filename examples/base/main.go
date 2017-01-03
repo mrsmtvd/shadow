@@ -4,33 +4,28 @@ import (
 	"log"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/resource/alerts"
-	"github.com/kihamo/shadow/resource/config"
-	"github.com/kihamo/shadow/resource/database"
-	"github.com/kihamo/shadow/resource/logger"
-	"github.com/kihamo/shadow/resource/mail"
-	"github.com/kihamo/shadow/resource/metrics"
-	"github.com/kihamo/shadow/resource/template"
-	"github.com/kihamo/shadow/resource/workers"
-	"github.com/kihamo/shadow/service/frontend"
-	"github.com/kihamo/shadow/service/system"
+	"github.com/kihamo/shadow/components/alerts"
+	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/database"
+	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/mail"
+	"github.com/kihamo/shadow/components/metrics"
+	"github.com/kihamo/shadow/components/workers"
 )
 
 func main() {
 	application, err := shadow.NewApplication(
-		[]shadow.Resource{
-			new(config.Resource),
-			new(logger.Resource),
-			new(metrics.Resource),
-			new(workers.Resource),
-			new(database.Resource),
-			new(template.Resource),
-			new(mail.Resource),
-			new(alerts.Resource),
-		},
-		[]shadow.Service{
-			new(system.SystemService),
-			new(frontend.FrontendService),
+		[]shadow.Component{
+			new(config.Component),
+			new(logger.Component),
+			new(metrics.Component),
+			new(workers.Component),
+			new(database.Component),
+			new(mail.Component),
+			new(alerts.Component),
+
+			new(dashboard.Component),
 		},
 		"Shadow base",
 		"1.0",

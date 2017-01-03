@@ -1,38 +1,32 @@
 package shadow // import "github.com/kihamo/shadow"
 
 import (
-	"errors"
+	"fmt"
 	"sync"
 )
 
 //go:generate goimports -w ./
-//go:generate sh -c "cd service/frontend && go-bindata-assetfs -pkg=frontend --ignore=blur-admin templates/... public/..."
-//go:generate sh -c "cd service/system && go-bindata-assetfs -pkg=system templates/..."
+//go:generate sh -c "cd components/alerts && go-bindata-assetfs -pkg=alerts templates/..."
+//go:generate sh -c "cd components/dashboard && go-bindata-assetfs -pkg=dashboard templates/... public/..."
+//go:generate sh -c "cd components/mail && go-bindata-assetfs -pkg=mail templates/..."
+//go:generate sh -c "cd components/workers && go-bindata-assetfs -pkg=workers templates/..."
 
-type ContextItem interface {
+type Component interface {
 	GetName() string
+	GetVersion() string
 	Init(*Application) error
 }
 
-type ContextItemRunner interface {
+type ComponentRunner interface {
 	Run() error
 }
 
-type ContextItemAsyncRunner interface {
+type ComponentAsyncRunner interface {
 	Run(*sync.WaitGroup) error
 }
 
-type Resource interface {
-	ContextItem
-}
-
-type Service interface {
-	ContextItem
-}
-
 type Application struct {
-	resources []Resource
-	services  []Service
+	components []Component
 
 	Name    string
 	Version string
@@ -41,24 +35,17 @@ type Application struct {
 	wg *sync.WaitGroup
 }
 
-func NewApplication(resources []Resource, services []Service, name string, version string, build string) (*Application, error) {
+func NewApplication(components []Component, name string, version string, build string) (*Application, error) {
 	application := &Application{
-		resources: []Resource{},
-		services:  []Service{},
-		Name:      name,
-		Version:   version,
-		Build:     build,
-		wg:        new(sync.WaitGroup),
+		components: []Component{},
+		Name:       name,
+		Version:    version,
+		Build:      build,
+		wg:         new(sync.WaitGroup),
 	}
 
-	for i := range resources {
-		if err := application.RegisterResource(resources[i]); err != nil {
-			return nil, err
-		}
-	}
-
-	for i := range services {
-		if err := application.RegisterService(services[i]); err != nil {
+	for i := range components {
+		if err := application.RegisterComponent(components[i]); err != nil {
 			return nil, err
 		}
 	}
@@ -67,34 +54,23 @@ func NewApplication(resources []Resource, services []Service, name string, versi
 }
 
 func (a *Application) Run() (err error) {
-	resources := a.GetResources()
-	services := a.GetServices()
-
-	// Resources init
-	for i := range resources {
-		if err = resources[i].Init(a); err != nil {
+	for i := range a.components {
+		if err = a.components[i].Init(a); err != nil {
 			return err
 		}
 	}
 
-	// Services init
-	for i := range services {
-		if err = services[i].Init(a); err != nil {
-			return err
-		}
-	}
-
-	// Resources run
-	for i := range resources {
-		if err = a.run(resources[i]); err != nil {
-			return err
-		}
-	}
-
-	// Services run
-	for i := range services {
-		if err = a.run(services[i]); err != nil {
-			return err
+	for i := range a.components {
+		if runner, ok := a.components[i].(ComponentAsyncRunner); ok {
+			a.wg.Add(1)
+			if err := runner.Run(a.wg); err != nil {
+				a.wg.Done()
+				return err
+			}
+		} else if runner, ok := a.components[i].(ComponentRunner); ok {
+			if err := runner.Run(); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -102,74 +78,30 @@ func (a *Application) Run() (err error) {
 	return nil
 }
 
-func (a *Application) run(item ContextItem) error {
-	if runner, ok := item.(ContextItemAsyncRunner); ok {
-		a.wg.Add(1)
-		if err := runner.Run(a.wg); err != nil {
-			a.wg.Done()
-			return err
-		}
-	} else if runner, ok := item.(ContextItemRunner); ok {
-		if err := runner.Run(); err != nil {
-			return err
+func (a *Application) GetComponent(n string) (Component, error) {
+	for i := range a.components {
+		if a.components[i].GetName() == n {
+			return a.components[i], nil
 		}
 	}
 
-	return nil
+	return nil, fmt.Errorf("Component \"%s\" not found", n)
 }
 
-func (a *Application) GetResource(name string) (Resource, error) {
-	for i := range a.resources {
-		if a.resources[i].GetName() == name {
-			return a.resources[i], nil
-		}
-	}
-
-	return nil, errors.New("Resource \"" + name + "\" not found")
+func (a *Application) GetComponents() []Component {
+	return a.components
 }
 
-func (a *Application) GetResources() []Resource {
-	return a.resources
-}
-
-func (a *Application) HasResource(name string) bool {
-	_, err := a.GetResource(name)
+func (a *Application) HasComponent(n string) bool {
+	_, err := a.GetComponent(n)
 	return err == nil
 }
 
-func (a *Application) RegisterResource(resource Resource) error {
-	if _, err := a.GetResource(resource.GetName()); err == nil {
-		return errors.New("Resource \"" + resource.GetName() + "\" already exists")
+func (a *Application) RegisterComponent(c Component) error {
+	if _, err := a.GetComponent(c.GetName()); err == nil {
+		return fmt.Errorf("Component \"%s\" already exists", c.GetName())
 	}
 
-	a.resources = append(a.resources, resource)
-	return nil
-}
-
-func (a *Application) GetService(name string) (Service, error) {
-	for i := range a.services {
-		if a.services[i].GetName() == name {
-			return a.services[i], nil
-		}
-	}
-
-	return nil, errors.New("Service \"" + name + "\" not found")
-}
-
-func (a *Application) GetServices() []Service {
-	return a.services
-}
-
-func (a *Application) HasService(name string) bool {
-	_, err := a.GetService(name)
-	return err == nil
-}
-
-func (a *Application) RegisterService(service Service) error {
-	if _, err := a.GetService(service.GetName()); err == nil {
-		return errors.New("Service \"" + service.GetName() + "\" already exists")
-	}
-
-	a.services = append(a.services, service)
+	a.components = append(a.components, c)
 	return nil
 }

@@ -1,0 +1,188 @@
+{{ define "content" }}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-xs-4">
+            <div class="panel panel-green">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="workers-count">0</div>
+                            <div>Workers</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#workers">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-red">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-tasks fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="tasks-wait-count">0</div>
+                            <div>Wait tasks</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#tasks">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-sitemap fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="goroutines">0</div>
+                            <div>Goroutines</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer" style="height:41px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" id="workers">
+    <div class="panel-heading">Workers</div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Created</th>
+                    <th>Task ID</th>
+                    <th>Task name</th>
+                    <th>Task status</th>
+                    <th>Task created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" id="tasks">
+    <div class="panel-heading">Wait tasks</div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Task name</th>
+                    <th>Task created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    var statsDonut;
+    function getTaskStatusName(status) {
+        switch(status) {
+            case 0:
+                return 'wait';
+                break;
+            case 1:
+                return 'process';
+                break;
+            case 2:
+                return 'success';
+                break;
+            case 3:
+                return 'fail';
+                break;
+            case 4:
+                return 'fail by timeout';
+                break;
+            case 5:
+                return 'kill';
+                break;
+            case 6:
+                return 'wait repeat';
+                break;
+            default:
+                return 'unknown';
+                break;
+        }
+    }
+    function update() {
+        $.ajax({
+            type: 'GET',
+            url: '/workers/ajax/',
+            success: function(r){
+                var tW = $('#workers tbody').empty();
+                var tT = $('#tasks tbody').empty();
+                var workers = r.workers_count || 0;
+                var tasks_wait = 0;
+                var workers_wait = r.workers_wait || 0;
+                var workers_busy = r.workers_busy || 0;
+                var goroutines = r.goroutines || 0
+                if (Array.isArray(r.workers)) {
+                    for (var i in r.workers) {
+                        var worker = r.workers[i];
+                        var task = worker.task;
+                        tW.append('<tr>'
+                                + '<td>' + worker.id + '</td>'
+                                + '<td>' + new Date(worker.created).toLocaleString() + '</td>'
+                                + '<td>' + (task ? task.id : '') + '</td>'
+                                + '<td>' + (task ? task.name : '') + '</td>'
+                                + '<td>' + (task ? getTaskStatusName(task.status) : '') + '</td>'
+                                + '<td>' + (task ? new Date(task.created).toLocaleString() : '') + '</td>'
+                                + '</tr>');
+                    }
+                    workers = r.workers.length
+                }
+                if (Array.isArray(r.tasks_wait)) {
+                    for (var i in r.tasks_wait) {
+                        var task = r.tasks_wait[i];
+                        tT.append('<tr>'
+                                + '<td>' + task.id + '</td>'
+                                + '<td>' + task.name + '</td>'
+                                + '<td>' + new Date(task.created).toLocaleString() + '</td>'
+                                + '</tr>');
+                    }
+                    tasks_wait = r.tasks_wait.length
+                }
+                $('#tasks-title').text(tasks_wait + ' wait tasks');
+                $('#goroutines').text(goroutines);
+                $('#workers-count').text(workers);
+                $('#tasks-wait-count').text(tasks_wait);
+            }
+        });
+    }
+    $(function() {
+        update();
+        setInterval(update, 1000 * 5);
+    });
+</script>
+{{ end }}
