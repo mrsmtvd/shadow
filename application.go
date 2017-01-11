@@ -1,20 +1,25 @@
-package shadow // import "github.com/kihamo/shadow"
+package shadow
 
 import (
 	"fmt"
 	"sync"
 )
 
-//go:generate goimports -w ./
-//go:generate sh -c "cd components/alerts && go-bindata-assetfs -pkg=alerts templates/..."
-//go:generate sh -c "cd components/dashboard && go-bindata-assetfs -pkg=dashboard templates/... public/..."
-//go:generate sh -c "cd components/mail && go-bindata-assetfs -pkg=mail templates/..."
-//go:generate sh -c "cd components/workers && go-bindata-assetfs -pkg=workers templates/..."
+type Application interface {
+	Run() error
+	GetComponent(string) (Component, error)
+	GetComponents() []Component
+	HasComponent(string) bool
+	RegisterComponent(Component) error
+	GetName() string
+	GetVersion() string
+	GetBuild() string
+}
 
 type Component interface {
 	GetName() string
 	GetVersion() string
-	Init(*Application) error
+	Init(Application) error
 }
 
 type ComponentRunner interface {
@@ -25,22 +30,22 @@ type ComponentAsyncRunner interface {
 	Run(*sync.WaitGroup) error
 }
 
-type Application struct {
+type App struct {
 	components []Component
 
-	Name    string
-	Version string
-	Build   string
+	name    string
+	version string
+	build   string
 
 	wg *sync.WaitGroup
 }
 
-func NewApplication(components []Component, name string, version string, build string) (*Application, error) {
-	application := &Application{
+func NewApp(components []Component, name string, version string, build string) (Application, error) {
+	application := &App{
 		components: []Component{},
-		Name:       name,
-		Version:    version,
-		Build:      build,
+		name:       name,
+		version:    version,
+		build:      build,
 		wg:         new(sync.WaitGroup),
 	}
 
@@ -53,7 +58,7 @@ func NewApplication(components []Component, name string, version string, build s
 	return application, nil
 }
 
-func (a *Application) Run() (err error) {
+func (a *App) Run() (err error) {
 	for i := range a.components {
 		if err = a.components[i].Init(a); err != nil {
 			return err
@@ -78,7 +83,7 @@ func (a *Application) Run() (err error) {
 	return nil
 }
 
-func (a *Application) GetComponent(n string) (Component, error) {
+func (a *App) GetComponent(n string) (Component, error) {
 	for i := range a.components {
 		if a.components[i].GetName() == n {
 			return a.components[i], nil
@@ -88,20 +93,32 @@ func (a *Application) GetComponent(n string) (Component, error) {
 	return nil, fmt.Errorf("Component \"%s\" not found", n)
 }
 
-func (a *Application) GetComponents() []Component {
+func (a *App) GetComponents() []Component {
 	return a.components
 }
 
-func (a *Application) HasComponent(n string) bool {
+func (a *App) HasComponent(n string) bool {
 	_, err := a.GetComponent(n)
 	return err == nil
 }
 
-func (a *Application) RegisterComponent(c Component) error {
+func (a *App) RegisterComponent(c Component) error {
 	if _, err := a.GetComponent(c.GetName()); err == nil {
 		return fmt.Errorf("Component \"%s\" already exists", c.GetName())
 	}
 
 	a.components = append(a.components, c)
 	return nil
+}
+
+func (a *App) GetName() string {
+	return a.name
+}
+
+func (a *App) GetVersion() string {
+	return a.version
+}
+
+func (a *App) GetBuild() string {
+	return a.build
 }

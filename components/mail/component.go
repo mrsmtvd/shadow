@@ -21,7 +21,7 @@ type mailTask struct {
 }
 
 type Component struct {
-	application *shadow.Application
+	application shadow.Application
 	config      *config.Component
 	logger      logger.Logger
 
@@ -40,7 +40,7 @@ func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
-func (c *Component) Init(a *shadow.Application) error {
+func (c *Component) Init(a shadow.Application) error {
 	resourceConfig, err := a.GetComponent("config")
 	if err != nil {
 		return err

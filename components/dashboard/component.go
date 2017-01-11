@@ -13,7 +13,7 @@ import (
 )
 
 type Component struct {
-	application *shadow.Application
+	application shadow.Application
 	config      *config.Component
 	logger      logger.Logger
 	router      *Router
@@ -31,7 +31,7 @@ func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
-func (c *Component) Init(a *shadow.Application) (err error) {
+func (c *Component) Init(a shadow.Application) (err error) {
 	resourceConfig, err := a.GetComponent("config")
 	if err != nil {
 		return err

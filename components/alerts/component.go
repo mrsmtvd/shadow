@@ -13,7 +13,7 @@ const (
 )
 
 type Component struct {
-	application *shadow.Application
+	application shadow.Application
 
 	mutex  sync.RWMutex
 	alerts []*Alert
@@ -28,7 +28,7 @@ func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
-func (c *Component) Init(a *shadow.Application) error {
+func (c *Component) Init(a shadow.Application) error {
 	c.alerts = make([]*Alert, 0)
 	c.queue = make(chan *Alert)
 

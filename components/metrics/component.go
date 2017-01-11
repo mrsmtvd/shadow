@@ -23,7 +23,7 @@ const (
 )
 
 type Component struct {
-	application *shadow.Application
+	application shadow.Application
 
 	config *config.Component
 	logger logger.Logger
@@ -51,7 +51,7 @@ func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
-func (c *Component) Init(a *shadow.Application) error {
+func (c *Component) Init(a shadow.Application) error {
 	resourceConfig, err := a.GetComponent("config")
 	if err != nil {
 		return err
@@ -176,9 +176,9 @@ func (c *Component) CaptureMetrics(d time.Duration, f func()) {
 
 func (c *Component) getTags() map[string]string {
 	tags := map[string]string{
-		TagAppName:    c.application.Name,
-		TagAppVersion: c.application.Version,
-		TagAppBuild:   c.application.Build,
+		TagAppName:    c.application.GetName(),
+		TagAppVersion: c.application.GetVersion(),
+		TagAppBuild:   c.application.GetBuild(),
 	}
 
 	if hostname, err := os.Hostname(); err == nil {

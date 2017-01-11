@@ -21,7 +21,7 @@ const (
 )
 
 type Component struct {
-	application *shadow.Application
+	application shadow.Application
 
 	config  *config.Component
 	loggers map[string]Logger
@@ -38,7 +38,7 @@ func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
-func (c *Component) Init(a *shadow.Application) error {
+func (c *Component) Init(a shadow.Application) error {
 	resourceConfig, err := a.GetComponent("config")
 	if err != nil {
 		return err
@@ -126,9 +126,9 @@ func (c *Component) getLevel() xlog.Level {
 
 func (c *Component) getDefaultFields() map[string]interface{} {
 	fields := map[string]interface{}{
-		FieldAppName:    c.application.Name,
-		FieldAppVersion: c.application.Version,
-		FieldAppBuild:   c.application.Build,
+		FieldAppName:    c.application.GetName(),
+		FieldAppVersion: c.application.GetVersion(),
+		FieldAppBuild:   c.application.GetBuild(),
 	}
 
 	if hostname, err := os.Hostname(); err == nil {

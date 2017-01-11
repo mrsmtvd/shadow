@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	application, err := shadow.NewApplication(
+	application, err := shadow.NewApp(
 		[]shadow.Component{
 			new(config.Component),
 			new(logger.Component),

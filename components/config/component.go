@@ -29,7 +29,7 @@ type Watcher func(interface{}, interface{})
 
 type Component struct {
 	mutex       sync.RWMutex
-	application *shadow.Application
+	application shadow.Application
 	config      *globalconf.GlobalConf
 	variables   map[string]Variable
 	watchers    map[string][]Watcher
@@ -60,14 +60,14 @@ func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
-func (c *Component) Init(a *shadow.Application) (err error) {
+func (c *Component) Init(a shadow.Application) (err error) {
 	c.application = a
 
 	config := flag.String(FlagConfig, "", "Config file which which override default config parameters")
 	flag.Parse()
 
 	opts := globalconf.Options{
-		EnvPrefix: strings.ToUpper(strings.Replace(a.Name, " ", "_", -1)) + "_",
+		EnvPrefix: strings.ToUpper(strings.Replace(a.GetName(), " ", "_", -1)) + "_",
 		Filename:  *config,
 	}
 

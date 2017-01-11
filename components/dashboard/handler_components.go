@@ -7,7 +7,7 @@ import (
 type ComponentsHandler struct {
 	TemplateHandler
 
-	application *shadow.Application
+	application shadow.Application
 }
 
 func (h *ComponentsHandler) Handle() {
