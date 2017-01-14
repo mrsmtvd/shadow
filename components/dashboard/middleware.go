@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -33,12 +34,27 @@ func (w *ResponseWriter) GetStatusCode() int {
 	return w.status
 }
 
-func BasicAuthMiddleware(component *Component) alice.Constructor {
+func ContextMiddleware(c *Component) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			component.mutex.RLock()
-			token := component.authToken
-			component.mutex.RUnlock()
+			ctx := context.WithValue(r.Context(), ConfigContextKey, c.config)
+			ctx = context.WithValue(ctx, LoggerContextKey, c.logger)
+			ctx = context.WithValue(ctx, RenderContextKey, c.renderer)
+			ctx = context.WithValue(ctx, RequestContextKey, r)
+			ctx = context.WithValue(ctx, ResponseContextKey, w)
+
+			r = r.WithContext(ctx)
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func BasicAuthMiddleware(c *Component) alice.Constructor {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c.mutex.RLock()
+			token := c.authToken
+			c.mutex.RUnlock()
 
 			if token == "" || r.Header.Get("Authorization") == token {
 				next.ServeHTTP(w, r)
@@ -51,7 +67,7 @@ func BasicAuthMiddleware(component *Component) alice.Constructor {
 	}
 }
 
-func LoggerMiddleware(component *Component) alice.Constructor {
+func LoggerMiddleware(c *Component) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := &ResponseWriter{
@@ -71,15 +87,17 @@ func LoggerMiddleware(component *Component) alice.Constructor {
 				"user-agent":     r.UserAgent(),
 			}
 
+			logger := LoggerFromContext(r.Context())
+
 			switch writer.GetStatusCode() {
 			case 500:
-				component.logger.Error("Internal error", fields)
+				logger.Error("Internal error", fields)
 
 			case 404:
-				component.logger.Warn("Not found", fields)
+				logger.Warn("Not found", fields)
 
 			default:
-				component.logger.Info("Request", fields)
+				logger.Info("Request", fields)
 			}
 		})
 	}

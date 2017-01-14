@@ -1,16 +1,18 @@
 package alerts
 
 import (
+	"net/http"
+
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
 type AjaxHandler struct {
-	dashboard.JSONHandler
+	dashboard.Handler
 
 	component *Component
 }
 
-func (h *AjaxHandler) Handle() {
+func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	list := h.component.GetAlerts()
 	alertsShort := make([]map[string]interface{}, 0, cap(list))
 
@@ -26,5 +28,5 @@ func (h *AjaxHandler) Handle() {
 		alertsShort = append(alertsShort, alert)
 	}
 
-	h.SendJSON(alertsShort)
+	h.SendJSON(alertsShort, w)
 }

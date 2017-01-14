@@ -3,59 +3,56 @@ package dashboard
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logger"
 )
 
 type ConfigHandler struct {
-	TemplateHandler
-
-	config *config.Component
-	logger logger.Logger
+	Handler
 }
 
-func (h *ConfigHandler) saveNewValue() error {
-	if err := h.Request().ParseForm(); err != nil {
+func (h *ConfigHandler) saveNewValue(r *http.Request) error {
+	if err := r.ParseForm(); err != nil {
 		return err
 	}
 
-	key := h.Request().PostForm.Get("key")
+	key := r.PostForm.Get("key")
 	if key == "" {
 		return nil
 	}
 
-	if !h.config.Has(key) {
+	config := ConfigFromContext(r.Context())
+
+	if !config.Has(key) {
 		return fmt.Errorf("Variable %s not found", key)
 	}
 
-	if !h.config.IsEditable(key) {
+	if !config.IsEditable(key) {
 		return fmt.Errorf("Variable %s isn't editable", key)
 	}
 
-	currentValue := h.config.Get(key)
+	currentValue := config.Get(key)
 
-	newValue := h.Request().PostForm.Get("value")
-	err := h.config.Set(key, newValue)
+	newValue := r.PostForm.Get("value")
+	err := config.Set(key, newValue)
 
-	h.logger.Infof("Change value for %s with %v to %v", key, currentValue, newValue)
+	LoggerFromContext(r.Context()).Infof("Change value for %s with '%v' to '%v'", key, currentValue, newValue)
 
 	return err
 }
 
-func (h *ConfigHandler) Handle() {
+func (h *ConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	if h.IsPost() {
-		err = h.saveNewValue()
+	if h.IsPost(r) {
+		err = h.saveNewValue(r)
 
 		if err == nil {
-			h.Redirect(h.Request().RequestURI, http.StatusFound)
+			h.Redirect(r.RequestURI, http.StatusFound, w, r)
 			return
 		}
 	}
 
-	h.SetView("dashboard", "config")
-	h.SetVar("variables", h.config.GetAllVariables())
-	h.SetVar("error", err)
+	h.Render(r.Context(), "dashboard", "config", map[string]interface{}{
+		"variables": ConfigFromContext(r.Context()).GetAllVariables(),
+		"error":     err,
+	})
 }

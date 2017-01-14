@@ -1,13 +1,14 @@
 package dashboard
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type MethodNotAllowedHandler struct {
-	TemplateHandler
+	Handler
 }
 
-func (h *MethodNotAllowedHandler) Handle() {
-	h.SetView("dashboard", "405")
-
-	h.Response().WriteHeader(http.StatusMethodNotAllowed)
+func (h *MethodNotAllowedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	h.Render(r.Context(), "dashboard", "405", nil)
 }

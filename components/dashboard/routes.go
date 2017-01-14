@@ -19,27 +19,13 @@ func (c *Component) loadRoutes() {
 
 	c.router = NewRouter(c)
 
-	panicHandler := &PanicHandler{
-		logger: c.logger,
-	}
-	panicHandler.SetRenderer(c.renderer)
-	c.router.SetPanicHandler(panicHandler)
-
-	methodNotAllowedHandler := &MethodNotAllowedHandler{}
-	methodNotAllowedHandler.SetRenderer(c.renderer)
-	c.router.SetNotAllowedHandler(methodNotAllowedHandler)
-
-	notFoundHandler := &NotFoundHandler{}
-	notFoundHandler.SetRenderer(c.renderer)
-	c.router.SetNotFoundHandler(notFoundHandler)
+	c.router.SetPanicHandler(&PanicHandler{})
+	c.router.SetNotAllowedHandler(&MethodNotAllowedHandler{})
+	c.router.SetNotFoundHandler(&NotFoundHandler{})
 
 	for _, component := range c.application.GetComponents() {
 		if componentRoute, ok := component.(hasRoute); ok {
 			for _, route := range componentRoute.GetDashboardRoutes() {
-				if templateRoute, ok := route.Handler.(HandlerTemplate); ok {
-					templateRoute.SetRenderer(c.renderer)
-				}
-
 				for _, method := range route.Methods {
 					c.router.Handle(method, "/"+component.GetName()+route.Path, route.Handler)
 				}

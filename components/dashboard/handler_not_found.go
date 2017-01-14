@@ -1,13 +1,14 @@
 package dashboard
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type NotFoundHandler struct {
-	TemplateHandler
+	Handler
 }
 
-func (h *NotFoundHandler) Handle() {
-	h.SetView("dashboard", "404")
-
-	h.Response().WriteHeader(http.StatusNotFound)
+func (h *NotFoundHandler) NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	h.Render(r.Context(), "dashboard", "404", nil)
 }

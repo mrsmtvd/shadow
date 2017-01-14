@@ -1,13 +1,15 @@
 package workers
 
 import (
+	"net/http"
+
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
 type IndexHandler struct {
-	dashboard.TemplateHandler
+	dashboard.Handler
 }
 
-func (h *IndexHandler) Handle() {
-	h.SetView("workers", "index")
+func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.Render(r.Context(), "workers", "index", nil)
 }

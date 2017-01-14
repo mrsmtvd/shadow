@@ -1,6 +1,7 @@
 package workers
 
 import (
+	"net/http"
 	"runtime"
 
 	"github.com/kihamo/go-workers/worker"
@@ -8,18 +9,18 @@ import (
 )
 
 type AjaxHandler struct {
-	dashboard.JSONHandler
+	dashboard.Handler
 
 	component *Component
 }
 
-func (h *AjaxHandler) Handle() {
+func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	workersList := []map[string]interface{}{}
 	workersWait := 0
 	workersBusy := 0
 
-	for _, w := range h.component.GetWorkers() {
-		switch w.GetStatus() {
+	for _, wrk := range h.component.GetWorkers() {
+		switch wrk.GetStatus() {
 		case worker.WorkerStatusWait:
 			workersWait += 1
 		case worker.WorkerStatusBusy:
@@ -27,11 +28,11 @@ func (h *AjaxHandler) Handle() {
 		}
 
 		workerInfo := map[string]interface{}{
-			"id":      w.GetId(),
-			"created": w.GetCreatedAt(),
+			"id":      wrk.GetId(),
+			"created": wrk.GetCreatedAt(),
 		}
 
-		t := w.GetTask()
+		t := wrk.GetTask()
 		if t != nil {
 			workerInfo["task"] = map[string]interface{}{
 				"id":      t.GetId(),
@@ -52,6 +53,6 @@ func (h *AjaxHandler) Handle() {
 		"goroutines":    runtime.NumGoroutine(),
 	}
 
-	h.SendJSON(stats)
+	h.SendJSON(stats, w)
 	return
 }

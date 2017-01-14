@@ -1,34 +1,38 @@
 package mail
 
 import (
+	"net/http"
+
 	"github.com/kihamo/shadow/components/dashboard"
 	"gopkg.in/gomail.v2"
 )
 
 type IndexHandler struct {
-	dashboard.TemplateHandler
+	dashboard.Handler
 
 	component *Component
 }
 
-func (h *IndexHandler) Handle() {
-	h.SetView("mail", "index")
+func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	vars := map[string]interface{}{}
 
-	if h.IsPost() {
+	if h.IsPost(r) {
 		message := gomail.NewMessage()
-		message.SetHeader("Subject", h.Request().FormValue("subject"))
-		message.SetHeader("To", h.Request().FormValue("to"))
+		message.SetHeader("Subject", r.FormValue("subject"))
+		message.SetHeader("To", r.FormValue("to"))
 
-		if h.Request().FormValue("type") == "html" {
-			message.SetBody("text/html", h.Request().FormValue("message"))
+		if r.FormValue("type") == "html" {
+			message.SetBody("text/html", r.FormValue("message"))
 		} else {
-			message.SetBody("text/plain", h.Request().FormValue("message"))
+			message.SetBody("text/plain", r.FormValue("message"))
 		}
 
 		if err := h.component.SendAndReturn(message); err != nil {
-			h.SetVar("error", err.Error())
+			vars["error"] = err.Error()
 		} else {
-			h.SetVar("message", "Message send success")
+			vars["message"] = "Message send success"
 		}
 	}
+
+	h.Render(r.Context(), "mail", "index", vars)
 }

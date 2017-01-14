@@ -4,39 +4,29 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
-
-	"github.com/kihamo/shadow/components/logger"
 )
 
 type PanicHandler struct {
-	TemplateHandler
-
-	logger logger.Logger
-	error  interface{}
+	Handler
 }
 
-func (h *PanicHandler) SetError(err interface{}) {
-	h.error = err
-}
-
-func (h *PanicHandler) Handle() {
-	h.SetView("dashboard", "500")
-
-	h.Response().WriteHeader(http.StatusInternalServerError)
-
+func (h *PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stack := make([]byte, 4096)
 	stack = stack[:runtime.Stack(stack, false)]
 
 	_, filePath, line, _ := runtime.Caller(0)
 
 	fields := map[string]interface{}{
-		"error": fmt.Sprintf("%s", h.error),
+		"error": fmt.Sprintf("%s", PanicFromContext(r.Context())),
 		"stack": string(stack),
 		"file":  filePath,
 		"line":  line,
 	}
 
-	h.logger.Error("Frontend reguest error", fields)
+	w.WriteHeader(http.StatusInternalServerError)
+	h.Render(r.Context(), "dashboard", "500", map[string]interface{}{
+		"panic": fields,
+	})
 
-	h.SetVar("panic", fields)
+	LoggerFromContext(r.Context()).Error("Frontend reguest error", fields)
 }

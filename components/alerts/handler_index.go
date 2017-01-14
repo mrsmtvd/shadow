@@ -1,18 +1,19 @@
 package alerts
 
 import (
+	"net/http"
+
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
 type IndexHandler struct {
-	dashboard.TemplateHandler
+	dashboard.Handler
 
 	component *Component
 }
 
-func (h *IndexHandler) Handle() {
-	h.SetView("alerts", "index")
-
-	list := h.component.GetAlerts()
-	h.SetVar("alerts", list)
+func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.Render(r.Context(), "alerts", "index", map[string]interface{}{
+		"alerts": h.component.GetAlerts(),
+	})
 }

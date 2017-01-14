@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -8,141 +9,54 @@ import (
 	"github.com/kihamo/gotypes"
 )
 
-type Handler interface {
-	SetRequest(*http.Request)
-	SetResponse(http.ResponseWriter)
-	Handle()
-}
-
-type HandlerTemplate interface {
-	SetRenderer(*Renderer)
-	SetView(string, string)
-	Render()
-}
-
 type HandlerAuth interface {
 	IsAuth() bool
 }
 
-type HandlerPanic interface {
-	SetError(interface{})
+type Handler struct {
+	http.Handler
 }
 
-type AbstractFrontendHandler struct {
-	Handler
-
-	response http.ResponseWriter
-	request  *http.Request
-}
-
-func (h *AbstractFrontendHandler) GetMethods() []string {
-	return []string{http.MethodGet}
-}
-
-func (h *AbstractFrontendHandler) IsAuth() bool {
+func (h *Handler) IsAuth() bool {
 	return true
 }
 
-func (h *AbstractFrontendHandler) Request() *http.Request {
-	return h.request
+func (h *Handler) IsGet(r *http.Request) bool {
+	return r.Method == http.MethodGet
 }
 
-func (h *AbstractFrontendHandler) SetRequest(r *http.Request) {
-	h.request = r
+func (h *Handler) IsPost(r *http.Request) bool {
+	return r.Method == http.MethodPost
 }
 
-func (h *AbstractFrontendHandler) Response() http.ResponseWriter {
-	return h.response
+func (h *Handler) IsAjax(r *http.Request) bool {
+	return r.Header.Get("X-Requested-With") == "XMLHttpRequest"
 }
 
-func (h *AbstractFrontendHandler) SetResponse(r http.ResponseWriter) {
-	h.response = r
+func (h *Handler) Redirect(l string, c int, w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, l, c)
 }
 
-func (h *AbstractFrontendHandler) IsGet() bool {
-	return h.request.Method == http.MethodGet
-}
+func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interface{}) {
+	err := RenderFromContext(ctx).Render(ctx, c, v, d)
 
-func (h *AbstractFrontendHandler) IsPost() bool {
-	return h.request.Method == http.MethodPost
-}
-
-func (h *AbstractFrontendHandler) IsAjax() bool {
-	return h.request.Header.Get("X-Requested-With") == "XMLHttpRequest"
-}
-
-func (h *AbstractFrontendHandler) Redirect(location string, code int) {
-	http.Redirect(h.response, h.request, location, code)
-}
-
-type TemplateHandler struct {
-	AbstractFrontendHandler
-
-	renderer  *Renderer
-	vars      map[string]interface{}
-	component string
-	view      string
-}
-
-func (h *TemplateHandler) SetResponse(r http.ResponseWriter) {
-	h.AbstractFrontendHandler.SetResponse(r)
-
-	r.Header().Set("Content-Type", "text/html; charset=utf-8")
-}
-
-func (h *TemplateHandler) SetVar(name string, value interface{}) {
-	if h.vars == nil {
-		h.vars = map[string]interface{}{}
-	}
-
-	h.vars[name] = value
-}
-
-func (h *TemplateHandler) SetRequest(r *http.Request) {
-	h.AbstractFrontendHandler.SetRequest(r)
-
-	h.SetVar("Request", r)
-}
-
-func (h *TemplateHandler) SetRenderer(r *Renderer) {
-	h.renderer = r
-}
-
-func (h *TemplateHandler) SetView(c, v string) {
-	h.component = c
-	h.view = v
-}
-
-func (h *TemplateHandler) Render() {
-	if h.renderer != nil {
-		err := h.renderer.Render(h.Response(), h.component, h.view, h.vars)
-		if err != nil {
-			panic(err.Error())
-		}
+	if err != nil {
+		panic(err.Error())
 	}
 }
 
-type JSONHandler struct {
-	AbstractFrontendHandler
-}
-
-func (h *JSONHandler) SetResponse(r http.ResponseWriter) {
-	h.AbstractFrontendHandler.SetResponse(r)
-
-	r.Header().Set("Content-Type", "application/json; charset=utf-8")
-}
-
-func (h *JSONHandler) SendJSON(reply interface{}) {
-	response, err := json.Marshal(reply)
+func (h *Handler) SendJSON(r interface{}, w http.ResponseWriter) {
+	response, err := json.Marshal(r)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	h.Response().Write(response)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Write(response)
 }
 
-func (h *JSONHandler) DecodeJSON(output interface{}) error {
-	decoder := json.NewDecoder(h.Request().Body)
+func (h *Handler) DecodeJSON(j interface{}, r *http.Request) error {
+	decoder := json.NewDecoder(r.Body)
 
 	var in interface{}
 	err := decoder.Decode(&in)
@@ -151,7 +65,7 @@ func (h *JSONHandler) DecodeJSON(output interface{}) error {
 		return err
 	}
 
-	converter := gotypes.NewConverter(in, &output)
+	converter := gotypes.NewConverter(in, &j)
 
 	if !converter.Valid() {
 		return errors.New("Convert failed")

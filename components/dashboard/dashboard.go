@@ -6,7 +6,6 @@ import (
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logger"
 )
 
 func (c *Component) GetTemplates() *assetfs.AssetFS {
@@ -84,10 +83,7 @@ func (c *Component) GetDashboardRoutes() []*Route {
 		{
 			Methods: []string{http.MethodGet, http.MethodPost},
 			Path:    "/config",
-			Handler: &ConfigHandler{
-				config: c.config,
-				logger: logger.NewOrNop(c.GetName(), c.application),
-			},
+			Handler: &ConfigHandler{},
 		},
 		{
 			Methods: []string{http.MethodGet},

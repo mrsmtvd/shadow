@@ -1,9 +1,9 @@
 package dashboard
 
 import (
+	"context"
 	"fmt"
 	"html/template"
-	"io"
 	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
@@ -99,7 +99,7 @@ func (r *Renderer) AddComponents(c string, f *assetfs.AssetFS) error {
 	return nil
 }
 
-func (r *Renderer) Render(w io.Writer, c, v string, d map[string]interface{}) error {
+func (r *Renderer) Render(ctx context.Context, c, v string, d map[string]interface{}) error {
 	component, ok := r.views[c]
 	if !ok {
 		return fmt.Errorf("Templates for component \"%s\" not found", c)
@@ -110,17 +110,21 @@ func (r *Renderer) Render(w io.Writer, c, v string, d map[string]interface{}) er
 		return fmt.Errorf("Template \"%s\" for component \"%s\" not found", v, c)
 	}
 
-	context := map[string]interface{}{}
+	context := map[string]interface{}{
+		"Request": RequestFromContext(ctx),
+	}
 
 	for i := range r.globals {
 		context[i] = r.globals[i]
 	}
 
-	for i := range d {
-		context[i] = d[i]
+	if d != nil {
+		for i := range d {
+			context[i] = d[i]
+		}
 	}
 
-	return view.ExecuteTemplate(w, "main", context)
+	return view.ExecuteTemplate(ResponseFromContext(ctx), "main", context)
 }
 
 func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]string, error) {
