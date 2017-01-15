@@ -39,18 +39,3 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		},
 	}
 }
-
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		ConfigFrontendAuthUser:     {c.watchAuthUser},
-		ConfigFrontendAuthPassword: {c.watchAuthPassword},
-	}
-}
-
-func (c *Component) watchAuthUser(newValue interface{}, _ interface{}) {
-	c.generateAuthToken(newValue.(string), c.config.GetString(ConfigFrontendAuthPassword))
-}
-
-func (c *Component) watchAuthPassword(newValue interface{}, _ interface{}) {
-	c.generateAuthToken(c.config.GetString(ConfigFrontendAuthUser), newValue.(string))
-}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"runtime"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
@@ -47,8 +48,17 @@ func (r *Router) setMiddleware(h http.Handler) http.Handler {
 
 func (r *Router) SetPanicHandler(h http.Handler) {
 	r.PanicHandler = func(pw http.ResponseWriter, pr *http.Request, pe interface{}) {
+		stack := make([]byte, 4096)
+		stack = stack[:runtime.Stack(stack, false)]
+		_, file, line, _ := runtime.Caller(6)
+
 		r.setMiddleware(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
-			ctx := context.WithValue(hr.Context(), PanicContextKey, pe)
+			ctx := context.WithValue(hr.Context(), PanicContextKey, &PanicError{
+				error: pe,
+				stack: string(stack),
+				file:  file,
+				line:  line,
+			})
 
 			hr = hr.WithContext(ctx)
 			h.ServeHTTP(hw, hr)

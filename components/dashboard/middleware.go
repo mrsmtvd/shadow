@@ -8,32 +8,6 @@ import (
 	"github.com/justinas/alice"
 )
 
-type ResponseWriter struct {
-	http.ResponseWriter
-	status int
-}
-
-func (w *ResponseWriter) Header() http.Header {
-	return w.ResponseWriter.Header()
-}
-
-func (w *ResponseWriter) Write(data []byte) (int, error) {
-	if w.status == 0 {
-		w.status = http.StatusOK
-	}
-
-	return w.ResponseWriter.Write(data)
-}
-
-func (w *ResponseWriter) WriteHeader(code int) {
-	w.status = code
-	w.ResponseWriter.WriteHeader(code)
-}
-
-func (w *ResponseWriter) GetStatusCode() int {
-	return w.status
-}
-
 func ContextMiddleware(c *Component) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -49,20 +23,27 @@ func ContextMiddleware(c *Component) alice.Constructor {
 	}
 }
 
-func BasicAuthMiddleware(c *Component) alice.Constructor {
+func BasicAuthMiddleware(_ *Component) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			c.mutex.RLock()
-			token := c.authToken
-			c.mutex.RUnlock()
+			config := ConfigFromContext(r.Context())
 
-			if token == "" || r.Header.Get("Authorization") == token {
+			checkUsername := config.GetString(ConfigFrontendAuthUser)
+			if checkUsername == "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			checkPassword := config.GetString(ConfigFrontendAuthPassword)
+
+			username, password, ok := r.BasicAuth()
+			if ok && checkUsername == username && checkPassword == password {
 				next.ServeHTTP(w, r)
 				return
 			}
 
 			w.Header().Set("WWW-Authenticate", `Basic realm="Shadow Security Zone"`)
-			w.WriteHeader(401)
+			w.WriteHeader(http.StatusUnauthorized)
 		})
 	}
 }
@@ -89,15 +70,10 @@ func LoggerMiddleware(c *Component) alice.Constructor {
 
 			logger := LoggerFromContext(r.Context())
 
-			switch writer.GetStatusCode() {
-			case 500:
-				logger.Error("Internal error", fields)
-
-			case 404:
-				logger.Warn("Not found", fields)
-
-			default:
-				logger.Info("Request", fields)
+			if writer.GetStatusCode()/100 == 5 {
+				logger.Error(http.StatusText(writer.GetStatusCode()), fields)
+			} else {
+				logger.Info(http.StatusText(writer.GetStatusCode()), fields)
 			}
 		})
 	}

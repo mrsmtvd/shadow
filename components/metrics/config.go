@@ -50,7 +50,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		},
 		{
 			Key:      ConfigMetricsInterval,
-			Default:  "30s",
+			Default:  "1m",
 			Usage:    "Flush interval",
 			Type:     config.ValueTypeDuration,
 			Editable: true,

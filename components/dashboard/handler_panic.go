@@ -3,7 +3,6 @@ package dashboard
 import (
 	"fmt"
 	"net/http"
-	"runtime"
 )
 
 type PanicHandler struct {
@@ -11,16 +10,12 @@ type PanicHandler struct {
 }
 
 func (h *PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	stack := make([]byte, 4096)
-	stack = stack[:runtime.Stack(stack, false)]
-
-	_, filePath, line, _ := runtime.Caller(0)
-
+	error := PanicFromContext(r.Context())
 	fields := map[string]interface{}{
-		"error": fmt.Sprintf("%s", PanicFromContext(r.Context())),
-		"stack": string(stack),
-		"file":  filePath,
-		"line":  line,
+		"error": fmt.Sprintf("%s", error.error),
+		"stack": error.stack,
+		"file":  error.file,
+		"line":  error.line,
 	}
 
 	w.WriteHeader(http.StatusInternalServerError)

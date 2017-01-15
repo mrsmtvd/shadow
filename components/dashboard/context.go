@@ -25,6 +25,13 @@ func (k *ContextKey) String() string {
 	return "dashboard context value " + k.name
 }
 
+type PanicError struct {
+	error interface{}
+	stack string
+	file  string
+	line  int
+}
+
 func ConfigFromContext(c context.Context) *config.Component {
 	return c.Value(ConfigContextKey).(*config.Component)
 }
@@ -45,6 +52,6 @@ func ResponseFromContext(c context.Context) http.ResponseWriter {
 	return c.Value(ResponseContextKey).(http.ResponseWriter)
 }
 
-func PanicFromContext(c context.Context) interface{} {
-	return c.Value(PanicContextKey)
+func PanicFromContext(c context.Context) *PanicError {
+	return c.Value(PanicContextKey).(*PanicError)
 }

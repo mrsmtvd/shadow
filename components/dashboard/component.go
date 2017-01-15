@@ -1,7 +1,6 @@
 package dashboard
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
@@ -17,10 +16,7 @@ type Component struct {
 	config      *config.Component
 	logger      logger.Logger
 	router      *Router
-
-	mutex     sync.RWMutex
-	renderer  *Renderer
-	authToken string
+	renderer    *Renderer
 }
 
 func (c *Component) GetName() string {
@@ -53,8 +49,6 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.loadMenu()
 	c.loadRoutes()
 
-	c.generateAuthToken(c.config.GetString(ConfigFrontendAuthUser), c.config.GetString(ConfigFrontendAuthPassword))
-
 	go func(router *Router) {
 		defer wg.Done()
 
@@ -76,15 +70,4 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}(c.router)
 
 	return nil
-}
-
-func (c *Component) generateAuthToken(user, password string) {
-	token := ""
-	if user != "" {
-		token = "Basic " + base64.StdEncoding.EncodeToString([]byte(user+":"+password))
-	}
-
-	c.mutex.Lock()
-	c.authToken = token
-	c.mutex.Unlock()
 }
