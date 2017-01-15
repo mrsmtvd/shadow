@@ -69,7 +69,6 @@ func (a *App) Run() (err error) {
 		if runner, ok := a.components[i].(ComponentAsyncRunner); ok {
 			a.wg.Add(1)
 			if err := runner.Run(a.wg); err != nil {
-				a.wg.Done()
 				return err
 			}
 		} else if runner, ok := a.components[i].(ComponentRunner); ok {

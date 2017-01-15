@@ -66,12 +66,18 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(wg *sync.WaitGroup) error {
-	if err := c.initClient(c.config.GetString(ConfigMetricsUrl), c.config.GetString(ConfigMetricsUsername), c.config.GetString(ConfigMetricsPassword)); err != nil {
+	c.logger = logger.NewOrNop(c.GetName(), c.application)
+
+	url := c.config.GetString(ConfigMetricsUrl)
+	if url == "" {
+		wg.Done()
+		return fmt.Errorf("%s is empty", ConfigMetricsUrl)
+	}
+
+	if err := c.initClient(url, c.config.GetString(ConfigMetricsUsername), c.config.GetString(ConfigMetricsPassword)); err != nil {
 		wg.Done()
 		return err
 	}
-
-	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
 	c.connector = influx.New(c.getTags(), influxdb.BatchPointsConfig{
 		Database:  c.config.GetString(ConfigMetricsDatabase),
