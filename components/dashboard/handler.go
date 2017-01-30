@@ -45,7 +45,7 @@ func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interfac
 	}
 }
 
-func (h *Handler) SendJSON(r interface{}, w http.ResponseWriter) {
+func (h *Handler) SendJSON(r interface{}, w http.ResponseWriter) []byte {
 	response, err := json.Marshal(r)
 	if err != nil {
 		panic(err.Error())
@@ -53,6 +53,8 @@ func (h *Handler) SendJSON(r interface{}, w http.ResponseWriter) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(response)
+
+	return response
 }
 
 func (h *Handler) DecodeJSON(j interface{}, r *http.Request) error {
