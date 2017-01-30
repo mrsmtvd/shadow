@@ -7,6 +7,7 @@ import (
 type Route struct {
 	Methods []string
 	Path    string
+	Direct  bool
 	Handler interface{}
 }
 
@@ -26,8 +27,13 @@ func (c *Component) loadRoutes() {
 	for _, component := range c.application.GetComponents() {
 		if componentRoute, ok := component.(hasRoute); ok {
 			for _, route := range componentRoute.GetDashboardRoutes() {
+				path := route.Path
+				if !route.Direct {
+					path = "/" + component.GetName() + path
+				}
+
 				for _, method := range route.Methods {
-					c.router.Handle(method, "/"+component.GetName()+route.Path, route.Handler)
+					c.router.Handle(method, path, route.Handler)
 				}
 			}
 		}
