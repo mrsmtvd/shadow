@@ -8,6 +8,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
+	"github.com/kihamo/shadow/components/logger"
 )
 
 type Router struct {
@@ -15,6 +16,7 @@ type Router struct {
 
 	defaultChain alice.Chain
 	authChain    alice.Chain
+	logger       logger.Logger
 }
 
 func NewRouter(c *Component) *Router {
@@ -30,6 +32,8 @@ func NewRouter(c *Component) *Router {
 		LoggerMiddleware(c),
 	)
 	r.authChain = r.defaultChain.Append(BasicAuthMiddleware(c))
+
+	r.logger = c.logger
 
 	return r
 }
@@ -87,5 +91,11 @@ func (r *Router) Handle(m, p string, h interface{}) {
 		r.Router.ServeFiles(p, h3)
 	} else {
 		panic(fmt.Sprintf("Unknown handler type %s %s %T", m, p, h))
+	}
+
+	if authHandler, ok := h.(HandlerAuth); ok && authHandler.IsAuth() {
+		r.logger.Debugf("Add security handler for %s %s", m, p)
+	} else {
+		r.logger.Debugf("Add handler for %s %s", m, p)
 	}
 }
