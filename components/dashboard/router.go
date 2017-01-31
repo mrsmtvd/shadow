@@ -39,15 +39,11 @@ func NewRouter(c *Component) *Router {
 }
 
 func (r *Router) setMiddleware(h http.Handler) http.Handler {
-	var chain alice.Chain
-
 	if authHandler, ok := h.(HandlerAuth); ok && authHandler.IsAuth() {
-		chain = r.authChain
-	} else {
-		chain = r.defaultChain
+		return r.authChain.Then(h)
 	}
 
-	return chain.Then(h)
+	return r.defaultChain.Then(h)
 }
 
 func (r *Router) SetPanicHandler(h http.Handler) {

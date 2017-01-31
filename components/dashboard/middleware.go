@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -23,7 +24,7 @@ func ContextMiddleware(c *Component) alice.Constructor {
 	}
 }
 
-func BasicAuthMiddleware(_ *Component) alice.Constructor {
+func BasicAuthMiddleware(c *Component) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			config := ConfigFromContext(r.Context())
@@ -42,7 +43,7 @@ func BasicAuthMiddleware(_ *Component) alice.Constructor {
 				return
 			}
 
-			w.Header().Set("WWW-Authenticate", `Basic realm="Shadow Security Zone"`)
+			w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Basic realm="%s Security Zone"`, c.application.GetName()))
 			w.WriteHeader(http.StatusUnauthorized)
 		})
 	}
