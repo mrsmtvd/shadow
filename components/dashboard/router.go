@@ -80,9 +80,9 @@ func (r *Router) HandlerFunc(m, p string, h http.HandlerFunc) {
 
 func (r *Router) Handle(m, p string, h interface{}) {
 	if h1, ok := h.(http.Handler); ok {
-		r.Router.Handler(m, p, r.authChain.Then(h1))
+		r.Router.Handler(m, p, r.setMiddleware(h1))
 	} else if h2, ok := h.(http.HandlerFunc); ok {
-		r.Router.Handler(m, p, r.authChain.ThenFunc(h2))
+		r.Router.Handler(m, p, r.setMiddleware(h2))
 	} else if h3, ok := h.(http.FileSystem); ok {
 		r.Router.ServeFiles(p, h3)
 	} else {
