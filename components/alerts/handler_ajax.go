@@ -2,9 +2,19 @@ package alerts
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/kihamo/shadow/components/dashboard"
 )
+
+// easyjson:json
+type ajaxHandlerResponse struct {
+	Icon    string    `json:"icon"`
+	Title   string    `json:"title"`
+	Message string    `json:"message"`
+	Elapsed string    `json:"elapsed"`
+	Date    time.Time `json:"date"`
+}
 
 type AjaxHandler struct {
 	dashboard.Handler
@@ -14,18 +24,16 @@ type AjaxHandler struct {
 
 func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	list := h.component.GetAlerts()
-	alertsShort := make([]map[string]interface{}, 0, cap(list))
+	alertsShort := make([]ajaxHandlerResponse, 0, cap(list))
 
 	for i := range list {
-		alert := map[string]interface{}{
-			"icon":    list[i].GetIcon(),
-			"title":   list[i].GetTitle(),
-			"message": list[i].GetMessage(),
-			"elapsed": list[i].GetDateAsMessage(),
-			"date":    list[i].GetDate(),
-		}
-
-		alertsShort = append(alertsShort, alert)
+		alertsShort = append(alertsShort, ajaxHandlerResponse{
+			Icon:    list[i].GetIcon(),
+			Title:   list[i].GetTitle(),
+			Message: list[i].GetMessage(),
+			Elapsed: list[i].GetDateAsMessage(),
+			Date:    list[i].GetDate(),
+		})
 	}
 
 	h.SendJSON(alertsShort, w)

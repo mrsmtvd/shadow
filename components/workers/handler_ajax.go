@@ -3,10 +3,35 @@ package workers
 import (
 	"net/http"
 	"runtime"
+	"time"
 
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow/components/dashboard"
 )
+
+// easyjson:json
+type ajaxHandlerResponseTask struct {
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	Status  int64     `json:"status"`
+	Created time.Time `json:"created"`
+}
+
+// easyjson:json
+type ajaxHandlerResponseWorker struct {
+	Id      string                   `json:"id"`
+	Created time.Time                `json:"created"`
+	Task    *ajaxHandlerResponseTask `json:"task"`
+}
+
+// easyjson:json
+type ajaxHandlerResponse struct {
+	Workers      []ajaxHandlerResponseWorker `json:"workers"`
+	WorkersCount int                         `json:"workers_count"`
+	WorkersWait  int                         `json:"workers_wait"`
+	WorkersBusy  int                         `json:"workers_busy"`
+	Goroutines   int                         `json:"goroutines"`
+}
 
 type AjaxHandler struct {
 	dashboard.Handler
@@ -15,7 +40,7 @@ type AjaxHandler struct {
 }
 
 func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	workersList := []map[string]interface{}{}
+	workersList := []ajaxHandlerResponseWorker{}
 	workersWait := 0
 	workersBusy := 0
 
@@ -27,30 +52,30 @@ func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			workersBusy += 1
 		}
 
-		workerInfo := map[string]interface{}{
-			"id":      wrk.GetId(),
-			"created": wrk.GetCreatedAt(),
+		workerInfo := ajaxHandlerResponseWorker{
+			Id:      wrk.GetId(),
+			Created: wrk.GetCreatedAt(),
 		}
 
 		t := wrk.GetTask()
 		if t != nil {
-			workerInfo["task"] = map[string]interface{}{
-				"id":      t.GetId(),
-				"name":    t.GetName(),
-				"status":  t.GetStatus(),
-				"created": t.GetCreatedAt(),
+			workerInfo.Task = &ajaxHandlerResponseTask{
+				Id:      t.GetId(),
+				Name:    t.GetName(),
+				Status:  t.GetStatus(),
+				Created: t.GetCreatedAt(),
 			}
 		}
 
 		workersList = append(workersList, workerInfo)
 	}
 
-	stats := map[string]interface{}{
-		"workers":       workersList,
-		"workers_count": len(workersList),
-		"workers_wait":  workersWait,
-		"workers_busy":  workersBusy,
-		"goroutines":    runtime.NumGoroutine(),
+	stats := ajaxHandlerResponse{
+		Workers:      workersList,
+		WorkersCount: len(workersList),
+		WorkersWait:  workersWait,
+		WorkersBusy:  workersBusy,
+		Goroutines:   runtime.NumGoroutine(),
 	}
 
 	h.SendJSON(stats, w)
