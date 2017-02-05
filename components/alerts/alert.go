@@ -1,6 +1,7 @@
 package alerts
 
 import (
+	"html/template"
 	"time"
 
 	"github.com/kihamo/shadow"
@@ -28,6 +29,10 @@ func (a *Alert) GetTitle() string {
 
 func (a *Alert) GetMessage() string {
 	return a.message
+}
+
+func (a *Alert) GetMessageAsHTML() template.HTML {
+	return template.HTML(a.message)
 }
 
 func (a *Alert) GetIcon() string {
