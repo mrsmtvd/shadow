@@ -19,6 +19,9 @@ type Application interface {
 type Component interface {
 	GetName() string
 	GetVersion() string
+}
+
+type ComponentInit interface {
 	Init(Application) error
 }
 
@@ -60,8 +63,10 @@ func NewApp(components []Component, name string, version string, build string) (
 
 func (a *App) Run() (err error) {
 	for i := range a.components {
-		if err = a.components[i].Init(a); err != nil {
-			return err
+		if init, ok := a.components[i].(ComponentInit); ok {
+			if err = init.Init(a); err != nil {
+				return err
+			}
 		}
 	}
 
