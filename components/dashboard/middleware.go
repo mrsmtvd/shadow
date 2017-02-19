@@ -17,6 +17,7 @@ func ContextMiddleware(c *Component) alice.Constructor {
 			ctx = context.WithValue(ctx, RenderContextKey, c.renderer)
 			ctx = context.WithValue(ctx, RequestContextKey, r)
 			ctx = context.WithValue(ctx, ResponseContextKey, w)
+			ctx = context.WithValue(ctx, RouterContextKey, c.router)
 
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)

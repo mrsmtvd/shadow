@@ -1,0 +1,113 @@
+{{ define "content" }}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Go trace</h1>
+    </div>
+</div>
+
+{{ if .error }}
+<div class="alert alert-danger alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    {{ .error.Error }}
+</div>
+{{ end }}
+
+<div class="panel panel-success">
+    <div class="panel-heading">Run profiling
+        {{ if .started }}
+        <div class="pull-right">
+            <span class="label label-warning">{{ .started.Format "2006.01.02 15:04:05" }}</span>
+        </div>
+        {{ end }}
+    </div>
+    <div class="panel-body">
+        <form role="form" action="?{{ if .started }}action=stop{{ else }}action=start{{ end }}" method="post">
+            {{ if .started }}<fieldset disabled>{{ end }}
+            <div class="form-group">
+                {{ range $id, $profile := .profiles }}
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="{{ $profile.Id }}" name="profile_{{ $profile.Id }}" value="{{ $profile.Id }}"{{ if $profile.Started }} checked{{ end }}> {{ $profile.Description }}
+                    </label>
+                </div>
+                {{ end }}
+            </div>
+            {{ if .started }}</fieldset>{{ end }}
+
+            {{ if .started }}
+                <button type="submit" class="btn btn-danger" value="stop">Finish profiling</button>
+            {{ else }}
+                <button type="submit" class="btn btn-success" value="start">Run profiling</button>
+            {{ end }}
+        </form>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        Dumps
+        {{ if .remove_all }}
+        <div class="pull-right">
+            <div class="btn-group">
+                <form method="post" action="?action=delete&id=all" class="btn-group btn-group-xs">
+                    <button type="submit" class="btn btn-default btn-xs">
+                        Remove all
+                    </button>
+                </form>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped" id="dumps">
+                <thead>
+                <tr>
+                    <th>Profiles</th>
+                    <th>Started</th>
+                    <th>Stopped</th>
+                    <th>Size</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{ range $d, $dump := .dumps }}
+                <tr{{ if eq $dump.GetStatus 3 }} class="danger"{{ end }}>
+                    <td>
+                        {{ if eq $dump.GetStatus 1 }}
+                            {{ range $p, $profile := $dump.GetProfiles }}
+                                {{ $profile.Id }}
+                            {{ end }}
+                        {{ else }}
+                        <div class="progress" style="width:100%;margin-bottom:0;float:right">
+                            <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <span class="sr-only">Generation</span>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </td>
+                    <td>{{ $dump.GetStartedAt.Format "2006.01.02 15:04:05" }}</td>
+                    <td>{{ $dump.GetStoppedAt.Format "2006.01.02 15:04:05" }}</td>
+                    <td>{{ $dump.GetSize }}</td>
+                    <td class="text-right">
+                        {{ if or (ne $dump.GetStatus 0) (ne $dump.GetStatus 2) }}
+                        <form method="post" action="?action=delete&id={{ $dump.GetId }}" class="btn-group-xs">
+                            <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download"></i> Download</a>
+                            <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash"></i> Delete</button>
+                        </form>
+                        {{ else }}
+                        <div class="progress" style="width:148px;margin-bottom:0;float:right">
+                            <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <span class="sr-only">Generation</span>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </td>
+                </tr>
+                {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{ end }}

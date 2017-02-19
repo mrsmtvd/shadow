@@ -37,6 +37,10 @@ func (h *Handler) Redirect(l string, c int, w http.ResponseWriter, r *http.Reque
 	http.Redirect(w, r, l, c)
 }
 
+func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
+	RouterFromContext(r.Context()).NotFound.ServeHTTP(w, r)
+}
+
 func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interface{}) {
 	err := RenderFromContext(ctx).Render(ctx, c, v, d)
 

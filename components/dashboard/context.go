@@ -14,6 +14,7 @@ var (
 	RenderContextKey   = &ContextKey{"render"}
 	RequestContextKey  = &ContextKey{"request"}
 	ResponseContextKey = &ContextKey{"response"}
+	RouterContextKey   = &ContextKey{"router"}
 	PanicContextKey    = &ContextKey{"panic"}
 )
 
@@ -50,6 +51,10 @@ func RequestFromContext(c context.Context) *http.Request {
 
 func ResponseFromContext(c context.Context) http.ResponseWriter {
 	return c.Value(ResponseContextKey).(http.ResponseWriter)
+}
+
+func RouterFromContext(c context.Context) *Router {
+	return c.Value(RouterContextKey).(*Router)
 }
 
 func PanicFromContext(c context.Context) *PanicError {
