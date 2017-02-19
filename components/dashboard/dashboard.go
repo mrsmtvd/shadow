@@ -2,10 +2,8 @@ package dashboard
 
 import (
 	"net/http"
-	"net/http/pprof"
 
 	"github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow/components/config"
 )
 
 func (c *Component) GetTemplates() *assetfs.AssetFS {
@@ -109,60 +107,5 @@ func (c *Component) GetDashboardRoutes() []*Route {
 		},
 	}...)
 
-	if c.config.GetBool(config.ConfigDebug) {
-		routes = append(routes, []*Route{
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/cmdline",
-				Handler: c.debugHandler(pprof.Cmdline),
-			},
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/profile",
-				Handler: c.debugHandler(pprof.Profile),
-			},
-			{
-				Methods: []string{http.MethodGet, http.MethodPost},
-				Path:    "/debug/pprof/symbol",
-				Handler: c.debugHandler(pprof.Symbol),
-			},
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/block",
-				Handler: c.debugHandler(pprof.Index),
-			},
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/goroutine",
-				Handler: c.debugHandler(pprof.Index),
-			},
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/heap",
-				Handler: c.debugHandler(pprof.Index),
-			},
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/threadcreate",
-				Handler: c.debugHandler(pprof.Index),
-			},
-			{
-				Methods: []string{http.MethodGet},
-				Path:    "/debug/pprof/",
-				Handler: c.debugHandler(pprof.Index),
-			},
-		}...)
-	}
-
 	return routes
-}
-
-func (c *Component) debugHandler(h http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if c.config.GetBool(config.ConfigDebug) {
-			h.ServeHTTP(w, r)
-		} else {
-			c.router.NotFound.ServeHTTP(w, r)
-		}
-	})
 }
