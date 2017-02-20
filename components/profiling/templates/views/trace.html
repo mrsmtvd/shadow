@@ -27,7 +27,7 @@
                 {{ range $id, $profile := .profiles }}
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" id="{{ $profile.Id }}" name="profile_{{ $profile.Id }}" value="{{ $profile.Id }}"{{ if $profile.Started }} checked{{ end }}> {{ $profile.Description }}
+                        <input type="checkbox" id="{{ $profile.GetId }}" name="profile_{{ $profile.GetId }}" value="{{ $profile.GetId }}"{{ if $profile.GetStarted }} checked{{ end }}> {{ $profile.GetDescription }}
                     </label>
                 </div>
                 {{ end }}
@@ -76,7 +76,7 @@
                     <td>
                         {{ if eq $dump.GetStatus 1 }}
                             {{ range $p, $profile := $dump.GetProfiles }}
-                                {{ $profile.Id }}
+                                {{ $profile.GetId }}
                             {{ end }}
                         {{ else }}
                         <div class="progress" style="width:100%;margin-bottom:0;float:right">

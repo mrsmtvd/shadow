@@ -8,10 +8,12 @@ import (
 )
 
 type Profile struct {
-	Id          string
-	Description string
-	Started     bool
-	Buffer      *bytes.Buffer
+	mutex sync.RWMutex
+
+	id          string
+	description string
+	started     bool
+	buffer      *bytes.Buffer
 }
 
 var profiles struct {
@@ -24,45 +26,80 @@ func init() {
 	profiles.profiles = make(map[string]*Profile)
 }
 
+func (p *Profile) GetId() string {
+	p.mutex.RLock()
+	defer p.mutex.RUnlock()
+
+	return p.id
+}
+
+func (p *Profile) GetDescription() string {
+	p.mutex.RLock()
+	defer p.mutex.RUnlock()
+
+	return p.description
+}
+
+func (p *Profile) GetStarted() bool {
+	p.mutex.RLock()
+	defer p.mutex.RUnlock()
+
+	return p.started
+}
+
+func (p *Profile) SetStarted(started bool) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	p.started = started
+}
+
+func (p *Profile) Write(b []byte) (n int, err error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	return p.buffer.Write(b)
+}
+
 func loadProfilesOnce() {
 	profiles.mutex.Lock()
 	defer profiles.mutex.Unlock()
 
 	profiles.profiles = map[string]*Profile{
 		ProfileCpu: {
-			Id:          ProfileCpu,
-			Description: "CPU profiling for the current process",
-			Buffer:      bytes.NewBuffer(nil),
+			id:          ProfileCpu,
+			description: "CPU profiling for the current process",
+			buffer:      bytes.NewBuffer(nil),
 		},
 		ProfileTrace: {
-			Id:          ProfileTrace,
-			Description: "tracing for the current program",
-			Buffer:      bytes.NewBuffer(nil),
+			id:          ProfileTrace,
+			description: "tracing for the current program",
+			buffer:      bytes.NewBuffer(nil),
 		},
 	}
 
 	for _, p := range pprof.Profiles() {
 		profile := Profile{
-			Id:     p.Name(),
-			Buffer: bytes.NewBuffer(nil),
+			id:     p.Name(),
+			buffer: bytes.NewBuffer(nil),
 		}
 
-		switch profile.Id {
+		switch profile.id {
 		case "goroutine":
-			profile.Description = "stack traces of all current goroutines"
+			profile.description = "stack traces of all current goroutines"
 		case "heap":
-			profile.Description = "a sampling of all heap allocations"
+			profile.description = "a sampling of all heap allocations"
 		case "threadcreate":
-			profile.Description = "stack traces that led to the creation of new OS threads"
+			profile.description = "stack traces that led to the creation of new OS threads"
 		case "block":
-			profile.Description = "stack traces that led to blocking on synchronization primitives"
+			profile.description = "stack traces that led to blocking on synchronization primitives"
 		case "mutex":
-			profile.Description = "stack traces of holders of contended mutexes"
+			profile.description = "stack traces of holders of contended mutexes"
 		default:
-			profile.Description = profile.Id
+			profile.description = profile.id
 		}
 
-		profiles.profiles[profile.Id] = &profile
+		profiles.profiles[profile.id] = &profile
 	}
 }
 
@@ -82,7 +119,7 @@ func GetProfiles() []Profile {
 	}
 
 	sort.Slice(result, func(i, j int) bool {
-		return result[i].Id < result[j].Id
+		return result[i].GetId() < result[j].GetId()
 	})
 
 	return result

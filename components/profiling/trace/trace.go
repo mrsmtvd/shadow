@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime/pprof"
@@ -36,8 +37,8 @@ func StartProfiles(list []string) error {
 
 	runProfiles := make([]*Profile, 0, len(list))
 
-	profiles.mutex.RLock()
-	defer profiles.mutex.RUnlock()
+	profiles.mutex.Lock()
+	defer profiles.mutex.Unlock()
 
 	for _, id := range list {
 		profile, ok := profiles.profiles[id]
@@ -54,18 +55,18 @@ func StartProfiles(list []string) error {
 
 	now := time.Now()
 	for i := range runProfiles {
-		switch runProfiles[i].Id {
+		switch runProfiles[i].GetId() {
 		case ProfileCpu:
-			if err := pprof.StartCPUProfile(runProfiles[i].Buffer); err != nil {
+			if err := pprof.StartCPUProfile(runProfiles[i]); err != nil {
 				return err
 			}
 		case ProfileTrace:
-			if err := trace.Start(runProfiles[i].Buffer); err != nil {
+			if err := trace.Start(runProfiles[i]); err != nil {
 				return err
 			}
 		}
 
-		runProfiles[i].Started = true
+		runProfiles[i].SetStarted(true)
 	}
 
 	startAt = &now
@@ -102,27 +103,34 @@ func StopProfiles(path string) error {
 	}
 
 	for _, profile := range profiles.profiles {
-		if !profile.Started {
+		if !profile.GetStarted() {
 			continue
 		}
 
-		switch profile.Id {
+		switch profile.GetId() {
 		case ProfileCpu:
 			pprof.StopCPUProfile()
 		case ProfileTrace:
 			trace.Stop()
 		default:
-			pprof.Lookup(profile.Id).WriteTo(profile.Buffer, 0)
+			pprof.Lookup(profile.GetId()).WriteTo(profile, 0)
 		}
 
 		dump.AddProfile(*profile)
-		profile.Started = false
+		profile.SetStarted(false)
 	}
 
 	dumps.dumps[dump.GetId()] = dump
 	startAt = nil
 
-	go saveArchive(dump)
+	go func() {
+		if err := saveDump(dump); err != nil {
+			log.Printf("Error save dump file %s with error %s", dump.GetFile(), err.Error())
+			dump.SetStatus(DumpStatusError)
+		} else {
+			dump.SetStatus(DumpStatusFinished)
+		}
+	}()
 
 	return nil
 }

@@ -158,7 +158,7 @@ func LoadDumps(path string) error {
 		dumps.mutex.Unlock()
 
 		go func() {
-			if err := read(dump); err != nil {
+			if err := readDump(dump); err != nil {
 				log.Printf("Error read %s with error %s", dump.GetFile(), err.Error())
 				dump.SetStatus(DumpStatusError)
 			} else {
@@ -216,7 +216,7 @@ func DeleteDump(id string) error {
 	return nil
 }
 
-func read(dump *Dump) error {
+func readDump(dump *Dump) error {
 	file, err := os.Open(dump.GetFile())
 	if err != nil {
 		return err
@@ -259,10 +259,10 @@ func read(dump *Dump) error {
 	return nil
 }
 
-func saveArchive(dump *Dump) {
+func saveDump(dump *Dump) error {
 	file, err := os.Create(dump.GetFile())
 	if err != nil {
-		return
+		return err
 	}
 
 	defer file.Close()
@@ -280,38 +280,36 @@ func saveArchive(dump *Dump) {
 	// copy binary
 	binary, err := osext.Executable()
 	if err != nil {
-		return
+		return err
 	}
 
 	if err := writeFile(tarWriter, binary, filepath.Base(binary)); err != nil {
-		return
+		return err
 	}
 
 	// copy trace
 	for _, profile := range dump.GetProfiles() {
-		if profile.Buffer.Len() == 0 {
+		if profile.buffer.Len() == 0 {
 			continue
 		}
 
 		tmpfile, err := ioutil.TempFile("", "trace_")
 		if err != nil {
-			return
+			return err
 		}
 
-		io.Copy(tmpfile, profile.Buffer)
+		io.Copy(tmpfile, profile.buffer)
 
-		if err := writeFile(tarWriter, tmpfile.Name(), fmt.Sprintf("%s.trace", profile.Id)); err != nil {
-			fmt.Println(err)
-
+		if err := writeFile(tarWriter, tmpfile.Name(), fmt.Sprintf("%s.trace", profile.id)); err != nil {
 			tmpfile.Close()
-			return
+			return err
 		}
 
 		tmpfile.Close()
-		profile.Buffer.Reset()
+		profile.buffer.Reset()
 	}
 
-	dump.SetStatus(DumpStatusFinished)
+	return nil
 }
 
 func writeFile(archive *tar.Writer, filePath string, name string) error {

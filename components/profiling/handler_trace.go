@@ -32,9 +32,11 @@ func (h *TraceHandler) actionStart(w http.ResponseWriter, r *http.Request) error
 
 	runProfiles := []string{}
 	for _, profile := range trace.GetProfiles() {
-		if r.PostForm.Get("profile_"+profile.Id) != "" {
-			runProfiles = append(runProfiles, profile.Id)
-			dashboard.LoggerFromContext(r.Context()).Infof("Run trace \"%s\"", profile.Id)
+		id := profile.GetId()
+
+		if r.PostForm.Get("profile_"+id) != "" {
+			runProfiles = append(runProfiles, id)
+			dashboard.LoggerFromContext(r.Context()).Infof("Run trace \"%s\"", id)
 		}
 	}
 
