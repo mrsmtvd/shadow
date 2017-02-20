@@ -90,7 +90,7 @@
                     <td>{{ $dump.GetStoppedAt.Format "2006.01.02 15:04:05" }}</td>
                     <td>{{ $dump.GetSize }}</td>
                     <td class="text-right">
-                        {{ if or (ne $dump.GetStatus 0) (ne $dump.GetStatus 2) }}
+                        {{ if and (ne $dump.GetStatus 0) (ne $dump.GetStatus 2) }}
                         <form method="post" action="?action=delete&id={{ $dump.GetId }}" class="btn-group-xs">
                             <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download"></i> Download</a>
                             <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash"></i> Delete</button>
