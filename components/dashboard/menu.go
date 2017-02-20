@@ -3,6 +3,7 @@ package dashboard
 type Menu struct {
 	Name    string
 	Url     string
+	Direct  bool
 	Icon    string
 	SubMenu []*Menu
 }
@@ -33,7 +34,9 @@ func (c *Component) loadMenu() {
 }
 
 func (c *Component) changeUrlMenu(m *Menu, p string) {
-	m.Url = "/" + p + m.Url
+	if !m.Direct {
+		m.Url = "/" + p + m.Url
+	}
 
 	if len(m.SubMenu) > 0 {
 		for i := range m.SubMenu {

@@ -23,7 +23,17 @@ func (c *Component) GetDashboardMenu() *dashboard.Menu {
 	return &dashboard.Menu{
 		Name: "Profiling",
 		Icon: "terminal",
-		Url:  "/",
+		SubMenu: []*dashboard.Menu{
+			{
+				Name: "Traces",
+				Url:  "/trace",
+			},
+			{
+				Name:   "Pprof",
+				Url:    "/debug/pprof",
+				Direct: true,
+			},
+		},
 	}
 }
 
@@ -31,7 +41,7 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 	routes := []*dashboard.Route{
 		{
 			Methods: []string{http.MethodGet, http.MethodPost},
-			Path:    "/",
+			Path:    "/trace",
 			Handler: &TraceHandler{
 				config: c.config,
 			},
