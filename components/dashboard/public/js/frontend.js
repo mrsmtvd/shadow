@@ -34,6 +34,11 @@ $(function() {
         })
     }
 
+    function getParameterByName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
     if ($('#navbar-alerts').length) {
         $('#navbar-alerts>li').click(function(){
             if ($('#navbar-alerts ul li').length) {
@@ -43,5 +48,10 @@ $(function() {
 
         alertUpdate();
         setInterval(alertUpdate, 1000 * 5);
+    }
+
+    var showTab = getParameterByName('tab');
+    if (showTab) {
+        $('.nav-tabs a[href=#' + showTab + ']').tab('show') ;
     }
 });

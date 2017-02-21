@@ -57,7 +57,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		})
 
 		// TODO: ssl
-		addr := fmt.Sprintf("%s:%d", c.config.GetString(ConfigFrontendHost), c.config.GetInt(ConfigFrontendPort))
+		addr := fmt.Sprintf("%s:%d", c.config.GetString(ConfigDashboardHost), c.config.GetInt(ConfigDashboardPort))
 
 		c.logger.Info("Running service", map[string]interface{}{
 			"addr": addr,

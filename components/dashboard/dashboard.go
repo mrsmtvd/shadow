@@ -81,7 +81,9 @@ func (c *Component) GetDashboardRoutes() []*Route {
 		{
 			Methods: []string{http.MethodGet, http.MethodPost},
 			Path:    "/config",
-			Handler: &ConfigHandler{},
+			Handler: &ConfigHandler{
+				application: c.application,
+			},
 		},
 		{
 			Methods: []string{http.MethodGet},

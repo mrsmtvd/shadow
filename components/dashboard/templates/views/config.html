@@ -14,40 +14,54 @@
     </div>
     {{ end }}
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped">
-            <thead>
-            <tr>
-                <th width="10%">Name</th>
-                <th width="30%">Value</th>
-                <th width="20%">Default</th>
-                <th>Description</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{ range $i, $config := .variables }}
-            <tr>
-                <td>{{ $config.Key }}</td>
-                <td>
-                    {{ if $config.Editable }}
-                    <form method="POST" class="form-inline text-nowrap">
-                        <input type="hidden" name="key" value="{{ $config.Key }}" />
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="value" value="{{ $config.Value }}" />
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" onclick="submit();"><i class="glyphicon glyphicon-edit"></i></button>
-                    </form>
-                    {{ else }}
-                    {{ $config.Value }}
-                    {{ end }}
-                </td>
-                <td>{{ $config.Default }}</td>
-                <td>{{ $config.Usage }}</td>
-            </tr>
+    <div role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+            {{ range $name, $vars := .variables }}
+            <li role="presentation"{{ if eq $name "main" }} class="active"{{ end }}><a href="#{{ $name }}" aria-controls="{{ $name }}" role="tab" data-toggle="tab">{{ $name }}</a></li>
             {{ end }}
-            </tbody>
-        </table>
+        </ul>
+
+        <div class="tab-content">
+        {{ range $name, $vars := .variables }}
+            <div role="tabpanel" class="tab-pane{{ if eq $name "main" }} active{{ end }}" id="{{ $name }}">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th width="10%">Name</th>
+                            <th width="30%">Value</th>
+                            <th width="20%">Default</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $i, $config := $vars }}
+                        <tr>
+                            <td>{{ $config.Key }}</td>
+                            <td>
+                                {{ if $config.Editable }}
+                                <form method="POST" class="form-inline text-nowrap">
+                                    <input type="hidden" name="key" value="{{ $config.Key }}" />
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="value" value="{{ $config.Value }}" />
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary" onclick="submit();"><i class="glyphicon glyphicon-edit"></i></button>
+                                </form>
+                                {{ else }}
+                                {{ $config.Value }}
+                                {{ end }}
+                            </td>
+                            <td>{{ $config.Default }}</td>
+                            <td>{{ $config.Usage }}</td>
+                        </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {{ end }}
+        </div>
     </div>
 </div>
 {{ end }}
