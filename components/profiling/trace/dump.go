@@ -39,7 +39,7 @@ type Dump struct {
 }
 
 var filePattern = regexp.MustCompile(`^[0-9]{14}.tar.gz$`)
-var tracePattern = regexp.MustCompile(`^(.*?).trace$`)
+var tracePattern = regexp.MustCompile(`^(.*?).pprof`)
 
 func (d *Dump) Delete() error {
 	return os.Remove(d.file)
@@ -300,7 +300,7 @@ func saveDump(dump *Dump) error {
 
 		io.Copy(tmpfile, profile.buffer)
 
-		if err := writeFile(tarWriter, tmpfile.Name(), fmt.Sprintf("%s.trace", profile.id)); err != nil {
+		if err := writeFile(tarWriter, tmpfile.Name(), fmt.Sprintf("%s.pprof", profile.id)); err != nil {
 			tmpfile.Close()
 			return err
 		}

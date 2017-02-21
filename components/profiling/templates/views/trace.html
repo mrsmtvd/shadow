@@ -1,3 +1,31 @@
+{{ define "head" }}
+    {{ if .started }}
+    <link href="/profiling/vendor/flipclock/flipclock.css" rel="stylesheet">
+    {{ end }}
+{{ end }}
+
+{{ define "js" }}
+    {{ if .started }}
+    <script src="/profiling/vendor/flipclock/flipclock.min.js"></script>
+    {{ end }}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            {{ if .started }}
+            $('.clock').FlipClock({{ .duration.Seconds }}, {
+                clockFace: 'MinuteCounter'
+            });
+            {{ else }}
+            $('#select-all').click(function() {
+                var next = !$(this).data('selected');
+                $('#profiles').find(':checkbox').prop('checked', next);
+                $(this).text(next ? 'Unselect all' : 'Select all').data('selected', next);
+            });
+            {{ end }}
+        });
+    </script>
+{{ end }}
+
 {{ define "content" }}
 <div class="row">
     <div class="col-lg-12">
@@ -13,16 +41,23 @@
 {{ end }}
 
 <div class="panel panel-success">
-    <div class="panel-heading">Run profiling
-        {{ if .started }}
+    <div class="panel-heading">
+        Run profiling
+        {{ if not .started }}
         <div class="pull-right">
-            <span class="label label-warning">{{ .started.Format "2006.01.02 15:04:05" }}</span>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-xs" id="select-all">Select all</button>
+            </div>
         </div>
         {{ end }}
     </div>
     <div class="panel-body">
-        <form role="form" action="?{{ if .started }}action=stop{{ else }}action=start{{ end }}" method="post">
-            {{ if .started }}<fieldset disabled>{{ end }}
+        <form role="form" action="?{{ if .started }}action=stop{{ else }}action=start{{ end }}" method="post" id="profiles">
+            {{ if .started }}
+            <div class="row">
+                <div class="clock" style="width:300px;margin:1em auto;"></div>
+            </div>
+            {{ else }}
             <div class="form-group">
                 {{ range $id, $profile := .profiles }}
                 <div class="checkbox">
@@ -32,13 +67,15 @@
                 </div>
                 {{ end }}
             </div>
-            {{ if .started }}</fieldset>{{ end }}
-
-            {{ if .started }}
-                <button type="submit" class="btn btn-danger" value="stop">Finish profiling</button>
-            {{ else }}
-                <button type="submit" class="btn btn-success" value="start">Run profiling</button>
             {{ end }}
+
+            <div class="text-center">
+                {{ if .started }}
+                <button type="submit" class="btn btn-danger" value="stop">Finish profiling</button>
+                {{ else }}
+                <button type="submit" class="btn btn-success" value="start">Run profiling</button>
+                {{ end }}
+            </div>
         </form>
     </div>
 </div>

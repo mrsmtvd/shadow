@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -148,12 +149,18 @@ func (h *TraceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dumps := trace.GetDumps()
+	started := trace.GetStarted()
 	context := map[string]interface{}{
 		"dumps":      dumps,
 		"profiles":   trace.GetProfiles(),
-		"started":    trace.GetStarted(),
+		"started":    started,
+		"duration":   0,
 		"remove_all": len(dumps) != 0,
 		"error":      err,
+	}
+
+	if started != nil {
+		context["duration"] = time.Now().Sub(*started)
 	}
 
 	for _, dump := range dumps {

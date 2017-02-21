@@ -39,6 +39,16 @@ func (c *Component) GetDashboardMenu() *dashboard.Menu {
 func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 	routes := []*dashboard.Route{
 		{
+			Methods: []string{http.MethodGet},
+			Path:    "/vendor/*filepath",
+			Handler: &assetfs.AssetFS{
+				Asset:     Asset,
+				AssetDir:  AssetDir,
+				AssetInfo: AssetInfo,
+				Prefix:    "public/vendor",
+			},
+		},
+		{
 			Methods: []string{http.MethodGet, http.MethodPost},
 			Path:    "/trace",
 			Handler: &TraceHandler{
