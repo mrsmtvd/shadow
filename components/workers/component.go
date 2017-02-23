@@ -58,7 +58,7 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 }
 
 func (c *Component) setLogListener(wg *sync.WaitGroup) {
-	listener := dispatcher.NewDefaultListener(c.config.GetInt(ConfigDoneSize))
+	listener := dispatcher.NewDefaultListener()
 	c.dispatcher.AddListener(listener)
 
 	// logger for finished tasks

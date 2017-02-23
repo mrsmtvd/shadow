@@ -6,7 +6,6 @@ import (
 
 const (
 	ConfigWorkersCount = "workers.count"
-	ConfigDoneSize     = "workers.done.size"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {
@@ -17,12 +16,6 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Usage:    "Default workers count",
 			Type:     config.ValueTypeInt,
 			Editable: true,
-		},
-		{
-			Key:     ConfigDoneSize,
-			Default: 1000,
-			Usage:   "Size buffer of done task channel",
-			Type:    config.ValueTypeInt,
 		},
 	}
 }
