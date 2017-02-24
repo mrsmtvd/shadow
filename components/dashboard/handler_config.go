@@ -53,7 +53,7 @@ func (h *ConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			*redirectUrl = *r.URL
 			redirectUrl.RawQuery = "tab=" + parts[0]
 
-			h.Redirect(r.RequestURI, http.StatusFound, w, r)
+			h.Redirect(redirectUrl.String(), http.StatusFound, w, r)
 			return
 		}
 	}
