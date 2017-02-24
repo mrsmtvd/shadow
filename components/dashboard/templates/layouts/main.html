@@ -7,15 +7,15 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>{{ .Application.GetName }}</title>
-    <link href="/dashboard/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/dashboard/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <link href="/dashboard/vendor/sb-admin/css/sb-admin-2.css" rel="stylesheet">
-    <link href="/dashboard/vendor/sb-admin/css/timeline.css" rel="stylesheet">
-    <link href="/dashboard/vendor/morrisjs/morris.css" rel="stylesheet">
-    <link href="/dashboard/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/dashboard/css/frontend.css" rel="stylesheet">
-    <link rel="shortcut icon" href="/dashboard/images/favicon.svg" type="image/svg+xml">
-    <script src="/dashboard/vendor/jquery/jquery.min.js"></script>
+    <link href="/dashboard/vendor/bootstrap/css/bootstrap.min.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link href="/dashboard/vendor/metisMenu/metisMenu.min.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link href="/dashboard/vendor/sb-admin/css/sb-admin-2.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link href="/dashboard/vendor/sb-admin/css/timeline.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link href="/dashboard/vendor/morrisjs/morris.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link href="/dashboard/vendor/font-awesome/css/font-awesome.min.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link href="/dashboard/css/frontend.css?v={{ .Application.GetBuild }}" rel="stylesheet">
+    <link rel="shortcut icon" href="/dashboard/images/favicon.svg?v={{ .Application.GetBuild }}" type="image/svg+xml">
+    <script src="/dashboard/vendor/jquery/jquery.min.js?v={{ .Application.GetBuild }}"></script>
     {{ block "head" . }} {{ end }}
 </head>
 <body>
@@ -85,12 +85,12 @@
     </div>
 </div>
 
-<script src="/dashboard/vendor/bootstrap/js/bootstrap.min.js"></script>
-<script src="/dashboard/vendor/metisMenu/metisMenu.min.js"></script>
-<script src="/dashboard/vendor/sb-admin/js/sb-admin-2.js"></script>
-<script src="/dashboard/vendor/raphael/raphael-min.js"></script>
-<script src="/dashboard/vendor/morrisjs/morris.min.js"></script>
-<script src="/dashboard/js/frontend.js"></script>
+<script src="/dashboard/vendor/bootstrap/js/bootstrap.min.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/vendor/metisMenu/metisMenu.min.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/vendor/sb-admin/js/sb-admin-2.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/vendor/raphael/raphael-min.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/vendor/morrisjs/morris.min.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/js/frontend.js?v={{ .Application.GetBuild }}"></script>
 {{ block "js" . }} {{ end }}
 
 </body>

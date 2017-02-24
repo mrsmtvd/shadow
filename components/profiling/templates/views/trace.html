@@ -1,12 +1,12 @@
 {{ define "head" }}
     {{ if .started }}
-    <link href="/profiling/vendor/flipclock/flipclock.css" rel="stylesheet">
+    <link href="/profiling/vendor/flipclock/flipclock.css?v={{ .Application.GetBuild }}" rel="stylesheet">
     {{ end }}
 {{ end }}
 
 {{ define "js" }}
     {{ if .started }}
-    <script src="/profiling/vendor/flipclock/flipclock.min.js"></script>
+    <script src="/profiling/vendor/flipclock/flipclock.min.js?v={{ .Application.GetBuild }}"></script>
     {{ end }}
 
     <script type="text/javascript">
