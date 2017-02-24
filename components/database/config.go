@@ -61,18 +61,18 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	}
 }
 
-func (c *Component) watchDebug(newValue interface{}, _ interface{}) {
+func (c *Component) watchDebug(_ string, newValue interface{}, _ interface{}) {
 	c.initTrace(newValue.(bool))
 }
 
-func (c *Component) watchMigrationsTable(newValue interface{}, _ interface{}) {
+func (c *Component) watchMigrationsTable(_ string, newValue interface{}, _ interface{}) {
 	migrate.SetTable(newValue.(string))
 }
 
-func (c *Component) watchMaxIdleConns(newValue interface{}, _ interface{}) {
+func (c *Component) watchMaxIdleConns(_ string, newValue interface{}, _ interface{}) {
 	c.initConns(newValue.(int), c.config.GetInt(ConfigDatabaseMaxOpenConns))
 }
 
-func (c *Component) watchMaxOpenConns(newValue interface{}, _ interface{}) {
+func (c *Component) watchMaxOpenConns(_ string, newValue interface{}, _ interface{}) {
 	c.initConns(c.config.GetInt(ConfigDatabaseMaxIdleConns), newValue.(int))
 }

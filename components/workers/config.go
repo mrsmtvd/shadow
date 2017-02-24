@@ -26,7 +26,7 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	}
 }
 
-func (c *Component) watchWorkersCount(newValue interface{}, _ interface{}) {
+func (c *Component) watchWorkersCount(_ string, newValue interface{}, _ interface{}) {
 	for i := c.dispatcher.GetWorkers().Len(); i < newValue.(int); i++ {
 		c.AddWorker()
 	}

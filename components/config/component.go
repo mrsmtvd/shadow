@@ -3,6 +3,8 @@ package config
 import (
 	"errors"
 	"flag"
+	"fmt"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -15,6 +17,8 @@ import (
 const (
 	FlagConfig = "config"
 
+	WatcherForAll = "*"
+
 	ValueTypeBool     = "bool"
 	ValueTypeInt      = "int"
 	ValueTypeInt64    = "int64"
@@ -25,7 +29,7 @@ const (
 	ValueTypeDuration = "duration"
 )
 
-type Watcher func(interface{}, interface{})
+type Watcher func(string, interface{}, interface{})
 
 type Component struct {
 	mutex       sync.RWMutex
@@ -87,6 +91,10 @@ func (c *Component) Run() error {
 	for _, component := range c.application.GetComponents() {
 		if variables, ok := component.(hasVariables); ok {
 			for _, variable := range variables.GetConfigVariables() {
+				if variable.Key == WatcherForAll {
+					return fmt.Errorf("Use key %s not allowed", WatcherForAll)
+				}
+
 				c.addFlag(variable)
 			}
 		}
@@ -101,6 +109,15 @@ func (c *Component) Run() error {
 	}
 
 	c.config.ParseAll()
+
+	c.mutex.Lock()
+	for k, v := range c.variables {
+		if reflect.ValueOf(v.Value).Kind() == reflect.Ptr {
+			v.Value = reflect.Indirect(reflect.ValueOf(v.Value)).Interface()
+			c.variables[k] = v
+		}
+	}
+	c.mutex.Unlock()
 
 	return nil
 }
@@ -222,22 +239,55 @@ func (c *Component) Set(key string, value interface{}) error {
 	variable, ok := c.variables[key]
 
 	if !ok {
+		c.mutex.Unlock()
 		return errors.New("Config already parsed. Can't and new variable")
 	}
 
-	variable.Value = value
+	switch variable.Type {
+	case ValueTypeBool:
+		value = gotypes.ToBool(value)
+	case ValueTypeInt:
+		value = gotypes.ToInt(value)
+	case ValueTypeInt64:
+		value = gotypes.ToInt64(value)
+	case ValueTypeUint:
+		value = gotypes.ToUint(value)
+	case ValueTypeUint64:
+		value = gotypes.ToUint64(value)
+	case ValueTypeFloat64:
+		value = gotypes.ToFloat64(value)
+	case ValueTypeString:
+		value = gotypes.ToString(value)
+	case ValueTypeDuration:
+		value = gotypes.ToDuration(value)
+	default:
+		c.mutex.Unlock()
+		return fmt.Errorf("Unknown type %s for config %s", variable.Type, variable.Key)
+	}
 
+	variable.Value = value
 	c.variables[key] = variable
-	watchers, ok := c.watchers[key]
+
+	watchers := []Watcher{}
+
+	if watchersForAll, ok := c.watchers[WatcherForAll]; ok {
+		for _, w := range watchersForAll {
+			watchers = append(watchers, w)
+		}
+	}
+
+	if watchersByKey, ok := c.watchers[key]; ok {
+		for _, w := range watchersByKey {
+			watchers = append(watchers, w)
+		}
+	}
 
 	c.mutex.Unlock()
 
 	if ok {
-		newValue := c.Get(key)
-
 		go func() {
 			for _, watcher := range watchers {
-				watcher(newValue, oldValue)
+				watcher(key, value, oldValue)
 			}
 		}()
 	}

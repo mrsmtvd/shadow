@@ -34,7 +34,7 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	}
 }
 
-func (c *Component) watchLoggerConfig(newValue interface{}, _ interface{}) {
+func (c *Component) watchLoggerConfig(_ string, newValue interface{}, _ interface{}) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 

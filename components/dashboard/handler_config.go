@@ -35,12 +35,7 @@ func (h *ConfigHandler) saveNewValue(r *http.Request) (string, error) {
 		return "", fmt.Errorf("Variable %s isn't editable", key)
 	}
 
-	currentValue := config.Get(key)
-
-	newValue := r.PostForm.Get("value")
-	err := config.Set(key, newValue)
-
-	LoggerFromContext(r.Context()).Infof("Change value for %s with '%v' to '%v'", key, currentValue, newValue)
+	err := config.Set(key, r.PostForm.Get("value"))
 
 	return key, err
 }

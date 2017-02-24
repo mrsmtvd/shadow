@@ -39,3 +39,13 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		},
 	}
 }
+
+func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
+	return map[string][]config.Watcher{
+		config.WatcherForAll: {c.watchConfig},
+	}
+}
+
+func (c *Component) watchConfig(key string, newValue interface{}, oldValue interface{}) {
+	c.logger.Infof("Change value for %s with '%v' to '%v'", key, oldValue, newValue)
+}

@@ -77,7 +77,7 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	}
 }
 
-func (c *Component) watchUrl(newValue interface{}, _ interface{}) {
+func (c *Component) watchUrl(_ string, newValue interface{}, _ interface{}) {
 	c.initClient(
 		newValue.(string),
 		c.config.GetString(ConfigMetricsUsername),
@@ -85,7 +85,7 @@ func (c *Component) watchUrl(newValue interface{}, _ interface{}) {
 	)
 }
 
-func (c *Component) watchUsername(newValue interface{}, _ interface{}) {
+func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{}) {
 	c.initClient(
 		c.config.GetString(ConfigMetricsUrl),
 		newValue.(string),
@@ -93,7 +93,7 @@ func (c *Component) watchUsername(newValue interface{}, _ interface{}) {
 	)
 }
 
-func (c *Component) watchPassword(newValue interface{}, _ interface{}) {
+func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{}) {
 	c.initClient(
 		c.config.GetString(ConfigMetricsUrl),
 		c.config.GetString(ConfigMetricsUsername),
@@ -101,6 +101,6 @@ func (c *Component) watchPassword(newValue interface{}, _ interface{}) {
 	)
 }
 
-func (c *Component) watchInterval(newValue interface{}, _ interface{}) {
+func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {
 	c.changeTicker <- newValue.(time.Duration)
 }

@@ -44,7 +44,7 @@
                                     <input type="hidden" name="key" value="{{ $config.Key }}" />
                                     <div class="form-group">
                                         {{ if eq $config.Type "bool" }}
-                                        <input type="checkbox" name="value" {{ if $config.Value }} checked{{ end }} />
+                                        <input type="checkbox" name="value" {{ if eq (print $config.Value) "true" }} checked{{ end }} />
                                         {{ else if or (eq $config.Type "int") (eq $config.Type "int64") }}
                                         <input type="number" class="form-control" name="value" value="{{ $config.Value }}" pattern="^[-+]?[0-9]*$" />
                                         {{ else if or (eq $config.Type "uint") (eq $config.Type "uint64") }}
