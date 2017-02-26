@@ -8,19 +8,19 @@ import (
 )
 
 const (
-	MetricListenersTotal  = "workers.listeners.total"
-	MetricListenersTasks  = "workers.listeners.tasks"
-	MetricWorkersTotal  = "workers.workers.total"
-	MetricWorkersStatus = "workers.workers.status"
-	MetricTasksTotal    = "workers.tasks.total"
-	MetricTasksStatus   = "workers.tasks.status"
+	MetricListenersTotal = "workers.listeners.total"
+	MetricListenersTasks = "workers.listeners.tasks"
+	MetricWorkersTotal   = "workers.workers.total"
+	MetricWorkersStatus  = "workers.workers.status"
+	MetricTasksTotal     = "workers.tasks.total"
+	MetricTasksStatus    = "workers.tasks.status"
 )
 
 var (
 	metricListenersTotal kit.Gauge
 	metricListenersTasks kit.Gauge
-	metricWorkersTotal kit.Gauge
-	metricTasksTotal   kit.Gauge
+	metricWorkersTotal   kit.Gauge
+	metricTasksTotal     kit.Gauge
 
 	metricWorkerStatusWait    kit.Gauge
 	metricWorkerStatusProcess kit.Gauge
