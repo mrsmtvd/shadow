@@ -52,6 +52,9 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	go func() {
 		defer wg.Done()
 		c.dispatcher.Run()
+
+		c.dispatcher.SetTickerExecuteTasksDuration(c.config.GetDuration(ConfigTickerExecuteTasksDuration))
+		c.dispatcher.SetTickerNotifyListenersDuration(c.config.GetDuration(ConfigTickerNotifyListenersDuration))
 	}()
 
 	return nil
@@ -68,7 +71,7 @@ func (c *Component) setLogListener(wg *sync.WaitGroup) {
 
 		for {
 			select {
-			case t := <-listener.TaskDone:
+			case t := <-listener.GetTaskDoneChannel():
 				switch t.GetStatus() {
 				case task.TaskStatusWait:
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "wait"}))
