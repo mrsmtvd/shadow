@@ -34,14 +34,14 @@ func (c *Component) GetVersion() string {
 func (c *Component) GetDependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
+			Name: "alerts",
+		},
+		{
 			Name:     config.ComponentName,
 			Required: true,
 		},
 		{
 			Name: logger.ComponentName,
-		},
-		{
-			Name: "alerts",
 		},
 	}
 }
