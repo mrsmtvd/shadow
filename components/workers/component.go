@@ -72,21 +72,30 @@ func (c *Component) setLogListener(wg *sync.WaitGroup) {
 		for {
 			select {
 			case t := <-listener.GetTaskDoneChannel():
+				metricTasksTotal.Add(1)
+
 				switch t.GetStatus() {
 				case task.TaskStatusWait:
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "wait"}))
+					metricTasksStatusWait.Add(1)
 				case task.TaskStatusProcess:
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "process"}))
+					metricTasksStatusProcess.Add(1)
 				case task.TaskStatusSuccess:
 					c.logger.Debug("Success finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "success"}))
+					metricTasksStatusSuccess.Add(1)
 				case task.TaskStatusFail:
 					c.logger.Error("Fail finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail"}))
+					metricTasksStatusFail.Add(1)
 				case task.TaskStatusFailByTimeout:
 					c.logger.Error("Fail by timeout finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail-by-timeout"}))
+					metricTasksStatusFailByTimeout.Add(1)
 				case task.TaskStatusKill:
 					c.logger.Warn("Execute killed", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "kill"}))
+					metricTasksStatusKill.Add(1)
 				case task.TaskStatusRepeatWait:
 					c.logger.Debug("Repeat execute", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "repeat-wait"}))
+					metricTasksStatusRepeatWait.Add(1)
 				}
 			}
 		}

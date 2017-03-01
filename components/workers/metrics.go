@@ -2,7 +2,6 @@ package workers
 
 import (
 	kit "github.com/go-kit/kit/metrics"
-	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow/components/metrics"
 )
@@ -49,27 +48,6 @@ func (c *Component) MetricsCapture() {
 			metricWorkerStatusProcess.Add(1)
 		case worker.WorkerStatusBusy:
 			metricWorkerStatusBusy.Add(1)
-		}
-	}
-
-	for _, t := range c.dispatcher.GetTasks().GetItems() {
-		metricTasksTotal.Add(1)
-
-		switch t.GetStatus() {
-		case task.TaskStatusWait:
-			metricTasksStatusWait.Add(1)
-		case task.TaskStatusProcess:
-			metricTasksStatusProcess.Add(1)
-		case task.TaskStatusSuccess:
-			metricTasksStatusSuccess.Add(1)
-		case task.TaskStatusFail:
-			metricTasksStatusFail.Add(1)
-		case task.TaskStatusFailByTimeout:
-			metricTasksStatusFailByTimeout.Add(1)
-		case task.TaskStatusKill:
-			metricTasksStatusKill.Add(1)
-		case task.TaskStatusRepeatWait:
-			metricTasksStatusRepeatWait.Add(1)
 		}
 	}
 }
