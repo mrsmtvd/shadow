@@ -15,7 +15,12 @@ func (c *Component) loadTemplates() error {
 		return err
 	}
 
-	for _, component := range c.application.GetComponents() {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return err
+	}
+
+	for _, component := range components {
 		if componentTemplate, ok := component.(hasTemplate); ok {
 			err := c.renderer.AddComponents(component.GetName(), componentTemplate.GetTemplates())
 			if err != nil {

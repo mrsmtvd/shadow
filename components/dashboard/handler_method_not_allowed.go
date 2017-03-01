@@ -10,5 +10,5 @@ type MethodNotAllowedHandler struct {
 
 func (h *MethodNotAllowedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusMethodNotAllowed)
-	h.Render(r.Context(), "dashboard", "405", nil)
+	h.Render(r.Context(), ComponentName, "405", nil)
 }

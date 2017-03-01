@@ -16,6 +16,8 @@ import (
 )
 
 const (
+	ComponentName = "metrics"
+
 	TagAppName    = "app_name"
 	TagAppVersion = "app_version"
 	TagAppBuild   = "app_build"
@@ -44,15 +46,27 @@ type hasCapture interface {
 }
 
 func (c *Component) GetName() string {
-	return "metrics"
+	return ComponentName
 }
 
 func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
+func (c *Component) GetDependencies() []shadow.Dependency {
+	return []shadow.Dependency{
+		{
+			Name:     config.ComponentName,
+			Required: true,
+		},
+		{
+			Name: logger.ComponentName,
+		},
+	}
+}
+
 func (c *Component) Init(a shadow.Application) error {
-	resourceConfig, err := a.GetComponent("config")
+	resourceConfig, err := a.GetComponent(config.ComponentName)
 	if err != nil {
 		return err
 	}
@@ -87,7 +101,12 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.prefix = c.config.GetString(ConfigMetricsPrefix)
 
 	// search metrics
-	for _, component := range c.application.GetComponents() {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return err
+	}
+
+	for _, component := range components {
 		if metrics, ok := component.(hasMetrics); ok {
 			metrics.MetricsRegister(c)
 		}
@@ -105,7 +124,8 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 				// collect metrics
 				wg := new(sync.WaitGroup)
 
-				for _, component := range c.application.GetComponents() {
+				components, _ := c.application.GetComponents()
+				for _, component := range components {
 					if capture, ok := component.(hasCapture); ok {
 						wg.Add(1)
 

@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	ComponentName = "alerts"
+
 	MaxInList = 50
 	ClearTime = time.Minute * 15
 )
@@ -21,7 +23,7 @@ type Component struct {
 }
 
 func (c *Component) GetName() string {
-	return "alerts"
+	return ComponentName
 }
 
 func (c *Component) GetVersion() string {

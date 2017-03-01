@@ -11,5 +11,5 @@ type IndexHandler struct {
 }
 
 func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Render(r.Context(), "workers", "index", nil)
+	h.Render(r.Context(), ComponentName, "index", nil)
 }

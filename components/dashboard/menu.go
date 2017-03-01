@@ -12,10 +12,15 @@ type hasMenu interface {
 	GetDashboardMenu() *Menu
 }
 
-func (c *Component) loadMenu() {
+func (c *Component) loadMenu() error {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return err
+	}
+
 	menus := make([]*Menu, 0)
 
-	for _, component := range c.application.GetComponents() {
+	for _, component := range components {
 		if componentMenu, ok := component.(hasMenu); ok {
 			menu := componentMenu.GetDashboardMenu()
 			if menu != nil {
@@ -31,6 +36,7 @@ func (c *Component) loadMenu() {
 	}
 
 	c.renderer.AddGlobalVar("Menu", menus)
+	return nil
 }
 
 func (c *Component) changeUrlMenu(m *Menu, p string) {

@@ -77,7 +77,7 @@ func (h *ConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		variables[cmpName] = cmp
 	}
 
-	h.Render(r.Context(), "dashboard", "config", map[string]interface{}{
+	h.Render(r.Context(), ComponentName, "config", map[string]interface{}{
 		"variables": variables,
 		"error":     err,
 	})

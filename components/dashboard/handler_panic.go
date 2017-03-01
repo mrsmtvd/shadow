@@ -19,7 +19,7 @@ func (h *PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusInternalServerError)
-	h.Render(r.Context(), "dashboard", "500", map[string]interface{}{
+	h.Render(r.Context(), ComponentName, "500", map[string]interface{}{
 		"panic": fields,
 	})
 

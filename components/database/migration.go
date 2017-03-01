@@ -15,9 +15,14 @@ type hasMigrations interface {
 }
 
 func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return nil, err
+	}
+
 	list := []*migrate.Migration{}
 
-	for _, s := range c.application.GetComponents() {
+	for _, s := range components {
 		if service, ok := s.(hasMigrations); ok {
 			migrations, err := service.GetMigrations().FindMigrations()
 

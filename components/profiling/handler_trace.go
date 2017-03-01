@@ -169,5 +169,5 @@ func (h *TraceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Render(r.Context(), "profiling", "trace", context)
+	h.Render(r.Context(), ComponentName, "trace", context)
 }

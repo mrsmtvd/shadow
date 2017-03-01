@@ -15,7 +15,12 @@ type hasRoute interface {
 	GetDashboardRoutes() []*Route
 }
 
-func (c *Component) loadRoutes() {
+func (c *Component) loadRoutes() error {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return err
+	}
+
 	http.DefaultServeMux = http.NewServeMux()
 
 	c.router = NewRouter(c)
@@ -24,7 +29,7 @@ func (c *Component) loadRoutes() {
 	c.router.SetNotAllowedHandler(&MethodNotAllowedHandler{})
 	c.router.SetNotFoundHandler(&NotFoundHandler{})
 
-	for _, component := range c.application.GetComponents() {
+	for _, component := range components {
 		if componentRoute, ok := component.(hasRoute); ok {
 			for _, route := range componentRoute.GetDashboardRoutes() {
 				path := route.Path
@@ -52,4 +57,6 @@ func (c *Component) loadRoutes() {
 	c.router.Handle(http.MethodConnect, "/", mainHandler)
 	c.router.Handle(http.MethodOptions, "/", mainHandler)
 	c.router.Handle(http.MethodTrace, "/", mainHandler)
+
+	return nil
 }

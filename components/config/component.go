@@ -15,6 +15,8 @@ import (
 )
 
 const (
+	ComponentName = "config"
+
 	FlagConfig = "config"
 
 	WatcherForAll = "*"
@@ -57,7 +59,7 @@ type hasWatchers interface {
 }
 
 func (c *Component) GetName() string {
-	return "config"
+	return ComponentName
 }
 
 func (c *Component) GetVersion() string {
@@ -88,7 +90,12 @@ func (c *Component) Init(a shadow.Application) (err error) {
 }
 
 func (c *Component) Run() error {
-	for _, component := range c.application.GetComponents() {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return err
+	}
+
+	for _, component := range components {
 		if variables, ok := component.(hasVariables); ok {
 			for _, variable := range variables.GetConfigVariables() {
 				if variable.Key == WatcherForAll {

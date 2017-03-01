@@ -18,7 +18,7 @@ func (h *EnvironmentHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		vars[pair[0]] = pair[1]
 	}
 
-	h.Render(r.Context(), "dashboard", "environment", map[string]interface{}{
+	h.Render(r.Context(), ComponentName, "environment", map[string]interface{}{
 		"goVersion":      runtime.Version(),
 		"goOS":           runtime.GOOS,
 		"goArch":         runtime.GOARCH,

@@ -13,7 +13,7 @@ type IndexHandler struct {
 }
 
 func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Render(r.Context(), "alerts", "index", map[string]interface{}{
+	h.Render(r.Context(), ComponentName, "index", map[string]interface{}{
 		"alerts": h.component.GetAlerts(),
 	})
 }

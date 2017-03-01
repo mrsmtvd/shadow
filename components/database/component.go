@@ -8,6 +8,10 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
+const (
+	ComponentName = "database"
+)
+
 type Component struct {
 	application shadow.Application
 	config      *config.Component
@@ -16,15 +20,27 @@ type Component struct {
 }
 
 func (c *Component) GetName() string {
-	return "database"
+	return ComponentName
 }
 
 func (c *Component) GetVersion() string {
 	return "1.0.0"
 }
 
+func (c *Component) GetDependencies() []shadow.Dependency {
+	return []shadow.Dependency{
+		{
+			Name:     config.ComponentName,
+			Required: true,
+		},
+		{
+			Name: logger.ComponentName,
+		},
+	}
+}
+
 func (c *Component) Init(a shadow.Application) error {
-	resourceConfig, err := a.GetComponent("config")
+	resourceConfig, err := a.GetComponent(config.ComponentName)
 	if err != nil {
 		return err
 	}

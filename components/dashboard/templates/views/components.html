@@ -17,14 +17,24 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Version</th>
+                            <th>Dependencies</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{ range $i, $component := .components }}
                         <tr>
                             <td>{{ add $i 1 }}</td>
-                            <td>{{ $component.GetName }}</td>
-                            <td>{{ $component.GetVersion }}</td>
+                            <td>{{ $component.name }}</td>
+                            <td>{{ $component.version }}</td>
+                            <td>
+                                {{ range $j, $dep := $component.dependencies }}
+                                    {{ if $dep.Required }}
+                                        <span class="label label-warning">{{ $dep.Name }}</span>
+                                    {{ else }}
+                                        <span class="label label-info">{{ $dep.Name }}</span>
+                                    {{ end }}
+                                {{ end }}
+                            </td>
                         </tr>
                         {{ end }}
                         </tbody>

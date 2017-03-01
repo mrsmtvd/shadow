@@ -34,5 +34,5 @@ func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Render(r.Context(), "mail", "index", vars)
+	h.Render(r.Context(), ComponentName, "index", vars)
 }

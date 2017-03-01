@@ -1,14 +1,17 @@
 package shadow
 
 import (
+	"errors"
 	"fmt"
 	"sync"
+
+	"github.com/deckarep/golang-set"
 )
 
 type Application interface {
 	Run() error
 	GetComponent(string) (Component, error)
-	GetComponents() []Component
+	GetComponents() ([]Component, error)
 	HasComponent(string) bool
 	RegisterComponent(Component) error
 	GetName() string
@@ -29,27 +32,40 @@ type ComponentRunner interface {
 	Run() error
 }
 
+type ComponentDependency interface {
+	GetDependencies() []Dependency
+}
+
 type ComponentAsyncRunner interface {
 	Run(*sync.WaitGroup) error
 }
 
+type Dependency struct {
+	Name     string
+	Required bool
+}
+
 type App struct {
-	components []Component
+	components        map[string]Component
+	resolveComponents []Component
 
 	name    string
 	version string
 	build   string
 
-	wg *sync.WaitGroup
+	wg       *sync.WaitGroup
+	run      bool
+	resolved bool
 }
 
-func NewApp(components []Component, name string, version string, build string) (Application, error) {
+func NewApp(name string, version string, build string, components []Component) (Application, error) {
 	application := &App{
-		components: []Component{},
+		components: map[string]Component{},
 		name:       name,
 		version:    version,
 		build:      build,
 		wg:         new(sync.WaitGroup),
+		run:        false,
 	}
 
 	for i := range components {
@@ -62,21 +78,32 @@ func NewApp(components []Component, name string, version string, build string) (
 }
 
 func (a *App) Run() (err error) {
-	for i := range a.components {
-		if init, ok := a.components[i].(ComponentInit); ok {
+	if a.run {
+		return errors.New("Already running")
+	}
+
+	components, err := a.GetComponents()
+	if err != nil {
+		return err
+	}
+
+	a.run = true
+
+	for i := range components {
+		if init, ok := components[i].(ComponentInit); ok {
 			if err = init.Init(a); err != nil {
 				return err
 			}
 		}
 	}
 
-	for i := range a.components {
-		if runner, ok := a.components[i].(ComponentAsyncRunner); ok {
+	for i := range components {
+		if runner, ok := components[i].(ComponentAsyncRunner); ok {
 			a.wg.Add(1)
 			if err := runner.Run(a.wg); err != nil {
 				return err
 			}
-		} else if runner, ok := a.components[i].(ComponentRunner); ok {
+		} else if runner, ok := components[i].(ComponentRunner); ok {
 			if err := runner.Run(); err != nil {
 				return err
 			}
@@ -88,17 +115,21 @@ func (a *App) Run() (err error) {
 }
 
 func (a *App) GetComponent(n string) (Component, error) {
-	for i := range a.components {
-		if a.components[i].GetName() == n {
-			return a.components[i], nil
-		}
+	if cmp, ok := a.components[n]; ok {
+		return cmp, nil
 	}
 
 	return nil, fmt.Errorf("Component \"%s\" not found", n)
 }
 
-func (a *App) GetComponents() []Component {
-	return a.components
+func (a *App) GetComponents() ([]Component, error) {
+	if !a.resolved {
+		if err := a.resolveDependencies(); err != nil {
+			return nil, err
+		}
+	}
+
+	return a.resolveComponents, nil
 }
 
 func (a *App) HasComponent(n string) bool {
@@ -111,7 +142,8 @@ func (a *App) RegisterComponent(c Component) error {
 		return fmt.Errorf("Component \"%s\" already exists", c.GetName())
 	}
 
-	a.components = append(a.components, c)
+	a.components[c.GetName()] = c
+	a.resolved = false
 	return nil
 }
 
@@ -125,4 +157,63 @@ func (a *App) GetVersion() string {
 
 func (a *App) GetBuild() string {
 	return a.build
+}
+
+func (a *App) resolveDependencies() error {
+	a.resolveComponents = make([]Component, 0, len(a.components))
+
+	cmpDependencies := make(map[string]mapset.Set)
+	for _, cmp := range a.components {
+		dependencySet := mapset.NewSet()
+
+		if cmpDependency, ok := cmp.(ComponentDependency); ok {
+			for _, dep := range cmpDependency.GetDependencies() {
+				if dep.Required {
+					if !a.HasComponent(dep.Name) {
+						return fmt.Errorf("Component \"%s\" has required dependency \"%s\"", cmp.GetName(), dep.Name)
+					}
+				} else if !a.HasComponent(dep.Name) {
+					cmpDependencies[dep.Name] = mapset.NewSet()
+				}
+
+				dependencySet.Add(dep.Name)
+			}
+		}
+
+		cmpDependencies[cmp.GetName()] = dependencySet
+	}
+
+	var components []string
+
+	for len(cmpDependencies) != 0 {
+		readySet := mapset.NewSet()
+		for name, deps := range cmpDependencies {
+			if deps.Cardinality() == 0 {
+				readySet.Add(name)
+			}
+		}
+
+		if readySet.Cardinality() == 0 {
+			return errors.New("Circular dependency found")
+		}
+
+		for name := range readySet.Iter() {
+			delete(cmpDependencies, name.(string))
+			components = append(components, name.(string))
+		}
+
+		for name, deps := range cmpDependencies {
+			diff := deps.Difference(readySet)
+			cmpDependencies[name] = diff
+		}
+	}
+
+	for _, name := range components {
+		if cmp, err := a.GetComponent(name); err == nil {
+			a.resolveComponents = append(a.resolveComponents, cmp)
+		}
+	}
+
+	a.resolved = true
+	return nil
 }
