@@ -1,5 +1,10 @@
 package dashboard
 
+import (
+	"sort"
+	"strings"
+)
+
 type Menu struct {
 	Name    string
 	Url     string
@@ -10,6 +15,18 @@ type Menu struct {
 
 type hasMenu interface {
 	GetDashboardMenu() *Menu
+}
+
+type orderedMenus []*Menu
+
+func (m orderedMenus) Len() int {
+	return len(m)
+}
+func (m orderedMenus) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+func (m orderedMenus) Less(i, j int) bool {
+	return strings.Compare(m[i].Name, m[j].Name) < 0
 }
 
 func (c *Component) loadMenu() error {
@@ -35,7 +52,10 @@ func (c *Component) loadMenu() error {
 		}
 	}
 
-	c.renderer.AddGlobalVar("Menu", menus)
+	contextMenus := orderedMenus(menus)
+	sort.Sort(contextMenus)
+
+	c.renderer.AddGlobalVar("Menu", contextMenus)
 	return nil
 }
 
