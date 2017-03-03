@@ -5,10 +5,10 @@ import (
 )
 
 const (
-	ConfigDashboardHost         = "dashboard.host"
-	ConfigDashboardPort         = "dashboard.port"
-	ConfigDashboardAuthUser     = "dashboard.auth-user"
-	ConfigDashboardAuthPassword = "dashboard.auth-password"
+	ConfigDashboardHost         = ComponentName + ".host"
+	ConfigDashboardPort         = ComponentName + ".port"
+	ConfigDashboardAuthUser     = ComponentName + ".auth-user"
+	ConfigDashboardAuthPassword = ComponentName + ".auth-password"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {

@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	ConfigDatabaseDriver          = "database.driver"
-	ConfigDatabaseDsn             = "database.dsn"
-	ConfigDatabaseMigrationsTable = "database.migrations.table"
-	ConfigDatabaseMaxIdleConns    = "database.max_idle_conns"
-	ConfigDatabaseMaxOpenConns    = "database.max_open_conns"
+	ConfigDatabaseDriver          = ComponentName + ".driver"
+	ConfigDatabaseDsn             = ComponentName + ".dsn"
+	ConfigDatabaseMigrationsTable = ComponentName + ".migrations.table"
+	ConfigDatabaseMaxIdleConns    = ComponentName + ".max_idle_conns"
+	ConfigDatabaseMaxOpenConns    = ComponentName + ".max_open_conns"
 
 	defaultMigrationsTableName = "migrations"
 )

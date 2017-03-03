@@ -7,14 +7,14 @@ import (
 )
 
 const (
-	ConfigMetricsUrl       = "metrics.url"
-	ConfigMetricsDatabase  = "metrics.database"
-	ConfigMetricsUsername  = "metrics.username"
-	ConfigMetricsPassword  = "metrics.password"
-	ConfigMetricsPrecision = "metrics.precision"
-	ConfigMetricsInterval  = "metrics.interval"
-	ConfigMetricsTags      = "metrics.tags"
-	ConfigMetricsPrefix    = "metrics.prefix"
+	ConfigMetricsUrl       = ComponentName + ".url"
+	ConfigMetricsDatabase  = ComponentName + ".database"
+	ConfigMetricsUsername  = ComponentName + ".username"
+	ConfigMetricsPassword  = ComponentName + ".password"
+	ConfigMetricsPrecision = ComponentName + ".precision"
+	ConfigMetricsInterval  = ComponentName + ".interval"
+	ConfigMetricsTags      = ComponentName + ".tags"
+	ConfigMetricsPrefix    = ComponentName + ".prefix"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {

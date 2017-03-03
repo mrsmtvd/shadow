@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	ConfigMailSmtpUsername = "mail.smtp.username"
-	ConfigMailSmtpPassword = "mail.smtp.password"
-	ConfigMailSmtpHost     = "mail.smtp.host"
-	ConfigMailSmtpPort     = "mail.smtp.port"
-	ConfigMailFromAddress  = "mail.from.address"
-	ConfigMailFromName     = "mail.from.name"
+	ConfigMailSmtpUsername = ComponentName + ".smtp.username"
+	ConfigMailSmtpPassword = ComponentName + ".smtp.password"
+	ConfigMailSmtpHost     = ComponentName + ".smtp.host"
+	ConfigMailSmtpPort     = ComponentName + ".smtp.port"
+	ConfigMailFromAddress  = ComponentName + ".from.address"
+	ConfigMailFromName     = ComponentName + ".from.name"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {

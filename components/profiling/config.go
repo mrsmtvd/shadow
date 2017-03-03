@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ConfigProfilingDumpDirectory = "profiling.dump_directory"
+	ConfigProfilingDumpDirectory = ComponentName + ".dump_directory"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {

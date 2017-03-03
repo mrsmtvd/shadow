@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	ConfigLoggerLevel  = "logger.level"
-	ConfigLoggerFields = "logger.fields"
+	ConfigLoggerLevel  = ComponentName + ".level"
+	ConfigLoggerFields = ComponentName + ".fields"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {

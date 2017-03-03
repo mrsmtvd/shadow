@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	ConfigWorkersCount                  = "workers.count"
-	ConfigTickerExecuteTasksDuration    = "workers.ticker_execute_tasks_duration"
-	ConfigTickerNotifyListenersDuration = "workers.ticker_notify_listeners_duration"
+	ConfigWorkersCount                  = ComponentName + ".count"
+	ConfigTickerExecuteTasksDuration    = ComponentName + ".ticker_execute_tasks_duration"
+	ConfigTickerNotifyListenersDuration = ComponentName + ".ticker_notify_listeners_duration"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {
