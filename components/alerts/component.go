@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/kihamo/shadow"
+	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/metrics"
 )
 
 const (
@@ -28,6 +30,17 @@ func (c *Component) GetName() string {
 
 func (c *Component) GetVersion() string {
 	return "1.0.0"
+}
+
+func (c *Component) GetDependencies() []shadow.Dependency {
+	return []shadow.Dependency{
+		{
+			Name: dashboard.ComponentName,
+		},
+		{
+			Name: metrics.ComponentName,
+		},
+	}
 }
 
 func (c *Component) Init(a shadow.Application) error {

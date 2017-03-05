@@ -7,7 +7,9 @@ import (
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/metrics"
 	"gopkg.in/gomail.v2"
 )
 
@@ -49,7 +51,13 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 			Required: true,
 		},
 		{
+			Name: dashboard.ComponentName,
+		},
+		{
 			Name: logger.ComponentName,
+		},
+		{
+			Name: metrics.ComponentName,
 		},
 	}
 }

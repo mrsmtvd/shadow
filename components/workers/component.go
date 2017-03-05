@@ -8,7 +8,9 @@ import (
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/metrics"
 )
 
 const (
@@ -38,7 +40,13 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 			Required: true,
 		},
 		{
+			Name: dashboard.ComponentName,
+		},
+		{
 			Name: logger.ComponentName,
+		},
+		{
+			Name: metrics.ComponentName,
 		},
 	}
 }

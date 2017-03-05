@@ -3,6 +3,7 @@ package profiling
 import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/profiling/trace"
 )
 
@@ -27,6 +28,9 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 		{
 			Name:     config.ComponentName,
 			Required: true,
+		},
+		{
+			Name: dashboard.ComponentName,
 		},
 	}
 }
