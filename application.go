@@ -185,7 +185,7 @@ func (a *App) resolveDependencies() error {
 
 	var components []string
 
-	for len(cmpDependencies) != 0 {
+	for len(cmpDependencies) > 0 {
 		readySet := mapset.NewSet()
 		for name, deps := range cmpDependencies {
 			if deps.Cardinality() == 0 {
