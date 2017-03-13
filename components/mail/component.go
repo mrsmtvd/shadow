@@ -156,20 +156,20 @@ func (c *Component) execute(task *mailTask) error {
 		if err = gomail.Send(c.closer, task.message); err != nil {
 			if strings.Contains(err.Error(), "4.4.2") {
 				c.logger.Debug("SMTP server response timeout exceeded", map[string]interface{}{
-					"message": task.message,
+					"mail": task.message,
 					"error":   err.Error(),
 				})
 
 				c.open = false
 				return c.execute(task)
 			} else {
-				c.logger.Error(err.Error(), map[string]interface{}{"message": task.message})
+				c.logger.Error(err.Error(), map[string]interface{}{"mail": task.message})
 				task.result <- err
 
 				return err
 			}
 		} else {
-			c.logger.Debug("Send message success", map[string]interface{}{"message": task.message})
+			c.logger.Debug("Send message success", map[string]interface{}{"mail": task.message})
 			task.result <- nil
 		}
 	}
@@ -184,7 +184,7 @@ func (c *Component) Send(message *gomail.Message) {
 	}
 	c.queue <- task
 
-	c.logger.Debug("Send new message to queue", map[string]interface{}{"message": message})
+	c.logger.Debug("Send new message to queue", map[string]interface{}{"mail": message})
 
 }
 
