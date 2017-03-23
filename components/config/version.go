@@ -1,5 +1,5 @@
 package config
 
 const (
-	ComponentVersion = "1.0.23"
+	ComponentVersion = "1.0.29"
 )

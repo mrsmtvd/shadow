@@ -1,3 +1,3 @@
 package shadow // import "github.com/kihamo/shadow"
 
-//go:generate bash ./generate.sh
+//go:generate /bin/bash ./generate.sh

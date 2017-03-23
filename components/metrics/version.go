@@ -1,5 +1,5 @@
 package metrics
 
 const (
-	ComponentVersion = "1.0.41"
+	ComponentVersion = "1.0.29"
 )

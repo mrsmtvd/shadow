@@ -25,7 +25,7 @@ do
         CMP_VERSION=${!CMP_VAR}
     fi
 
-    CMP_BUILD_NUMBER=`git log . | wc -l`
+    CMP_BUILD_NUMBER=`git log component.go | wc -l`
     CMP_VERSION="${CMP_VERSION}${CMP_BUILD_NUMBER}"
     CMP_PACKAGE=`go list -e -f '{{.Name}}' ./`
 
