@@ -41,7 +41,7 @@ func (c *Component) GetName() string {
 }
 
 func (c *Component) GetVersion() string {
-	return "1.0.0"
+	return ComponentVersion
 }
 
 func (c *Component) GetDependencies() []shadow.Dependency {
@@ -63,13 +63,8 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 }
 
 func (c *Component) Init(a shadow.Application) error {
-	resourceConfig, err := a.GetComponent(config.ComponentName)
-	if err != nil {
-		return err
-	}
-	c.config = resourceConfig.(*config.Component)
-
 	c.application = a
+	c.config = a.GetComponent(config.ComponentName).(*config.Component)
 
 	return nil
 }
@@ -156,8 +151,8 @@ func (c *Component) execute(task *mailTask) error {
 		if err = gomail.Send(c.closer, task.message); err != nil {
 			if strings.Contains(err.Error(), "4.4.2") {
 				c.logger.Debug("SMTP server response timeout exceeded", map[string]interface{}{
-					"mail": task.message,
-					"error":   err.Error(),
+					"mail":  task.message,
+					"error": err.Error(),
 				})
 
 				c.open = false

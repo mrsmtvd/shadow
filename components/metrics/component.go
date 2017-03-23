@@ -50,7 +50,7 @@ func (c *Component) GetName() string {
 }
 
 func (c *Component) GetVersion() string {
-	return "1.0.0"
+	return ComponentVersion
 }
 
 func (c *Component) GetDependencies() []shadow.Dependency {
@@ -66,14 +66,8 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 }
 
 func (c *Component) Init(a shadow.Application) error {
-	resourceConfig, err := a.GetComponent(config.ComponentName)
-	if err != nil {
-		return err
-	}
-	c.config = resourceConfig.(*config.Component)
-
 	c.application = a
-
+	c.config = a.GetComponent(config.ComponentName).(*config.Component)
 	c.changeTicker = make(chan time.Duration)
 
 	return nil

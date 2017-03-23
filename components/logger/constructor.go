@@ -5,8 +5,8 @@ import (
 )
 
 func NewOrNop(name string, application shadow.Application) Logger {
-	if resourceLogger, err := application.GetComponent(ComponentName); err == nil {
-		return resourceLogger.(*Component).Get(name)
+	if cmp := application.GetComponent(ComponentName); cmp != nil {
+		return cmp.(*Component).Get(name)
 	}
 
 	return NopLogger

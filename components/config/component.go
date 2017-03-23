@@ -63,7 +63,7 @@ func (c *Component) GetName() string {
 }
 
 func (c *Component) GetVersion() string {
-	return "1.0.0"
+	return ComponentVersion
 }
 
 func (c *Component) Init(a shadow.Application) (err error) {

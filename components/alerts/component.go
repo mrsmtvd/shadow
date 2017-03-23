@@ -29,7 +29,7 @@ func (c *Component) GetName() string {
 }
 
 func (c *Component) GetVersion() string {
-	return "1.0.0"
+	return ComponentVersion
 }
 
 func (c *Component) GetDependencies() []shadow.Dependency {
@@ -44,10 +44,9 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 }
 
 func (c *Component) Init(a shadow.Application) error {
+	c.application = a
 	c.alerts = make([]*Alert, 0)
 	c.queue = make(chan *Alert)
-
-	c.application = a
 
 	return nil
 }

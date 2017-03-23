@@ -10,7 +10,7 @@ import (
 
 type Application interface {
 	Run() error
-	GetComponent(string) (Component, error)
+	GetComponent(string) Component
 	GetComponents() ([]Component, error)
 	HasComponent(string) bool
 	RegisterComponent(Component) error
@@ -114,12 +114,12 @@ func (a *App) Run() (err error) {
 	return nil
 }
 
-func (a *App) GetComponent(n string) (Component, error) {
+func (a *App) GetComponent(n string) Component {
 	if cmp, ok := a.components[n]; ok {
-		return cmp, nil
+		return cmp
 	}
 
-	return nil, fmt.Errorf("Component \"%s\" not found", n)
+	return nil
 }
 
 func (a *App) GetComponents() ([]Component, error) {
@@ -133,12 +133,11 @@ func (a *App) GetComponents() ([]Component, error) {
 }
 
 func (a *App) HasComponent(n string) bool {
-	_, err := a.GetComponent(n)
-	return err == nil
+	return a.GetComponent(n) != nil
 }
 
 func (a *App) RegisterComponent(c Component) error {
-	if _, err := a.GetComponent(c.GetName()); err == nil {
+	if a.HasComponent(c.GetName()) {
 		return fmt.Errorf("Component \"%s\" already exists", c.GetName())
 	}
 
@@ -209,7 +208,7 @@ func (a *App) resolveDependencies() error {
 	}
 
 	for _, name := range components {
-		if cmp, err := a.GetComponent(name); err == nil {
+		if cmp := a.GetComponent(name); cmp != nil {
 			a.resolveComponents = append(a.resolveComponents, cmp)
 		}
 	}
