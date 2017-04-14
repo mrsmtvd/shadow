@@ -65,6 +65,8 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(*config.Component)
+	c.open = false
+	c.queue = make(chan *mailTask)
 
 	return nil
 }
@@ -72,8 +74,6 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
-	c.open = false
-	c.queue = make(chan *mailTask)
 	c.initDialer(
 		c.config.GetString(ConfigMailSmtpHost),
 		c.config.GetInt(ConfigMailSmtpPort),
@@ -92,11 +92,13 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 				}
 
 				err := c.execute(task)
-				if metricMailTotal != nil {
-					if err != nil {
-						metricMailTotal.With("result", "failed").Add(1)
-					} else {
-						metricMailTotal.With("result", "success").Add(1)
+				if err != nil {
+					if metricMailTotalFailed != nil {
+						metricMailTotalFailed.Inc()
+					}
+				} else {
+					if metricMailTotalSuccess != nil {
+						metricMailTotalSuccess.Inc()
 					}
 				}
 

@@ -54,14 +54,13 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(*config.Component)
+	c.dispatcher = dispatcher.NewDispatcher()
 
 	return nil
 }
 
 func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
-
-	c.dispatcher = dispatcher.NewDispatcher()
 	c.setLogListener(wg)
 
 	for i := 1; i <= c.config.GetInt(ConfigWorkersCount); i++ {
@@ -91,10 +90,6 @@ func (c *Component) setLogListener(wg *sync.WaitGroup) {
 		for {
 			select {
 			case t := <-listener.GetTaskDoneChannel():
-				if metricTasksTotal != nil {
-					metricTasksTotal.Add(1)
-				}
-
 				status := t.GetStatus()
 
 				switch status {
@@ -102,43 +97,43 @@ func (c *Component) setLogListener(wg *sync.WaitGroup) {
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "wait"}))
 
 					if metricTasksStatusWait != nil {
-						metricTasksStatusWait.Add(1)
+						metricTasksStatusWait.Inc()
 					}
 				case task.TaskStatusProcess:
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "process"}))
 
 					if metricTasksStatusProcess != nil {
-						metricTasksStatusProcess.Add(1)
+						metricTasksStatusProcess.Inc()
 					}
 				case task.TaskStatusSuccess:
 					c.logger.Debug("Success finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "success"}))
 
 					if metricTasksStatusSuccess != nil {
-						metricTasksStatusSuccess.Add(1)
+						metricTasksStatusSuccess.Inc()
 					}
 				case task.TaskStatusFail:
 					c.logger.Error("Fail finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail"}))
 
 					if metricTasksStatusFail != nil {
-						metricTasksStatusFail.Add(1)
+						metricTasksStatusFail.Inc()
 					}
 				case task.TaskStatusFailByTimeout:
 					c.logger.Error("Fail by timeout finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail-by-timeout"}))
 
 					if metricTasksStatusFailByTimeout != nil {
-						metricTasksStatusFailByTimeout.Add(1)
+						metricTasksStatusFailByTimeout.Inc()
 					}
 				case task.TaskStatusKill:
 					c.logger.Warn("Execute killed", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "kill"}))
 
 					if metricTasksStatusKill != nil {
-						metricTasksStatusKill.Add(1)
+						metricTasksStatusKill.Inc()
 					}
 				case task.TaskStatusRepeatWait:
 					c.logger.Debug("Repeat execute", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "repeat-wait"}))
 
 					if metricTasksStatusRepeatWait != nil {
-						metricTasksStatusRepeatWait.Add(1)
+						metricTasksStatusRepeatWait.Inc()
 					}
 				default:
 					c.logger.Warnf("Unknown task status %s", status, c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "unknown"}))
@@ -149,31 +144,54 @@ func (c *Component) setLogListener(wg *sync.WaitGroup) {
 }
 
 func (c *Component) AddTask(t task.Tasker) {
-	c.logger.Debug("Add task", c.getLogFieldsForTask(t, nil))
 	c.dispatcher.AddTask(t)
+	c.logger.Debug("Add task", c.getLogFieldsForTask(t, nil))
+
+	if metricTasksTotal != nil {
+		metricTasksTotal.Inc()
+	}
 }
 
 func (c *Component) AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := c.dispatcher.AddNamedTaskByFunc(n, f, a...)
 	c.logger.Debug("Add task", c.getLogFieldsForTask(t, nil))
+
+	if metricTasksTotal != nil {
+		metricTasksTotal.Inc()
+	}
+
 	return t
 }
 
 func (c *Component) AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := c.dispatcher.AddTaskByFunc(f, a...)
 	c.logger.Debug("Add task", c.getLogFieldsForTask(t, nil))
+
+	if metricTasksTotal != nil {
+		metricTasksTotal.Inc()
+	}
+
 	return t
 }
 
 func (c *Component) AddTaskByPriorityAndFunc(p int64, f task.TaskFunction, a ...interface{}) task.Tasker {
 	t := c.dispatcher.AddTaskByPriorityAndFunc(p, f, a...)
 	c.logger.Debug("Add task", c.getLogFieldsForTask(t, nil), map[string]interface{}{"priority": p})
+
+	if metricTasksTotal != nil {
+		metricTasksTotal.Inc()
+	}
+
 	return t
 }
 
 func (c *Component) AddWorker() {
 	w := c.dispatcher.AddWorker()
 	c.logger.Debug("Add worker", map[string]interface{}{"worker.id": w.GetId()})
+
+	if metricWorkersTotal != nil {
+		metricWorkersTotal.Inc()
+	}
 }
 
 func (c *Component) GetWorkers() []worker.Worker {

@@ -89,7 +89,7 @@ func MetricsMiddleware(_ *Component) alice.Constructor {
 			next.ServeHTTP(w, r)
 
 			if metricHandlerExecuteTime != nil {
-				metricHandlerExecuteTime.ObserveDurationByTime(now)
+				metricHandlerExecuteTime.UpdateSince(now)
 			}
 		})
 	}

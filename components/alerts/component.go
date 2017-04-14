@@ -65,7 +65,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 				c.mutex.Unlock()
 
 				if metricAlertsTotal != nil {
-					metricAlertsTotal.Add(1)
+					metricAlertsTotal.Inc()
 				}
 
 			case <-ticker.C:

@@ -1,8 +1,7 @@
 package mail
 
 import (
-	kit "github.com/go-kit/kit/metrics"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/kihamo/snitch"
 )
 
 const (
@@ -10,9 +9,26 @@ const (
 )
 
 var (
-	metricMailTotal kit.Counter
+	metricMailTotalSuccess snitch.Counter
+	metricMailTotalFailed  snitch.Counter
 )
 
-func (c *Component) MetricsRegister(m *metrics.Component) {
-	metricMailTotal = m.NewCounter(MetricMailTotal)
+type metricsCollector struct {
+}
+
+func (c *metricsCollector) Describe(ch chan<- *snitch.Description) {
+	ch <- metricMailTotalSuccess.Description()
+	ch <- metricMailTotalFailed.Description()
+}
+
+func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
+	ch <- metricMailTotalSuccess
+	ch <- metricMailTotalFailed
+}
+
+func (c *Component) Metrics() snitch.Collector {
+	metricMailTotalSuccess = snitch.NewCounter(MetricMailTotal, "status", "success")
+	metricMailTotalFailed = snitch.NewCounter(MetricMailTotal, "status", "failed")
+
+	return &metricsCollector{}
 }

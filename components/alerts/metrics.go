@@ -1,8 +1,7 @@
 package alerts
 
 import (
-	kit "github.com/go-kit/kit/metrics"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/kihamo/snitch"
 )
 
 const (
@@ -10,9 +9,11 @@ const (
 )
 
 var (
-	metricAlertsTotal kit.Counter
+	metricAlertsTotal snitch.Counter
 )
 
-func (c *Component) MetricsRegister(m *metrics.Component) {
-	metricAlertsTotal = m.NewCounter(MetricAlertsTotal)
+func (c *Component) Metrics() snitch.Collector {
+	metricAlertsTotal = snitch.NewCounter(MetricAlertsTotal)
+
+	return metricAlertsTotal
 }

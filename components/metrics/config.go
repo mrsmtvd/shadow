@@ -13,7 +13,7 @@ const (
 	ConfigMetricsPassword  = ComponentName + ".password"
 	ConfigMetricsPrecision = ComponentName + ".precision"
 	ConfigMetricsInterval  = ComponentName + ".interval"
-	ConfigMetricsTags      = ComponentName + ".tags"
+	ConfigMetricsLabels    = ComponentName + ".labels"
 	ConfigMetricsPrefix    = ComponentName + ".prefix"
 )
 
@@ -26,9 +26,10 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Editable: true,
 		},
 		{
-			Key:   ConfigMetricsDatabase,
-			Usage: "InfluxDB database name",
-			Type:  config.ValueTypeString,
+			Key:      ConfigMetricsDatabase,
+			Usage:    "InfluxDB database name",
+			Type:     config.ValueTypeString,
+			Editable: true,
 		},
 		{
 			Key:      ConfigMetricsUsername,
@@ -43,10 +44,11 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Editable: true,
 		},
 		{
-			Key:     ConfigMetricsPrecision,
-			Usage:   "InfluxDB precision",
-			Default: "s",
-			Type:    config.ValueTypeString,
+			Key:      ConfigMetricsPrecision,
+			Usage:    "InfluxDB precision",
+			Default:  "s",
+			Type:     config.ValueTypeString,
+			Editable: true,
 		},
 		{
 			Key:      ConfigMetricsInterval,
@@ -56,9 +58,10 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Editable: true,
 		},
 		{
-			Key:   ConfigMetricsTags,
-			Usage: "Tags list with format: tag1_name=tag1_value,tag2_name=tag2_value",
-			Type:  config.ValueTypeString,
+			Key:      ConfigMetricsLabels,
+			Usage:    "Labels list with format: label1_name=label1_value,label2_name=label2_value",
+			Type:     config.ValueTypeString,
+			Editable: true,
 		},
 		{
 			Key:   ConfigMetricsPrefix,
@@ -70,37 +73,80 @@ func (c *Component) GetConfigVariables() []config.Variable {
 
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigMetricsUrl:      {c.watchUrl},
-		ConfigMetricsUsername: {c.watchUsername},
-		ConfigMetricsPassword: {c.watchPassword},
-		ConfigMetricsInterval: {c.watchInterval},
+		ConfigMetricsUrl:       {c.watchUrl},
+		ConfigMetricsDatabase:  {c.watchDatabase},
+		ConfigMetricsUsername:  {c.watchUsername},
+		ConfigMetricsPassword:  {c.watchPassword},
+		ConfigMetricsPrecision: {c.watchPrecision},
+		ConfigMetricsInterval:  {c.watchInterval},
+		ConfigMetricsLabels:    {c.watchLabels},
 	}
 }
 
 func (c *Component) watchUrl(_ string, newValue interface{}, _ interface{}) {
-	c.initClient(
-		newValue.(string),
-		c.config.GetString(ConfigMetricsUsername),
-		c.config.GetString(ConfigMetricsPassword),
-	)
+	/*
+		c.initCollector(
+			newValue.(string),
+			c.config.GetString(ConfigMetricsDatabase),
+			c.config.GetString(ConfigMetricsUsername),
+			c.config.GetString(ConfigMetricsPassword),
+			c.config.GetString(ConfigMetricsPrecision),
+		)
+	*/
+}
+
+func (c *Component) watchDatabase(_ string, newValue interface{}, _ interface{}) {
+	/*
+		c.initCollector(
+			c.config.GetString(ConfigMetricsUrl),
+			newValue.(string),
+			c.config.GetString(ConfigMetricsUsername),
+			c.config.GetString(ConfigMetricsPassword),
+			c.config.GetString(ConfigMetricsPrecision),
+		)
+	*/
 }
 
 func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{}) {
-	c.initClient(
-		c.config.GetString(ConfigMetricsUrl),
-		newValue.(string),
-		c.config.GetString(ConfigMetricsPassword),
-	)
+	/*
+		c.initCollector(
+			c.config.GetString(ConfigMetricsUrl),
+			c.config.GetString(ConfigMetricsDatabase),
+			newValue.(string),
+			c.config.GetString(ConfigMetricsPassword),
+			c.config.GetString(ConfigMetricsPrecision),
+		)
+	*/
 }
 
 func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{}) {
-	c.initClient(
-		c.config.GetString(ConfigMetricsUrl),
-		c.config.GetString(ConfigMetricsUsername),
-		newValue.(string),
-	)
+	/*
+		c.initCollector(
+			c.config.GetString(ConfigMetricsUrl),
+			c.config.GetString(ConfigMetricsDatabase),
+			c.config.GetString(ConfigMetricsUsername),
+			newValue.(string),
+			c.config.GetString(ConfigMetricsPrecision),
+		)
+	*/
+}
+
+func (c *Component) watchPrecision(_ string, newValue interface{}, _ interface{}) {
+	/*
+		c.initCollector(
+			c.config.GetString(ConfigMetricsUrl),
+			c.config.GetString(ConfigMetricsDatabase),
+			c.config.GetString(ConfigMetricsUsername),
+			c.config.GetString(ConfigMetricsPassword),
+			newValue.(string),
+		)
+	*/
 }
 
 func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {
 	c.changeTicker <- newValue.(time.Duration)
+}
+
+func (c *Component) watchLabels(_ string, newValue interface{}, _ interface{}) {
+	//c.initLabels(newValue.(string))
 }

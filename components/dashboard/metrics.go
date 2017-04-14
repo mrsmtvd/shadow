@@ -1,7 +1,7 @@
 package dashboard
 
 import (
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/kihamo/snitch"
 )
 
 const (
@@ -9,9 +9,11 @@ const (
 )
 
 var (
-	metricHandlerExecuteTime metrics.Timer
+	metricHandlerExecuteTime snitch.Timer
 )
 
-func (c *Component) MetricsRegister(m *metrics.Component) {
-	metricHandlerExecuteTime = m.NewTimer(MetricHandlerExecuteTime)
+func (c *Component) Metrics() snitch.Collector {
+	metricHandlerExecuteTime = snitch.NewTimer(MetricHandlerExecuteTime)
+
+	return metricHandlerExecuteTime
 }
