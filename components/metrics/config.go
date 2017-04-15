@@ -84,69 +84,72 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 }
 
 func (c *Component) watchUrl(_ string, newValue interface{}, _ interface{}) {
-	/*
-		c.initCollector(
-			newValue.(string),
-			c.config.GetString(ConfigMetricsDatabase),
-			c.config.GetString(ConfigMetricsUsername),
-			c.config.GetString(ConfigMetricsPassword),
-			c.config.GetString(ConfigMetricsPrecision),
-		)
-	*/
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	c.storage.Reinitialization(
+		newValue.(string),
+		c.config.GetString(ConfigMetricsDatabase),
+		c.config.GetString(ConfigMetricsUsername),
+		c.config.GetString(ConfigMetricsPassword),
+		c.config.GetString(ConfigMetricsPrecision))
 }
 
 func (c *Component) watchDatabase(_ string, newValue interface{}, _ interface{}) {
-	/*
-		c.initCollector(
-			c.config.GetString(ConfigMetricsUrl),
-			newValue.(string),
-			c.config.GetString(ConfigMetricsUsername),
-			c.config.GetString(ConfigMetricsPassword),
-			c.config.GetString(ConfigMetricsPrecision),
-		)
-	*/
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	c.storage.Reinitialization(
+		c.config.GetString(ConfigMetricsUrl),
+		newValue.(string),
+		c.config.GetString(ConfigMetricsUsername),
+		c.config.GetString(ConfigMetricsPassword),
+		c.config.GetString(ConfigMetricsPrecision))
 }
 
 func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{}) {
-	/*
-		c.initCollector(
-			c.config.GetString(ConfigMetricsUrl),
-			c.config.GetString(ConfigMetricsDatabase),
-			newValue.(string),
-			c.config.GetString(ConfigMetricsPassword),
-			c.config.GetString(ConfigMetricsPrecision),
-		)
-	*/
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	c.storage.Reinitialization(
+		c.config.GetString(ConfigMetricsUrl),
+		c.config.GetString(ConfigMetricsDatabase),
+		newValue.(string),
+		c.config.GetString(ConfigMetricsPassword),
+		c.config.GetString(ConfigMetricsPrecision))
 }
 
 func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{}) {
-	/*
-		c.initCollector(
-			c.config.GetString(ConfigMetricsUrl),
-			c.config.GetString(ConfigMetricsDatabase),
-			c.config.GetString(ConfigMetricsUsername),
-			newValue.(string),
-			c.config.GetString(ConfigMetricsPrecision),
-		)
-	*/
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	c.storage.Reinitialization(
+		c.config.GetString(ConfigMetricsUrl),
+		c.config.GetString(ConfigMetricsDatabase),
+		c.config.GetString(ConfigMetricsUsername),
+		newValue.(string),
+		c.config.GetString(ConfigMetricsPrecision))
 }
 
 func (c *Component) watchPrecision(_ string, newValue interface{}, _ interface{}) {
-	/*
-		c.initCollector(
-			c.config.GetString(ConfigMetricsUrl),
-			c.config.GetString(ConfigMetricsDatabase),
-			c.config.GetString(ConfigMetricsUsername),
-			c.config.GetString(ConfigMetricsPassword),
-			newValue.(string),
-		)
-	*/
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	c.storage.Reinitialization(
+		c.config.GetString(ConfigMetricsUrl),
+		c.config.GetString(ConfigMetricsDatabase),
+		c.config.GetString(ConfigMetricsUsername),
+		c.config.GetString(ConfigMetricsPassword),
+		newValue.(string))
 }
 
 func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {
-	c.changeTicker <- newValue.(time.Duration)
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	c.registry.SendInterval(newValue.(time.Duration))
 }
 
 func (c *Component) watchLabels(_ string, newValue interface{}, _ interface{}) {
-	//c.initLabels(newValue.(string))
+	c.initLabels(newValue.(string))
 }

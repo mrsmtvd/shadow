@@ -6,17 +6,18 @@ import (
 	"time"
 
 	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/snitch"
 )
 
 type IndextHandler struct {
 	dashboard.Handler
+
+	component *Component
 }
 
 func (h *IndextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var updated time.Time
 
-	metrics, err := snitch.DefaultRegisterer.Gather()
+	metrics, err := h.component.Registry().Gather()
 	if err == nil {
 		sort.Sort(metrics)
 

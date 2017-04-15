@@ -1,5 +1,5 @@
 package dashboard
 
 const (
-	ComponentVersion = "1.0.53"
+	ComponentVersion = "1.0.59"
 )

@@ -2,8 +2,9 @@ package metrics
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"sync"
-	"time"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -11,17 +12,16 @@ import (
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/snitch"
 	_ "github.com/kihamo/snitch/collector"
+	"github.com/kihamo/snitch/storage"
 )
 
 const (
 	ComponentName = "metrics"
 
-/*
 	TagAppName    = "app_name"
 	TagAppVersion = "app_version"
 	TagAppBuild   = "app_build"
 	TagHostname   = "hostname"
-*/
 )
 
 type Component struct {
@@ -30,9 +30,10 @@ type Component struct {
 	config *config.Component
 	logger logger.Logger
 
-	mutex        sync.RWMutex
-	prefix       string
-	changeTicker chan time.Duration
+	mutex    sync.RWMutex
+	prefix   string
+	registry snitch.Registerer
+	storage  *storage.Influx
 }
 
 type hasMetrics interface {
@@ -65,7 +66,6 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(*config.Component)
-	c.changeTicker = make(chan time.Duration)
 
 	return nil
 }
@@ -79,7 +79,24 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		return fmt.Errorf("%s is empty", ConfigMetricsUrl)
 	}
 
+	storage, err := storage.NewInflux(
+		c.config.GetString(ConfigMetricsUrl),
+		c.config.GetString(ConfigMetricsDatabase),
+		c.config.GetString(ConfigMetricsUsername),
+		c.config.GetString(ConfigMetricsPassword),
+		c.config.GetString(ConfigMetricsPrecision))
+	if err != nil {
+		wg.Done()
+		return nil
+	}
+
 	c.prefix = c.config.GetString(ConfigMetricsPrefix)
+	c.registry = snitch.DefaultRegisterer
+	c.registry.AddStorages(storage)
+	c.registry.SendInterval(c.config.GetDuration(ConfigMetricsInterval))
+
+	c.storage = storage
+	c.initLabels(c.config.GetString(ConfigMetricsLabels))
 
 	// search metrics
 	components, err := c.application.GetComponents()
@@ -89,23 +106,33 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 
 	for _, component := range components {
 		if metrics, ok := component.(hasMetrics); ok {
-			snitch.DefaultRegisterer.Register(metrics.Metrics())
+			c.Register(metrics.Metrics())
 		}
 	}
 
 	return nil
 }
 
-/*
+func (c *Component) Registry() snitch.Registerer {
+	return c.registry
+}
+
+func (c *Component) Register(cs ...snitch.Collector) {
+	c.registry.Register(cs...)
+}
+
 func (c *Component) initLabels(labels string) {
-	l := metric.Labels{
-		TagAppName:    c.application.GetName(),
-		TagAppVersion: c.application.GetVersion(),
-		TagAppBuild:   c.application.GetBuild(),
+	l := snitch.Labels{
+		&snitch.Label{Key: TagAppName, Value: c.application.GetName()},
+		&snitch.Label{Key: TagAppVersion, Value: c.application.GetVersion()},
+		&snitch.Label{Key: TagAppBuild, Value: c.application.GetBuild()},
 	}
 
 	if hostname, err := os.Hostname(); err == nil {
-		l[TagHostname] = hostname
+		l = append(l, &snitch.Label{
+			Key:   TagHostname,
+			Value: hostname,
+		})
 	}
 
 	if len(labels) > 0 {
@@ -115,7 +142,10 @@ func (c *Component) initLabels(labels string) {
 			parts = strings.Split(tag, "=")
 
 			if len(parts) > 1 {
-				l[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+				l = append(l, &snitch.Label{
+					Key:   strings.TrimSpace(parts[0]),
+					Value: strings.TrimSpace(parts[1]),
+				})
 			}
 		}
 	}
@@ -123,13 +153,5 @@ func (c *Component) initLabels(labels string) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	c.labels = l
+	c.registry.SetLabels(l)
 }
-
-func (c *Component) GetLastUpdated() *time.Time {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	return c.updatedAt
-}
-*/
