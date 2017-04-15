@@ -56,7 +56,7 @@ func (h *TraceHandler) actionStop(w http.ResponseWriter, r *http.Request) error 
 		return fmt.Errorf("Trace already stoped")
 	}
 
-	err := trace.StopProfiles(h.config.GetString(ConfigProfilingDumpDirectory))
+	err := trace.StopProfiles(h.config.GetString(ConfigDumpDirectory))
 	dashboard.LoggerFromContext(r.Context()).Info("Stop trace")
 
 	return err

@@ -7,64 +7,64 @@ import (
 )
 
 const (
-	ConfigMetricsUrl       = ComponentName + ".url"
-	ConfigMetricsDatabase  = ComponentName + ".database"
-	ConfigMetricsUsername  = ComponentName + ".username"
-	ConfigMetricsPassword  = ComponentName + ".password"
-	ConfigMetricsPrecision = ComponentName + ".precision"
-	ConfigMetricsInterval  = ComponentName + ".interval"
-	ConfigMetricsLabels    = ComponentName + ".labels"
-	ConfigMetricsPrefix    = ComponentName + ".prefix"
+	ConfigUrl       = ComponentName + ".url"
+	ConfigDatabase  = ComponentName + ".database"
+	ConfigUsername  = ComponentName + ".username"
+	ConfigPassword  = ComponentName + ".password"
+	ConfigPrecision = ComponentName + ".precision"
+	ConfigInterval  = ComponentName + ".interval"
+	ConfigLabels    = ComponentName + ".labels"
+	ConfigPrefix    = ComponentName + ".prefix"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:      ConfigMetricsUrl,
+			Key:      ConfigUrl,
 			Usage:    "InfluxDB url",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigMetricsDatabase,
+			Key:      ConfigDatabase,
 			Usage:    "InfluxDB database name",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigMetricsUsername,
+			Key:      ConfigUsername,
 			Usage:    "InfluxDB username",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigMetricsPassword,
+			Key:      ConfigPassword,
 			Usage:    "InfluxDB password",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigMetricsPrecision,
+			Key:      ConfigPrecision,
 			Usage:    "InfluxDB precision",
 			Default:  "s",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigMetricsInterval,
+			Key:      ConfigInterval,
 			Default:  "1m",
 			Usage:    "Flush interval",
 			Type:     config.ValueTypeDuration,
 			Editable: true,
 		},
 		{
-			Key:      ConfigMetricsLabels,
+			Key:      ConfigLabels,
 			Usage:    "Labels list with format: label1_name=label1_value,label2_name=label2_value",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:   ConfigMetricsPrefix,
+			Key:   ConfigPrefix,
 			Usage: "Prefix for measurements",
 			Type:  config.ValueTypeString,
 		},
@@ -73,13 +73,13 @@ func (c *Component) GetConfigVariables() []config.Variable {
 
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigMetricsUrl:       {c.watchUrl},
-		ConfigMetricsDatabase:  {c.watchDatabase},
-		ConfigMetricsUsername:  {c.watchUsername},
-		ConfigMetricsPassword:  {c.watchPassword},
-		ConfigMetricsPrecision: {c.watchPrecision},
-		ConfigMetricsInterval:  {c.watchInterval},
-		ConfigMetricsLabels:    {c.watchLabels},
+		ConfigUrl:       {c.watchUrl},
+		ConfigDatabase:  {c.watchDatabase},
+		ConfigUsername:  {c.watchUsername},
+		ConfigPassword:  {c.watchPassword},
+		ConfigPrecision: {c.watchPrecision},
+		ConfigInterval:  {c.watchInterval},
+		ConfigLabels:    {c.watchLabels},
 	}
 }
 
@@ -89,10 +89,10 @@ func (c *Component) watchUrl(_ string, newValue interface{}, _ interface{}) {
 
 	c.storage.Reinitialization(
 		newValue.(string),
-		c.config.GetString(ConfigMetricsDatabase),
-		c.config.GetString(ConfigMetricsUsername),
-		c.config.GetString(ConfigMetricsPassword),
-		c.config.GetString(ConfigMetricsPrecision))
+		c.config.GetString(ConfigDatabase),
+		c.config.GetString(ConfigUsername),
+		c.config.GetString(ConfigPassword),
+		c.config.GetString(ConfigPrecision))
 }
 
 func (c *Component) watchDatabase(_ string, newValue interface{}, _ interface{}) {
@@ -100,11 +100,11 @@ func (c *Component) watchDatabase(_ string, newValue interface{}, _ interface{})
 	defer c.mutex.RUnlock()
 
 	c.storage.Reinitialization(
-		c.config.GetString(ConfigMetricsUrl),
+		c.config.GetString(ConfigUrl),
 		newValue.(string),
-		c.config.GetString(ConfigMetricsUsername),
-		c.config.GetString(ConfigMetricsPassword),
-		c.config.GetString(ConfigMetricsPrecision))
+		c.config.GetString(ConfigUsername),
+		c.config.GetString(ConfigPassword),
+		c.config.GetString(ConfigPrecision))
 }
 
 func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{}) {
@@ -112,11 +112,11 @@ func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{})
 	defer c.mutex.RUnlock()
 
 	c.storage.Reinitialization(
-		c.config.GetString(ConfigMetricsUrl),
-		c.config.GetString(ConfigMetricsDatabase),
+		c.config.GetString(ConfigUrl),
+		c.config.GetString(ConfigDatabase),
 		newValue.(string),
-		c.config.GetString(ConfigMetricsPassword),
-		c.config.GetString(ConfigMetricsPrecision))
+		c.config.GetString(ConfigPassword),
+		c.config.GetString(ConfigPrecision))
 }
 
 func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{}) {
@@ -124,11 +124,11 @@ func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{})
 	defer c.mutex.RUnlock()
 
 	c.storage.Reinitialization(
-		c.config.GetString(ConfigMetricsUrl),
-		c.config.GetString(ConfigMetricsDatabase),
-		c.config.GetString(ConfigMetricsUsername),
+		c.config.GetString(ConfigUrl),
+		c.config.GetString(ConfigDatabase),
+		c.config.GetString(ConfigUsername),
 		newValue.(string),
-		c.config.GetString(ConfigMetricsPrecision))
+		c.config.GetString(ConfigPrecision))
 }
 
 func (c *Component) watchPrecision(_ string, newValue interface{}, _ interface{}) {
@@ -136,10 +136,10 @@ func (c *Component) watchPrecision(_ string, newValue interface{}, _ interface{}
 	defer c.mutex.RUnlock()
 
 	c.storage.Reinitialization(
-		c.config.GetString(ConfigMetricsUrl),
-		c.config.GetString(ConfigMetricsDatabase),
-		c.config.GetString(ConfigMetricsUsername),
-		c.config.GetString(ConfigMetricsPassword),
+		c.config.GetString(ConfigUrl),
+		c.config.GetString(ConfigDatabase),
+		c.config.GetString(ConfigUsername),
+		c.config.GetString(ConfigPassword),
 		newValue.(string))
 }
 

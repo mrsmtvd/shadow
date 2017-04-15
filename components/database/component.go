@@ -52,18 +52,18 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run() (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
-	c.storage, err = NewSQLStorage(c.config.GetString(ConfigDatabaseDriver), c.config.GetString(ConfigDatabaseDsn))
+	c.storage, err = NewSQLStorage(c.config.GetString(ConfigDriver), c.config.GetString(ConfigDsn))
 
 	if err != nil {
 		return err
 	}
 
-	c.initConns(c.config.GetInt(ConfigDatabaseMaxIdleConns), c.config.GetInt(ConfigDatabaseMaxOpenConns))
+	c.initConns(c.config.GetInt(ConfigMaxIdleConns), c.config.GetInt(ConfigMaxOpenConns))
 	c.initTrace(c.config.GetBool(config.ConfigDebug))
 
 	c.storage.SetTypeConverter(TypeConverter{})
 
-	tableName := c.config.GetString(ConfigDatabaseMigrationsTable)
+	tableName := c.config.GetString(ConfigMigrationsTable)
 	if tableName == "" {
 		tableName = defaultMigrationsTableName
 	}

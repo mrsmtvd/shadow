@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	MetricListenersTotal = "workers.listeners.total"
-	MetricListenersTasks = "workers.listeners.tasks"
-	MetricWorkersTotal   = "workers.workers.total"
-	MetricWorkersStatus  = "workers.workers.status"
-	MetricTasksTotal     = "workers.tasks.total"
-	MetricTasksStatus    = "workers.tasks.status"
+	MetricListenersTotal = ComponentName + ".listeners.total"
+	MetricListenersTasks = ComponentName + ".listeners.tasks"
+	MetricWorkersTotal   = ComponentName + ".workers.total"
+	MetricWorkersStatus  = ComponentName + ".workers.status"
+	MetricTasksTotal     = ComponentName + ".tasks.total"
+	MetricTasksStatus    = ComponentName + ".tasks.status"
 )
 
 var (

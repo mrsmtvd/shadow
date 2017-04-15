@@ -5,34 +5,34 @@ import (
 )
 
 const (
-	ConfigDashboardHost         = ComponentName + ".host"
-	ConfigDashboardPort         = ComponentName + ".port"
-	ConfigDashboardAuthUser     = ComponentName + ".auth-user"
-	ConfigDashboardAuthPassword = ComponentName + ".auth-password"
+	ConfigHost         = ComponentName + ".host"
+	ConfigPort         = ComponentName + ".port"
+	ConfigAuthUser     = ComponentName + ".auth-user"
+	ConfigAuthPassword = ComponentName + ".auth-password"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:     ConfigDashboardHost,
+			Key:     ConfigHost,
 			Default: "localhost",
 			Usage:   "Frontend host",
 			Type:    config.ValueTypeString,
 		},
 		{
-			Key:     ConfigDashboardPort,
+			Key:     ConfigPort,
 			Default: 8080,
 			Usage:   "Frontend port number",
 			Type:    config.ValueTypeInt,
 		},
 		{
-			Key:      ConfigDashboardAuthUser,
+			Key:      ConfigAuthUser,
 			Usage:    "User login",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigDashboardAuthPassword,
+			Key:      ConfigAuthPassword,
 			Usage:    "User password",
 			Type:     config.ValueTypeString,
 			Editable: true,

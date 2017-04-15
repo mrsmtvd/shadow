@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	MetricAlertsTotal = "alerts.total"
+	MetricTotal = ComponentName + ".total"
 )
 
 var (
@@ -13,7 +13,7 @@ var (
 )
 
 func (c *Component) Metrics() snitch.Collector {
-	metricAlertsTotal = snitch.NewCounter(MetricAlertsTotal)
+	metricAlertsTotal = snitch.NewCounter(MetricTotal)
 
 	return metricAlertsTotal
 }

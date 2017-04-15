@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	ConfigDatabaseDriver          = ComponentName + ".driver"
-	ConfigDatabaseDsn             = ComponentName + ".dsn"
-	ConfigDatabaseMigrationsTable = ComponentName + ".migrations.table"
-	ConfigDatabaseMaxIdleConns    = ComponentName + ".max_idle_conns"
-	ConfigDatabaseMaxOpenConns    = ComponentName + ".max_open_conns"
+	ConfigDriver          = ComponentName + ".driver"
+	ConfigDsn             = ComponentName + ".dsn"
+	ConfigMigrationsTable = ComponentName + ".migrations.table"
+	ConfigMaxIdleConns    = ComponentName + ".max_idle_conns"
+	ConfigMaxOpenConns    = ComponentName + ".max_open_conns"
 
 	defaultMigrationsTableName = "migrations"
 )
@@ -18,32 +18,32 @@ const (
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:     ConfigDatabaseDriver,
+			Key:     ConfigDriver,
 			Default: "mysql",
 			Usage:   "Database driver (sqlite3, postgres, mysql, mssql and oci8)",
 			Type:    config.ValueTypeString,
 		},
 		{
-			Key:   ConfigDatabaseDsn,
+			Key:   ConfigDsn,
 			Usage: "Database DSN",
 			Type:  config.ValueTypeString,
 		},
 		{
-			Key:      ConfigDatabaseMigrationsTable,
+			Key:      ConfigMigrationsTable,
 			Default:  defaultMigrationsTableName,
 			Usage:    "Database migrations table name",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
-			Key:      ConfigDatabaseMaxIdleConns,
+			Key:      ConfigMaxIdleConns,
 			Default:  0,
 			Usage:    "Database maximum number of connections in the idle connection pool",
 			Type:     config.ValueTypeInt,
 			Editable: true,
 		},
 		{
-			Key:      ConfigDatabaseMaxOpenConns,
+			Key:      ConfigMaxOpenConns,
 			Default:  0,
 			Usage:    "Database maximum number of connections in the idle connection pool",
 			Type:     config.ValueTypeInt,
@@ -54,10 +54,10 @@ func (c *Component) GetConfigVariables() []config.Variable {
 
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		config.ConfigDebug:            {c.watchDebug},
-		ConfigDatabaseMigrationsTable: {c.watchMigrationsTable},
-		ConfigDatabaseMaxIdleConns:    {c.watchMaxIdleConns},
-		ConfigDatabaseMaxOpenConns:    {c.watchMaxOpenConns},
+		config.ConfigDebug:    {c.watchDebug},
+		ConfigMigrationsTable: {c.watchMigrationsTable},
+		ConfigMaxIdleConns:    {c.watchMaxIdleConns},
+		ConfigMaxOpenConns:    {c.watchMaxOpenConns},
 	}
 }
 
@@ -70,9 +70,9 @@ func (c *Component) watchMigrationsTable(_ string, newValue interface{}, _ inter
 }
 
 func (c *Component) watchMaxIdleConns(_ string, newValue interface{}, _ interface{}) {
-	c.initConns(newValue.(int), c.config.GetInt(ConfigDatabaseMaxOpenConns))
+	c.initConns(newValue.(int), c.config.GetInt(ConfigMaxOpenConns))
 }
 
 func (c *Component) watchMaxOpenConns(_ string, newValue interface{}, _ interface{}) {
-	c.initConns(c.config.GetInt(ConfigDatabaseMaxIdleConns), newValue.(int))
+	c.initConns(c.config.GetInt(ConfigMaxIdleConns), newValue.(int))
 }

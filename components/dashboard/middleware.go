@@ -30,13 +30,13 @@ func BasicAuthMiddleware(c *Component) alice.Constructor {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			config := ConfigFromContext(r.Context())
 
-			checkUsername := config.GetString(ConfigDashboardAuthUser)
+			checkUsername := config.GetString(ConfigAuthUser)
 			if checkUsername == "" {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			checkPassword := config.GetString(ConfigDashboardAuthPassword)
+			checkPassword := config.GetString(ConfigAuthPassword)
 
 			username, password, ok := r.BasicAuth()
 			if ok && checkUsername == username && checkPassword == password {

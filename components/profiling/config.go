@@ -5,13 +5,13 @@ import (
 )
 
 const (
-	ConfigProfilingDumpDirectory = ComponentName + ".dump_directory"
+	ConfigDumpDirectory = ComponentName + ".dump_directory"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:      ConfigProfilingDumpDirectory,
+			Key:      ConfigDumpDirectory,
 			Usage:    "Path to trace dumps directory",
 			Default:  "./",
 			Type:     config.ValueTypeString,

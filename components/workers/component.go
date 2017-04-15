@@ -63,7 +63,7 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 	c.setLogListener(wg)
 
-	for i := 1; i <= c.config.GetInt(ConfigWorkersCount); i++ {
+	for i := 1; i <= c.config.GetInt(ConfigCount); i++ {
 		c.AddWorker()
 	}
 

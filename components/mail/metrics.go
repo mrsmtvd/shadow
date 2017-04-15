@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	MetricMailTotal = "mail.total"
+	MetricTotal = ComponentName + ".total"
 )
 
 var (
@@ -27,8 +27,8 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 }
 
 func (c *Component) Metrics() snitch.Collector {
-	metricMailTotalSuccess = snitch.NewCounter(MetricMailTotal, "status", "success")
-	metricMailTotalFailed = snitch.NewCounter(MetricMailTotal, "status", "failed")
+	metricMailTotalSuccess = snitch.NewCounter(MetricTotal, "status", "success")
+	metricMailTotalFailed = snitch.NewCounter(MetricTotal, "status", "failed")
 
 	return &metricsCollector{}
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ConfigWorkersCount                  = ComponentName + ".count"
+	ConfigCount                         = ComponentName + ".count"
 	ConfigTickerExecuteTasksDuration    = ComponentName + ".ticker_execute_tasks_duration"
 	ConfigTickerNotifyListenersDuration = ComponentName + ".ticker_notify_listeners_duration"
 )
@@ -15,7 +15,7 @@ const (
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		{
-			Key:      ConfigWorkersCount,
+			Key:      ConfigCount,
 			Default:  2,
 			Usage:    "Default workers count",
 			Type:     config.ValueTypeInt,
@@ -40,7 +40,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigWorkersCount:                  {c.watchWorkersCount},
+		ConfigCount:                         {c.watchWorkersCount},
 		ConfigTickerExecuteTasksDuration:    {c.watchTickerExecuteTasksDuration},
 		ConfigTickerNotifyListenersDuration: {c.watchTickerNotifyListenersDuration},
 	}

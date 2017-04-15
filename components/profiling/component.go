@@ -42,7 +42,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	trace.LoadDumps(c.config.GetString(ConfigProfilingDumpDirectory))
+	trace.LoadDumps(c.config.GetString(ConfigDumpDirectory))
 
 	return nil
 }

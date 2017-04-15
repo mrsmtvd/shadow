@@ -107,7 +107,7 @@ func (c *Component) Get(key string) Logger {
 }
 
 func (c *Component) getLevel() xlog.Level {
-	switch c.config.GetInt(ConfigLoggerLevel) {
+	switch c.config.GetInt(ConfigLevel) {
 	case 0:
 		return xlog.LevelFatal
 	case 1:
@@ -140,7 +140,7 @@ func (c *Component) getDefaultFields() map[string]interface{} {
 		fields[FieldHostname] = hostname
 	}
 
-	fieldsFromConfig := c.config.GetString(ConfigLoggerFields)
+	fieldsFromConfig := c.config.GetString(ConfigFields)
 	if len(fieldsFromConfig) > 0 {
 		var parts []string
 

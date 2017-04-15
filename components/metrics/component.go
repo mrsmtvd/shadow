@@ -73,30 +73,30 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
-	url := c.config.GetString(ConfigMetricsUrl)
+	url := c.config.GetString(ConfigUrl)
 	if url == "" {
 		wg.Done()
-		return fmt.Errorf("%s is empty", ConfigMetricsUrl)
+		return fmt.Errorf("%s is empty", ConfigUrl)
 	}
 
 	storage, err := storage.NewInflux(
-		c.config.GetString(ConfigMetricsUrl),
-		c.config.GetString(ConfigMetricsDatabase),
-		c.config.GetString(ConfigMetricsUsername),
-		c.config.GetString(ConfigMetricsPassword),
-		c.config.GetString(ConfigMetricsPrecision))
+		c.config.GetString(ConfigUrl),
+		c.config.GetString(ConfigDatabase),
+		c.config.GetString(ConfigUsername),
+		c.config.GetString(ConfigPassword),
+		c.config.GetString(ConfigPrecision))
 	if err != nil {
 		wg.Done()
 		return nil
 	}
 
-	c.prefix = c.config.GetString(ConfigMetricsPrefix)
+	c.prefix = c.config.GetString(ConfigPrefix)
 	c.registry = snitch.DefaultRegisterer
 	c.registry.AddStorages(storage)
-	c.registry.SendInterval(c.config.GetDuration(ConfigMetricsInterval))
+	c.registry.SendInterval(c.config.GetDuration(ConfigInterval))
 
 	c.storage = storage
-	c.initLabels(c.config.GetString(ConfigMetricsLabels))
+	c.initLabels(c.config.GetString(ConfigLabels))
 
 	// search metrics
 	components, err := c.application.GetComponents()
