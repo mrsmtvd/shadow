@@ -5,6 +5,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	rt "github.com/kihamo/shadow/components/dashboard/runtime"
 )
 
 type EnvironmentHandler struct {
@@ -26,6 +28,7 @@ func (h *EnvironmentHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"goNumCPU":       runtime.NumCPU(),
 		"goNumGoroutine": runtime.NumGoroutine(),
 		"goNumCgoCall":   runtime.NumCgoCall(),
+		"goRace":         rt.RaceEnabled,
 		"envVars":        vars,
 	})
 }

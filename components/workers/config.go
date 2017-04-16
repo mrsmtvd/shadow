@@ -40,13 +40,13 @@ func (c *Component) GetConfigVariables() []config.Variable {
 
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigCount:                         {c.watchWorkersCount},
+		ConfigCount:                         {c.watchCount},
 		ConfigTickerExecuteTasksDuration:    {c.watchTickerExecuteTasksDuration},
 		ConfigTickerNotifyListenersDuration: {c.watchTickerNotifyListenersDuration},
 	}
 }
 
-func (c *Component) watchWorkersCount(_ string, newValue interface{}, _ interface{}) {
+func (c *Component) watchCount(_ string, newValue interface{}, _ interface{}) {
 	for i := c.dispatcher.GetWorkers().Len(); i < newValue.(int); i++ {
 		c.AddWorker()
 	}

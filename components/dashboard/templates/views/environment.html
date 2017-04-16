@@ -52,6 +52,10 @@
                             <td>Go num CGO call</td>
                             <td>{{ .goNumCgoCall }}</td>
                         </tr>
+                        <tr>
+                            <td>Go race detector enabled</td>
+                            <td>{{ if .goRace }}Yes{{ else }}No{{ end }}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
