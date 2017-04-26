@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	MetricHandlerExecuteTime = ComponentName + ".handler.execute_time"
+	MetricHandlerExecuteTime = ComponentName + "_handler_response_time_milliseconds"
 )
 
 var (

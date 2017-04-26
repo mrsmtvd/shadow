@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	MetricTotal = ComponentName + ".total"
+	MetricTotal = ComponentName + "_send_total"
 )
 
 var (
