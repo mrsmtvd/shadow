@@ -45,7 +45,6 @@
                             <span class="label label-info">value: {{ $metric.Gauge.Value }}</span>
                         {{ else if eq $type "histogram" }}
                             <span class="label label-info">count: {{ $metric.Histogram.SampleCount }}</span>
-                            <span class="label label-info">sum: {{ $metric.Histogram.SampleSum }}</span>
                             <span class="label label-info">min: {{ $metric.Histogram.SampleMin }}</span>
                             <span class="label label-info">max: {{ $metric.Histogram.SampleMax }}</span>
                             <span class="label label-info">variance: {{ $metric.Histogram.SampleVariance }}</span>
@@ -55,7 +54,6 @@
                             {{ end }}
                         {{ else if eq $type "timer" }}
                             <span class="label label-info">count: {{ $metric.Timer.SampleCount }}</span>
-                            <span class="label label-info">sum: {{ $metric.Timer.SampleSum }}</span>
                             <span class="label label-info">min: {{ $metric.Timer.SampleMin }}</span>
                             <span class="label label-info">max: {{ $metric.Timer.SampleMax }}</span>
                             <span class="label label-info">variance: {{ $metric.Timer.SampleVariance }}</span>

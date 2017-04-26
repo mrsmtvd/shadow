@@ -1,6 +1,8 @@
 package profiling
 
 import (
+	"runtime/debug"
+
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -42,7 +44,12 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
+	c.initGCPercent()
 	trace.LoadDumps(c.config.GetString(ConfigDumpDirectory))
 
 	return nil
+}
+
+func (c *Component) initGCPercent() {
+	debug.SetGCPercent(c.config.GetInt(ConfigGCPercent))
 }
