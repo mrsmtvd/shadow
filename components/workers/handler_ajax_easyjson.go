@@ -61,8 +61,27 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers(in *jlexer.Lex
 			out.WorkersWait = int(in.Int())
 		case "workers_busy":
 			out.WorkersBusy = int(in.Int())
-		case "goroutines":
-			out.Goroutines = int(in.Int())
+		case "listeners":
+			if in.IsNull() {
+				in.Skip()
+				out.Listeners = nil
+			} else {
+				in.Delim('[')
+				if !in.IsDelim(']') {
+					out.Listeners = make([]ajaxHandlerResponseListener, 0, 4)
+				} else {
+					out.Listeners = []ajaxHandlerResponseListener{}
+				}
+				for !in.IsDelim(']') {
+					var v2 ajaxHandlerResponseListener
+					(v2).UnmarshalEasyJSON(in)
+					out.Listeners = append(out.Listeners, v2)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "listeners_count":
+			out.ListenersCount = int(in.Int())
 		default:
 			in.SkipRecursive()
 		}
@@ -86,11 +105,11 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers(out *jwriter.W
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v2, v3 := range in.Workers {
-			if v2 > 0 {
+		for v3, v4 := range in.Workers {
+			if v3 > 0 {
 				out.RawByte(',')
 			}
-			(v3).MarshalEasyJSON(out)
+			(v4).MarshalEasyJSON(out)
 		}
 		out.RawByte(']')
 	}
@@ -116,8 +135,25 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers(out *jwriter.W
 		out.RawByte(',')
 	}
 	first = false
-	out.RawString("\"goroutines\":")
-	out.Int(int(in.Goroutines))
+	out.RawString("\"listeners\":")
+	if in.Listeners == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v5, v6 := range in.Listeners {
+			if v5 > 0 {
+				out.RawByte(',')
+			}
+			(v6).MarshalEasyJSON(out)
+		}
+		out.RawByte(']')
+	}
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"listeners_count\":")
+	out.Int(int(in.ListenersCount))
 	out.RawByte('}')
 }
 
@@ -144,7 +180,74 @@ func (v *ajaxHandlerResponse) UnmarshalJSON(data []byte) error {
 func (v *ajaxHandlerResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers(l, v)
 }
-func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(in *jlexer.Lexer, out *ajaxHandlerResponseWorker) {
+func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(in *jlexer.Lexer, out *ajaxHandlerResponseListener) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "name":
+			out.Name = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(out *jwriter.Writer, in ajaxHandlerResponseListener) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"name\":")
+	out.String(string(in.Name))
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v ajaxHandlerResponseListener) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ajaxHandlerResponseListener) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *ajaxHandlerResponseListener) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ajaxHandlerResponseListener) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(l, v)
+}
+func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(in *jlexer.Lexer, out *ajaxHandlerResponseWorker) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -189,7 +292,7 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(in *jlexer.Le
 		in.Consumed()
 	}
 }
-func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(out *jwriter.Writer, in ajaxHandlerResponseWorker) {
+func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(out *jwriter.Writer, in ajaxHandlerResponseWorker) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -221,27 +324,27 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(out *jwriter.
 // MarshalJSON supports json.Marshaler interface
 func (v ajaxHandlerResponseWorker) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(&w, v)
+	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ajaxHandlerResponseWorker) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(w, v)
+	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ajaxHandlerResponseWorker) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(&r, v)
+	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ajaxHandlerResponseWorker) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(l, v)
+	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(l, v)
 }
-func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(in *jlexer.Lexer, out *ajaxHandlerResponseTask) {
+func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers3(in *jlexer.Lexer, out *ajaxHandlerResponseTask) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -280,7 +383,7 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(in *jlexer.Le
 		in.Consumed()
 	}
 }
-func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(out *jwriter.Writer, in ajaxHandlerResponseTask) {
+func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers3(out *jwriter.Writer, in ajaxHandlerResponseTask) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -314,23 +417,23 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(out *jwriter.
 // MarshalJSON supports json.Marshaler interface
 func (v ajaxHandlerResponseTask) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(&w, v)
+	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers3(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ajaxHandlerResponseTask) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers2(w, v)
+	easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers3(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ajaxHandlerResponseTask) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(&r, v)
+	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers3(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ajaxHandlerResponseTask) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers2(l, v)
+	easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers3(l, v)
 }

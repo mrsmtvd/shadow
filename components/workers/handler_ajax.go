@@ -2,7 +2,6 @@ package workers
 
 import (
 	"net/http"
-	"runtime"
 	"time"
 
 	"github.com/kihamo/go-workers/worker"
@@ -25,12 +24,19 @@ type ajaxHandlerResponseWorker struct {
 }
 
 // easyjson:json
+type ajaxHandlerResponseListener struct {
+	Name string `json:"name"`
+}
+
+// easyjson:json
 type ajaxHandlerResponse struct {
 	Workers      []ajaxHandlerResponseWorker `json:"workers"`
 	WorkersCount int                         `json:"workers_count"`
 	WorkersWait  int                         `json:"workers_wait"`
 	WorkersBusy  int                         `json:"workers_busy"`
-	Goroutines   int                         `json:"goroutines"`
+
+	Listeners      []ajaxHandlerResponseListener `json:"listeners"`
+	ListenersCount int                           `json:"listeners_count"`
 }
 
 type AjaxHandler struct {
@@ -44,12 +50,12 @@ func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	workersWait := 0
 	workersBusy := 0
 
-	for _, wrk := range h.component.GetWorkers() {
+	for _, wrk := range h.component.dispatcher.GetWorkers().GetItems() {
 		switch wrk.GetStatus() {
 		case worker.WorkerStatusWait:
-			workersWait += 1
+			workersWait++
 		case worker.WorkerStatusBusy:
-			workersBusy += 1
+			workersBusy++
 		}
 
 		workerInfo := ajaxHandlerResponseWorker{
@@ -70,12 +76,25 @@ func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		workersList = append(workersList, workerInfo)
 	}
 
+	listenersList := []ajaxHandlerResponseListener{}
+	listenersCount := 0
+
+	for _, l := range h.component.dispatcher.GetListeners() {
+		listenersCount++
+
+		listenersList = append(listenersList, ajaxHandlerResponseListener{
+			Name: l.GetName(),
+		})
+	}
+
 	stats := ajaxHandlerResponse{
 		Workers:      workersList,
 		WorkersCount: len(workersList),
 		WorkersWait:  workersWait,
 		WorkersBusy:  workersBusy,
-		Goroutines:   runtime.NumGoroutine(),
+
+		Listeners:      listenersList,
+		ListenersCount: listenersCount,
 	}
 
 	h.SendJSON(stats, w)

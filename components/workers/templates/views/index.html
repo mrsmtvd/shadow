@@ -12,6 +12,28 @@
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
+                            <i class="fa fa-deaf fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="listeners-count">0</div>
+                            <div>Listeners</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#listeners">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
                             <i class="fa fa-users fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
@@ -51,26 +73,27 @@
                 </a>
             </div>
         </div>
-        <div class="col-xs-4">
-            <div class="panel panel-yellow">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-sitemap fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge" id="goroutines">0</div>
-                            <div>Goroutines</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer" style="height:41px"></div>
-            </div>
+    </div>
+</div>
+
+<div class="panel panel-success" id="listeners">
+    <div class="panel-heading">Listeners</div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<div class="panel panel-default" id="workers">
+<div class="panel panel-warning" id="workers">
     <div class="panel-heading">Workers</div>
     <div class="panel-body">
         <div class="table-responsive">
@@ -92,7 +115,7 @@
     </div>
 </div>
 
-<div class="panel panel-default" id="tasks">
+<div class="panel panel-danger" id="tasks">
     <div class="panel-heading">Wait tasks</div>
     <div class="panel-body">
         <div class="table-responsive">
@@ -148,13 +171,24 @@
             type: 'GET',
             url: '/workers/ajax/',
             success: function(r){
+                var tL = $('#listeners tbody').empty();
                 var tW = $('#workers tbody').empty();
                 var tT = $('#tasks tbody').empty();
+
+                var listeners = r.listeners_count || 0;
                 var workers = r.workers_count || 0;
                 var tasks_wait = 0;
-                var workers_wait = r.workers_wait || 0;
-                var workers_busy = r.workers_busy || 0;
-                var goroutines = r.goroutines || 0
+
+                if (Array.isArray(r.listeners)) {
+                    for (var i in r.listeners) {
+                        var listener = r.listeners[i];
+                        tL.append('<tr>'
+                                + '<td>' + listener.name + '</td>'
+                                + '</tr>');
+                    }
+                    listeners = r.listeners.length
+                }
+
                 if (Array.isArray(r.workers)) {
                     for (var i in r.workers) {
                         var worker = r.workers[i];
@@ -170,6 +204,7 @@
                     }
                     workers = r.workers.length
                 }
+
                 if (Array.isArray(r.tasks_wait)) {
                     for (var i in r.tasks_wait) {
                         var task = r.tasks_wait[i];
@@ -181,9 +216,10 @@
                     }
                     tasks_wait = r.tasks_wait.length
                 }
-                $('#tasks-title').text(tasks_wait + ' wait tasks');
-                $('#goroutines').text(goroutines);
+
+                $('#listeners-count').text(listeners);
                 $('#workers-count').text(workers);
+                $('#tasks-title').text(tasks_wait + ' wait tasks');
                 $('#tasks-wait-count').text(tasks_wait);
             }
         });
