@@ -8,6 +8,11 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
+const (
+	lockName             = "migrations.lock"
+	lockTImeoutInSeconds = 1
+)
+
 var idRegexp = regexp.MustCompile(`^(\d+)(.*)$`)
 
 type hasMigrations interface {
@@ -44,20 +49,36 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 	return list, nil
 }
 
-func (c *Component) UpMigrations() (int, error) {
-	dialect, err := c.GetStorage().GetDialect()
+func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
+	storage := c.GetStorage()
+	dialect, err := storage.GetDialect()
 	if err != nil {
 		return 0, err
 	}
 
-	return migrate.Exec(c.GetStorage().executor.(*gorp.DbMap).Db, dialect, c, migrate.Up)
+	if dialect == "mysql" {
+		result, err := storage.SelectIntByQuery("SELECT GET_LOCK(?, ?)", lockName, lockTImeoutInSeconds)
+		if err != nil {
+			return 0, err
+		}
+
+		if result != 1 {
+			c.logger.Warn("Migrations are locked")
+			return 0, nil
+		}
+
+		defer func() {
+			storage.ExecByQuery("SELECT RELEASE_LOCK(?)", lockName)
+		}()
+	}
+
+	return migrate.Exec(storage.executor.(*gorp.DbMap).Db, dialect, c, dir)
+}
+
+func (c *Component) UpMigrations() (int, error) {
+	return c.execWithLock(migrate.Up)
 }
 
 func (c *Component) DownMigrations() (int, error) {
-	dialect, err := c.GetStorage().GetDialect()
-	if err != nil {
-		return 0, err
-	}
-
-	return migrate.Exec(c.GetStorage().executor.(*gorp.DbMap).Db, dialect, c, migrate.Down)
+	return c.execWithLock(migrate.Down)
 }
