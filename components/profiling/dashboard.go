@@ -32,6 +32,11 @@ func (c *Component) GetDashboardMenu() *dashboard.Menu {
 				Url:    "/debug/pprof",
 				Direct: true,
 			},
+			{
+				Name:   "Expvar",
+				Url:    "/debug/vars",
+				Direct: true,
+			},
 		},
 	}
 }
@@ -54,6 +59,12 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 			Handler: &TraceHandler{
 				config: c.config,
 			},
+		},
+		{
+			Methods: []string{http.MethodGet},
+			Path:    "/debug/vars/",
+			Handler: c.debugHandler((&ExpvarHandler{}).ServeHTTP),
+			Direct:  true,
 		},
 		{
 			Methods: []string{http.MethodGet},
