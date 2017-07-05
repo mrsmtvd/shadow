@@ -9,8 +9,7 @@ import (
 )
 
 const (
-	lockName             = "migrations.lock"
-	lockTImeoutInSeconds = 1
+	lockTimeoutInSeconds = 1
 )
 
 var idRegexp = regexp.MustCompile(`^(\d+)(.*)$`)
@@ -57,7 +56,9 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 	}
 
 	if dialect == "mysql" {
-		result, err := storage.SelectIntByQuery("SELECT GET_LOCK(?, ?)", lockName, lockTImeoutInSeconds)
+		lockName := c.config.GetString(ConfigMigrationsTable) + ".lock"
+
+		result, err := storage.SelectIntByQuery("SELECT GET_LOCK(?, ?)", lockName, lockTimeoutInSeconds)
 		if err != nil {
 			return 0, err
 		}
