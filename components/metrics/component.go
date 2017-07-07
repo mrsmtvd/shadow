@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/snitch"
 	_ "github.com/kihamo/snitch/collector"
 	"github.com/kihamo/snitch/storage"
@@ -55,10 +56,13 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 			Required: true,
 		},
 		{
+			Name: dashboard.ComponentName,
+		},
+		{
 			Name: logger.ComponentName,
 		},
 		{
-			Name: dashboard.ComponentName,
+			Name: profiling.ComponentName,
 		},
 	}
 }
@@ -72,6 +76,11 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
+	c.registry = snitch.DefaultRegisterer
+
+	if c.application.HasComponent(profiling.ComponentName) {
+		c.registry.AddStorages(storage.NewExpvarWithId(ComponentName))
+	}
 
 	url := c.config.GetString(ConfigUrl)
 	if url == "" {
@@ -91,7 +100,6 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}
 
 	c.prefix = c.config.GetString(ConfigPrefix)
-	c.registry = snitch.DefaultRegisterer
 	c.registry.AddStorages(storage)
 	c.registry.SendInterval(c.config.GetDuration(ConfigInterval))
 
