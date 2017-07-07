@@ -13,7 +13,7 @@ var (
 )
 
 func (c *Component) Metrics() snitch.Collector {
-	metricHandlerExecuteTime = snitch.NewTimer(MetricHandlerExecuteTime)
+	metricHandlerExecuteTime = snitch.NewTimer(MetricHandlerExecuteTime, "Time of handle requests")
 
 	return metricHandlerExecuteTime
 }

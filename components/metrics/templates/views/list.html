@@ -22,6 +22,7 @@
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Help</th>
                     <th class="md-col-1">Type</th>
                     <th>Labels</th>
                     <th>Value</th>
@@ -30,15 +31,16 @@
                 <tbody>
                 {{ range $m, $metric := .metrics }}
                 <tr>
-                    <td>{{ $metric.Name }}</td>
-                    <td>{{ $metric.Type }}</td>
+                    <td>{{ $metric.Description.Name }}</td>
+                    <td>{{ $metric.Description.Help }}</td>
+                    <td>{{ $metric.Description.Type }}</td>
                     <td>
-                        {{ range $l, $label := $metric.Labels }}
+                        {{ range $l, $label := $metric.Description.Labels }}
                             <span class="label label-success">{{ $label.Key }}: {{ $label.Value }}</span>
                         {{ end }}
                     </td>
                     <td>
-                        {{ $type := $metric.Type.String }}
+                        {{ $type := $metric.Description.Type.String }}
                         {{ if eq $type "counter" }}
                             <span class="label label-info">value: {{ $metric.Counter.Value }}</span>
                         {{ else if eq $type "gauge" }}

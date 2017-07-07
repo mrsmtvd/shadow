@@ -27,8 +27,8 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 }
 
 func (c *Component) Metrics() snitch.Collector {
-	metricMailTotalSuccess = snitch.NewCounter(MetricTotal, "status", "success")
-	metricMailTotalFailed = snitch.NewCounter(MetricTotal, "status", "failed")
+	metricMailTotalSuccess = snitch.NewCounter(MetricTotal, "Number of mail with success status", "status", "success")
+	metricMailTotalFailed = snitch.NewCounter(MetricTotal, "Number of mail with failed status", "status", "failed")
 
 	return &metricsCollector{}
 }
