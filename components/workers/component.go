@@ -194,8 +194,22 @@ func (c *Component) AddWorker() {
 	}
 }
 
+func (c *Component) RemoveWorker(w worker.Worker) {
+	c.dispatcher.RemoveWorker(w)
+	c.logger.Debug("Remove worker", map[string]interface{}{"worker.id": w.GetId()})
+
+	go func() {
+		w.Kill()
+		c.logger.Debug("Killed worker", map[string]interface{}{"worker.id": w.GetId()})
+	}()
+
+	if metricWorkersTotal != nil {
+		metricWorkersTotal.Dec()
+	}
+}
+
 func (c *Component) GetWorkers() []worker.Worker {
-	return c.dispatcher.GetWorkers().GetItems()
+	return c.dispatcher.GetWorkers()
 }
 
 func (c *Component) getLogFieldsForTask(t task.Tasker, l map[string]interface{}) map[string]interface{} {

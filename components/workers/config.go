@@ -47,7 +47,7 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 }
 
 func (c *Component) watchCount(_ string, newValue interface{}, _ interface{}) {
-	for i := c.dispatcher.GetWorkers().Len(); i < newValue.(int); i++ {
+	for i := len(c.dispatcher.GetWorkers()); i < newValue.(int); i++ {
 		c.AddWorker()
 	}
 }

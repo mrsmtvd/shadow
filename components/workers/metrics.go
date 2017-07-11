@@ -19,7 +19,7 @@ var (
 	metricListenersTotal snitch.Gauge
 	metricListenersTasks snitch.Gauge
 
-	metricWorkersTotal        snitch.Counter
+	metricWorkersTotal        snitch.Gauge
 	metricWorkerStatusWait    snitch.Gauge
 	metricWorkerStatusProcess snitch.Gauge
 	metricWorkerStatusBusy    snitch.Gauge
@@ -67,7 +67,7 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 		workerStatusBusy    float64
 	)
 
-	for _, w := range c.dispatcher.GetWorkers().GetItems() {
+	for _, w := range c.dispatcher.GetWorkers() {
 		switch w.GetStatus() {
 		case worker.WorkerStatusWait:
 			workerStatusWait++
@@ -104,7 +104,7 @@ func (c *Component) Metrics() snitch.Collector {
 	metricListenersTotal = snitch.NewGauge(MetricListenersTotal, "Number of listeners")
 	metricListenersTasks = snitch.NewGauge(MetricListenersTasks, "Number of tasks in listeners")
 
-	metricWorkersTotal = snitch.NewCounter(MetricWorkersTotal, "Number of workers")
+	metricWorkersTotal = snitch.NewGauge(MetricWorkersTotal, "Number of workers")
 	metricWorkerStatusWait = snitch.NewGauge(MetricWorkersStatus, "Number of workers with wait status", "status", "wait")
 	metricWorkerStatusProcess = snitch.NewGauge(MetricWorkersStatus, "Number of workers with process status", "status", "process")
 	metricWorkerStatusBusy = snitch.NewGauge(MetricWorkersStatus, "Number of workers with busy status", "status", "busy")

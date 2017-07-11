@@ -1,4 +1,34 @@
 $(function() {
+    $('#modal').on('show.bs.modal', function (event) {
+        var target = $(event.relatedTarget);
+        var modal = $(this);
+
+
+        var title = target.data('modal-title');
+        if (title !== 'undefined') {
+            modal.find('.modal-title').text(title);
+        }
+
+        var body = target.data('modal-body');
+        if (body !== 'undefined') {
+            modal.find('.modal-body').text(body);
+        }
+
+        var callback = target.data('modal-callback');
+        if (callback !== 'undefined') {
+            $('#modal').data('modal-callback', callback);
+        }
+    });
+
+    $('#modal button[type=submit]').click(function (e) {
+        e.preventDefault();
+
+        var callback = $('#modal').data('modal-callback');
+        if (callback !== 'undefined') {
+            eval(callback);
+        }
+    });
+
     function alertUpdate() {
         $.ajax({
             type: 'GET',

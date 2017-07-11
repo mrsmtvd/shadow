@@ -41,6 +41,10 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 	RouterFromContext(r.Context()).NotFound.ServeHTTP(w, r)
 }
 
+func (h *Handler) MethodNotAllowed(w http.ResponseWriter, r *http.Request) {
+	RouterFromContext(r.Context()).MethodNotAllowed.ServeHTTP(w, r)
+}
+
 func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interface{}) {
 	err := RenderFromContext(ctx).Render(ctx, c, v, d)
 

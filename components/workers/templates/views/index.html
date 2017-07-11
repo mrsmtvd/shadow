@@ -84,6 +84,8 @@
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Created</th>
+                    <th>Updated</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -94,18 +96,54 @@
 </div>
 
 <div class="panel panel-warning" id="workers">
-    <div class="panel-heading">Workers</div>
+    <div class="panel-heading">
+        Workers
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Actions
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu slidedown">
+                <li>
+                    <a href="javascript:void(0)" id="workers-show">
+                        <i class="glyphicon glyphicon-eye-open"></i> Show all tasks
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" id="workers-hide">
+                        <i class="glyphicon glyphicon-eye-close"></i> Hide all tasks
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm reset all workers" data-modal-callback="workersReset();">
+                        <i class="glyphicon glyphicon-refresh"></i> Reset all
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill and remove all workers" data-modal-callback="workersKill();">
+                        <i class="glyphicon glyphicon-trash"></i> Kill all
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#workers-add">
+                        <i class="glyphicon glyphicon-plus"></i> Add worker
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
     <div class="panel-body">
         <div class="table-responsive">
-            <table class="table table-hover">
+            <table class="table">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>Created</th>
-                    <th>Task ID</th>
-                    <th>Task name</th>
-                    <th>Task status</th>
-                    <th>Task created</th>
+                    <th>Status</th>
+                    <th>Task</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -133,100 +171,31 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="workers-add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add workers</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="workers-add-count" class="control-label">Number new workers:</label>
+                        <input type="number" min="1" class="form-control" id="workers-add-count">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success" data-dismiss="modal">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
 {{ end }}
 
 {{ define "js" }}
-<script>
-    var statsDonut;
-    function getTaskStatusName(status) {
-        switch(status) {
-            case 0:
-                return 'wait';
-                break;
-            case 1:
-                return 'process';
-                break;
-            case 2:
-                return 'success';
-                break;
-            case 3:
-                return 'fail';
-                break;
-            case 4:
-                return 'fail by timeout';
-                break;
-            case 5:
-                return 'kill';
-                break;
-            case 6:
-                return 'wait repeat';
-                break;
-            default:
-                return 'unknown';
-                break;
-        }
-    }
-    function update() {
-        $.ajax({
-            type: 'GET',
-            url: '/workers/ajax/',
-            success: function(r){
-                var tL = $('#listeners tbody').empty();
-                var tW = $('#workers tbody').empty();
-                var tT = $('#tasks tbody').empty();
-
-                var listeners = r.listeners_count || 0;
-                var workers = r.workers_count || 0;
-                var tasks_wait = 0;
-
-                if (Array.isArray(r.listeners)) {
-                    for (var i in r.listeners) {
-                        var listener = r.listeners[i];
-                        tL.append('<tr>'
-                                + '<td>' + listener.name + '</td>'
-                                + '</tr>');
-                    }
-                    listeners = r.listeners.length
-                }
-
-                if (Array.isArray(r.workers)) {
-                    for (var i in r.workers) {
-                        var worker = r.workers[i];
-                        var task = worker.task;
-                        tW.append('<tr>'
-                                + '<td>' + worker.id + '</td>'
-                                + '<td>' + new Date(worker.created).toLocaleString() + '</td>'
-                                + '<td>' + (task ? task.id : '') + '</td>'
-                                + '<td>' + (task ? task.name : '') + '</td>'
-                                + '<td>' + (task ? getTaskStatusName(task.status) : '') + '</td>'
-                                + '<td>' + (task ? new Date(task.created).toLocaleString() : '') + '</td>'
-                                + '</tr>');
-                    }
-                    workers = r.workers.length
-                }
-
-                if (Array.isArray(r.tasks_wait)) {
-                    for (var i in r.tasks_wait) {
-                        var task = r.tasks_wait[i];
-                        tT.append('<tr>'
-                                + '<td>' + task.id + '</td>'
-                                + '<td>' + task.name + '</td>'
-                                + '<td>' + new Date(task.created).toLocaleString() + '</td>'
-                                + '</tr>');
-                    }
-                    tasks_wait = r.tasks_wait.length
-                }
-
-                $('#listeners-count').text(listeners);
-                $('#workers-count').text(workers);
-                $('#tasks-title').text(tasks_wait + ' wait tasks');
-                $('#tasks-wait-count').text(tasks_wait);
-            }
-        });
-    }
-    $(function() {
-        update();
-        setInterval(update, 1000 * 5);
-    });
-</script>
+<script src="/workers/js/dashboard.js?v={{ .Application.GetBuild }}"></script>
 {{ end }}

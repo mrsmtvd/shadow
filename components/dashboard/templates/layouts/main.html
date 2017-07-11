@@ -83,6 +83,22 @@
             {{ block "content" . }} {{ end }}
         </div>
     </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="modalLabel">Confirm</h4>
+                </div>
+                <div class="modal-body">Are you sure?</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" data-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="/dashboard/vendor/bootstrap/js/bootstrap.min.js?v={{ .Application.GetBuild }}"></script>
@@ -90,7 +106,7 @@
 <script src="/dashboard/vendor/sb-admin/js/sb-admin-2.js?v={{ .Application.GetBuild }}"></script>
 <script src="/dashboard/vendor/raphael/raphael-min.js?v={{ .Application.GetBuild }}"></script>
 <script src="/dashboard/vendor/morrisjs/morris.min.js?v={{ .Application.GetBuild }}"></script>
-<script src="/dashboard/js/frontend.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/js/dashboard.js?v={{ .Application.GetBuild }}"></script>
 {{ block "js" . }} {{ end }}
 
 </body>
