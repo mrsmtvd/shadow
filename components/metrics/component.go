@@ -32,7 +32,6 @@ type Component struct {
 	logger logger.Logger
 
 	mutex    sync.RWMutex
-	prefix   string
 	registry snitch.Registerer
 	storage  *storage.Influx
 }
@@ -99,7 +98,6 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	c.prefix = c.config.GetString(ConfigPrefix)
 	c.registry.AddStorages(storage)
 	c.registry.SendInterval(c.config.GetDuration(ConfigInterval))
 

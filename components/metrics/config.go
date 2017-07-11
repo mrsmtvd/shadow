@@ -14,7 +14,6 @@ const (
 	ConfigPrecision = ComponentName + ".precision"
 	ConfigInterval  = ComponentName + ".interval"
 	ConfigLabels    = ComponentName + ".labels"
-	ConfigPrefix    = ComponentName + ".prefix"
 )
 
 func (c *Component) GetConfigVariables() []config.Variable {
@@ -62,11 +61,6 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Usage:    "Labels list with format: label1_name=label1_value,label2_name=label2_value",
 			Type:     config.ValueTypeString,
 			Editable: true,
-		},
-		{
-			Key:   ConfigPrefix,
-			Usage: "Prefix for measurements",
-			Type:  config.ValueTypeString,
 		},
 	}
 }
