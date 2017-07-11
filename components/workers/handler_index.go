@@ -8,8 +8,12 @@ import (
 
 type IndexHandler struct {
 	dashboard.Handler
+
+	component *Component
 }
 
 func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Render(r.Context(), ComponentName, "index", nil)
+	h.Render(r.Context(), ComponentName, "index", map[string]interface{}{
+		"defaultListenerName": h.component.getDefaultListenerName(),
+	})
 }

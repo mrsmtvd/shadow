@@ -39,7 +39,9 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 		{
 			Methods: []string{http.MethodGet},
 			Path:    "/",
-			Handler: &IndexHandler{},
+			Handler: &IndexHandler{
+				component: c,
+			},
 		},
 		{
 			Methods: []string{http.MethodGet, http.MethodPost},

@@ -11,7 +11,7 @@ CMP_LOGGER="1.0."
 CMP_MAIL="1.0."
 CMP_METRICS="1.1."
 CMP_PROFILING="1.0."
-CMP_WORKERS="1.0."
+CMP_WORKERS="1.1."
 
 for CMP in `find components -maxdepth 1 -type d ! -path components`
 do

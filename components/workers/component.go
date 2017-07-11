@@ -78,8 +78,12 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	return nil
 }
 
+func (c *Component) getDefaultListenerName() string {
+	return c.GetName() + ".all"
+}
+
 func (c *Component) setLogListener(wg *sync.WaitGroup) {
-	listener := dispatcher.NewDefaultListener(c.GetName() + ".all")
+	listener := dispatcher.NewDefaultListener(c.getDefaultListenerName())
 	c.dispatcher.AddListener(listener)
 
 	// logger for finished tasks
@@ -187,7 +191,7 @@ func (c *Component) AddTaskByPriorityAndFunc(p int64, f task.TaskFunction, a ...
 
 func (c *Component) AddWorker() {
 	w := c.dispatcher.AddWorker()
-	c.logger.Debug("Add worker", map[string]interface{}{"worker.id": w.GetId()})
+	c.logger.Debug("Added worker", map[string]interface{}{"worker.id": w.GetId()})
 
 	if metricWorkersTotal != nil {
 		metricWorkersTotal.Inc()
@@ -196,7 +200,7 @@ func (c *Component) AddWorker() {
 
 func (c *Component) RemoveWorker(w worker.Worker) {
 	c.dispatcher.RemoveWorker(w)
-	c.logger.Debug("Remove worker", map[string]interface{}{"worker.id": w.GetId()})
+	c.logger.Debug("Removed worker", map[string]interface{}{"worker.id": w.GetId()})
 
 	go func() {
 		w.Kill()
@@ -236,8 +240,18 @@ func (c *Component) getLogFieldsForTask(t task.Tasker, l map[string]interface{})
 
 func (c *Component) AddListener(l dispatcher.Listener) {
 	c.dispatcher.AddListener(l)
+	c.logger.Debug("Added listener", map[string]interface{}{"listener.name": l.GetName()})
+
+	if metricListenersTotal != nil {
+		metricListenersTotal.Inc()
+	}
 }
 
 func (c *Component) RemoveListener(l dispatcher.Listener) {
 	c.dispatcher.RemoveListener(l)
+	c.logger.Debug("Remove dlistener", map[string]interface{}{"listener.name": l.GetName()})
+
+	if metricListenersTotal != nil {
+		metricListenersTotal.Dec()
+	}
 }

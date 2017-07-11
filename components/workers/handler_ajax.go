@@ -114,15 +114,15 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 	h.SendJSON(stats, w)
 }
 
-func (h *AjaxHandler) actionReset(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionWorkersReset(w http.ResponseWriter, r *http.Request) {
 	workers := h.component.dispatcher.GetWorkers()
 	checkId := r.FormValue("id")
 
 	go func() {
-		for _, w := range workers {
-			if checkId == "" || w.GetId() == checkId {
-				w.Reset()
-				h.component.logger.Infof("Reseted worker #%s", w.GetId())
+		for _, worker := range workers {
+			if checkId == "" || worker.GetId() == checkId {
+				worker.Reset()
+				h.component.logger.Infof("Reseted worker #%s", worker.GetId())
 
 				if checkId != "" {
 					break
@@ -136,13 +136,13 @@ func (h *AjaxHandler) actionReset(w http.ResponseWriter, r *http.Request) {
 	}, w)
 }
 
-func (h *AjaxHandler) actionKill(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionWorkersKill(w http.ResponseWriter, r *http.Request) {
 	workers := h.component.dispatcher.GetWorkers()
 	checkId := r.FormValue("id")
 
-	for _, w := range workers {
-		if checkId == "" || w.GetId() == checkId {
-			h.component.RemoveWorker(w)
+	for _, worker := range workers {
+		if checkId == "" || worker.GetId() == checkId {
+			h.component.RemoveWorker(worker)
 
 			if checkId != "" {
 				break
@@ -155,7 +155,7 @@ func (h *AjaxHandler) actionKill(w http.ResponseWriter, r *http.Request) {
 	}, w)
 }
 
-func (h *AjaxHandler) actionAdd(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionWorkersAdd(w http.ResponseWriter, r *http.Request) {
 	count := r.FormValue("count")
 	if count != "" {
 		if c, err := strconv.Atoi(count); err == nil {
@@ -170,28 +170,56 @@ func (h *AjaxHandler) actionAdd(w http.ResponseWriter, r *http.Request) {
 	}, w)
 }
 
+func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Request) {
+	listeners := h.component.dispatcher.GetListeners()
+	checkId := r.FormValue("id")
+
+	for _, listener := range listeners {
+		if checkId == "" || listener.GetName() == checkId {
+			if listener.GetName() != h.component.getDefaultListenerName() {
+				h.component.RemoveListener(listener)
+			}
+
+			if checkId != "" {
+				break
+			}
+		}
+	}
+
+	h.SendJSON(ajaxHandlerResponseSuccess{
+		Result: "success",
+	}, w)
+}
+
 func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Query().Get("action") {
 	case "stats":
 		h.actionStats(w, r)
 
-	case "reset":
+	case "listeners-remove":
 		if h.IsPost(r) {
-			h.actionReset(w, r)
+			h.actionListenersRemove(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
-	case "kill":
+	case "workers-reset":
 		if h.IsPost(r) {
-			h.actionKill(w, r)
+			h.actionWorkersReset(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
-	case "add":
+	case "workers-kill":
 		if h.IsPost(r) {
-			h.actionAdd(w, r)
+			h.actionWorkersKill(w, r)
+		} else {
+			h.MethodNotAllowed(w, r)
+		}
+
+	case "workers-add":
+		if h.IsPost(r) {
+			h.actionWorkersAdd(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}

@@ -77,7 +77,22 @@
 </div>
 
 <div class="panel panel-success" id="listeners">
-    <div class="panel-heading">Listeners</div>
+    <div class="panel-heading">
+        Listeners
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Actions
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu slidedown">
+                <li>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all listeners" data-modal-body="Will be remove all listeners except default listener. Are you sure?" data-modal-callback="listenersRemove();">
+                        <i class="glyphicon glyphicon-trash"></i> Remove all
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
     <div class="panel-body">
         <div class="table-responsive">
             <table class="table table-hover">
@@ -86,6 +101,7 @@
                     <th>Name</th>
                     <th>Created</th>
                     <th>Updated</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -197,5 +213,8 @@
 {{ end }}
 
 {{ define "js" }}
+<script type="application/javascript">
+    var defaultListenerName = '{{ .defaultListenerName }}';
+</script>
 <script src="/workers/js/dashboard.js?v={{ .Application.GetBuild }}"></script>
 {{ end }}

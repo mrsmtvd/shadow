@@ -60,11 +60,23 @@ function update() {
             if (Array.isArray(r.listeners)) {
                 for (var i in r.listeners) {
                     var listener = r.listeners[i];
-                    tL.append('<tr>'
-                        + '<td>' + listener.name + '</td>'
-                        + '<td>' + new Date(listener.created).toLocaleString() + '</td>'
-                        + '<td>' + new Date(listener.updated).toLocaleString() + '</td>'
-                        + '</tr>');
+
+                    var lC = '<tr>'
+                    + '<td>' + listener.name + '</td>'
+                    + '<td>' + new Date(listener.created).toLocaleString() + '</td>'
+                    + '<td>' + new Date(listener.updated).toLocaleString() + '</td>';
+                    
+                    if (listener.name != defaultListenerName) {
+                        lC += '<td><div class="btn-group btn-group-sm">'
+                            + '<button type="button" class="btn btn-danger btn-icon listener-remove" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener ' + listener.name + '" data-modal-callback="listenersRemove(\'' + listener.name + '\');"><i class="glyphicon glyphicon-trash" title="Remove"></i></button>'
+                            + '</div></td>'
+                    } else {
+                        lC += '<td></td>';
+                    }
+                    
+                    lC += '</tr>';
+                    
+                    tL.append(lC);
                 }
                 listeners = r.listeners.length
             }
@@ -149,7 +161,7 @@ function update() {
 function workersKill(id) {
     $.ajax({
         type: 'POST',
-        url: '/workers/ajax/?action=kill',
+        url: '/workers/ajax/?action=workers-kill',
         data: {
             id: id
         },
@@ -160,7 +172,18 @@ function workersKill(id) {
 function workersReset(id) {
     $.ajax({
         type: 'POST',
-        url: '/workers/ajax/?action=reset',
+        url: '/workers/ajax/?action=workers-reset',
+        data: {
+            id: id
+        },
+        success: update
+    });
+}
+
+function listenersRemove(id) {
+    $.ajax({
+        type: 'POST',
+        url: '/workers/ajax/?action=listeners-remove',
         data: {
             id: id
         },
@@ -182,7 +205,7 @@ $(function() {
     $('#workers-add button[type=submit]').click(function () {
         $.ajax({
             type: 'POST',
-            url: '/workers/ajax/?action=add',
+            url: '/workers/ajax/?action=workers-add',
             data: {
                 count: $('#workers-add-count').val()
             },
