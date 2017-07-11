@@ -103,6 +103,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 				}
 
 			case <-time.After(mailDaemonTimeOut):
+				c.mutex.Lock()
 				if c.open {
 					if err := c.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
 						c.logger.Error("Dialer close failed", map[string]interface{}{"error": err.Error()})
@@ -112,6 +113,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 
 					c.open = false
 				}
+				c.mutex.Unlock()
 			}
 		}
 	}()
@@ -128,8 +130,8 @@ func (c *Component) initDialer(host string, port int, username, password string)
 }
 
 func (c *Component) execute(task *mailTask) error {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
 	var err error
 
