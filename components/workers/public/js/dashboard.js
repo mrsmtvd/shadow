@@ -63,8 +63,8 @@ function update() {
 
                     var lC = '<tr>'
                     + '<td>' + listener.name + '</td>'
-                    + '<td>' + new Date(listener.created).toLocaleString() + '</td>'
-                    + '<td>' + new Date(listener.updated).toLocaleString() + '</td>';
+                    + '<td>' + dateToString(listener.created) + '</td>'
+                    + '<td>' + dateToString(listener.updated) + '</td>';
                     
                     if (listener.name != defaultListenerName) {
                         lC += '<td><div class="btn-group btn-group-sm">'
@@ -87,7 +87,7 @@ function update() {
                     var task = worker.task;
                     var wC ='<tr>'
                         + '<td>' + worker.id + '</td>'
-                        + '<td>' + new Date(worker.created).toLocaleString() + '</td>'
+                        + '<td>' + dateToString(worker.created) + '</td>'
                         + '<td>' + getWorkerStatusName(worker.status) + '</td>';
 
                     if (task) {
@@ -128,7 +128,7 @@ function update() {
                     tT.append('<tr>'
                         + '<td>' + task.id + '</td>'
                         + '<td>' + task.name + '</td>'
-                        + '<td>' + new Date(task.created).toLocaleString() + '</td>'
+                        + '<td>' + dateToString(task.created) + '</td>'
                         + '</tr>');
                 }
                 tasks_wait = r.tasks_wait.length

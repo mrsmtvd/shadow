@@ -123,17 +123,17 @@
                         </div>
                         {{ end }}
                     </td>
-                    <td>{{ $dump.GetStartedAt.Format "2006.01.02 15:04:05" }}</td>
-                    <td>{{ $dump.GetStoppedAt.Format "2006.01.02 15:04:05" }}</td>
+                    <td><script type="application/javascript">document.write(dateToString('{{ $dump.GetStartedAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script></td>
+                    <td><script type="application/javascript">document.write(dateToString('{{ $dump.GetStoppedAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script></td>
                     <td>{{ $dump.GetSize }}</td>
                     <td class="text-right">
                         {{ if and (ne $dump.GetStatus 0) (ne $dump.GetStatus 2) }}
-                        <form method="post" action="?action=delete&id={{ $dump.GetId }}" class="btn-group-xs">
-                            <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download"></i> Download</a>
-                            <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash"></i> Delete</button>
+                        <form method="post" action="?action=delete&id={{ $dump.GetId }}" class="btn-group btn-group-sm">
+                            <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download" title="Download"></i></a>
+                            <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash" title="Delete"></i></button>
                         </form>
                         {{ else }}
-                        <div class="progress" style="width:148px;margin-bottom:0;float:right">
+                        <div class="progress" style="width:67px;margin-bottom:0;float:right">
                             <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
                                 <span class="sr-only">Generation</span>
                             </div>

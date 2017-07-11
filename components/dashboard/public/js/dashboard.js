@@ -64,11 +64,6 @@ $(function() {
         })
     }
 
-    function getParameterByName(name) {
-        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-    }
-
     if ($('#navbar-alerts').length) {
         $('#navbar-alerts>li').click(function(){
             if ($('#navbar-alerts ul li').length) {
