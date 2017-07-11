@@ -1,8 +1,8 @@
 $(function() {
+    // modal
     $('#modal').on('show.bs.modal', function (event) {
         var target = $(event.relatedTarget);
         var modal = $(this);
-
 
         var title = target.data('modal-title');
         if (title !== 'undefined') {
@@ -29,6 +29,7 @@ $(function() {
         }
     });
 
+    // alerts
     function alertUpdate() {
         $.ajax({
             type: 'GET',
