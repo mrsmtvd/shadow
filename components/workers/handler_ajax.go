@@ -33,9 +33,12 @@ type ajaxHandlerResponseWorker struct {
 
 // easyjson:json
 type ajaxHandlerResponseListener struct {
-	Name    string    `json:"name"`
-	Created time.Time `json:"created"`
-	Updated time.Time `json:"updated"`
+	Name              string     `json:"name"`
+	CreatedAt         time.Time  `json:"created_at"`
+	LastTaskSuccessAt *time.Time `json:"last_task_success_at"`
+	LastTaskFailedAt  *time.Time `json:"last_task_failed_at"`
+	CountTaskSuccess  uint64     `json:"count_task_success"`
+	CountTaskFailed   uint64     `json:"count_task_failed"`
 }
 
 // easyjson:json
@@ -95,9 +98,12 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 		item := l.(dispatcher.ListenerItem)
 
 		listenersList = append(listenersList, ajaxHandlerResponseListener{
-			Name:    item.GetName(),
-			Created: item.GetCreated(),
-			Updated: item.GetUpdated(),
+			Name:              item.GetName(),
+			CreatedAt:         item.GetCreatedAt(),
+			LastTaskSuccessAt: item.GetLastTaskSuccessAt(),
+			LastTaskFailedAt:  item.GetLastTaskFailedAt(),
+			CountTaskSuccess:  item.GetCountTaskSuccess(),
+			CountTaskFailed:   item.GetCountTaskFailed(),
 		})
 	}
 

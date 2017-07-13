@@ -7,6 +7,7 @@ import (
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	time "time"
 )
 
 // suppress unused package warning
@@ -209,14 +210,38 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers1(in *jlexer.Le
 		switch key {
 		case "name":
 			out.Name = string(in.String())
-		case "created":
+		case "created_at":
 			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Created).UnmarshalJSON(data))
+				in.AddError((out.CreatedAt).UnmarshalJSON(data))
 			}
-		case "updated":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Updated).UnmarshalJSON(data))
+		case "last_task_success_at":
+			if in.IsNull() {
+				in.Skip()
+				out.LastTaskSuccessAt = nil
+			} else {
+				if out.LastTaskSuccessAt == nil {
+					out.LastTaskSuccessAt = new(time.Time)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.LastTaskSuccessAt).UnmarshalJSON(data))
+				}
 			}
+		case "last_task_failed_at":
+			if in.IsNull() {
+				in.Skip()
+				out.LastTaskFailedAt = nil
+			} else {
+				if out.LastTaskFailedAt == nil {
+					out.LastTaskFailedAt = new(time.Time)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.LastTaskFailedAt).UnmarshalJSON(data))
+				}
+			}
+		case "count_task_success":
+			out.CountTaskSuccess = uint64(in.Uint64())
+		case "count_task_failed":
+			out.CountTaskFailed = uint64(in.Uint64())
 		default:
 			in.SkipRecursive()
 		}
@@ -241,14 +266,40 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers1(out *jwriter.
 		out.RawByte(',')
 	}
 	first = false
-	out.RawString("\"created\":")
-	out.Raw((in.Created).MarshalJSON())
+	out.RawString("\"created_at\":")
+	out.Raw((in.CreatedAt).MarshalJSON())
 	if !first {
 		out.RawByte(',')
 	}
 	first = false
-	out.RawString("\"updated\":")
-	out.Raw((in.Updated).MarshalJSON())
+	out.RawString("\"last_task_success_at\":")
+	if in.LastTaskSuccessAt == nil {
+		out.RawString("null")
+	} else {
+		out.Raw((*in.LastTaskSuccessAt).MarshalJSON())
+	}
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"last_task_failed_at\":")
+	if in.LastTaskFailedAt == nil {
+		out.RawString("null")
+	} else {
+		out.Raw((*in.LastTaskFailedAt).MarshalJSON())
+	}
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"count_task_success\":")
+	out.Uint64(uint64(in.CountTaskSuccess))
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"count_task_failed\":")
+	out.Uint64(uint64(in.CountTaskFailed))
 	out.RawByte('}')
 }
 

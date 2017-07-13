@@ -63,8 +63,12 @@ function update() {
 
                     var lC = '<tr>'
                     + '<td>' + listener.name + '</td>'
-                    + '<td>' + dateToString(listener.created) + '</td>'
-                    + '<td>' + dateToString(listener.updated) + '</td>';
+                    + '<td>' + dateToString(listener.created_at) + '</td>'
+                    + '<td>' + listener.count_task_success + '</td>'
+                    + '<td>' + (listener.last_task_success_at ? dateToString(listener.last_task_success_at) : '') + '</td>' 
+                    + '<td>' + listener.count_task_failed + '</td>'
+                    + '<td>' + (listener.count_task_failed ? dateToString(listener.count_task_failed) : '') + '</td>'
+                    ;
                     
                     if (listener.name != defaultListenerName) {
                         lC += '<td><div class="btn-group btn-group-sm">'
