@@ -67,7 +67,7 @@ function update() {
                     + '<td>' + listener.count_task_success + '</td>'
                     + '<td>' + (listener.last_task_success_at ? dateToString(listener.last_task_success_at) : '') + '</td>' 
                     + '<td>' + listener.count_task_failed + '</td>'
-                    + '<td>' + (listener.count_task_failed ? dateToString(listener.count_task_failed) : '') + '</td>'
+                    + '<td>' + (listener.last_task_failed_at ? dateToString(listener.last_task_failed_at) : '') + '</td>'
                     ;
                     
                     if (listener.name != defaultListenerName) {
