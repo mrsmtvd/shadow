@@ -3,8 +3,11 @@ package shadow
 import (
 	"errors"
 	"fmt"
+	"os"
 	"sync"
+	"time"
 
+	"github.com/bugsnag/osext"
 	"github.com/deckarep/golang-set"
 )
 
@@ -17,6 +20,7 @@ type Application interface {
 	GetName() string
 	GetVersion() string
 	GetBuild() string
+	GetBuildDate() *time.Time
 }
 
 type Component interface {
@@ -56,6 +60,17 @@ type App struct {
 	wg       *sync.WaitGroup
 	run      bool
 	resolved bool
+}
+
+var buildDate *time.Time
+
+func init() {
+	if b, err := osext.Executable(); err == nil {
+		if f, err := os.Stat(b); err == nil {
+			d := f.ModTime()
+			buildDate = &d
+		}
+	}
 }
 
 func NewApp(name string, version string, build string, components []Component) (Application, error) {
@@ -156,6 +171,10 @@ func (a *App) GetVersion() string {
 
 func (a *App) GetBuild() string {
 	return a.build
+}
+
+func (a *App) GetBuildDate() *time.Time {
+	return buildDate
 }
 
 func (a *App) resolveDependencies() error {
