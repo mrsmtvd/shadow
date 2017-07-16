@@ -11,6 +11,10 @@ import (
 	"github.com/deckarep/golang-set"
 )
 
+var (
+	startTime = time.Now().UTC()
+)
+
 type Application interface {
 	Run() error
 	GetComponent(string) Component
@@ -21,6 +25,7 @@ type Application interface {
 	GetVersion() string
 	GetBuild() string
 	GetBuildDate() *time.Time
+	GetUptime() time.Duration
 }
 
 type Component interface {
@@ -175,6 +180,10 @@ func (a *App) GetBuild() string {
 
 func (a *App) GetBuildDate() *time.Time {
 	return buildDate
+}
+
+func (a *App) GetUptime() time.Duration {
+	return time.Since(startTime)
 }
 
 func (a *App) resolveDependencies() error {
