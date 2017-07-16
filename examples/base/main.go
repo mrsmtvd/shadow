@@ -8,6 +8,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/database"
+	"github.com/kihamo/shadow/components/grpc"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/mail"
 	"github.com/kihamo/shadow/components/metrics"
@@ -25,6 +26,7 @@ func main() {
 			new(config.Component),
 			new(dashboard.Component),
 			new(database.Component),
+			new(grpc.Component),
 			new(logger.Component),
 			new(mail.Component),
 			new(metrics.Component),

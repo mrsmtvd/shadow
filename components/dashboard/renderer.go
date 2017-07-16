@@ -30,8 +30,9 @@ func NewRenderer() *Renderer {
 	}
 
 	r.funcs = template.FuncMap{
-		"add": r.funcAdd,
-		"mod": r.funcMod,
+		"add":     r.funcAdd,
+		"mod":     r.funcMod,
+		"replace": r.funcReplace,
 	}
 
 	return r
@@ -158,4 +159,8 @@ func (r *Renderer) funcAdd(x, y int) (interface{}, error) {
 
 func (r *Renderer) funcMod(x, y int) (bool, error) {
 	return x%y == 0, nil
+}
+
+func (r *Renderer) funcReplace(input, from, to string) string {
+	return strings.Replace(input, from, to, -1)
 }

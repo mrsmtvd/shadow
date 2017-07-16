@@ -1,0 +1,29 @@
+{{ define "content" }}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">gRPC</h1>
+    </div>
+</div>
+
+<div class="panel-body">
+    <div class="list-group">
+        {{ range $service, $methods := .api }}
+        {{ $id := replace $service "." "_" }}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $id }}">{{ $service }}</a>
+                </h4>
+            </div>
+            <div id="collapse-{{ $id }}" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    {{ range $i, $method := $methods }}
+                        <h4 class="panel-title">{{ $method }}</h4>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+{{ end }}
