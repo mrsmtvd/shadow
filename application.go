@@ -183,7 +183,7 @@ func (a *App) GetBuildDate() *time.Time {
 }
 
 func (a *App) GetUptime() time.Duration {
-	return time.Since(startTime)
+	return time.Now().UTC().Sub(startTime)
 }
 
 func (a *App) resolveDependencies() error {
