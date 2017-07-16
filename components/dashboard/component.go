@@ -1,7 +1,7 @@
 package dashboard
 
 import (
-	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"sync"
@@ -72,16 +72,19 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 			router.ServeHTTP(out, in)
 		})
 
-		// TODO: ssl
-		addr := fmt.Sprintf("%s:%d", c.config.GetString(ConfigHost), c.config.GetInt(ConfigPort))
+		addr := net.JoinHostPort(c.config.GetString(ConfigHost), c.config.GetString(ConfigPort))
+		lis, err := net.Listen("tcp", addr)
+		if err != nil {
+			c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
+		}
 
 		c.logger.Info("Running service", map[string]interface{}{
 			"addr": addr,
 			"pid":  os.Getpid(),
 		})
 
-		if err := http.ListenAndServe(addr, c.router); err != nil {
-			c.logger.Fatalf("Could not start frontend [%d]: %s\n", os.Getpid(), err.Error())
+		if err := http.Serve(lis, c.router); err != nil {
+			c.logger.Fatalf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}(c.router)
 
