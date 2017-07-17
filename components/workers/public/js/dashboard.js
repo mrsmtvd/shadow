@@ -203,8 +203,6 @@ function listenersRemove(id) {
 }
 
 $(function() {
-    update();
-    
     $('#workers-show').click(function () {
         $('#workers .task-show:has(i.glyphicon-eye-open)').click();
     });
@@ -223,7 +221,16 @@ $(function() {
             success: update
         });
     });
-    
-    // 10 seconds
-    setInterval(update, 1000 * 10);
+
+    update();
+    var autorefresh = window.setInterval(update, 1000 * 10);
+    $('#autorefresh').click(function() {
+        if (autorefresh === null) {
+            update();
+            autorefresh = window.setInterval(update, 1000 * 10);
+        } else {
+            window.clearInterval(autorefresh);
+            autorefresh = null;
+        }
+    });
 });
