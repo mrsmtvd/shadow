@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kihamo/go-workers/dispatcher"
+	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/go-workers/worker"
 	"github.com/kihamo/shadow/components/dashboard"
 )
@@ -17,10 +18,13 @@ type ajaxHandlerResponseSuccess struct {
 
 // easyjson:json
 type ajaxHandlerResponseTask struct {
-	Id      string    `json:"id"`
-	Name    string    `json:"name"`
-	Status  int64     `json:"status"`
-	Created time.Time `json:"created"`
+	Id        string      `json:"id"`
+	Name      string      `json:"name"`
+	Status    int64       `json:"status"`
+	Priority  int64       `json:"priority"`
+	Attempts  int64       `json:"attempts"`
+	LastError interface{} `json:"last_error"`
+	Created   time.Time   `json:"created"`
 }
 
 // easyjson:json
@@ -43,6 +47,8 @@ type ajaxHandlerResponseListener struct {
 
 // easyjson:json
 type ajaxHandlerResponse struct {
+	Tasks []ajaxHandlerResponseTask `json:"tasks_wait"`
+
 	Workers      []ajaxHandlerResponseWorker `json:"workers"`
 	WorkersCount int                         `json:"workers_count"`
 	WorkersWait  int                         `json:"workers_wait"`
@@ -58,7 +64,28 @@ type AjaxHandler struct {
 	component *Component
 }
 
+func (h *AjaxHandler) fillResponseTask(t task.Tasker) *ajaxHandlerResponseTask {
+	return &ajaxHandlerResponseTask{
+		Id:        t.GetId(),
+		Name:      t.GetName(),
+		Status:    t.GetStatus(),
+		Priority:  t.GetPriority(),
+		Attempts:  t.GetAttempts(),
+		LastError: t.GetLastError(),
+		Created:   t.GetCreatedAt(),
+	}
+}
+
 func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
+	tasksList := []ajaxHandlerResponseTask{}
+
+	for _, t := range h.component.dispatcher.GetTasks() {
+		switch t.GetStatus() {
+		case task.TaskStatusWait, task.TaskStatusRepeatWait:
+			tasksList = append(tasksList, *h.fillResponseTask(t))
+		}
+	}
+
 	workersList := []ajaxHandlerResponseWorker{}
 	workersWait := 0
 	workersBusy := 0
@@ -79,15 +106,12 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 
 		t := wrk.GetTask()
 		if t != nil {
-			workerInfo.Task = &ajaxHandlerResponseTask{
-				Id:      t.GetId(),
-				Name:    t.GetName(),
-				Status:  t.GetStatus(),
-				Created: t.GetCreatedAt(),
-			}
-		}
+			workerInfo.Task = h.fillResponseTask(t)
 
-		workersList = append(workersList, workerInfo)
+			workersList = append([]ajaxHandlerResponseWorker{workerInfo}, workersList...)
+		} else {
+			workersList = append(workersList, workerInfo)
+		}
 	}
 
 	listenersList := []ajaxHandlerResponseListener{}
@@ -108,6 +132,8 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	stats := ajaxHandlerResponse{
+		Tasks: tasksList,
+
 		Workers:      workersList,
 		WorkersCount: len(workersList),
 		WorkersWait:  workersWait,

@@ -95,7 +95,7 @@ function update() {
                         + '<td>' + getWorkerStatusName(worker.status) + '</td>';
 
                     if (task) {
-                        wC += '<td><button type="button" class="btn btn-success btn-circle task-show" data-task="' + task.id + '"><i class="glyphicon glyphicon-eye-open"></i></button></td>';
+                        wC += '<td><button type="button" class="btn btn-success btn-circle task-show" data-task="' + i + '"><i class="glyphicon glyphicon-eye-open"></i></button></td>';
                     } else {
                         wC += '<td></td>';
                     }
@@ -110,13 +110,16 @@ function update() {
 
                     if (task) {
                         tW.append(
-                            '<tr>'
-                            + '<td colspan="5" style="display:none" id="task-' + i + '">'
+                            '<tr style="display:none" id="task-' + i + '">'
+                            + '<td colspan="5">'
                             + '<ul class="list-group">'
                             + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.id + '</em></span><strong>ID</strong><br /></li>'
                             + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.name + '</em></span><strong>Name</strong><br /></li>'
                             + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + getTaskStatusName(task.status) + '</em></span><strong>Status</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + new Date(task.created).toLocaleString() + '</em></span><strong>Date</strong><br /></li>'
+                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.priority + '</em></span><strong>Priority</strong><br /></li>'
+                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.attempts + '</em></span><strong>Attempts</strong><br /></li>'
+                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.last_error ? task.last_error : '&mdash;') + '</em></span><strong>Last error</strong><br /></li>'
+                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + new Date(task.created).toLocaleString() + '</em></span><strong>Created</strong><br /></li>'
                             + '</ul>'
                             + '</td>'
                             + '</tr>'
@@ -132,6 +135,10 @@ function update() {
                     tT.append('<tr>'
                         + '<td>' + task.id + '</td>'
                         + '<td>' + task.name + '</td>'
+                        + '<td>' + getTaskStatusName(task.status) + '</td>'
+                        + '<td>' + task.priority + '</td>'
+                        + '<td>' + task.attempts + '</td>'
+                        + '<td>' + (task.last_error ? task.last_error : '&mdash;') + '</td>'
                         + '<td>' + dateToString(task.created) + '</td>'
                         + '</tr>');
                 }

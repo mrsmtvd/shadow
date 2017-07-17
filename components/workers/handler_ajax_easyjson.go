@@ -37,6 +37,29 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers(in *jlexer.Lex
 			continue
 		}
 		switch key {
+		case "tasks_wait":
+			if in.IsNull() {
+				in.Skip()
+				out.Tasks = nil
+			} else {
+				in.Delim('[')
+				if out.Tasks == nil {
+					if !in.IsDelim(']') {
+						out.Tasks = make([]ajaxHandlerResponseTask, 0, 1)
+					} else {
+						out.Tasks = []ajaxHandlerResponseTask{}
+					}
+				} else {
+					out.Tasks = (out.Tasks)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v1 ajaxHandlerResponseTask
+					(v1).UnmarshalEasyJSON(in)
+					out.Tasks = append(out.Tasks, v1)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		case "workers":
 			if in.IsNull() {
 				in.Skip()
@@ -53,9 +76,9 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers(in *jlexer.Lex
 					out.Workers = (out.Workers)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v1 ajaxHandlerResponseWorker
-					(v1).UnmarshalEasyJSON(in)
-					out.Workers = append(out.Workers, v1)
+					var v2 ajaxHandlerResponseWorker
+					(v2).UnmarshalEasyJSON(in)
+					out.Workers = append(out.Workers, v2)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -82,9 +105,9 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers(in *jlexer.Lex
 					out.Listeners = (out.Listeners)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v2 ajaxHandlerResponseListener
-					(v2).UnmarshalEasyJSON(in)
-					out.Listeners = append(out.Listeners, v2)
+					var v3 ajaxHandlerResponseListener
+					(v3).UnmarshalEasyJSON(in)
+					out.Listeners = append(out.Listeners, v3)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -109,16 +132,33 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers(out *jwriter.W
 		out.RawByte(',')
 	}
 	first = false
+	out.RawString("\"tasks_wait\":")
+	if in.Tasks == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v4, v5 := range in.Tasks {
+			if v4 > 0 {
+				out.RawByte(',')
+			}
+			(v5).MarshalEasyJSON(out)
+		}
+		out.RawByte(']')
+	}
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
 	out.RawString("\"workers\":")
 	if in.Workers == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v3, v4 := range in.Workers {
-			if v3 > 0 {
+		for v6, v7 := range in.Workers {
+			if v6 > 0 {
 				out.RawByte(',')
 			}
-			(v4).MarshalEasyJSON(out)
+			(v7).MarshalEasyJSON(out)
 		}
 		out.RawByte(']')
 	}
@@ -149,11 +189,11 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers(out *jwriter.W
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v5, v6 := range in.Listeners {
-			if v5 > 0 {
+		for v8, v9 := range in.Listeners {
+			if v8 > 0 {
 				out.RawByte(',')
 			}
-			(v6).MarshalEasyJSON(out)
+			(v9).MarshalEasyJSON(out)
 		}
 		out.RawByte(']')
 	}
@@ -456,6 +496,18 @@ func easyjsonDce94ab1DecodeGithubComKihamoShadowComponentsWorkers3(in *jlexer.Le
 			out.Name = string(in.String())
 		case "status":
 			out.Status = int64(in.Int64())
+		case "priority":
+			out.Priority = int64(in.Int64())
+		case "attempts":
+			out.Attempts = int64(in.Int64())
+		case "last_error":
+			if m, ok := out.LastError.(easyjson.Unmarshaler); ok {
+				m.UnmarshalEasyJSON(in)
+			} else if m, ok := out.LastError.(json.Unmarshaler); ok {
+				_ = m.UnmarshalJSON(in.Raw())
+			} else {
+				out.LastError = in.Interface()
+			}
 		case "created":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Created).UnmarshalJSON(data))
@@ -492,6 +544,30 @@ func easyjsonDce94ab1EncodeGithubComKihamoShadowComponentsWorkers3(out *jwriter.
 	first = false
 	out.RawString("\"status\":")
 	out.Int64(int64(in.Status))
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"priority\":")
+	out.Int64(int64(in.Priority))
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"attempts\":")
+	out.Int64(int64(in.Attempts))
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"last_error\":")
+	if m, ok := in.LastError.(easyjson.Marshaler); ok {
+		m.MarshalEasyJSON(out)
+	} else if m, ok := in.LastError.(json.Marshaler); ok {
+		out.Raw(m.MarshalJSON())
+	} else {
+		out.Raw(json.Marshal(in.LastError))
+	}
 	if !first {
 		out.RawByte(',')
 	}
