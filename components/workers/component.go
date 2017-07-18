@@ -189,6 +189,24 @@ func (c *Component) AddTaskByPriorityAndFunc(p int64, f task.TaskFunction, a ...
 	return t
 }
 
+func (c *Component) RemoveTask(t task.Tasker) {
+	c.dispatcher.RemoveTask(t)
+	c.logger.Debug("Removed task", map[string]interface{}{"task.id": t.GetId()})
+
+	if metricTasksTotal != nil {
+		metricTasksTotal.Dec()
+	}
+}
+
+func (c *Component) RemoveTaskById(id string) {
+	c.dispatcher.RemoveTaskById(id)
+	c.logger.Debug("Removed task", map[string]interface{}{"task.id": id})
+
+	if metricTasksTotal != nil {
+		metricTasksTotal.Dec()
+	}
+}
+
 func (c *Component) AddWorker() {
 	w := c.dispatcher.AddWorker()
 	c.logger.Debug("Added worker", map[string]interface{}{"worker.id": w.GetId()})

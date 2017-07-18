@@ -146,6 +146,39 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 	h.SendJSON(stats, w)
 }
 
+func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Request) {
+	listeners := h.component.dispatcher.GetListeners()
+	checkId := r.FormValue("id")
+
+	for _, listener := range listeners {
+		if checkId == "" || listener.GetName() == checkId {
+			if listener.GetName() != h.component.getDefaultListenerName() {
+				h.component.RemoveListener(listener)
+			}
+
+			if checkId != "" {
+				break
+			}
+		}
+	}
+
+	h.SendJSON(ajaxHandlerResponseSuccess{
+		Result: "success",
+	}, w)
+}
+
+func (h *AjaxHandler) actionTaskRemove(w http.ResponseWriter, r *http.Request) {
+	removeId := r.FormValue("id")
+
+	if removeId != "" {
+		h.component.RemoveTaskById(removeId)
+	}
+
+	h.SendJSON(ajaxHandlerResponseSuccess{
+		Result: "success",
+	}, w)
+}
+
 func (h *AjaxHandler) actionWorkersReset(w http.ResponseWriter, r *http.Request) {
 	workers := h.component.dispatcher.GetWorkers()
 	checkId := r.FormValue("id")
@@ -202,27 +235,6 @@ func (h *AjaxHandler) actionWorkersAdd(w http.ResponseWriter, r *http.Request) {
 	}, w)
 }
 
-func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Request) {
-	listeners := h.component.dispatcher.GetListeners()
-	checkId := r.FormValue("id")
-
-	for _, listener := range listeners {
-		if checkId == "" || listener.GetName() == checkId {
-			if listener.GetName() != h.component.getDefaultListenerName() {
-				h.component.RemoveListener(listener)
-			}
-
-			if checkId != "" {
-				break
-			}
-		}
-	}
-
-	h.SendJSON(ajaxHandlerResponseSuccess{
-		Result: "success",
-	}, w)
-}
-
 func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Query().Get("action") {
 	case "stats":
@@ -231,6 +243,13 @@ func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "listeners-remove":
 		if h.IsPost(r) {
 			h.actionListenersRemove(w, r)
+		} else {
+			h.MethodNotAllowed(w, r)
+		}
+
+	case "task-remove":
+		if h.IsPost(r) {
+			h.actionTaskRemove(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}

@@ -24,14 +24,14 @@ var (
 	metricWorkerStatusProcess snitch.Gauge
 	metricWorkerStatusBusy    snitch.Gauge
 
-	metricTasksTotal               snitch.Counter
-	metricTasksStatusWait          snitch.Counter
-	metricTasksStatusProcess       snitch.Counter
-	metricTasksStatusSuccess       snitch.Counter
-	metricTasksStatusFail          snitch.Counter
-	metricTasksStatusFailByTimeout snitch.Counter
-	metricTasksStatusKill          snitch.Counter
-	metricTasksStatusRepeatWait    snitch.Counter
+	metricTasksTotal               snitch.Gauge
+	metricTasksStatusWait          snitch.Gauge
+	metricTasksStatusProcess       snitch.Gauge
+	metricTasksStatusSuccess       snitch.Gauge
+	metricTasksStatusFail          snitch.Gauge
+	metricTasksStatusFailByTimeout snitch.Gauge
+	metricTasksStatusKill          snitch.Gauge
+	metricTasksStatusRepeatWait    snitch.Gauge
 )
 
 type metricsCollector struct {
@@ -109,14 +109,14 @@ func (c *Component) Metrics() snitch.Collector {
 	metricWorkerStatusProcess = snitch.NewGauge(MetricWorkersStatus, "Number of workers with process status", "status", "process")
 	metricWorkerStatusBusy = snitch.NewGauge(MetricWorkersStatus, "Number of workers with busy status", "status", "busy")
 
-	metricTasksTotal = snitch.NewCounter(MetricTasksTotal, "Number of tasks")
-	metricTasksStatusWait = snitch.NewCounter(MetricTasksStatus, "Number of tasks with wait status", "status", "wait")
-	metricTasksStatusProcess = snitch.NewCounter(MetricTasksStatus, "Number of tasks with process status", "status", "process")
-	metricTasksStatusSuccess = snitch.NewCounter(MetricTasksStatus, "Number of tasks with success status", "status", "success")
-	metricTasksStatusFail = snitch.NewCounter(MetricTasksStatus, "Number of tasks with fail status", "status", "fail")
-	metricTasksStatusFailByTimeout = snitch.NewCounter(MetricTasksStatus, "status", "fail-by-timeout")
-	metricTasksStatusKill = snitch.NewCounter(MetricTasksStatus, "Number of tasks with kill status", "status", "kill")
-	metricTasksStatusRepeatWait = snitch.NewCounter(MetricTasksStatus, "Number of tasks with wait repeat status", "status", "repeat-wait")
+	metricTasksTotal = snitch.NewGauge(MetricTasksTotal, "Number of tasks")
+	metricTasksStatusWait = snitch.NewGauge(MetricTasksStatus, "Number of tasks with wait status", "status", "wait")
+	metricTasksStatusProcess = snitch.NewGauge(MetricTasksStatus, "Number of tasks with process status", "status", "process")
+	metricTasksStatusSuccess = snitch.NewGauge(MetricTasksStatus, "Number of tasks with success status", "status", "success")
+	metricTasksStatusFail = snitch.NewGauge(MetricTasksStatus, "Number of tasks with fail status", "status", "fail")
+	metricTasksStatusFailByTimeout = snitch.NewGauge(MetricTasksStatus, "status", "fail-by-timeout")
+	metricTasksStatusKill = snitch.NewGauge(MetricTasksStatus, "Number of tasks with kill status", "status", "kill")
+	metricTasksStatusRepeatWait = snitch.NewGauge(MetricTasksStatus, "Number of tasks with wait repeat status", "status", "repeat-wait")
 
 	return &metricsCollector{
 		dispatcher: c.dispatcher,

@@ -140,6 +140,9 @@ function update() {
                         + '<td>' + task.attempts + '</td>'
                         + '<td>' + (task.last_error ? task.last_error : '&mdash;') + '</td>'
                         + '<td>' + dateToString(task.created) + '</td>'
+                        + '<td><div class="btn-group btn-group-sm">'
+                        + '<button type="button" class="btn btn-info btn-icon task-remove" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove task #' + task.id + '" data-modal-callback="taskRemove(\'' + task.id + '\');"><i class="glyphicon glyphicon-trash" title="Remove"></i></button>'
+                        + '</div></td>'
                         + '</tr>');
                 }
                 tasks_wait = r.tasks_wait.length
@@ -169,6 +172,28 @@ function update() {
     });
 }
 
+function listenersRemove(id) {
+    $.ajax({
+        type: 'POST',
+        url: '/workers/ajax/?action=listeners-remove',
+        data: {
+            id: id
+        },
+        success: update
+    });
+}
+
+function taskRemove(id) {
+    $.ajax({
+        type: 'POST',
+        url: '/workers/ajax/?action=task-remove',
+        data: {
+            id: id
+        },
+        success: update
+    });
+}
+
 function workersKill(id) {
     $.ajax({
         type: 'POST',
@@ -184,17 +209,6 @@ function workersReset(id) {
     $.ajax({
         type: 'POST',
         url: '/workers/ajax/?action=workers-reset',
-        data: {
-            id: id
-        },
-        success: update
-    });
-}
-
-function listenersRemove(id) {
-    $.ajax({
-        type: 'POST',
-        url: '/workers/ajax/?action=listeners-remove',
         data: {
             id: id
         },
