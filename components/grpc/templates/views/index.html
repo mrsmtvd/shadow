@@ -6,24 +6,120 @@
 </div>
 
 <div class="panel-body">
-    <div class="list-group">
-        {{ range $service, $methods := .api }}
-        {{ $id := replace $service "." "_" }}
+    {{ if .error }}
+    <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ .error }}
+    </div>
+    {{ end }}
+
+    {{ range $s, $service := .services }}
+    {{ $serviceId := replace $service.Name "." "_" }}
+    <h4>{{ $service.Name }}</h4>
+
+    {{ range $m, $method := $service.Methods }}
+    {{ if $method.InputType }}
+    {{ $methodId := replace $method.Name "." "_" }}
+    <div class="panel-group" id="methods-{{ $methodId }}">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $id }}">{{ $service }}</a>
+                    <a data-toggle="collapse" data-parent="#methods-{{ $serviceId }}-{{ $methodId }}"
+                       href="#method-{{ $serviceId }}-{{ $methodId }}">{{ $method.Name }}</a>
                 </h4>
             </div>
-            <div id="collapse-{{ $id }}" class="panel-collapse collapse in">
+            <div id="method-{{ $serviceId }}-{{ $methodId }}" class="panel-collapse collapse">
                 <div class="panel-body">
-                    {{ range $i, $method := $methods }}
-                        <h4 class="panel-title">{{ $method }}</h4>
-                    {{ end }}
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <i class="fa fa-arrow-right fa-fw"></i>
+                            {{ $method.InputType.Name }}
+                            {{ if or $method.InputStream }}
+                            <div class="pull-right">
+                                <span class="label label-warning">stream</span>
+                            </div>
+                            {{ end }}
+                        </div>
+                        <form method="post" action="?action=call" class="call"
+                              data-result="result-{{ $serviceId }}-{{ $methodId }}">
+                            <input type="hidden" name="service" value="{{ $service.Name }}">
+                            <input type="hidden" name="method" value="{{ $method.Name }}">
+                            <div class="panel-body">
+                                {{ if $method.InputType.Fields }}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Field</th>
+                                            <th>Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {{ range $f, $field := $method.InputType.Fields }}
+                                        <tr>
+                                            <td>{{ $field.Name }}</td>
+                                            <td>{{ $field.Type }}</td>
+                                            <td></td>
+                                        </tr>
+                                        {{ end }}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {{ end }}
+                            </div>
+                            <div class="panel-footer text-center">
+                                <input type="submit" class="btn btn-info btn-sm" value="Call"/>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="panel well" id="result-{{ $serviceId }}-{{ $methodId }}"
+                         style="white-space:pre-wrap;display:none;"></div>
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <i class="fa fa-arrow-left fa-fw"></i>
+                            {{ $method.OutputType.Name }}
+                            {{ if or $method.OutputStream }}
+                            <div class="pull-right">
+                                <span class="label label-warning">stream</span>
+                            </div>
+                            {{ end }}
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Type</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $f, $field := $method.OutputType.Fields }}
+                                    <tr>
+                                        <td>{{ $field.Name }}</td>
+                                        <td>{{ $field.Type }}</td>
+                                    </tr>
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        {{ end }}
     </div>
+    {{ else }}
+    <h4 class="panel-title">{{ $method.Name }}</h4>
+    {{ end }}
+    {{ end }}
+    {{ end }}
 </div>
+{{ end }}
+
+{{ define "js" }}
+<script src="/grpc/js/dashboard.js?v={{ .Application.GetBuild }}"></script>
 {{ end }}

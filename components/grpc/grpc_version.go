@@ -6,8 +6,8 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (s *grpcServer) Version(ctx context.Context, in *VersionRequest) (*VersionReply, error) {
-	return &VersionReply{
+func (s *grpcServer) Version(ctx context.Context, in *VersionRequest) (*VersionResponse, error) {
+	return &VersionResponse{
 		Name:      s.component.application.GetName(),
 		Version:   s.component.application.GetVersion(),
 		Build:     s.component.application.GetBuild(),

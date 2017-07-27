@@ -104,6 +104,9 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		}
 	}
 
+	var wgListen sync.WaitGroup
+	wgListen.Add(1)
+
 	go func() {
 		defer wg.Done()
 
@@ -122,10 +125,13 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 			"pid":  os.Getpid(),
 		})
 
+		wgListen.Done()
+
 		if err := c.server.Serve(lis); err != nil {
 			c.logger.Fatalf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}()
 
+	wgListen.Wait()
 	return nil
 }

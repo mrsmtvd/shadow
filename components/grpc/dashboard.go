@@ -28,10 +28,18 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 	return []*dashboard.Route{
 		{
 			Methods: []string{http.MethodGet},
-			Path:    "/",
-			Handler: &IndexHandler{
-				component: c,
+			Path:    "/js/*filepath",
+			Handler: &assetfs.AssetFS{
+				Asset:     Asset,
+				AssetDir:  AssetDir,
+				AssetInfo: AssetInfo,
+				Prefix:    "public/js",
 			},
+		},
+		{
+			Methods: []string{http.MethodGet, http.MethodPost},
+			Path:    "/",
+			Handler: NewIndexHandler(c),
 		},
 	}
 }

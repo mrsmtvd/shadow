@@ -4,7 +4,7 @@ package grpc;
 
 message VersionRequest {}
 
-message VersionReply {
+message VersionResponse {
     string name = 1;
     string version = 2;
     string build = 3;
@@ -13,6 +13,6 @@ message VersionReply {
 }
 
 service Grpc {
-    rpc Version (VersionRequest) returns (VersionReply) {}
+    rpc Version (VersionRequest) returns (VersionResponse) {}
 }
 
