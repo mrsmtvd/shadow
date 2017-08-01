@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
+	"github.com/kihamo/shadow"
 )
 
 const (
@@ -30,9 +31,10 @@ func NewRenderer() *Renderer {
 	}
 
 	r.funcs = template.FuncMap{
-		"add":     r.funcAdd,
-		"mod":     r.funcMod,
-		"replace": r.funcReplace,
+		"add":        r.funcAdd,
+		"mod":        r.funcMod,
+		"replace":    r.funcReplace,
+		"date_since": shadow.DateSinceAsMessage,
 	}
 
 	return r

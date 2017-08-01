@@ -25,6 +25,7 @@ type Application interface {
 	GetVersion() string
 	GetBuild() string
 	GetBuildDate() *time.Time
+	GetStartDate() *time.Time
 	GetUptime() time.Duration
 }
 
@@ -180,6 +181,10 @@ func (a *App) GetBuild() string {
 
 func (a *App) GetBuildDate() *time.Time {
 	return buildDate
+}
+
+func (a *App) GetStartDate() *time.Time {
+	return &startTime
 }
 
 func (a *App) GetUptime() time.Duration {
