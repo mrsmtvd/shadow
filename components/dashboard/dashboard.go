@@ -32,6 +32,10 @@ func (c *Component) GetDashboardMenu() *Menu {
 				Name: "Environment",
 				Url:  "/environment",
 			},
+			{
+				Name: "Bindata",
+				Url:  "/bindata",
+			},
 		},
 	}
 }
@@ -46,6 +50,13 @@ func (c *Component) GetDashboardRoutes() []*Route {
 				AssetDir:  AssetDir,
 				AssetInfo: AssetInfo,
 				Prefix:    "assets",
+			},
+		},
+		{
+			Methods: []string{http.MethodGet},
+			Path:    "/bindata",
+			Handler: &BindataHandler{
+				application: c.application,
 			},
 		},
 		{

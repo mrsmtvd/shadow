@@ -89,7 +89,7 @@ gulp.task('server:spawn', function() {
         var lines = data.toString().split('\n');
         for (var l in lines) {
             if (lines[l].length) {
-                utils.log(lines[l]);
+                util.log(lines[l]);
             }
         }
     });
@@ -363,7 +363,7 @@ gulp.task('bindata', function() {
                 };
             }
         }))
-        .pipe(exec('cd <%= file.path %> && go-bindata-assetfs <%= options.debug %> -pkg=<%= options.path.basename(file.path) %> <%= file.contents %>', {
+        .pipe(exec('cd <%= file.path %> && go-bindata-assetfs <%= options.debug %> -ignore="(\.DS_Store|\.gitignore)" -pkg=<%= options.path.basename(file.path) %> <%= file.contents %>', {
             path: path,
             debug: process.env.NODE_ENV === DEV_ENV ? '-debug' : ''
         }))

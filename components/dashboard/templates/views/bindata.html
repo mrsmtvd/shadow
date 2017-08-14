@@ -1,0 +1,60 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Bindata</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            {{ if .error }}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ .error }}
+            </div>
+            {{ end }}
+
+            {{ if .breadcrumb }}
+            <ul class="breadcrumb">
+                {{ range $i, $item := .breadcrumb }}
+                    {{ if $item.Active }}
+                    <li class="active">{{ $item.Name }}</li>
+                    {{ else }}
+                    <li><a href="/dashboard/bindata?path={{ $item.Path }}">{{ $item.Name }}</a></li>
+                    {{ end }}
+                {{ end }}
+            </ul>
+            {{ end }}
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Mode</th>
+                        <th>Modified</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $f, $file := .files }}
+                    <tr>
+                        <td>
+                            {{ if $file.IsDir }}
+                                <i class="fa fa-folder fa-fw fa-lg"></i>
+                            {{ else }}
+                                <i class="fa fa-file-o fa-fw fa-lg"></i>
+                            {{ end }}
+                            <a href="/dashboard/bindata/?path={{ $file.Path }}">{{ $file.Name }}</a>
+                        </td>
+                        <td>{{ $file.Size }}</td>
+                        <td>{{ $file.Mode }}</td>
+                        <td>{{ date_since $file.ModTime }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}
