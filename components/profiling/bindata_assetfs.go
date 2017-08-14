@@ -128,7 +128,7 @@ func assetsJsTraceMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/trace.min.js", size: 102, mode: os.FileMode(420), modTime: time.Unix(1502719057, 0)}
+	info := bindataFileInfo{name: "assets/js/trace.min.js", size: 102, mode: os.FileMode(420), modTime: time.Unix(1502723009, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -148,7 +148,7 @@ func assetsVendorsFlipclockCssFlipclockMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/flipclock/css/flipclock.min.css", size: 7618, mode: os.FileMode(420), modTime: time.Unix(1502719056, 0)}
+	info := bindataFileInfo{name: "assets/vendors/flipclock/css/flipclock.min.css", size: 7618, mode: os.FileMode(420), modTime: time.Unix(1502723009, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -168,7 +168,7 @@ func assetsVendorsFlipclockJsFlipclockMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/flipclock/js/flipclock.min.js", size: 20851, mode: os.FileMode(420), modTime: time.Unix(1502719056, 0)}
+	info := bindataFileInfo{name: "assets/vendors/flipclock/js/flipclock.min.js", size: 20851, mode: os.FileMode(420), modTime: time.Unix(1502723009, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

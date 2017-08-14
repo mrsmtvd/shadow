@@ -10,10 +10,13 @@
 
     <link rel="shortcut icon" href="/dashboard/assets/images/favicon.svg?v={{ .Application.build }}" type="image/svg+xml">
 
-    <link href="/dashboard/assets/vendors/bootstrap/dist/css/bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+    <link href="/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
     <link href="/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/vendors/nprogress/nprogress.css?v={{ .Application.build }}" rel="stylesheet">
+    <link href="/dashboard/assets/vendors/nprogress/css/nprogress.min.css?v={{ .Application.build }}" rel="stylesheet">
+    <link href="/dashboard/assets/css/dashboard.min.css?v={{ .Application.build }}" rel="stylesheet">
     <link href="/dashboard/assets/css/custom.min.css?v={{ .Application.build }}" rel="stylesheet">
+
+    <script src="/dashboard/assets/js/functions.min.js?v={{ .Application.build }}"></script>
 
     {{ block "head" . }} {{ end }}
 </head>
@@ -25,10 +28,10 @@
     </div>
 </div>
 
-<script src="/dashboard/assets/vendors/jquery/dist/jquery.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/bootstrap/dist/js/bootstrap.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/fastclick/lib/fastclick.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/nprogress/nprogress.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/jquery/js/jquery.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/fastclick/js/fastclick.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/nprogress/js/nprogress.min.js?v={{ .Application.build }}"></script>
 <script src="/dashboard/assets/js/custom.min.js?v={{ .Application.build }}"></script>
 {{ block "js" . }} {{ end }}
 

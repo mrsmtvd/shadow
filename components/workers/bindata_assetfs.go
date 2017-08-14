@@ -126,7 +126,7 @@ func assetsJsIndexMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/index.min.js", size: 5990, mode: os.FileMode(420), modTime: time.Unix(1502719057, 0)}
+	info := bindataFileInfo{name: "assets/js/index.min.js", size: 5990, mode: os.FileMode(420), modTime: time.Unix(1502723009, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
