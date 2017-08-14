@@ -53,6 +53,14 @@ func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interfac
 	}
 }
 
+func (h *Handler) RenderLayout(ctx context.Context, c, v, l string, d map[string]interface{}) {
+	err := RenderFromContext(ctx).RenderLayout(ctx, c, v, l, d)
+
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func (h *Handler) SendJSON(r interface{}, w http.ResponseWriter) []byte {
 	response, err := json.Marshal(r)
 	if err != nil {

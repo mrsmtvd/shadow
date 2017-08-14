@@ -1,0 +1,36 @@
+{
+  "name": "shadow",
+  "version": "0.1.0",
+  "authors": [
+    "Kihamo"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "pages",
+    "index.html",
+    "/js"
+  ],
+  "main": [],
+  "dependencies": {
+    "jquery": "^2.2.4",
+    "bootstrap": "~3.3.7",
+    "font-awesome": "~4.7.0",
+    "nprogress": "~0.2.0",
+    "fastclick": "^1.0.6",
+    "autosize": "^4.0.0",
+    "validator": "https://github.com/yairEO/validator.git#^1.0.6",
+    "waitMe": "https://github.com/vadimsva/waitMe.git#29.07.16",
+    "switchery": "^0.8.2",
+    "flipclock": "FlipClock#^0.7.7",
+    "bootstrap-progressbar": "^0.9.0",
+    "iCheck": "^1.0.2"
+  },
+  "resolutions": {
+    "jquery": "^2.2.4",
+    "fastclick": "^1.0.6"
+  }
+}

@@ -1,204 +1,176 @@
 {{ define "content" }}
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-            Workers
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-info btn-sm" style="margin-top: 8px" id="autorefresh" data-toggle="button" aria-pressed="true" autocomplete="off">
-                    Autorefresh
-                </button>
-            </div>
-        </h1>
+<div class="page-title">
+    <div class="title_left">
+        <h3>Workers</h3>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-xs-12">
-        <div class="col-xs-4">
-            <div class="panel panel-green">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-deaf fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge" id="listeners-count">0</div>
-                            <div>Listeners</div>
-                        </div>
-                    </div>
-                </div>
-                <a href="#listeners">
-                    <div class="panel-footer">
-                        <span class="pull-left">View Details</span>
-                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-xs-4">
-            <div class="panel panel-yellow">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-users fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge" id="workers-count">0</div>
-                            <div>Workers</div>
-                        </div>
-                    </div>
-                </div>
-                <a href="#workers">
-                    <div class="panel-footer">
-                        <span class="pull-left">View Details</span>
-                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-xs-4">
-            <div class="panel panel-red">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-tasks fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge" id="tasks-wait-count">0</div>
-                            <div>Wait tasks</div>
-                        </div>
-                    </div>
-                </div>
-                <a href="#tasks">
-                    <div class="panel-footer">
-                        <span class="pull-left">View Details</span>
-                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
+    <div class="title_right">
+        <div class="form-group pull-right">
+            <div class="input-group">
+                <label>
+                    <input type="checkbox" class="js-switch" id="autorefresh" /> Autorefresh
+                </label>
             </div>
         </div>
     </div>
 </div>
 
-<div class="panel panel-success" id="listeners">
-    <div class="panel-heading">
-        Listeners
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Actions
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu slidedown">
-                <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all listeners" data-modal-body="Will be remove all listeners except default listener. Are you sure?" data-modal-callback="listenersRemove();">
-                        <i class="glyphicon glyphicon-trash"></i> Remove all
-                    </a>
+<div class="clearfix"></div>
+
+<div class="row top_tiles">
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+        <div class="tile-stats">
+            <div class="icon"><i class="fa fa-deaf fa-5x"></i></div>
+            <div class="count" id="listeners-count">0</div>
+            <h3>Listeners</h3>
+        </div>
+    </div>
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+        <div class="tile-stats">
+            <div class="icon"><i class="fa fa-users fa-5x"></i></div>
+            <div class="count" id="workers-count">0</div>
+            <h3>Workers</h3>
+        </div>
+    </div>
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+        <div class="tile-stats">
+            <div class="icon"><i class="fa fa-tasks fa-5x"></i></div>
+            <div class="count" id="tasks-wait-count">0</div>
+            <h3>Wait tasks</h3>
+        </div>
+    </div>
+</div>
+
+<div id="listeners">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-deaf"></i> Listeners</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all listeners" data-modal-body="Will be remove all listeners except default listener. Are you sure?" data-modal-callback="listenersRemove();">
+                                <i class="glyphicon glyphicon-trash"></i> Remove all
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
+            <div class="clearfix"></div>
         </div>
-    </div>
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Created</th>
-                    <th>Count success</th>
-                    <th>Last success</th>
-                    <th>Count failed</th>
-                    <th>Last failed</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Created</th>
+                        <th>Count success</th>
+                        <th>Last success</th>
+                        <th>Count failed</th>
+                        <th>Last failed</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="panel panel-warning" id="workers">
-    <div class="panel-heading">
-        Workers
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Actions
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu slidedown">
-                <li>
-                    <a href="javascript:void(0)" id="workers-show">
-                        <i class="glyphicon glyphicon-eye-open"></i> Show all tasks
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript:void(0)" id="workers-hide">
-                        <i class="glyphicon glyphicon-eye-close"></i> Hide all tasks
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm reset all workers" data-modal-callback="workersReset();">
-                        <i class="glyphicon glyphicon-refresh"></i> Reset all
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill and remove all workers" data-modal-callback="workersKill();">
-                        <i class="glyphicon glyphicon-trash"></i> Kill all
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#workers-add">
-                        <i class="glyphicon glyphicon-plus"></i> Add worker
-                    </a>
+<div id="workers">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-users"></i> Workers</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="javascript:void(0)" id="workers-show">
+                                <i class="glyphicon glyphicon-eye-open"></i> Show all tasks
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" id="workers-hide">
+                                <i class="glyphicon glyphicon-eye-close"></i> Hide all tasks
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm reset all workers" data-modal-callback="workersReset();">
+                                <i class="glyphicon glyphicon-refresh"></i> Reset all
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill and remove all workers" data-modal-callback="workersKill();">
+                                <i class="glyphicon glyphicon-trash"></i> Kill all
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#workers-add">
+                                <i class="glyphicon glyphicon-plus"></i> Add worker
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
+            <div class="clearfix"></div>
         </div>
-    </div>
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Created</th>
-                    <th>Status</th>
-                    <th>Task</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Created</th>
+                        <th>Status</th>
+                        <th>Task</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="panel panel-danger" id="tasks">
-    <div class="panel-heading">Wait tasks</div>
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Attempts</th>
-                    <th>Last error</th>
-                    <th>Created</th>
-                    <td>Actions</td>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+<div id="tasks">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-tasks"></i> Wait tasks</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Attempts</th>
+                        <th>Last error</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -231,5 +203,5 @@
 <script type="application/javascript">
     var defaultListenerName = '{{ .defaultListenerName }}';
 </script>
-<script src="/workers/js/dashboard.js?v={{ .Application.GetBuild }}"></script>
+<script src="/workers/assets/js/index.min.js?v={{ .Application.build }}"></script>
 {{ end }}

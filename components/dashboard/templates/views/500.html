@@ -1,7 +1,12 @@
 {{ define "content" }}
-<div class="page-header">
-    <h1>{{ .panic.error }}</h1>
+<div class="col-md-12">
+    <div class="col-middle">
+        <div class="text-center text-center">
+            <h1 class="error-number">500</h1>
+            <h2>{{ .panic.error }}</h2>
+            <p>Error in {{ .panic.file }} at {{ .panic.line }} line</p>
+            <pre>{{ .panic.stack }}</pre>
+        </div>
+    </div>
 </div>
-<p>{{ .panic.file }}:{{ .panic.line }}</p>
-<pre>{{ .panic.stack }}</pre>
 {{ end }}

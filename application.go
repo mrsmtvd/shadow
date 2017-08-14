@@ -73,7 +73,7 @@ var buildDate *time.Time
 func init() {
 	if b, err := osext.Executable(); err == nil {
 		if f, err := os.Stat(b); err == nil {
-			d := f.ModTime()
+			d := f.ModTime().UTC()
 			buildDate = &d
 		}
 	}

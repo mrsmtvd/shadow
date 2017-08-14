@@ -1,93 +1,99 @@
 {{ define "content" }}
-
 <div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">Configuration</h1>
-    </div>
-</div>
-
-<div class="panel-body">
-    {{ if .error }}
-    <div class="alert alert-danger alert-dismissable">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        {{ .error.Error }}
-    </div>
-    {{ end }}
-
-    <form role="form" action="#" method="post" id="configs" data-toggle="validator">
-
-    <div role="tabpanel">
-        <ul class="nav nav-tabs" role="tablist">
-            {{ range $name, $vars := .variables }}
-            <li role="presentation"{{ if eq $name "main" }} class="active"{{ end }}><a href="#{{ $name }}" aria-controls="{{ $name }}" role="tab" data-toggle="tab">{{ $name }}</a></li>
-            {{ end }}
-        </ul>
-
-        <div class="tab-content">
-        {{ range $name, $vars := .variables }}
-            <div role="tabpanel" class="tab-pane{{ if eq $name "main" }} active{{ end }}" id="{{ $name }}">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead>
-                        <tr>
-                            <th width="20%">Name</th>
-                            <th width="25%">Value</th>
-                            <th width="15%">Default</th>
-                            <th>Description</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{ range $i, $config := $vars }}
-                        <tr>
-                            <td>
-                                {{ if $config.Editable }}
-                                    <label class="control-label" for="{{ $config.Key }}">{{ $config.Key }}</label>
-                                {{ else }}
-                                    <label class="control-label">{{ $config.Key }}</label>
-                                {{ end }}
-                            </td>
-                            <td>
-                                {{ if $config.Editable }}
-                                    <div class="form-group">
-                                        {{ if eq $config.Type "bool" }}
-                                        <input type="checkbox" name="{{ $config.Key }}" id="{{ $config.Key }}" {{ if eq (print $config.Value) "true" }} checked{{ end }} />
-                                        {{ else if or (eq $config.Type "int") (eq $config.Type "int64") }}
-                                        <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?[0-9]*$" />
-                                        {{ else if or (eq $config.Type "uint") (eq $config.Type "uint64") }}
-                                        <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[+]?[0-9]*$" />
-                                        {{ else if eq $config.Type "float64" }}
-                                        <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" />
-                                        {{ else if eq $config.Type "duration" }}
-                                        <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?([0-9]*(\.[0-9]*)?[a-z]+)+$" />
-                                        {{ else }}
-                                        <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" />
-                                        {{ end }}
-                                    </div>
-                                {{ else }}
-                                    {{ $config.Value }}
-                                {{ end }}
-                            </td>
-                            <td>{{ $config.Default }}</td>
-                            <td>{{ $config.Usage }}</td>
-                        </tr>
-                        {{ end }}
-                        </tbody>
-                    </table>
-                </div>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Configuration</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            {{ if .error }}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ .error.Error }}
             </div>
-        {{ end }}
-        </div>
+            {{ end }}
 
-        <div class="text-center">
-            <button type="reset" class="btn btn-info" value="reset">Reset</button>
-            <button type="submit" class="btn btn-success" value="save" disabled="disabled">Save</button>
+            <form role="form" action="#" method="post" id="configs" data-toggle="validator">
+                <div role="tabpanel">
+                    <ul class="nav nav-tabs bar_tabs" role="tablist">
+                        {{ range $name, $vars := .variables }}
+                        <li role="presentation" {{ if eq $name "main" }} class="active"{{ end }}>
+                            <a href="#{{ $name }}" aria-controls="{{ $name }}" role="tab" data-toggle="tab" aria-expanded="{{ if eq $name "main" }}true{{ else }}false{{ end }}">
+                                {{ $name }}
+                            </a>
+                        </li>
+                        {{ end }}
+                    </ul>
+
+                    <div class="tab-content">
+                        {{ range $name, $vars := .variables }}
+                        <div role="tabpanel" class="tab-pane{{ if eq $name "main" }} active{{ end }}" id="{{ $name }}">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th width="20%">Name</th>
+                                        <th width="25%">Value</th>
+                                        <th width="15%">Default</th>
+                                        <th>Description</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $i, $config := $vars }}
+                                    <tr>
+                                        <td>
+                                            {{ if $config.Editable }}
+                                            <label class="control-label" for="{{ $config.Key }}">{{ $config.Key }}</label>
+                                            {{ else }}
+                                            <label class="control-label">{{ $config.Key }}</label>
+                                            {{ end }}
+                                        </td>
+                                        <td>
+                                            {{ if $config.Editable }}
+                                            <div class="form-group">
+                                                {{ if eq $config.Type "bool" }}
+                                                <input type="checkbox" name="{{ $config.Key }}" id="{{ $config.Key }}" {{ if eq (print $config.Value) "true" }} checked{{ end }} />
+                                                {{ else if or (eq $config.Type "int") (eq $config.Type "int64") }}
+                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?[0-9]*$"/>
+                                                {{ else if or (eq $config.Type "uint") (eq $config.Type "uint64") }}
+                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[+]?[0-9]*$"/>
+                                                {{ else if eq $config.Type "float64" }}
+                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?[0-9]*(\.[0-9]*)?$"/>
+                                                {{ else if eq $config.Type "duration" }}
+                                                <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?([0-9]*(\.[0-9]*)?[a-z]+)+$"/>
+                                                {{ else }}
+                                                <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}"/>
+                                                {{ end }}
+                                            </div>
+                                            {{ else }}
+                                            {{ $config.Value }}
+                                            {{ end }}
+                                        </td>
+                                        <td>{{ $config.Default }}</td>
+                                        <td>{{ $config.Usage }}</td>
+                                    </tr>
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-md-offset-3">
+                        <button type="reset" class="btn btn-info" value="reset">Reset</button>
+                        <button type="submit" class="btn btn-success" value="save" disabled="disabled">Save</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-
-    </form>
 </div>
-
-<div class="modal fade" id="modalConfig" tabindex="-1" role="dialog" aria-labelledby="modalConfigLabel" aria-hidden="true">
+<div class="modal fade" id="modalConfig" tabindex="-1" role="dialog" aria-labelledby="modalConfigLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -105,5 +111,5 @@
 {{ end }}
 
 {{ define "js" }}
-<script src="/dashboard/js/config.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/assets/js/config.min.js?v={{ .Application.GetBuild }}"></script>
 {{ end }}

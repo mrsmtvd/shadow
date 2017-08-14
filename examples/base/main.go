@@ -16,11 +16,15 @@ import (
 	"github.com/kihamo/shadow/components/workers"
 )
 
+var (
+	build = "common"
+)
+
 func main() {
 	application, err := shadow.NewApp(
 		"Shadow base",
 		"1.0",
-		"12345-base",
+		build,
 		[]shadow.Component{
 			new(alerts.Component),
 			new(config.Component),

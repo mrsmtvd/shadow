@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "shadow",
+  "version": "0.1.0",
+  "author": "Kihamo",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kihamo/shadow.git"
+  },
+  "dependencies": {
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-env": "^0.4.0",
+    "gulp-exec": "^2.1.3",
+    "gulp-filter-by": "^1.2.0",
+    "gulp-group-aggregate": "^0.1.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "run-sequence": "^2.1.0"
+  }
+}

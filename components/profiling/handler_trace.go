@@ -80,7 +80,7 @@ func (h *TraceHandler) actionDownload(w http.ResponseWriter, r *http.Request) er
 	defer file.Close()
 
 	w.Header().Set("Content-Length", strconv.FormatInt(dump.GetSize(), 10))
-	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Type", "application/x-gzip")
 	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(dump.GetFile()))
 
 	io.Copy(w, file)
@@ -100,7 +100,7 @@ func (h *TraceHandler) actionDelete(w http.ResponseWriter, r *http.Request) erro
 				return err
 			}
 
-			dashboard.LoggerFromContext(r.Context()).Infof("Remove %s dump from file", dump.GetId(), dump.GetFile())
+			dashboard.LoggerFromContext(r.Context()).Infof("Remove %s dump from file %s", dump.GetId(), dump.GetFile())
 		}
 
 		return nil

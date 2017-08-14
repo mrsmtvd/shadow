@@ -1,3 +1,5 @@
 package shadow // import "github.com/kihamo/shadow"
 
-//go:generate /bin/bash ./generate.sh
+//go:generate npm install
+//go:generate bower install
+//go:generate gulp build

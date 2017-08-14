@@ -1,5 +1,5 @@
 package profiling
 
 const (
-	ComponentVersion = "1.0.35"
+	ComponentVersion = "2.0.0"
 )

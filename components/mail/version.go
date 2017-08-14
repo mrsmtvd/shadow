@@ -1,5 +1,5 @@
 package mail
 
 const (
-	ComponentVersion = "1.0.53"
+	ComponentVersion = "2.0.0"
 )

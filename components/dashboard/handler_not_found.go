@@ -10,5 +10,5 @@ type NotFoundHandler struct {
 
 func (h *NotFoundHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	h.Render(r.Context(), ComponentName, "404", nil)
+	h.RenderLayout(r.Context(), ComponentName, "404", "simple", nil)
 }

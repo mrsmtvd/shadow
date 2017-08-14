@@ -1,5 +1,5 @@
 package grpc
 
 const (
-	ComponentVersion = "1.0.5"
+	ComponentVersion = "2.0.0"
 )

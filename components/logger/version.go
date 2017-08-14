@@ -1,5 +1,5 @@
 package logger
 
 const (
-	ComponentVersion = "1.0.29"
+	ComponentVersion = "2.0.0"
 )

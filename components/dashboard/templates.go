@@ -29,8 +29,15 @@ func (c *Component) loadTemplates() error {
 		}
 	}
 
-	c.renderer.AddGlobalVar("Application", c.application)
-	c.renderer.AddGlobalVar("Config", c.config)
+	c.renderer.AddGlobalVar("Application", map[string]interface{}{
+		"name":       c.application.GetName(),
+		"version":    c.application.GetVersion(),
+		"build":      c.application.GetBuild(),
+		"build_date": c.application.GetBuildDate(),
+		"start_date": c.application.GetStartDate(),
+		"uptime":     c.application.GetUptime(),
+	})
+	c.renderer.AddGlobalVar("Config", c.config.GetAllValues())
 	c.renderer.AddGlobalVar("AlertsEnabled", c.application.HasComponent("alerts"))
 
 	return nil

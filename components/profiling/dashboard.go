@@ -45,12 +45,12 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 	routes := []*dashboard.Route{
 		{
 			Methods: []string{http.MethodGet},
-			Path:    "/vendor/*filepath",
+			Path:    "/assets/*filepath",
 			Handler: &assetfs.AssetFS{
 				Asset:     Asset,
 				AssetDir:  AssetDir,
 				AssetInfo: AssetInfo,
-				Prefix:    "public/vendor",
+				Prefix:    "assets",
 			},
 		},
 		{

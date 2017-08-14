@@ -40,42 +40,12 @@ func (c *Component) GetDashboardRoutes() []*Route {
 	routes := []*Route{
 		{
 			Methods: []string{http.MethodGet},
-			Path:    "/css/*filepath",
+			Path:    "/assets/*filepath",
 			Handler: &assetfs.AssetFS{
 				Asset:     Asset,
 				AssetDir:  AssetDir,
 				AssetInfo: AssetInfo,
-				Prefix:    "public/css",
-			},
-		},
-		{
-			Methods: []string{http.MethodGet},
-			Path:    "/images/*filepath",
-			Handler: &assetfs.AssetFS{
-				Asset:     Asset,
-				AssetDir:  AssetDir,
-				AssetInfo: AssetInfo,
-				Prefix:    "public/images",
-			},
-		},
-		{
-			Methods: []string{http.MethodGet},
-			Path:    "/js/*filepath",
-			Handler: &assetfs.AssetFS{
-				Asset:     Asset,
-				AssetDir:  AssetDir,
-				AssetInfo: AssetInfo,
-				Prefix:    "public/js",
-			},
-		},
-		{
-			Methods: []string{http.MethodGet},
-			Path:    "/vendor/*filepath",
-			Handler: &assetfs.AssetFS{
-				Asset:     Asset,
-				AssetDir:  AssetDir,
-				AssetInfo: AssetInfo,
-				Prefix:    "public/vendor",
+				Prefix:    "assets",
 			},
 		},
 		{

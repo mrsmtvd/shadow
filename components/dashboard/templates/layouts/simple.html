@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ .Application.GetName }}</title>
+
+    <link rel="shortcut icon" href="/dashboard/assets/images/favicon.svg?v={{ .Application.build }}" type="image/svg+xml">
+
+    <link href="/dashboard/assets/vendors/bootstrap/dist/css/bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+    <link href="/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css?v={{ .Application.build }}" rel="stylesheet">
+    <link href="/dashboard/assets/vendors/nprogress/nprogress.css?v={{ .Application.build }}" rel="stylesheet">
+    <link href="/dashboard/assets/css/custom.min.css?v={{ .Application.build }}" rel="stylesheet">
+
+    {{ block "head" . }} {{ end }}
+</head>
+
+<body class="nav-md">
+<div class="container body">
+    <div class="main_container">
+        {{ block "content" . }} {{ end }}
+    </div>
+</div>
+
+<script src="/dashboard/assets/vendors/jquery/dist/jquery.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/bootstrap/dist/js/bootstrap.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/fastclick/lib/fastclick.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/nprogress/nprogress.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/js/custom.min.js?v={{ .Application.build }}"></script>
+{{ block "js" . }} {{ end }}
+
+</body>
+</html>

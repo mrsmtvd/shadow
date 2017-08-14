@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	TemplatePostfix    = ".html"
-	TemplateLayoutsDir = "templates/layouts"
-	TemplateViewsDir   = "templates/views"
+	TemplatePostfix       = ".html"
+	TemplateLayoutsDir    = "templates/layouts"
+	TemplateViewsDir      = "templates/views"
+	TemplateDefaultLayout = "base"
 )
 
 type Renderer struct {
@@ -104,6 +105,10 @@ func (r *Renderer) AddComponents(c string, f *assetfs.AssetFS) error {
 }
 
 func (r *Renderer) Render(ctx context.Context, c, v string, d map[string]interface{}) error {
+	return r.RenderLayout(ctx, c, v, TemplateDefaultLayout, d)
+}
+
+func (r *Renderer) RenderLayout(ctx context.Context, c, v, l string, d map[string]interface{}) error {
 	component, ok := r.views[c]
 	if !ok {
 		return fmt.Errorf("Templates for component \"%s\" not found", c)
@@ -128,7 +133,7 @@ func (r *Renderer) Render(ctx context.Context, c, v string, d map[string]interfa
 		}
 	}
 
-	return view.ExecuteTemplate(ResponseFromContext(ctx), "main", context)
+	return view.ExecuteTemplate(ResponseFromContext(ctx), l, context)
 }
 
 func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]string, error) {

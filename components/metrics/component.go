@@ -69,17 +69,17 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(*config.Component)
+	c.registry = snitch.DefaultRegisterer
+
+	if c.application.HasComponent(profiling.ComponentName) {
+		c.registry.AddStorages(storage.NewExpvarWithId(ComponentName))
+	}
 
 	return nil
 }
 
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
-	c.registry = snitch.DefaultRegisterer
-
-	if c.application.HasComponent(profiling.ComponentName) {
-		c.registry.AddStorages(storage.NewExpvarWithId(ComponentName))
-	}
 
 	url := c.config.GetString(ConfigUrl)
 	if url == "" {
