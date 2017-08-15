@@ -341,6 +341,16 @@ gulp.task('golang', function() {
 });
 
 gulp.task('bindata', function() {
+    var ignores = [
+        '[.]DS_Store',
+        '[.]gitignore'
+    ];
+
+    if (process.env.NODE_ENV !== DEV_ENV) {
+        ignores.push('.*?(([^n]|^)|([^i]|^)n|([^m]|^)in|([^.]|^|^[.])min)[.][jJ][sS]');
+        ignores.push('.*?(([^n]|^)|([^i]|^)n|([^m]|^)in|([^.]|^|^[.])min)[.][cC][sS][sS]');
+    }
+    
     return gulp.src([
         COMPONENTS + '/*/templates',
         COMPONENTS + '/*/assets',
@@ -363,7 +373,7 @@ gulp.task('bindata', function() {
                 };
             }
         }))
-        .pipe(exec('cd <%= file.path %> && go-bindata-assetfs <%= options.debug %> -ignore="(\.DS_Store|\.gitignore)" -pkg=<%= options.path.basename(file.path) %> <%= file.contents %>', {
+        .pipe(exec('cd <%= file.path %> && go-bindata-assetfs <%= options.debug %> -ignore="('+ ignores.join('|') +')" -pkg=<%= options.path.basename(file.path) %> <%= file.contents %>', {
             path: path,
             debug: process.env.NODE_ENV === DEV_ENV ? '-debug' : ''
         }))

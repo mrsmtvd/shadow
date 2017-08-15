@@ -42,6 +42,11 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 		return nil, err
 	}
 
+	modTime := time.Now()
+	if h.application.GetBuildDate() != nil {
+		modTime = *h.application.GetBuildDate()
+	}
+
 	for _, component := range components {
 		if componentTemplate, ok := component.(hasTemplate); ok {
 			fs := componentTemplate.GetTemplates()
@@ -53,8 +58,8 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 				IsDir:   true,
 				Name:    component.GetName(),
 				Size:    0,
-				Mode:    os.FileMode(0755),
-				ModTime: time.Now(),
+				Mode:    os.FileMode(0644) | os.ModeDir,
+				ModTime: modTime,
 				Path:    filepath.Join("/", component.GetName()),
 			})
 		}
