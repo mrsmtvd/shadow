@@ -291,6 +291,22 @@ gulp.task('frontend', ['compress-components'], function() {
         }))
         .pipe(gulp.dest(VENDORS_PROFILING + '/flipclock/css'));
     
+    // datatables
+    gulp.src(['bower_components/datatables.net/js/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net/js'));
+    
+    gulp.src(['bower_components/datatables.net-bs/js/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-bs/js'));
+
+    gulp.src(['bower_components/datatables.net-bs/css/*.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-bs/css'));
+
+    gulp.src(['bower_components/datatables.net-fixedheader/js/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-fixedheader/js'));
+
+    gulp.src(['bower_components/datatables.net-fixedheader-bs/css/*.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-fixedheader-bs/css'));
+    
     // wysiwyg
     /*
     gulp.src(['bower_components/bootstrap-wysiwyg/js/dist/bootstrap-wysiwyg.min.js'])

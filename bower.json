@@ -27,7 +27,11 @@
     "switchery": "^0.8.2",
     "flipclock": "FlipClock#^0.7.7",
     "bootstrap-progressbar": "^0.9.0",
-    "iCheck": "^1.0.2"
+    "iCheck": "^1.0.2",
+    "datatables.net-bs": "^2.1.1",
+    "datatables.net": "^1.10.15",
+    "datatables.net-fixedheader": "^3.1.2",
+    "datatables.net-fixedheader-bs": "^3.1.2"
   },
   "resolutions": {
     "jquery": "^2.2.4",
