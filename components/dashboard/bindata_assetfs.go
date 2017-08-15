@@ -221,7 +221,7 @@ func templatesViews500Html() (*asset, error) {
 	return a, nil
 }
 
-var _templatesViewsBindataHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x55\x4d\x8b\xdb\x30\x10\xbd\xef\xaf\x18\xc4\xd2\xd3\x26\x82\x3d\xb6\x8a\x4b\x4b\x2f\x3d\xb4\x14\xda\xfb\x22\x47\xe3\xf5\x80\x6c\x05\x49\xc9\xee\xd6\xe4\xbf\x17\xc9\x4e\x62\xaf\x2d\x61\x7a\x71\x2c\xcf\x7b\xf3\xe6\x53\xe9\x3a\x50\x58\x51\x8b\xc0\xf6\xa6\xf5\xd8\x7a\x06\xe7\xf3\x9d\x50\x74\x82\xbd\x96\xce\xed\x98\x35\x2f\xac\xb8\x03\x00\x18\x7f\x7d\x7d\x3a\xc8\x16\xf5\x60\x99\x5b\x3d\x79\x8d\x23\x6b\x44\xd4\x8f\xc5\x57\x6a\x95\xf4\x52\xf0\xfa\xf1\x9d\x71\x44\xdf\x6b\x94\xb6\xa2\x57\x56\x08\xae\xe8\x34\xd2\x78\x77\x9c\x48\x5e\x12\x98\xfa\xed\x3a\xa0\x0a\xb6\x68\xad\xb1\x21\xb5\x94\xa6\xd4\x68\x3d\xc4\xe7\x46\xc9\xf6\x19\xed\xe5\x40\xae\x21\xe7\x64\x39\xcb\x27\xba\x28\x8f\xde\x9b\x16\xfc\xdb\x01\x77\xac\x3f\xb0\x5b\x1e\xc6\x21\x83\x90\xf0\xc5\xcd\x20\xc4\x40\x5a\x92\x9b\x9a\x94\xc2\x76\xc7\xbc\x3d\x22\x2b\x3e\x78\x6a\xd0\x7d\x12\xbc\x77\x33\x17\xeb\xba\x54\x22\xd3\xba\x0c\x58\x6c\x55\x00\x2e\x95\xa3\xb4\x28\xd5\xde\x1e\x9b\x72\xe6\xea\xa8\x2f\xe1\xdf\x40\x0b\x89\x77\x1d\xd8\x50\x26\xb8\xa7\x07\xb8\x27\x8f\x0d\x7c\xdc\xe5\x1c\x4f\x23\x88\x8c\xed\x97\xbd\xa7\x13\xa6\x90\x42\xd3\xb5\x3b\x11\xc8\x8a\xae\x1b\x98\x3f\x65\x13\x78\x82\x6b\x9a\xc7\x76\xc9\x5f\xbb\x9c\xef\x42\x48\xa8\x2d\x56\x3b\xc6\x95\x74\x75\x69\xa4\x55\xbc\xec\xe7\xf3\xf3\x41\xfa\x7a\x77\x55\xfb\x25\x7d\x0d\xe7\xf3\x92\xbe\x2c\xf2\x31\xf4\x3d\x58\x67\x11\xfc\xa8\x57\x75\x71\x3c\xb8\x3e\x4c\xe6\xc6\xa2\x3b\x98\xd6\xc5\x22\xcd\x87\x34\x62\x26\x04\xe8\x69\xb5\x39\xa1\x5d\x60\xf4\xac\x1a\xa5\x4a\xd9\xec\xb2\x61\x20\x16\xa1\x3e\x82\xfb\x3a\x8f\xfa\x4d\x7f\x57\xa0\x7e\x18\xb5\x0e\x45\x15\xa1\x4a\x23\x05\x4f\x45\x1d\x38\x99\x5c\x4b\xa3\xde\x92\x1d\x1e\xb6\xa0\x7a\x80\xfb\x8a\x34\xc6\x2d\x08\x2f\x2e\x39\x7a\xf9\xda\x25\xa2\x18\x29\x86\xf5\x09\x0a\xdb\xef\xee\x1b\xcd\xee\x82\x45\xaf\xd7\x45\xaa\x24\x54\x72\x53\x19\xad\xd0\xc6\xb7\x97\xf0\xd4\xcf\xe1\xaa\x4d\x4c\xf1\x48\x39\xb7\x51\x59\x3d\xd2\xb8\x31\xff\xa1\xb7\xbc\x3d\x13\xa9\xf4\x12\xf3\xdb\x16\xc7\x72\x4d\xb6\x38\x7e\x19\x6d\x71\xba\x23\x3c\xd7\x92\xd0\xaf\xab\xbb\x30\xce\xd1\xdd\x6a\x46\x18\xed\xb5\x0c\x25\x3d\x3e\x39\x6a\xf7\x78\x23\xff\xa1\x26\xcf\x4f\xcf\x7c\xbe\xbc\x82\x27\xa6\x5e\xf0\x78\x73\x14\xb9\xff\x9f\xd1\x71\x78\x1d\x7e\xae\x9a\xff\x02\x00\x00\xff\xff\x9d\x0f\x26\xb3\x78\x08\x00\x00")
+var _templatesViewsBindataHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xbc\x56\x4d\x6f\x9c\x30\x10\xbd\xe7\x57\x58\x56\x94\x53\x08\x6a\x8e\x2d\x50\xb5\xca\xa5\x87\x56\x55\xdb\x7b\x64\xf0\xb0\x8c\x64\xec\x95\xed\xfd\x48\xd1\xfe\xf7\xca\x86\x65\x61\xc1\x64\xb3\x91\xba\x07\x62\xe3\x79\xf3\x66\xc6\x6f\x26\x34\x0d\xe1\x50\xa2\x04\x42\x0b\x25\x2d\x48\x4b\xc9\xe1\x70\x93\x70\xdc\x92\x42\x30\x63\x52\xaa\xd5\x8e\x66\x37\x84\x10\x32\x7c\xbb\x7f\x5e\x33\x09\xa2\x3b\x99\x9e\x5a\xb4\x02\x06\xa7\xde\xa2\x7a\xcc\xbe\xa2\xe4\xcc\xb2\x24\xae\x1e\xcf\x0e\x07\xf0\x42\x00\xd3\x25\xee\x69\x96\xc4\x1c\xb7\x03\x8e\xb3\xed\x88\xf2\x98\xc0\xd8\x6f\xd3\x10\x2c\xc9\x03\x68\xad\xb4\x4b\x2d\xc4\xc9\x04\x68\x4b\xfc\x33\xe2\x4c\xae\x40\x1f\x37\x68\x6a\x34\x86\xe5\x93\x7c\xbc\x8b\x7c\x63\xad\x92\xc4\xbe\xac\x21\xa5\xed\x86\x9e\xf2\x50\x06\x28\x71\x09\x1f\xdd\x74\x44\x94\x30\x8d\x2c\xaa\x90\x73\x90\x29\xb5\x7a\x03\x34\xbb\xb3\x58\x83\xf9\x94\xc4\xad\x9b\x29\x59\xd3\x84\x12\x19\xd7\xa5\xb3\x05\xc9\x9d\xe1\x5c\x39\x72\x0d\x8c\x17\x7a\x53\xe7\x13\x57\x1b\x71\x0c\xff\x64\x34\x93\x78\xd3\x10\xed\xca\x44\x6e\xf1\x9e\xdc\xa2\x85\x9a\x7c\x4c\x97\x1c\x8f\x23\xf0\x88\x87\x2f\x85\xc5\x2d\x84\x2c\x13\x81\xfd\xed\x78\x43\x9a\x35\x4d\x87\xfc\xc1\x6a\x87\x4b\x62\x81\xd3\xd8\x8e\xf9\x0b\xb3\xe4\x3b\x4b\x18\xa9\x34\x94\x29\x8d\x39\x33\x55\xae\x98\xe6\x71\xde\xea\xf3\xf3\x9a\xd9\x2a\xed\xd9\x7e\x32\x5b\x91\xc3\x61\x8e\x9f\x65\xcb\x31\xb4\x77\x70\xd9\x49\x12\x6f\xc4\x45\xb7\x38\x14\xae\x75\xca\x8c\x34\x98\xb5\x92\xc6\x17\x69\x2a\x52\x6f\x33\x02\x90\x16\x56\xa9\x2d\xe8\x19\x44\x8b\xaa\x80\xf1\xd0\x99\x9e\x3f\xe8\x80\x99\xab\x4f\x12\xdb\x6a\xd1\xaa\xef\x13\x25\xa2\x9a\x47\x1f\x68\xf6\x1b\xff\x5e\x03\xfb\xae\xf8\x95\x30\x2c\x11\xf8\x15\x50\xa7\x5c\x25\x4d\x18\x99\xc4\xa1\x12\x39\xcc\x42\x61\x73\xc5\x5f\x82\x72\xea\x5a\xae\xbc\x27\xb7\x25\x0a\xf0\x2d\xe7\x16\x26\xa8\xf3\xe5\x8b\x0a\x44\x31\x60\x74\xbd\xea\x18\x1e\xbe\x99\x27\x9c\x0c\x9e\x59\xaf\x7d\xd7\x96\x8c\x94\x2c\x2a\x95\xe0\xa0\xfd\x6a\xe7\x9e\x62\xe5\xe6\x7a\xa0\x65\x46\x8e\xc2\xfd\x19\x9f\x1a\xd4\x07\x37\x6a\x50\xff\x66\xd0\xa0\xaf\xa5\xb8\x34\x27\x16\x13\x43\x01\x91\xfa\x2f\x89\xdd\xd5\x8a\x43\xaa\xd9\xee\xca\x0c\xe7\xa7\x50\x1f\x4f\xbc\x24\x04\xa7\x92\x9e\xd4\x35\xa8\x27\xbd\x18\xe1\x7a\xf3\x52\x04\x67\x16\x9e\x0d\xca\x02\x4e\xe0\x3f\x58\x5f\x84\xef\xc7\x1b\xec\x6d\x54\x80\xb4\xc1\xc1\x76\xfc\xb5\xea\x96\xca\xbe\x59\xe1\x83\xf1\x9b\x5b\x19\xad\xb4\xda\xac\x49\xbf\x8a\xf6\xe6\x15\xe6\xde\xd1\x3b\x84\x30\x08\xc0\x53\xa3\x2c\x55\xbb\x28\x94\xa4\xd9\x49\xac\x2b\xf1\xb2\xae\xdc\x4b\xd2\xaf\xbc\x74\x29\xf1\x1f\x69\x29\xfd\xe5\x64\xe5\x84\xfb\xaa\x94\xde\x1b\x77\x4b\x7b\x16\xb8\xd9\x14\x05\x18\x73\x71\xec\x86\x6d\x61\x9c\xc0\x93\xda\x49\xa1\x18\x7f\x43\x16\x33\x5f\x4c\xe7\xbf\xf7\xf4\x4d\x78\xfa\x2f\x7b\x4d\xe2\xc0\xfc\x4f\x62\xff\x0f\x3b\x5b\xfa\xec\x1b\x6c\xbb\x65\xf7\xa7\xe7\xfc\x17\x00\x00\xff\xff\xe0\xe0\x85\xda\xef\x0b\x00\x00")
 
 func templatesViewsBindataHtmlBytes() ([]byte, error) {
 	return bindataRead(
@@ -236,7 +236,7 @@ func templatesViewsBindataHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/views/bindata.html", size: 2168, mode: os.FileMode(420), modTime: time.Unix(1502745003, 0)}
+	info := bindataFileInfo{name: "templates/views/bindata.html", size: 3055, mode: os.FileMode(420), modTime: time.Unix(1502805112, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -316,7 +316,7 @@ func assetsCssCustomMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/custom.min.css", size: 31, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/css/custom.min.css", size: 31, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -336,7 +336,7 @@ func assetsCssDashboardMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/dashboard.min.css", size: 63413, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/css/dashboard.min.css", size: 63413, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -516,7 +516,7 @@ func assetsJsConfigMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/config.min.js", size: 990, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/js/config.min.js", size: 990, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -536,7 +536,7 @@ func assetsJsCustomMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/custom.min.js", size: 8175, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/js/custom.min.js", size: 8175, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -556,7 +556,7 @@ func assetsJsFunctionsMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/functions.min.js", size: 227, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/js/functions.min.js", size: 227, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -576,7 +576,7 @@ func assetsVendorsAutosizeJsAutosizeMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/autosize/js/autosize.min.js", size: 3700, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/autosize/js/autosize.min.js", size: 3700, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -596,7 +596,7 @@ func assetsVendorsBootstrapCssBootstrapMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/css/bootstrap.min.css", size: 121200, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/css/bootstrap.min.css", size: 121200, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -616,7 +616,7 @@ func assetsVendorsBootstrapFontsGlyphiconsHalflingsRegularEot() (*asset, error) 
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.eot", size: 20127, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.eot", size: 20127, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -636,7 +636,7 @@ func assetsVendorsBootstrapFontsGlyphiconsHalflingsRegularSvg() (*asset, error) 
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.svg", size: 108738, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.svg", size: 108738, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -656,7 +656,7 @@ func assetsVendorsBootstrapFontsGlyphiconsHalflingsRegularTtf() (*asset, error) 
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.ttf", size: 45404, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.ttf", size: 45404, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -676,7 +676,7 @@ func assetsVendorsBootstrapFontsGlyphiconsHalflingsRegularWoff() (*asset, error)
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.woff", size: 23424, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.woff", size: 23424, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -696,7 +696,7 @@ func assetsVendorsBootstrapFontsGlyphiconsHalflingsRegularWoff2() (*asset, error
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.woff2", size: 18028, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/fonts/glyphicons-halflings-regular.woff2", size: 18028, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -716,7 +716,7 @@ func assetsVendorsBootstrapJsBootstrapMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap/js/bootstrap.min.js", size: 37045, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap/js/bootstrap.min.js", size: 37045, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -736,7 +736,7 @@ func assetsVendorsBootstrapProgressbarCssBootstrapProgressbarMinCss() (*asset, e
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap-progressbar/css/bootstrap-progressbar.min.css", size: 5014, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap-progressbar/css/bootstrap-progressbar.min.css", size: 5014, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -756,7 +756,7 @@ func assetsVendorsBootstrapProgressbarJsBootstrapProgressbarMinJs() (*asset, err
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/bootstrap-progressbar/js/bootstrap-progressbar.min.js", size: 2333, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/bootstrap-progressbar/js/bootstrap-progressbar.min.js", size: 2333, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -776,7 +776,7 @@ func assetsVendorsFastclickJsFastclickMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/fastclick/js/fastclick.min.js", size: 10239, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/fastclick/js/fastclick.min.js", size: 10239, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -796,7 +796,7 @@ func assetsVendorsFontAwesomeCssFontAwesomeMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/css/font-awesome.min.css", size: 31000, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/css/font-awesome.min.css", size: 31000, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -816,7 +816,7 @@ func assetsVendorsFontAwesomeFontsFontawesomeOtf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/FontAwesome.otf", size: 134808, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/FontAwesome.otf", size: 134808, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -836,7 +836,7 @@ func assetsVendorsFontAwesomeFontsFontawesomeWebfontEot() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.eot", size: 165742, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.eot", size: 165742, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -856,7 +856,7 @@ func assetsVendorsFontAwesomeFontsFontawesomeWebfontSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.svg", size: 444379, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.svg", size: 444379, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -876,7 +876,7 @@ func assetsVendorsFontAwesomeFontsFontawesomeWebfontTtf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.ttf", size: 165548, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.ttf", size: 165548, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -896,7 +896,7 @@ func assetsVendorsFontAwesomeFontsFontawesomeWebfontWoff() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.woff", size: 98024, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.woff", size: 98024, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -916,7 +916,7 @@ func assetsVendorsFontAwesomeFontsFontawesomeWebfontWoff2() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.woff2", size: 77160, mode: os.FileMode(420), modTime: time.Unix(1502793921, 0)}
+	info := bindataFileInfo{name: "assets/vendors/font-awesome/fonts/fontawesome-webfont.woff2", size: 77160, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -936,7 +936,7 @@ func assetsVendorsIcheckCssGreenMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/icheck/css/green.min.css", size: 914, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/icheck/css/green.min.css", size: 914, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -956,7 +956,7 @@ func assetsVendorsIcheckCssGreenPng() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/icheck/css/green.png", size: 1444, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/icheck/css/green.png", size: 1444, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -976,7 +976,7 @@ func assetsVendorsIcheckCssGreen2xPng() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/icheck/css/green@2x.png", size: 3117, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/icheck/css/green@2x.png", size: 3117, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -996,7 +996,7 @@ func assetsVendorsIcheckJsIcheckMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/icheck/js/icheck.min.js", size: 4931, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/icheck/js/icheck.min.js", size: 4931, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1016,7 +1016,7 @@ func assetsVendorsJqueryJsJqueryMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/jquery/js/jquery.min.js", size: 85578, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/jquery/js/jquery.min.js", size: 85578, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1036,7 +1036,7 @@ func assetsVendorsNprogressCssNprogressMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/nprogress/css/nprogress.min.css", size: 1090, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/nprogress/css/nprogress.min.css", size: 1090, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1056,7 +1056,7 @@ func assetsVendorsNprogressJsNprogressMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/nprogress/js/nprogress.min.js", size: 5952, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/nprogress/js/nprogress.min.js", size: 5952, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1076,7 +1076,7 @@ func assetsVendorsSwitcheryCssSwitcheryMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/switchery/css/switchery.min.css", size: 682, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/switchery/css/switchery.min.css", size: 682, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1096,7 +1096,7 @@ func assetsVendorsSwitcheryJsSwitcheryMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/switchery/js/switchery.min.js", size: 24502, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/switchery/js/switchery.min.js", size: 24502, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1116,7 +1116,7 @@ func assetsVendorsValidatorJsMultifieldMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/validator/js/multifield.min.js", size: 1092, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/validator/js/multifield.min.js", size: 1092, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1136,7 +1136,7 @@ func assetsVendorsValidatorJsValidatorMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/validator/js/validator.min.js", size: 5798, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/validator/js/validator.min.js", size: 5798, mode: os.FileMode(420), modTime: time.Unix(1502805699, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1156,7 +1156,7 @@ func assetsVendorsWaitmeCssWaitmeMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/waitMe/css/waitMe.min.css", size: 13861, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/waitMe/css/waitMe.min.css", size: 13861, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1176,7 +1176,7 @@ func assetsVendorsWaitmeJsWaitmeMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/waitMe/js/waitMe.min.js", size: 3393, mode: os.FileMode(420), modTime: time.Unix(1502793920, 0)}
+	info := bindataFileInfo{name: "assets/vendors/waitMe/js/waitMe.min.js", size: 3393, mode: os.FileMode(420), modTime: time.Unix(1502805698, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

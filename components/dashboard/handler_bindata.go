@@ -2,10 +2,12 @@ package dashboard
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -26,6 +28,7 @@ type bindataList struct {
 	Mode    os.FileMode
 	ModTime time.Time
 	Path    string
+	Reader  io.Reader
 }
 
 type bindataBreadcrumb struct {
@@ -100,7 +103,8 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 			Size:    statRoot.Size(),
 			Mode:    statRoot.Mode(),
 			ModTime: statRoot.ModTime(),
-			Path:    filepath.Join(path, statRoot.Name()),
+			Path:    filepath.Join("/", name, path),
+			Reader:  fileRoot,
 		}}, nil
 	}
 
@@ -134,6 +138,7 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 			Mode:    statSub.Mode(),
 			ModTime: statSub.ModTime(),
 			Path:    filepath.Join("/", name, path, statSub.Name()),
+			Reader:  fileSub,
 		}
 
 		if statSub.IsDir() {
@@ -161,7 +166,7 @@ func (h *BindataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	path = strings.Trim(filepath.Clean(path), sep)
 
-	if path == "" {
+	if path == "" || path == "." {
 		path = sep
 	}
 
@@ -187,6 +192,25 @@ func (h *BindataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		sort.SliceStable(files, func(i, j int) bool {
 			return files[i].IsDir != files[j].IsDir
 		})
+
+		switch r.URL.Query().Get("mode") {
+		case "raw":
+			if len(files) == 1 {
+				io.Copy(w, files[0].Reader)
+				return
+			}
+			break
+		case "file":
+			if len(files) == 1 {
+				w.Header().Set("Content-Length", strconv.FormatInt(files[0].Size, 10))
+				w.Header().Set("Content-Type", "application/x-gzip")
+				w.Header().Set("Content-Disposition", "attachment; filename="+files[0].Name)
+
+				io.Copy(w, files[0].Reader)
+				return
+			}
+			break
+		}
 	}
 
 	// breadcrumbs
