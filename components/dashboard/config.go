@@ -36,6 +36,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Usage:    "User password",
 			Type:     config.ValueTypeString,
 			Editable: true,
+			View:     []string{config.ViewPassword},
 		},
 	}
 }

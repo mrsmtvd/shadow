@@ -41,15 +41,6 @@ type Component struct {
 	watchers    map[string][]Watcher
 }
 
-type Variable struct {
-	Key      string
-	Default  interface{}
-	Value    interface{}
-	Type     string
-	Usage    string
-	Editable bool
-}
-
 type hasVariables interface {
 	GetConfigVariables() []Variable
 }

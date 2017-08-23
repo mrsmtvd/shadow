@@ -26,6 +26,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Usage:    "SMTP password",
 			Type:     config.ValueTypeString,
 			Editable: true,
+			View:     []string{config.ViewPassword},
 		},
 		{
 			Key:      ConfigSmtpHost,

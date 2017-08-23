@@ -40,10 +40,11 @@
                                     </thead>
                                     <tbody>
                                     {{ range $i, $config := $vars }}
+                                    {{ $varId := replace $config.Key "." "_" }}
                                     <tr>
                                         <td>
                                             {{ if $config.Editable }}
-                                            <label class="control-label" for="{{ $config.Key }}">{{ $config.Key }}</label>
+                                            <label class="control-label" for="{{ $varId }}">{{ $config.Key }}</label>
                                             {{ else }}
                                             <label class="control-label">{{ $config.Key }}</label>
                                             {{ end }}
@@ -52,24 +53,36 @@
                                             {{ if $config.Editable }}
                                             <div class="form-group">
                                                 {{ if eq $config.Type "bool" }}
-                                                <input type="checkbox" name="{{ $config.Key }}" id="{{ $config.Key }}" {{ if eq (print $config.Value) "true" }} checked{{ end }} />
+                                                <input type="checkbox" class="js-switch" name="{{ $config.Key }}" id="{{ $varId }}" {{ if eq (print $config.Value) "true" }} checked{{ end }} />
                                                 {{ else if or (eq $config.Type "int") (eq $config.Type "int64") }}
-                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?[0-9]*$"/>
+                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[-+]?[0-9]*$"/>
                                                 {{ else if or (eq $config.Type "uint") (eq $config.Type "uint64") }}
-                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[+]?[0-9]*$"/>
+                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[+]?[0-9]*$"/>
                                                 {{ else if eq $config.Type "float64" }}
-                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?[0-9]*(\.[0-9]*)?$"/>
+                                                <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[-+]?[0-9]*(\.[0-9]*)?$"/>
                                                 {{ else if eq $config.Type "duration" }}
-                                                <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}" pattern="^[-+]?([0-9]*(\.[0-9]*)?[a-z]+)+$"/>
+                                                <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[-+]?([0-9]*(\.[0-9]*)?[a-z]+)+$"/>
                                                 {{ else }}
-                                                <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $config.Key }}"/>
+                                                    {{ if $config.HasView "password" }}
+                                                    <input type="password" class="form-control password-show" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
+                                                    {{ else }}
+                                                    <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
+                                                    {{ end }}
                                                 {{ end }}
                                             </div>
                                             {{ else }}
                                             {{ $config.Value }}
                                             {{ end }}
                                         </td>
-                                        <td>{{ $config.Default }}</td>
+                                        <td>
+                                            <span id="{{ $varId }}_value" data-value="{{ $config.Default }}">
+                                                {{ if $config.HasView "password" }}
+                                                ******
+                                                {{ else }}
+                                                    {{ $config.Default }}
+                                                {{ end }}
+                                            </span>
+                                        </td>
                                         <td>{{ $config.Usage }}</td>
                                     </tr>
                                     {{ end }}

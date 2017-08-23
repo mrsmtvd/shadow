@@ -31,7 +31,8 @@
     "datatables.net-bs": "^2.1.1",
     "datatables.net": "^1.10.15",
     "datatables.net-fixedheader": "^3.1.2",
-    "datatables.net-fixedheader-bs": "^3.1.2"
+    "datatables.net-fixedheader-bs": "^3.1.2",
+    "bootstrap-show-password": "^1.0.3"
   },
   "resolutions": {
     "jquery": "^2.2.4",

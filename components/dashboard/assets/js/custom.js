@@ -284,6 +284,7 @@ $(document).ready(function () {
     init_tabs();
     init_autosize();
     init_validator();
+    init_password_show();
     init_switchery();
     init_icheck();
     init_datatables();
@@ -443,6 +444,14 @@ function init_modals() {
             eval(callback);
         }
     });
+}
+
+function init_password_show() {
+    if (typeof $.fn.password === 'undefined') {
+        return;
+    }
+
+    $('input[type=password].password-show').password();
 }
 
 function init_switchery() {

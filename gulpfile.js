@@ -258,6 +258,11 @@ gulp.task('frontend', ['compress-components'], function() {
     gulp.src(['bower_components/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css'])
         .pipe(rename('bootstrap-progressbar.min.css'))
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-progressbar/css'));
+    
+    // bootstrap-show-password
+    // ichecked
+    gulp.src(['bower_components/bootstrap-show-password/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-show-password/js'));
 
     // ichecked
     gulp.src(['bower_components/iCheck/*.min.js'])

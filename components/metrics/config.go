@@ -41,6 +41,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Usage:    "InfluxDB password",
 			Type:     config.ValueTypeString,
 			Editable: true,
+			View:     []string{config.ViewPassword},
 		},
 		{
 			Key:      ConfigPrecision,

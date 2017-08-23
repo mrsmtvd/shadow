@@ -1,6 +1,6 @@
 $(document).ready(function () {
     // save config
-    $('#configs input').change(function() {
+    $('#configs input[id]').change(function() {
         $(this).parentsUntil('tbody', 'tr').addClass('has-error');
         $('#configs button[type=submit]').prop('disabled', false);
     });
@@ -14,7 +14,7 @@ $(document).ready(function () {
         var m = $('#modalConfig');
         var c = '';
 
-        $('#configs tr.has-error td input[type!=hidden]').each(function(){
+        $('#configs tr.has-error td input[id][type!=hidden]').each(function(){
             var e = $(this);
 
             if (e.prop('type') == 'checkbox') {
@@ -35,7 +35,7 @@ $(document).ready(function () {
     $('#modalConfig button[type=submit]').click(function() {
         var data = {};
 
-        $('#configs tr.has-error td input[type!=hidden]').each(function(){
+        $('#configs tr.has-error td input[id][type!=hidden]').each(function(){
             var e = $(this);
             data[e.prop('id')] = e.prop('type') == 'checkbox' ? e.prop('checked') : e.val();
         });
@@ -46,4 +46,19 @@ $(document).ready(function () {
 
         return false;
     });
+
+    // show/hide password
+    $('#configs input[type=password].password-show')
+        .on('show.bs.password hide.bs.password', function () {
+            var e = $('#' + $(this).prop('id') + '_value');
+            
+            console.log(e);
+
+            if (e.length) {
+                var t = e.text();
+
+                e.text(e.data('value'));
+                e.data('value', t);
+            }
+        })
 });
