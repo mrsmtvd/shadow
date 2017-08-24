@@ -5,3 +5,7 @@
 .site_title {
     text-align:center;
 }
+
+.tagsinput .tag span {
+    line-height: 1.42857143;
+}

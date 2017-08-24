@@ -284,6 +284,7 @@ $(document).ready(function () {
     init_tabs();
     init_autosize();
     init_validator();
+    init_tagsinput();
     init_password_show();
     init_switchery();
     init_icheck();
@@ -443,6 +444,30 @@ function init_modals() {
         if (callback !== 'undefined') {
             eval(callback);
         }
+    });
+}
+
+function init_tagsinput() {
+    if (typeof $.fn.tagsInput === 'undefined') {
+        return;
+    }
+
+    var cb = function() {
+        $(this).change();
+    };
+    
+    var opts = {
+        width: 'auto',
+        onAddTag: cb,
+        onRemoveTag: cb
+    };
+
+    $('input[type=text].tags,textarea.tags').each(function() {
+        var el = $(this);
+        
+        el.tagsInput(jQuery.extend(opts, {
+            defaultText: el.data('default-text') || 'add a tag'
+        }));
     });
 }
 

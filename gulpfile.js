@@ -260,9 +260,18 @@ gulp.task('frontend', ['compress-components'], function() {
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-progressbar/css'));
     
     // bootstrap-show-password
-    // ichecked
     gulp.src(['bower_components/bootstrap-show-password/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-show-password/js'));
+    
+    // jquery.tagsinput
+    gulp.src(['bower_components/jquery.tagsinput/src/*.js'])
+        .pipe(uglify({
+            mangle: false
+        }))
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jquery.tagsinput/js'));
 
     // ichecked
     gulp.src(['bower_components/iCheck/*.min.js'])

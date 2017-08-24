@@ -7,6 +7,10 @@ import (
 	"github.com/kihamo/shadow"
 )
 
+const (
+	defaultComponentName = "main"
+)
+
 type ConfigHandler struct {
 	Handler
 
@@ -41,7 +45,7 @@ func (h *ConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		cmpName := parts[0]
 		if !h.application.HasComponent(cmpName) {
-			cmpName = "main"
+			cmpName = defaultComponentName
 		}
 
 		cmp, ok := variables[cmpName]

@@ -59,9 +59,13 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		},
 		{
 			Key:      ConfigLabels,
-			Usage:    "Labels list with format: label1_name=label1_value,label2_name=label2_value",
+			Usage:    "Labels list with format: label1_name=label1_value",
 			Type:     config.ValueTypeString,
 			Editable: true,
+			View:     []string{config.ViewTags},
+			ViewOptions: map[string]interface{}{
+				config.ViewOptionTagsDefaultText: "add a label",
+			},
 		},
 	}
 }

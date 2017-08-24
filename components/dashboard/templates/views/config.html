@@ -66,7 +66,16 @@
                                                     {{ if $config.HasView "password" }}
                                                     <input type="password" class="form-control password-show" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
                                                     {{ else }}
-                                                    <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
+                                                        {{ if $config.HasView "tags" }}
+                                                        {{ $defaultText := $config.GetViewOption "default-text" }}
+                                                        <input type="text" class="form-control tags" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"
+                                                               {{ if $defaultText }}
+                                                               data-default-text="{{ $defaultText }}"
+                                                               {{ end }}
+                                                        />
+                                                        {{ else }}
+                                                        <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
+                                                        {{ end }}
                                                     {{ end }}
                                                 {{ end }}
                                             </div>
@@ -83,7 +92,7 @@
                                                 {{ end }}
                                             </span>
                                         </td>
-                                        <td>{{ $config.Usage }}</td>
+                                        <td><span>{{ $config.Usage }}</span></td>
                                     </tr>
                                     {{ end }}
                                     </tbody>
@@ -124,5 +133,5 @@
 {{ end }}
 
 {{ define "js" }}
-<script src="/dashboard/assets/js/config.min.js?v={{ .Application.GetBuild }}"></script>
+<script src="/dashboard/assets/js/config.min.js?v={{ .Application.build }}"></script>
 {{ end }}

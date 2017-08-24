@@ -2359,6 +2359,7 @@ ul.timeline li {
   background: #1ABB9C;
   color: #fff !important; }
 
+/*
 .tag:after {
   content: " ";
   height: 30px;
@@ -2371,7 +2372,7 @@ ul.timeline li {
   border-top: 14px solid transparent;
   border-bottom: 14px solid transparent;
   border-left: 11px solid #1ABB9C; }
-
+*/
 .timeline h2.title {
   position: relative;
   font-size: 16px;
