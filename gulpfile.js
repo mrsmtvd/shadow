@@ -189,7 +189,15 @@ gulp.task('compress-components', function() {
 });
 
 gulp.task('frontend', ['compress-components'], function() {
-    // vendor
+    /**
+     * Vendors
+     */
+
+    // jquery
+    gulp.src(['bower_components/jquery/dist/jquery.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jquery/js'));
+
+    // bootstrap
     gulp.src([
         'bower_components/bootstrap/dist/**/*.min.css',
         'bower_components/bootstrap/dist/**/*.min.js',
@@ -198,117 +206,26 @@ gulp.task('frontend', ['compress-components'], function() {
     ])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap'));
 
-    gulp.src(['bower_components/jquery/dist/jquery.min.js'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jquery/js'));
-
-    gulp.src([
-        'bower_components/font-awesome/**/*.min.css',
-        'bower_components/font-awesome/**/fontawesome-*',
-        'bower_components/font-awesome/**/FontAwesome.otf'
-    ])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/font-awesome'));
-
-    gulp.src(['bower_components/nprogress/nprogress.js'])
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/nprogress/js'));
-    gulp.src(['bower_components/nprogress/nprogress.css'])
-        .pipe(cleanCss())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/nprogress/css'));
-
-    gulp.src(['bower_components/fastclick/lib/*.js'])
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/fastclick/js'));
-
+    // autosize
     gulp.src(['bower_components/autosize/dist/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/autosize/js'));
 
-    gulp.src(['bower_components/validator/*.js'])
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/validator/js'));
-
-    // waitMe
-    gulp.src(['bower_components/waitMe/*.min.js'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/waitMe/js'));
-
-    gulp.src(['bower_components/waitMe/*.min.css'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/waitMe/css'));
-
-    // progressbar
+    // bootstrap-progressbar
     gulp.src(['bower_components/bootstrap-progressbar/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-progressbar/js'));
 
     gulp.src(['bower_components/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css'])
         .pipe(rename('bootstrap-progressbar.min.css'))
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-progressbar/css'));
-    
+
     // bootstrap-show-password
     gulp.src(['bower_components/bootstrap-show-password/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-show-password/js'));
-    
-    // jquery.tagsinput
-    gulp.src(['bower_components/jquery.tagsinput/src/*.js'])
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jquery.tagsinput/js'));
 
-    // ichecked
-    gulp.src(['bower_components/iCheck/*.min.js'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/js'));
-
-    gulp.src(['bower_components/iCheck/skins/flat/green.css'])
-        .pipe(cleanCss())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/css'));
-
-    gulp.src(['bower_components/iCheck/skins/flat/green*.png'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/css'));
-
-    // switchery
-    gulp.src(['bower_components/switchery/dist/*.min.js'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/switchery/js'));
-
-    gulp.src(['bower_components/switchery/dist/*.min.css'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/switchery/css'));
-
-    // flipclock
-    gulp.src(['bower_components/flipclock/compiled/*.min.js'])
-        .pipe(gulp.dest(VENDORS_PROFILING + '/flipclock/js'));
-
-    gulp.src(['bower_components/flipclock/compiled/*.css'])
-        .pipe(cleanCss())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_PROFILING + '/flipclock/css'));
-    
     // datatables
     gulp.src(['bower_components/datatables.net/js/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net/js'));
-    
+
     gulp.src(['bower_components/datatables.net-bs/js/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-bs/js'));
 
@@ -320,37 +237,92 @@ gulp.task('frontend', ['compress-components'], function() {
 
     gulp.src(['bower_components/datatables.net-fixedheader-bs/css/*.min.css'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-fixedheader-bs/css'));
-    
-    // wysiwyg
-    /*
-    gulp.src(['bower_components/bootstrap-wysiwyg/js/dist/bootstrap-wysiwyg.min.js'])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-wysiwyg/js'));
 
-    gulp.src(['bower_components/jquery.hotkeys/jquery.hotkeys.js'])
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jquery.hotkey/js'));
+    // fastclick
+    gulp.src(['bower_components/fastclick/lib/*.js'])
+        .pipe(uglify({mangle:false}))
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/fastclick/js'));
 
-    gulp.src(['bower_components/google-code-prettify/src/prettify.js'])
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/google-code-prettify/js'));
+    // flipclock
+    gulp.src(['bower_components/flipclock/compiled/*.min.js'])
+        .pipe(gulp.dest(VENDORS_PROFILING + '/flipclock/js'));
 
-    gulp.src(['bower_components/google-code-prettify/bin/prettify.min.css'])
+    gulp.src(['bower_components/flipclock/compiled/*.css'])
         .pipe(cleanCss())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/google-code-prettify/css'));
-    */
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_PROFILING + '/flipclock/css'));
+
+    // font-awesome
+    gulp.src([
+        'bower_components/font-awesome/**/*.min.css',
+        'bower_components/font-awesome/**/fontawesome-*',
+        'bower_components/font-awesome/**/FontAwesome.otf'
+    ])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/font-awesome'));
+
+    // iCheck
+    gulp.src(['bower_components/iCheck/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/js'));
+
+    gulp.src(['bower_components/iCheck/skins/flat/green.css'])
+        .pipe(cleanCss())
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/css'));
+
+    gulp.src(['bower_components/iCheck/skins/flat/green*.png'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/css'));
+
+    // jquery.tagsinput
+    gulp.src(['bower_components/jquery.tagsinput/src/*.js'])
+        .pipe(uglify({mangle:false}))
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jquery.tagsinput/js'));
+
+    // nprogress
+    gulp.src(['bower_components/nprogress/nprogress.js'])
+        .pipe(uglify({mangle:false}))
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/nprogress/js'));
+    gulp.src(['bower_components/nprogress/nprogress.css'])
+        .pipe(cleanCss())
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/nprogress/css'));
+
+    // pnotify
+    gulp.src([
+            'bower_components/pnotify/dist/pnotify.js',
+            'bower_components/pnotify/dist/pnotify.buttons.js'
+        ])
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/pnotify/js'));
+
+    gulp.src([
+            'bower_components/pnotify/dist/pnotify.css',
+            'bower_components/pnotify/dist/pnotify.buttons.css'
+        ])
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/pnotify/css'));
+
+    // switchery
+    gulp.src(['bower_components/switchery/dist/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/switchery/js'));
+
+    gulp.src(['bower_components/switchery/dist/*.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/switchery/css'));
+
+    // validator
+    gulp.src(['bower_components/validator/*.js'])
+        .pipe(uglify({mangle:false}))
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/validator/js'));
+
+    // waitMe
+    gulp.src(['bower_components/waitMe/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/waitMe/js'));
+
+    gulp.src(['bower_components/waitMe/*.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/waitMe/css'));
 });
 
 /**
@@ -383,8 +355,7 @@ gulp.task('bindata', function() {
     
     return gulp.src([
         COMPONENTS + '/*/templates',
-        COMPONENTS + '/*/assets',
-        COMPONENTS + '/*/public'
+        COMPONENTS + '/*/assets'
     ])
         .pipe(groupAggregate({
             group: function (file){

@@ -12,8 +12,6 @@ $(document).ready(function () {
             def = this.defaultChecked;
         }
         
-        console.log(this.defaultValue, this.defaultChecked, current, def);
-        
         if (current == def) {
             row.removeClass('has-error');
         } else {
@@ -69,8 +67,6 @@ $(document).ready(function () {
     $('#configs input[type=password].password-show')
         .on('show.bs.password hide.bs.password', function () {
             var e = $('#' + $(this).prop('id') + '_value');
-            
-            console.log(e);
 
             if (e.length) {
                 var t = e.text();

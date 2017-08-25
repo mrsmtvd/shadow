@@ -33,7 +33,8 @@
     "datatables.net-fixedheader": "^3.1.2",
     "datatables.net-fixedheader-bs": "^3.1.2",
     "bootstrap-show-password": "^1.0.3",
-    "jquery.tagsinput": "https://github.com/xoxco/jQuery-Tags-Input.git#^1.3.6"
+    "jquery.tagsinput": "https://github.com/xoxco/jQuery-Tags-Input.git#^1.3.6",
+    "pnotify": "^3.2.1"
   },
   "resolutions": {
     "jquery": "^2.2.4",

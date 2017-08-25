@@ -110,7 +110,7 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 
 	fsDirectory, ok := statRoot.(*assetfs.AssetDirectory)
 	if !ok {
-		fmt.Errorf("Failed cast %s to assetfs.AssetDirectory", filepath.Join(path, statRoot.Name()))
+		return nil, fmt.Errorf("Failed cast %s to assetfs.AssetDirectory", filepath.Join(path, statRoot.Name()))
 	}
 
 	files, err := fsDirectory.Readdir(0)
