@@ -15,8 +15,9 @@ type IndexHandler struct {
 
 func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := map[string]interface{}{}
+	request := dashboard.RequestFromContext(r.Context())
 
-	if h.IsPost(r) {
+	if request.IsPost() {
 		message := gomail.NewMessage()
 		message.SetHeader("Subject", r.FormValue("subject"))
 		message.SetHeader("To", r.FormValue("to"))

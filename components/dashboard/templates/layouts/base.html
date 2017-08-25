@@ -60,12 +60,12 @@
                     <div class="menu_section">
                         <ul class="nav side-menu">
                             {{ range .Menu }}
-                                <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}>
+                                <li{{ if eq $.Request.Original.URL.Path .Url }} class="active"{{ end }}>
                                 {{ if gt (len .SubMenu) 0 }}
                                     <a><i class="fa fa-home"></i> {{ .Name }} <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         {{ range .SubMenu }}
-                                        <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}><a href="{{ .Url }}">{{ .Name }}</a></li>
+                                        <li{{ if eq $.Request.Original.URL.Path .Url }} class="active"{{ end }}><a href="{{ .Url }}">{{ .Name }}</a></li>
                                         {{ end }}
                                     </ul>
                                 {{ else }}

@@ -39,8 +39,9 @@ func (h *ForbiddenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var err error
+	request := RequestFromContext(r.Context())
 
-	if h.IsPost(r) {
+	if request.IsPost() {
 		if err = r.ParseForm(); err == nil {
 			username := r.PostForm.Get("username")
 			password := r.PostForm.Get("password")

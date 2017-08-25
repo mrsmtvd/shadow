@@ -143,7 +143,7 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 		ListenersCount: listenersCount,
 	}
 
-	h.SendJSON(stats, w)
+	dashboard.ResponseFromContext(r.Context()).SendJSON(stats)
 }
 
 func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Request) {
@@ -162,9 +162,9 @@ func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	h.SendJSON(ajaxHandlerResponseSuccess{
+	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
-	}, w)
+	})
 }
 
 func (h *AjaxHandler) actionTaskRemove(w http.ResponseWriter, r *http.Request) {
@@ -174,9 +174,9 @@ func (h *AjaxHandler) actionTaskRemove(w http.ResponseWriter, r *http.Request) {
 		h.component.RemoveTaskById(removeId)
 	}
 
-	h.SendJSON(ajaxHandlerResponseSuccess{
+	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
-	}, w)
+	})
 }
 
 func (h *AjaxHandler) actionWorkersReset(w http.ResponseWriter, r *http.Request) {
@@ -196,9 +196,9 @@ func (h *AjaxHandler) actionWorkersReset(w http.ResponseWriter, r *http.Request)
 		}
 	}()
 
-	h.SendJSON(ajaxHandlerResponseSuccess{
+	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
-	}, w)
+	})
 }
 
 func (h *AjaxHandler) actionWorkersKill(w http.ResponseWriter, r *http.Request) {
@@ -215,9 +215,9 @@ func (h *AjaxHandler) actionWorkersKill(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	h.SendJSON(ajaxHandlerResponseSuccess{
+	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
-	}, w)
+	})
 }
 
 func (h *AjaxHandler) actionWorkersAdd(w http.ResponseWriter, r *http.Request) {
@@ -230,46 +230,48 @@ func (h *AjaxHandler) actionWorkersAdd(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.SendJSON(ajaxHandlerResponseSuccess{
+	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
-	}, w)
+	})
 }
 
 func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	request := dashboard.RequestFromContext(r.Context())
+
 	switch r.URL.Query().Get("action") {
 	case "stats":
 		h.actionStats(w, r)
 
 	case "listeners-remove":
-		if h.IsPost(r) {
+		if request.IsPost() {
 			h.actionListenersRemove(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "task-remove":
-		if h.IsPost(r) {
+		if request.IsPost() {
 			h.actionTaskRemove(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "workers-reset":
-		if h.IsPost(r) {
+		if request.IsPost() {
 			h.actionWorkersReset(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "workers-kill":
-		if h.IsPost(r) {
+		if request.IsPost() {
 			h.actionWorkersKill(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "workers-add":
-		if h.IsPost(r) {
+		if request.IsPost() {
 			h.actionWorkersAdd(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)

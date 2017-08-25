@@ -59,7 +59,7 @@ func DateSinceAsMessage(t time.Time) string {
 			return "a week ago"
 		}
 
-		return fmt.Sprintf("%f weeks ago", math.Floor(diff.Seconds()/secondsInWeek))
+		return fmt.Sprintf("%.f weeks ago", math.Floor(diff.Seconds()/secondsInWeek))
 	}
 
 	// months

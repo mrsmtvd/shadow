@@ -120,8 +120,10 @@ func (h *TraceHandler) actionDelete(w http.ResponseWriter, r *http.Request) erro
 func (h *TraceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 
+	request := dashboard.RequestFromContext(r.Context())
 	action := r.URL.Query().Get("action")
-	if h.IsPost(r) {
+
+	if request.IsPost() {
 		switch action {
 		case "start":
 			err = h.actionStart(w, r)

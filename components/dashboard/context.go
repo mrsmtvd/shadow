@@ -2,9 +2,9 @@ package dashboard
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard/http"
 	"github.com/kihamo/shadow/components/logger"
 )
 
@@ -49,8 +49,8 @@ func RequestFromContext(c context.Context) *http.Request {
 	return c.Value(RequestContextKey).(*http.Request)
 }
 
-func ResponseFromContext(c context.Context) http.ResponseWriter {
-	return c.Value(ResponseContextKey).(http.ResponseWriter)
+func ResponseFromContext(c context.Context) *http.Response {
+	return c.Value(ResponseContextKey).(*http.Response)
 }
 
 func RouterFromContext(c context.Context) *Router {

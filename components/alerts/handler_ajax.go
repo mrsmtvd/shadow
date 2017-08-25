@@ -36,5 +36,5 @@ func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	h.SendJSON(alertsShort, w)
+	dashboard.ResponseFromContext(r.Context()).SendJSON(alertsShort)
 }

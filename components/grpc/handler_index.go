@@ -149,6 +149,7 @@ func (h *IndexHandler) getServicesViewData() ([]IndexHandlerServiceViewData, err
 func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 	s := r.FormValue("service")
 	m := r.FormValue("method")
+	response := dashboard.ResponseFromContext(r.Context())
 
 	if s == "" || m == "" {
 		h.NotFound(w, r)
@@ -157,17 +158,17 @@ func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 
 	service, err := h.cli.ResolveService(s)
 	if err != nil {
-		h.SendJSON(indexHandlerResponseCall{
+		response.SendJSON(indexHandlerResponseCall{
 			Error: err.Error(),
-		}, w)
+		})
 		return
 	}
 
 	method := service.FindMethodByName(m)
 	if method == nil {
-		h.SendJSON(indexHandlerResponseCall{
+		response.SendJSON(indexHandlerResponseCall{
 			Error: "Method not found",
-		}, w)
+		})
 		return
 	}
 
@@ -175,30 +176,32 @@ func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	request := dynamic.NewMessage(method.GetInputType())
 
-	response, err := stub.InvokeRpc(ctx, method, request)
+	result, err := stub.InvokeRpc(ctx, method, request)
 	if err != nil {
-		h.SendJSON(indexHandlerResponseCall{
+		response.SendJSON(indexHandlerResponseCall{
 			Error: err.Error(),
-		}, w)
+		})
 		return
 	}
 
 	marshaler := &jsonpb.Marshaler{}
-	responseJSON, err := marshaler.MarshalToString(response)
+	responseJSON, err := marshaler.MarshalToString(result)
 	if err != nil {
-		h.SendJSON(indexHandlerResponseCall{
+		response.SendJSON(indexHandlerResponseCall{
 			Error: err.Error(),
-		}, w)
+		})
 		return
 	}
 
-	h.SendJSON(indexHandlerResponseCall{
+	response.SendJSON(indexHandlerResponseCall{
 		Result: responseJSON,
-	}, w)
+	})
 }
 
 func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.IsPost(r) {
+	request := dashboard.RequestFromContext(r.Context())
+
+	if request.IsPost() {
 		if r.URL.Query().Get("action") == "call" {
 			h.call(w, r)
 		} else {

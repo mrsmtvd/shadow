@@ -20,10 +20,12 @@ type ConfigHandler struct {
 func (h *ConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	config := ConfigFromContext(r.Context())
+	ctx := r.Context()
+	config := ConfigFromContext(ctx)
+	request := RequestFromContext(ctx)
 	vars := config.GetAllVariables()
 
-	if h.IsPost(r) {
+	if request.IsPost() {
 		err = r.ParseForm()
 		if err == nil {
 			for key, values := range r.PostForm {
