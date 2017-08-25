@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime"
 
+	"github.com/alexedwards/scs/session"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/components/logger"
@@ -14,9 +15,10 @@ import (
 type Router struct {
 	httprouter.Router
 
-	defaultChain alice.Chain
-	authChain    alice.Chain
-	logger       logger.Logger
+	Forbidden http.Handler
+
+	chain  alice.Chain
+	logger logger.Logger
 }
 
 func NewRouter(c *Component) *Router {
@@ -26,24 +28,40 @@ func NewRouter(c *Component) *Router {
 	r.HandleMethodNotAllowed = true
 
 	// chains
-	r.defaultChain = alice.New(
-		ContextMiddleware(c),
+	r.chain = alice.New(
+		ContextMiddleware(r, c.config, c.logger, c.renderer),
 		MetricsMiddleware(c),
-		LoggerMiddleware(c),
+		LoggerMiddleware(),
+		r.authMiddleware,
 	)
-	r.authChain = r.defaultChain.Append(BasicAuthMiddleware(c))
 
 	r.logger = c.logger
 
 	return r
 }
 
-func (r *Router) setMiddleware(h http.Handler) http.Handler {
-	if authHandler, ok := h.(HandlerAuth); ok && authHandler.IsAuth() {
-		return r.authChain.Then(h)
+func (r *Router) authMiddleware(next http.Handler) http.Handler {
+	if r.Forbidden == nil {
+		return next
 	}
 
-	return r.defaultChain.Then(h)
+	if authHandler, ok := next.(HandlerAuth); !ok || !authHandler.IsAuth() {
+		return next
+	}
+
+	if _, ok := next.(http.HandlerFunc); !ok && r.Forbidden == next {
+		return next
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
+		auth, err := session.GetString(rq, "username")
+
+		if err == nil && auth != "" {
+			next.ServeHTTP(w, rq)
+		} else {
+			r.Forbidden.ServeHTTP(w, rq)
+		}
+	})
 }
 
 func (r *Router) SetPanicHandler(h http.Handler) {
@@ -52,7 +70,7 @@ func (r *Router) SetPanicHandler(h http.Handler) {
 		stack = stack[:runtime.Stack(stack, false)]
 		_, file, line, _ := runtime.Caller(6)
 
-		r.setMiddleware(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
+		r.chain.Then(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
 			ctx := context.WithValue(hr.Context(), PanicContextKey, &PanicError{
 				error: pe,
 				stack: string(stack),
@@ -66,23 +84,27 @@ func (r *Router) SetPanicHandler(h http.Handler) {
 	}
 }
 
-func (r *Router) SetNotAllowedHandler(h http.Handler) {
-	r.MethodNotAllowed = r.setMiddleware(h)
+func (r *Router) SetForbiddenHandler(h http.Handler) {
+	r.Forbidden = r.chain.Then(h)
 }
 
 func (r *Router) SetNotFoundHandler(h http.Handler) {
-	r.NotFound = r.setMiddleware(h)
+	r.NotFound = r.chain.Then(h)
+}
+
+func (r *Router) SetNotAllowedHandler(h http.Handler) {
+	r.MethodNotAllowed = r.chain.Then(h)
 }
 
 func (r *Router) HandlerFunc(m, p string, h http.HandlerFunc) {
-	r.Router.Handler(m, p, r.authChain.ThenFunc(h))
+	r.Router.Handler(m, p, r.chain.ThenFunc(h))
 }
 
 func (r *Router) Handle(m, p string, h interface{}) {
 	if h1, ok := h.(http.Handler); ok {
-		r.Router.Handler(m, p, r.setMiddleware(h1))
+		r.Router.Handler(m, p, r.chain.Then(h1))
 	} else if h2, ok := h.(http.HandlerFunc); ok {
-		r.Router.Handler(m, p, r.setMiddleware(h2))
+		r.Router.Handler(m, p, r.chain.Then(h2))
 	} else if h3, ok := h.(http.FileSystem); ok {
 		r.Router.ServeFiles(p, h3)
 	} else {

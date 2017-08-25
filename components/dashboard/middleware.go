@@ -2,22 +2,23 @@ package dashboard
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/justinas/alice"
+	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/logger"
 )
 
-func ContextMiddleware(c *Component) alice.Constructor {
+func ContextMiddleware(router *Router, config *config.Component, logger logger.Logger, renderer *Renderer) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := context.WithValue(r.Context(), ConfigContextKey, c.config)
-			ctx = context.WithValue(ctx, LoggerContextKey, c.logger)
-			ctx = context.WithValue(ctx, RenderContextKey, c.renderer)
+			ctx := context.WithValue(r.Context(), ConfigContextKey, config)
+			ctx = context.WithValue(ctx, LoggerContextKey, logger)
+			ctx = context.WithValue(ctx, RenderContextKey, renderer)
 			ctx = context.WithValue(ctx, RequestContextKey, r)
 			ctx = context.WithValue(ctx, ResponseContextKey, w)
-			ctx = context.WithValue(ctx, RouterContextKey, c.router)
+			ctx = context.WithValue(ctx, RouterContextKey, router)
 
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
@@ -25,32 +26,7 @@ func ContextMiddleware(c *Component) alice.Constructor {
 	}
 }
 
-func BasicAuthMiddleware(c *Component) alice.Constructor {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			config := ConfigFromContext(r.Context())
-
-			checkUsername := config.GetString(ConfigAuthUser)
-			if checkUsername == "" {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			checkPassword := config.GetString(ConfigAuthPassword)
-
-			username, password, ok := r.BasicAuth()
-			if ok && checkUsername == username && checkPassword == password {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Basic realm="%s Security Zone"`, c.application.GetName()))
-			w.WriteHeader(http.StatusUnauthorized)
-		})
-	}
-}
-
-func LoggerMiddleware(c *Component) alice.Constructor {
+func LoggerMiddleware() alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := &ResponseWriter{

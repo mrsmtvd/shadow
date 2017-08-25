@@ -71,6 +71,16 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Path:    "/environment",
 			Handler: &EnvironmentHandler{},
 		},
+		{
+			Methods: []string{http.MethodGet, http.MethodPost},
+			Path:    "/login",
+			Handler: &ForbiddenHandler{},
+		},
+		{
+			Methods: []string{http.MethodGet},
+			Path:    "/logout",
+			Handler: &LogoutHandler{},
+		},
 	}
 
 	componentsHandler := &ComponentsHandler{

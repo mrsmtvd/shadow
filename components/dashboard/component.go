@@ -19,7 +19,6 @@ type Component struct {
 	application shadow.Application
 	config      *config.Component
 	logger      logger.Logger
-	router      *Router
 	renderer    *Renderer
 }
 
@@ -61,16 +60,13 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		return err
 	}
 
-	if err := c.loadRoutes(); err != nil {
+	mux, err := c.getServeMux()
+	if err != nil {
 		return err
 	}
 
-	go func(router *Router) {
+	go func() {
 		defer wg.Done()
-
-		http.HandleFunc("/", func(out http.ResponseWriter, in *http.Request) {
-			router.ServeHTTP(out, in)
-		})
 
 		addr := net.JoinHostPort(c.config.GetString(ConfigHost), c.config.GetString(ConfigPort))
 		lis, err := net.Listen("tcp", addr)
@@ -83,10 +79,10 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 			"pid":  os.Getpid(),
 		})
 
-		if err := http.Serve(lis, c.router); err != nil {
+		if err := http.Serve(lis, mux); err != nil {
 			c.logger.Fatalf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		}
-	}(c.router)
+	}()
 
 	return nil
 }
