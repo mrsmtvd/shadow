@@ -81,14 +81,14 @@ func LoggerMiddleware(c *Component) alice.Constructor {
 	}
 }
 
-func MetricsMiddleware(_ *Component) alice.Constructor {
+func MetricsMiddleware(c *Component) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			now := time.Now()
 
 			next.ServeHTTP(w, r)
 
-			if metricHandlerExecuteTime != nil {
+			if c.application.HasComponent("metrics") {
 				metricHandlerExecuteTime.UpdateSince(now)
 			}
 		})
