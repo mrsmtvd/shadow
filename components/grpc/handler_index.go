@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"net"
-	"net/http"
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -146,10 +145,9 @@ func (h *IndexHandler) getServicesViewData() ([]IndexHandlerServiceViewData, err
 	return ret, nil
 }
 
-func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
-	s := r.FormValue("service")
-	m := r.FormValue("method")
-	response := dashboard.ResponseFromContext(r.Context())
+func (h *IndexHandler) call(w *dashboard.Response, r *dashboard.Request) {
+	s := r.Original().FormValue("service")
+	m := r.Original().FormValue("method")
 
 	if s == "" || m == "" {
 		h.NotFound(w, r)
@@ -158,7 +156,7 @@ func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 
 	service, err := h.cli.ResolveService(s)
 	if err != nil {
-		response.SendJSON(indexHandlerResponseCall{
+		w.SendJSON(indexHandlerResponseCall{
 			Error: err.Error(),
 		})
 		return
@@ -166,7 +164,7 @@ func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 
 	method := service.FindMethodByName(m)
 	if method == nil {
-		response.SendJSON(indexHandlerResponseCall{
+		w.SendJSON(indexHandlerResponseCall{
 			Error: "Method not found",
 		})
 		return
@@ -178,7 +176,7 @@ func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 
 	result, err := stub.InvokeRpc(ctx, method, request)
 	if err != nil {
-		response.SendJSON(indexHandlerResponseCall{
+		w.SendJSON(indexHandlerResponseCall{
 			Error: err.Error(),
 		})
 		return
@@ -187,22 +185,20 @@ func (h *IndexHandler) call(w http.ResponseWriter, r *http.Request) {
 	marshaler := &jsonpb.Marshaler{}
 	responseJSON, err := marshaler.MarshalToString(result)
 	if err != nil {
-		response.SendJSON(indexHandlerResponseCall{
+		w.SendJSON(indexHandlerResponseCall{
 			Error: err.Error(),
 		})
 		return
 	}
 
-	response.SendJSON(indexHandlerResponseCall{
+	w.SendJSON(indexHandlerResponseCall{
 		Result: responseJSON,
 	})
 }
 
-func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	request := dashboard.RequestFromContext(r.Context())
-
-	if request.IsPost() {
-		if r.URL.Query().Get("action") == "call" {
+func (h *IndexHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+	if r.IsPost() {
+		if r.URL().Query().Get("action") == "call" {
 			h.call(w, r)
 		} else {
 			h.NotFound(w, r)
@@ -216,7 +212,7 @@ func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		services []IndexHandlerServiceViewData
 	)
 
-	if h.component.config.GetBool(ConfigReflectionEnabled) {
+	if r.Config().GetBool(ConfigReflectionEnabled) {
 		services, err = h.getServicesViewData()
 	} else {
 		services, err = h.getServicesLightViewData()

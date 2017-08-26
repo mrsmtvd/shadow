@@ -58,6 +58,7 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Handler: &BindataHandler{
 				application: c.application,
 			},
+			Auth: true,
 		},
 		{
 			Methods: []string{http.MethodGet, http.MethodPost},
@@ -65,11 +66,13 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Handler: &ConfigHandler{
 				application: c.application,
 			},
+			Auth: true,
 		},
 		{
 			Methods: []string{http.MethodGet},
 			Path:    "/environment",
 			Handler: &EnvironmentHandler{},
+			Auth:    true,
 		},
 		{
 			Methods: []string{http.MethodGet, http.MethodPost},
@@ -80,6 +83,7 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Methods: []string{http.MethodGet},
 			Path:    "/logout",
 			Handler: &LogoutHandler{},
+			Auth:    true,
 		},
 	}
 
@@ -92,11 +96,13 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Methods: []string{http.MethodGet},
 			Path:    "/components",
 			Handler: componentsHandler,
+			Auth:    true,
 		},
 		{
 			Methods: []string{http.MethodGet},
 			Path:    "/",
 			Handler: componentsHandler,
+			Auth:    true,
 		},
 	}...)
 

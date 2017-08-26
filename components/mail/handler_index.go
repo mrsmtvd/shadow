@@ -1,8 +1,6 @@
 package mail
 
 import (
-	"net/http"
-
 	"github.com/kihamo/shadow/components/dashboard"
 	"gopkg.in/gomail.v2"
 )
@@ -13,19 +11,18 @@ type IndexHandler struct {
 	component *Component
 }
 
-func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *IndexHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	vars := map[string]interface{}{}
-	request := dashboard.RequestFromContext(r.Context())
 
-	if request.IsPost() {
+	if r.IsPost() {
 		message := gomail.NewMessage()
-		message.SetHeader("Subject", r.FormValue("subject"))
-		message.SetHeader("To", r.FormValue("to"))
+		message.SetHeader("Subject", r.Original().FormValue("subject"))
+		message.SetHeader("To", r.Original().FormValue("to"))
 
-		if r.FormValue("type") == "html" {
-			message.SetBody("text/html", r.FormValue("message"))
+		if r.Original().FormValue("type") == "html" {
+			message.SetBody("text/html", r.Original().FormValue("message"))
 		} else {
-			message.SetBody("text/plain", r.FormValue("message"))
+			message.SetBody("text/plain", r.Original().FormValue("message"))
 		}
 
 		if err := h.component.SendAndReturn(message); err != nil {

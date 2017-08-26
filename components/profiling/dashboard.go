@@ -59,11 +59,12 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 			Handler: &TraceHandler{
 				config: c.config,
 			},
+			Auth: true,
 		},
 		{
 			Methods: []string{http.MethodGet},
 			Path:    "/debug/vars/",
-			Handler: c.debugHandler((&ExpvarHandler{}).ServeHTTP),
+			Handler: c.debugHandler(dashboard.FromRouteHandler(&ExpvarHandler{}).ServeHTTP),
 			Direct:  true,
 		},
 		{

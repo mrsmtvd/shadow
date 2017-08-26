@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard/http"
 	"github.com/kihamo/shadow/components/logger"
 )
 
@@ -16,6 +15,7 @@ var (
 	ResponseContextKey = &ContextKey{"response"}
 	RouterContextKey   = &ContextKey{"router"}
 	PanicContextKey    = &ContextKey{"panic"}
+	SessionContextKey  = &ContextKey{"session"}
 )
 
 type ContextKey struct {
@@ -45,12 +45,12 @@ func RenderFromContext(c context.Context) *Renderer {
 	return c.Value(RenderContextKey).(*Renderer)
 }
 
-func RequestFromContext(c context.Context) *http.Request {
-	return c.Value(RequestContextKey).(*http.Request)
+func RequestFromContext(c context.Context) *Request {
+	return c.Value(RequestContextKey).(*Request)
 }
 
-func ResponseFromContext(c context.Context) *http.Response {
-	return c.Value(ResponseContextKey).(*http.Response)
+func ResponseFromContext(c context.Context) *Response {
+	return c.Value(ResponseContextKey).(*Response)
 }
 
 func RouterFromContext(c context.Context) *Router {
@@ -59,4 +59,8 @@ func RouterFromContext(c context.Context) *Router {
 
 func PanicFromContext(c context.Context) *PanicError {
 	return c.Value(PanicContextKey).(*PanicError)
+}
+
+func SessionFromContext(c context.Context) *Session {
+	return c.Value(SessionContextKey).(*Session)
 }

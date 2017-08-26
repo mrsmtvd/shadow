@@ -9,8 +9,8 @@ type PanicHandler struct {
 	Handler
 }
 
-func (h *PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	error := PanicFromContext(r.Context())
+func (h *PanicHandler) ServeHTTP(w *Response, r *Request) {
+	error := r.Panic()
 	fields := map[string]interface{}{
 		"error": fmt.Sprintf("%s", error.error),
 		"stack": error.stack,
@@ -23,5 +23,5 @@ func (h *PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"panic": fields,
 	})
 
-	LoggerFromContext(r.Context()).Error("Frontend reguest error", fields)
+	r.Logger().Error("Frontend reguest error", fields)
 }

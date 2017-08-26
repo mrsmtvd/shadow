@@ -2,9 +2,6 @@ package dashboard
 
 import (
 	"net/http"
-
-	"github.com/alexedwards/scs/engine/memstore"
-	"github.com/alexedwards/scs/session"
 )
 
 type Route struct {
@@ -12,6 +9,7 @@ type Route struct {
 	Path    string
 	Direct  bool
 	Handler interface{}
+	Auth    bool
 }
 
 type hasRoute interface {
@@ -41,7 +39,7 @@ func (c *Component) getServeMux() (http.Handler, error) {
 				}
 
 				for _, method := range route.Methods {
-					router.Handle(method, path, route.Handler)
+					router.Handle(method, path, route.Handler, route.Auth)
 				}
 			}
 		}
@@ -51,23 +49,10 @@ func (c *Component) getServeMux() (http.Handler, error) {
 		http.Redirect(w, r, "/"+c.GetName(), http.StatusMovedPermanently)
 	})
 
-	router.Handle(http.MethodGet, "/", mainHandler)
-	router.Handle(http.MethodHead, "/", mainHandler)
-	router.Handle(http.MethodPost, "/", mainHandler)
-	router.Handle(http.MethodPut, "/", mainHandler)
-	router.Handle(http.MethodPatch, "/", mainHandler)
-	router.Handle(http.MethodDelete, "/", mainHandler)
-	router.Handle(http.MethodConnect, "/", mainHandler)
-	router.Handle(http.MethodOptions, "/", mainHandler)
-	router.Handle(http.MethodTrace, "/", mainHandler)
+	router.Handle("*", "/", mainHandler, false)
 
 	// init session
-	session.CookieName = "shadow.token"
-
-	sessionEngine := memstore.New(0)
-	sessionManager := session.Manage(sessionEngine)
-
-	mux := sessionManager(router)
+	mux := NewSessionManager()(router)
 
 	return mux, nil
 }

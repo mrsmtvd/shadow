@@ -5,28 +5,26 @@ import (
 	"net/http"
 )
 
-type HandlerAuth interface {
-	IsAuth() bool
-}
-
 type Handler struct {
 	http.Handler
 }
 
-func (h *Handler) IsAuth() bool {
-	return true
+func FromRouteHandler(h RouterHandler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
+		h.ServeHTTP(NewResponse(w), NewRequest(rq))
+	})
 }
 
-func (h *Handler) Redirect(l string, c int, w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, l, c)
+func (h *Handler) Redirect(l string, c int, w *Response, r *Request) {
+	http.Redirect(w, r.Original(), l, c)
 }
 
-func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
-	RouterFromContext(r.Context()).NotFound.ServeHTTP(w, r)
+func (h *Handler) NotFound(w *Response, r *Request) {
+	RouterFromContext(r.Context()).NotFound.ServeHTTP(w, r.Original())
 }
 
-func (h *Handler) MethodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	RouterFromContext(r.Context()).MethodNotAllowed.ServeHTTP(w, r)
+func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
+	RouterFromContext(r.Context()).MethodNotAllowed.ServeHTTP(w, r.Original())
 }
 
 func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interface{}) {

@@ -3,8 +3,6 @@ package dashboard
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/alexedwards/scs/session"
 )
 
 type ForbiddenHandler struct {
@@ -15,40 +13,38 @@ func (h *ForbiddenHandler) IsAuth() bool {
 	return false
 }
 
-func (h *ForbiddenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if username, err := session.GetString(r, "username"); err == nil && username != "" {
+func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
+	if username, err := r.Session().GetString(SessionUsername); err == nil && username != "" {
 		h.Redirect("/", http.StatusFound, w, r)
 		return
 	}
 
-	config := ConfigFromContext(r.Context())
-	checkUsername := config.GetString(ConfigAuthUser)
-	checkPassword := config.GetString(ConfigAuthPassword)
+	checkUsername := r.Config().GetString(ConfigAuthUser)
+	checkPassword := r.Config().GetString(ConfigAuthPassword)
 
 	if checkUsername == "" && checkPassword == "" {
-		session.PutString(r, "username", "anonymous")
+		r.Session().PutString(SessionUsername, "anonymous")
 		h.Redirect("/", http.StatusFound, w, r)
 		return
 	}
 
 	handleUrl := "/dashboard/login"
 
-	if r.URL.Path != handleUrl {
+	if r.URL().Path != handleUrl {
 		h.Redirect(handleUrl, http.StatusFound, w, r)
 		return
 	}
 
 	var err error
-	request := RequestFromContext(r.Context())
 
-	if request.IsPost() {
-		if err = r.ParseForm(); err == nil {
-			username := r.PostForm.Get("username")
-			password := r.PostForm.Get("password")
+	if r.IsPost() {
+		if err = r.Original().ParseForm(); err == nil {
+			username := r.Original().PostForm.Get("username")
+			password := r.Original().PostForm.Get("password")
 
 			if checkUsername == username && checkPassword == password {
-				if err = session.RegenerateToken(r); err == nil {
-					if err = session.PutString(r, "username", username); err == nil {
+				if err = r.Session().RegenerateToken(); err == nil {
+					if err = r.Session().PutString(SessionUsername, username); err == nil {
 						h.Redirect("/", http.StatusFound, w, r)
 						return
 					}

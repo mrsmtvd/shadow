@@ -1,8 +1,6 @@
 package dashboard
 
 import (
-	"net/http"
-
 	"github.com/kihamo/shadow"
 )
 
@@ -12,7 +10,7 @@ type ComponentsHandler struct {
 	application shadow.Application
 }
 
-func (h *ComponentsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ComponentsHandler) ServeHTTP(w *Response, r *Request) {
 	contextComponents := []map[string]interface{}{}
 
 	components, _ := h.application.GetComponents()

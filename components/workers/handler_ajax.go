@@ -1,7 +1,6 @@
 package workers
 
 import (
-	"net/http"
 	"strconv"
 	"time"
 
@@ -76,7 +75,7 @@ func (h *AjaxHandler) fillResponseTask(t task.Tasker) *ajaxHandlerResponseTask {
 	}
 }
 
-func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionStats(w *dashboard.Response, r *dashboard.Request) {
 	tasksList := []ajaxHandlerResponseTask{}
 
 	for _, t := range h.component.dispatcher.GetTasks() {
@@ -143,12 +142,12 @@ func (h *AjaxHandler) actionStats(w http.ResponseWriter, r *http.Request) {
 		ListenersCount: listenersCount,
 	}
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(stats)
+	w.SendJSON(stats)
 }
 
-func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionListenersRemove(w *dashboard.Response, r *dashboard.Request) {
 	listeners := h.component.dispatcher.GetListeners()
-	checkId := r.FormValue("id")
+	checkId := r.Original().FormValue("id")
 
 	for _, listener := range listeners {
 		if checkId == "" || listener.GetName() == checkId {
@@ -162,26 +161,26 @@ func (h *AjaxHandler) actionListenersRemove(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
+	w.SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
 	})
 }
 
-func (h *AjaxHandler) actionTaskRemove(w http.ResponseWriter, r *http.Request) {
-	removeId := r.FormValue("id")
+func (h *AjaxHandler) actionTaskRemove(w *dashboard.Response, r *dashboard.Request) {
+	removeId := r.Original().FormValue("id")
 
 	if removeId != "" {
 		h.component.RemoveTaskById(removeId)
 	}
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
+	w.SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
 	})
 }
 
-func (h *AjaxHandler) actionWorkersReset(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionWorkersReset(w *dashboard.Response, r *dashboard.Request) {
 	workers := h.component.dispatcher.GetWorkers()
-	checkId := r.FormValue("id")
+	checkId := r.Original().FormValue("id")
 
 	go func() {
 		for _, worker := range workers {
@@ -196,14 +195,14 @@ func (h *AjaxHandler) actionWorkersReset(w http.ResponseWriter, r *http.Request)
 		}
 	}()
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
+	w.SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
 	})
 }
 
-func (h *AjaxHandler) actionWorkersKill(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) actionWorkersKill(w *dashboard.Response, r *dashboard.Request) {
 	workers := h.component.dispatcher.GetWorkers()
-	checkId := r.FormValue("id")
+	checkId := r.Original().FormValue("id")
 
 	for _, worker := range workers {
 		if checkId == "" || worker.GetId() == checkId {
@@ -215,13 +214,13 @@ func (h *AjaxHandler) actionWorkersKill(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
+	w.SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
 	})
 }
 
-func (h *AjaxHandler) actionWorkersAdd(w http.ResponseWriter, r *http.Request) {
-	count := r.FormValue("count")
+func (h *AjaxHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Request) {
+	count := r.Original().FormValue("count")
 	if count != "" {
 		if c, err := strconv.Atoi(count); err == nil {
 			for i := 0; i < c; i++ {
@@ -230,48 +229,46 @@ func (h *AjaxHandler) actionWorkersAdd(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(ajaxHandlerResponseSuccess{
+	w.SendJSON(ajaxHandlerResponseSuccess{
 		Result: "success",
 	})
 }
 
-func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	request := dashboard.RequestFromContext(r.Context())
-
-	switch r.URL.Query().Get("action") {
+func (h *AjaxHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+	switch r.URL().Query().Get("action") {
 	case "stats":
 		h.actionStats(w, r)
 
 	case "listeners-remove":
-		if request.IsPost() {
+		if r.IsPost() {
 			h.actionListenersRemove(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "task-remove":
-		if request.IsPost() {
+		if r.IsPost() {
 			h.actionTaskRemove(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "workers-reset":
-		if request.IsPost() {
+		if r.IsPost() {
 			h.actionWorkersReset(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "workers-kill":
-		if request.IsPost() {
+		if r.IsPost() {
 			h.actionWorkersKill(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)
 		}
 
 	case "workers-add":
-		if request.IsPost() {
+		if r.IsPost() {
 			h.actionWorkersAdd(w, r)
 		} else {
 			h.MethodNotAllowed(w, r)

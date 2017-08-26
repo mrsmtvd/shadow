@@ -22,12 +22,12 @@ type TraceHandler struct {
 	config *config.Component
 }
 
-func (h *TraceHandler) actionStart(w http.ResponseWriter, r *http.Request) error {
+func (h *TraceHandler) actionStart(w *dashboard.Response, r *dashboard.Request) error {
 	if trace.IsStarted() {
 		return fmt.Errorf("Trace already started")
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if err := r.Original().ParseForm(); err != nil {
 		return err
 	}
 
@@ -35,9 +35,9 @@ func (h *TraceHandler) actionStart(w http.ResponseWriter, r *http.Request) error
 	for _, profile := range trace.GetProfiles() {
 		id := profile.GetId()
 
-		if r.PostForm.Get("profile_"+id) != "" {
+		if r.Original().PostForm.Get("profile_"+id) != "" {
 			runProfiles = append(runProfiles, id)
-			dashboard.LoggerFromContext(r.Context()).Infof("Run trace \"%s\"", id)
+			r.Logger().Infof("Run trace \"%s\"", id)
 		}
 	}
 
@@ -46,24 +46,24 @@ func (h *TraceHandler) actionStart(w http.ResponseWriter, r *http.Request) error
 	}
 
 	err := trace.StartProfiles(runProfiles)
-	dashboard.LoggerFromContext(r.Context()).Infof("Run trace: %s", strings.Join(runProfiles, ", "))
+	r.Logger().Infof("Run trace: %s", strings.Join(runProfiles, ", "))
 
 	return err
 }
 
-func (h *TraceHandler) actionStop(w http.ResponseWriter, r *http.Request) error {
+func (h *TraceHandler) actionStop(w *dashboard.Response, r *dashboard.Request) error {
 	if !trace.IsStarted() {
 		return fmt.Errorf("Trace already stoped")
 	}
 
 	err := trace.StopProfiles(h.config.GetString(ConfigDumpDirectory))
-	dashboard.LoggerFromContext(r.Context()).Info("Stop trace")
+	r.Logger().Info("Stop trace")
 
 	return err
 }
 
-func (h *TraceHandler) actionDownload(w http.ResponseWriter, r *http.Request) error {
-	id := r.URL.Query().Get("id")
+func (h *TraceHandler) actionDownload(w *dashboard.Response, r *dashboard.Request) error {
+	id := r.URL().Query().Get("id")
 	if id == "" {
 		return fmt.Errorf("Dump \"%s\" not found", id)
 	}
@@ -88,8 +88,8 @@ func (h *TraceHandler) actionDownload(w http.ResponseWriter, r *http.Request) er
 	return nil
 }
 
-func (h *TraceHandler) actionDelete(w http.ResponseWriter, r *http.Request) error {
-	id := r.URL.Query().Get("id")
+func (h *TraceHandler) actionDelete(w *dashboard.Response, r *dashboard.Request) error {
+	id := r.URL().Query().Get("id")
 	if id == "" {
 		return fmt.Errorf("Dump \"%s\" not found", id)
 	}
@@ -100,7 +100,7 @@ func (h *TraceHandler) actionDelete(w http.ResponseWriter, r *http.Request) erro
 				return err
 			}
 
-			dashboard.LoggerFromContext(r.Context()).Infof("Remove %s dump from file %s", dump.GetId(), dump.GetFile())
+			r.Logger().Infof("Remove %s dump from file %s", dump.GetId(), dump.GetFile())
 		}
 
 		return nil
@@ -112,18 +112,17 @@ func (h *TraceHandler) actionDelete(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	err := trace.DeleteDump(id)
-	dashboard.LoggerFromContext(r.Context()).Infof("Remove %s dump from file %s", id, dump.GetFile())
+	r.Logger().Infof("Remove %s dump from file %s", id, dump.GetFile())
 
 	return err
 }
 
-func (h *TraceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	var err error
 
-	request := dashboard.RequestFromContext(r.Context())
-	action := r.URL.Query().Get("action")
+	action := r.Original().URL.Query().Get("action")
 
-	if request.IsPost() {
+	if r.IsPost() {
 		switch action {
 		case "start":
 			err = h.actionStart(w, r)
@@ -135,7 +134,7 @@ func (h *TraceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		if err == nil {
 			redirectUrl := &url.URL{}
-			*redirectUrl = *r.URL
+			*redirectUrl = *r.Original().URL
 			redirectUrl.RawQuery = ""
 
 			h.Redirect(redirectUrl.String(), http.StatusFound, w, r)
@@ -144,7 +143,7 @@ func (h *TraceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	} else if action == "download" {
 		if err = h.actionDownload(w, r); err != nil {
-			dashboard.LoggerFromContext(r.Context()).Error("Error in download trace: %s", err.Error())
+			r.Logger().Error("Error in download trace: %s", err.Error())
 		}
 
 		return

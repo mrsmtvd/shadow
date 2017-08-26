@@ -1,7 +1,6 @@
 package alerts
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/kihamo/shadow/components/dashboard"
@@ -22,7 +21,7 @@ type AjaxHandler struct {
 	component *Component
 }
 
-func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *AjaxHandler) ServeHTTP(w *dashboard.Response, _ *dashboard.Request) {
 	list := h.component.GetAlerts()
 	alertsShort := make([]ajaxHandlerResponse, 0, cap(list))
 
@@ -36,5 +35,5 @@ func (h *AjaxHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	dashboard.ResponseFromContext(r.Context()).SendJSON(alertsShort)
+	w.SendJSON(alertsShort)
 }

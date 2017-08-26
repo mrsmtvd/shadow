@@ -40,6 +40,7 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 			Methods: []string{http.MethodGet, http.MethodPost},
 			Path:    "/",
 			Handler: NewIndexHandler(c),
+			Auth:    true,
 		},
 	}
 }

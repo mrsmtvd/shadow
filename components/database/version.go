@@ -1,5 +1,5 @@
 package database
 
 const (
-	ComponentVersion = "2.0.00"
+	ComponentVersion = "2.0.0"
 )

@@ -2,37 +2,42 @@ package dashboard
 
 import (
 	"context"
-	originalHttp "net/http"
+	"net/http"
 	"time"
 
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard/http"
 	"github.com/kihamo/shadow/components/logger"
 )
 
 func ContextMiddleware(router *Router, config *config.Component, logger logger.Logger, renderer *Renderer) alice.Constructor {
-	return func(next originalHttp.Handler) originalHttp.Handler {
-		return originalHttp.HandlerFunc(func(w originalHttp.ResponseWriter, r *originalHttp.Request) {
-			writer := http.NewResponse(w)
-			reader := http.NewRequest(r)
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			writer := NewResponse(w)
+			request := NewRequest(r)
+			session := NewSession(w, r)
 
 			ctx := context.WithValue(r.Context(), ConfigContextKey, config)
 			ctx = context.WithValue(ctx, LoggerContextKey, logger)
 			ctx = context.WithValue(ctx, RenderContextKey, renderer)
-			ctx = context.WithValue(ctx, RequestContextKey, reader)
 			ctx = context.WithValue(ctx, ResponseContextKey, writer)
 			ctx = context.WithValue(ctx, RouterContextKey, router)
-
+			ctx = context.WithValue(ctx, SessionContextKey, session)
+			ctx = context.WithValue(ctx, RequestContextKey, request)
 			r = r.WithContext(ctx)
+
+			// TODO: dirty hack
+			request.original = r
+			session.request = r
+
 			next.ServeHTTP(writer, r)
 		})
 	}
 }
 
 func LoggerMiddleware() alice.Constructor {
-	return func(next originalHttp.Handler) originalHttp.Handler {
-		return originalHttp.HandlerFunc(func(w originalHttp.ResponseWriter, r *originalHttp.Request) {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			next.ServeHTTP(w, r)
 
 			statusCode := ResponseFromContext(r.Context()).GetStatusCode()
@@ -51,17 +56,17 @@ func LoggerMiddleware() alice.Constructor {
 			logger := LoggerFromContext(r.Context())
 
 			if statusCode/100 == 5 {
-				logger.Error(originalHttp.StatusText(statusCode), fields)
+				logger.Error(http.StatusText(statusCode), fields)
 			} else {
-				logger.Info(originalHttp.StatusText(statusCode), fields)
+				logger.Info(http.StatusText(statusCode), fields)
 			}
 		})
 	}
 }
 
 func MetricsMiddleware(c *Component) alice.Constructor {
-	return func(next originalHttp.Handler) originalHttp.Handler {
-		return originalHttp.HandlerFunc(func(w originalHttp.ResponseWriter, r *originalHttp.Request) {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			now := time.Now()
 
 			next.ServeHTTP(w, r)

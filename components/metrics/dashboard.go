@@ -32,6 +32,7 @@ func (c *Component) GetDashboardRoutes() []*dashboard.Route {
 			Handler: &IndextHandler{
 				component: c,
 			},
+			Auth: true,
 		},
 	}
 }

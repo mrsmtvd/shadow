@@ -119,21 +119,31 @@ func (r *Renderer) RenderLayout(ctx context.Context, c, v, l string, d map[strin
 		return fmt.Errorf("Template \"%s\" for component \"%s\" not found", v, c)
 	}
 
-	context := map[string]interface{}{
-		"Request": RequestFromContext(ctx),
-	}
+	data := r.getContextVariables(ctx)
 
 	for i := range r.globals {
-		context[i] = r.globals[i]
+		data[i] = r.globals[i]
 	}
 
 	if d != nil {
 		for i := range d {
-			context[i] = d[i]
+			data[i] = d[i]
 		}
 	}
 
-	return view.ExecuteTemplate(ResponseFromContext(ctx), l, context)
+	return view.ExecuteTemplate(ResponseFromContext(ctx), l, data)
+}
+
+func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface{} {
+	request := RequestFromContext(ctx)
+	username, _ := request.Session().GetString(SessionUsername)
+
+	return map[string]interface{}{
+		"Request": request,
+		"User": map[string]interface{}{
+			"username": username,
+		},
+	}
 }
 
 func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]string, error) {

@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"net/http"
 	"sort"
 	"time"
 
@@ -14,7 +13,7 @@ type IndextHandler struct {
 	component *Component
 }
 
-func (h *IndextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *IndextHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	var updated time.Time
 
 	metrics, err := h.component.Registry().Gather()

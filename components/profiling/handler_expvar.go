@@ -3,13 +3,14 @@ package profiling
 import (
 	"expvar"
 	"fmt"
-	"net/http"
+
+	"github.com/kihamo/shadow/components/dashboard"
 )
 
 type ExpvarHandler struct {
 }
 
-func (h *ExpvarHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ExpvarHandler) ServeHTTP(w *dashboard.Response, _ *dashboard.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	fmt.Fprintf(w, "{\n")
 	first := true

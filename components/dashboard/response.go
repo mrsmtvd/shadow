@@ -1,28 +1,28 @@
-package http
+package dashboard
 
 import (
 	"encoding/json"
-	originalHttp "net/http"
+	"net/http"
 )
 
 type Response struct {
-	originalHttp.ResponseWriter
+	http.ResponseWriter
 	status int
 }
 
-func NewResponse(w originalHttp.ResponseWriter) *Response {
+func NewResponse(w http.ResponseWriter) *Response {
 	return &Response{
 		ResponseWriter: w,
 	}
 }
 
-func (w *Response) Header() originalHttp.Header {
+func (w *Response) Header() http.Header {
 	return w.ResponseWriter.Header()
 }
 
 func (w *Response) Write(data []byte) (int, error) {
 	if w.status == 0 {
-		w.status = originalHttp.StatusOK
+		w.status = http.StatusOK
 	}
 
 	return w.ResponseWriter.Write(data)

@@ -1,5 +1,5 @@
 package workers
 
 const (
-	ComponentVersion = "2.0.0"
+	ComponentVersion = "2.2.0"
 )

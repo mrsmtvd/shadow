@@ -17,26 +17,23 @@ type ConfigHandler struct {
 	application shadow.Application
 }
 
-func (h *ConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ConfigHandler) ServeHTTP(w *Response, r *Request) {
 	var err error
 
-	ctx := r.Context()
-	config := ConfigFromContext(ctx)
-	request := RequestFromContext(ctx)
-	vars := config.GetAllVariables()
+	vars := r.Config().GetAllVariables()
 
-	if request.IsPost() {
-		err = r.ParseForm()
+	if r.IsPost() {
+		err = r.Original().ParseForm()
 		if err == nil {
-			for key, values := range r.PostForm {
-				if !config.Has(key) || !config.IsEditable(key) || len(values) == 0 {
+			for key, values := range r.Original().PostForm {
+				if !r.Config().Has(key) || !r.Config().IsEditable(key) || len(values) == 0 {
 					continue
 				}
 
-				config.Set(key, values[0])
+				r.Config().Set(key, values[0])
 			}
 
-			h.Redirect(r.URL.String(), http.StatusFound, w, r)
+			h.Redirect(r.URL().String(), http.StatusFound, w, r)
 			return
 		}
 	}
