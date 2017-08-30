@@ -481,17 +481,11 @@ function init_validator() {
     });
 
     $('form').submit(function(e) {
-        e.preventDefault();
-        var submit = true;
+        var valid = validator.checkAll(this);
+        $(this).data('valid', valid);
 
-        if (!validator.checkAll($(this))) {
-            submit = false;
+        if (valid) {
+            return false;
         }
-
-        if (submit) {
-            this.submit();
-        }
-
-        return false;
     });
 }
