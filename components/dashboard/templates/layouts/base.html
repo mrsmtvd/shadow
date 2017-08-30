@@ -62,7 +62,7 @@
                             {{ range .Menu }}
                                 <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}>
                                 {{ if gt (len .SubMenu) 0 }}
-                                    <a><i class="fa fa-home"></i> {{ .Name }} <span class="fa fa-chevron-down"></span></a>
+                                    <a><i class="fa{{ if .Icon }} fa-{{ .Icon }}{{ end }}"></i> {{ .Name }} <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         {{ range .SubMenu }}
                                         <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}><a href="{{ .Url }}">{{ .Name }}</a></li>
