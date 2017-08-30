@@ -7,12 +7,17 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-func (c *Component) debugHandler(h http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if c.config.GetBool(config.ConfigDebug) {
-			h.ServeHTTP(w, r)
-		} else {
-			dashboard.RouterFromContext(r.Context()).NotFound.ServeHTTP(w, r)
-		}
-	})
+type DebugHandler struct {
+	dashboard.Handler
+
+	handler http.HandlerFunc
+}
+
+func (h *DebugHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+	if !r.Config().GetBool(config.ConfigDebug) {
+		h.NotFound(w, r)
+		return
+	}
+
+	h.handler.ServeHTTP(w, r.Original())
 }

@@ -12,7 +12,7 @@ type EnvironmentHandler struct {
 	Handler
 }
 
-func (h *EnvironmentHandler) ServeHTTP(w *Response, r *Request) {
+func (h *EnvironmentHandler) ServeHTTP(_ *Response, r *Request) {
 	vars := make(map[string]string, len(os.Environ()))
 	for _, e := range os.Environ() {
 		pair := strings.Split(e, "=")

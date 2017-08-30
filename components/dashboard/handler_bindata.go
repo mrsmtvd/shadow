@@ -3,7 +3,6 @@ package dashboard
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -155,7 +154,7 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 	return ret, nil
 }
 
-func (h *BindataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *BindataHandler) ServeHTTP(w *Response, r *Request) {
 	var (
 		files      []bindataList
 		breadcrumb []bindataBreadcrumb
@@ -163,7 +162,7 @@ func (h *BindataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	)
 
 	sep := string(os.PathSeparator)
-	path := r.URL.Query().Get("path")
+	path := r.URL().Query().Get("path")
 	path = strings.Trim(filepath.Clean(path), sep)
 
 	if path == "" || path == "." {
@@ -193,7 +192,7 @@ func (h *BindataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return files[i].IsDir != files[j].IsDir
 		})
 
-		switch r.URL.Query().Get("mode") {
+		switch r.URL().Query().Get("mode") {
 		case "raw":
 			if len(files) == 1 {
 				io.Copy(w, files[0].Reader)

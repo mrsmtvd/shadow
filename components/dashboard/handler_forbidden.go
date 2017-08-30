@@ -9,10 +9,6 @@ type ForbiddenHandler struct {
 	Handler
 }
 
-func (h *ForbiddenHandler) IsAuth() bool {
-	return false
-}
-
 func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 	if username, err := r.Session().GetString(SessionUsername); err == nil && username != "" {
 		h.Redirect("/", http.StatusFound, w, r)

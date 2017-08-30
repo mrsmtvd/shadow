@@ -11,18 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/profiling/trace"
 )
 
 type TraceHandler struct {
 	dashboard.Handler
-
-	config *config.Component
 }
 
-func (h *TraceHandler) actionStart(w *dashboard.Response, r *dashboard.Request) error {
+func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) error {
 	if trace.IsStarted() {
 		return fmt.Errorf("Trace already started")
 	}
@@ -51,12 +48,12 @@ func (h *TraceHandler) actionStart(w *dashboard.Response, r *dashboard.Request) 
 	return err
 }
 
-func (h *TraceHandler) actionStop(w *dashboard.Response, r *dashboard.Request) error {
+func (h *TraceHandler) actionStop(_ *dashboard.Response, r *dashboard.Request) error {
 	if !trace.IsStarted() {
 		return fmt.Errorf("Trace already stoped")
 	}
 
-	err := trace.StopProfiles(h.config.GetString(ConfigDumpDirectory))
+	err := trace.StopProfiles(r.Config().GetString(ConfigDumpDirectory))
 	r.Logger().Info("Stop trace")
 
 	return err
@@ -88,7 +85,7 @@ func (h *TraceHandler) actionDownload(w *dashboard.Response, r *dashboard.Reques
 	return nil
 }
 
-func (h *TraceHandler) actionDelete(w *dashboard.Response, r *dashboard.Request) error {
+func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request) error {
 	id := r.URL().Query().Get("id")
 	if id == "" {
 		return fmt.Errorf("Dump \"%s\" not found", id)

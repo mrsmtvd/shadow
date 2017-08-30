@@ -10,7 +10,7 @@ type ComponentsHandler struct {
 	application shadow.Application
 }
 
-func (h *ComponentsHandler) ServeHTTP(w *Response, r *Request) {
+func (h *ComponentsHandler) ServeHTTP(_ *Response, r *Request) {
 	contextComponents := []map[string]interface{}{}
 
 	components, _ := h.application.GetComponents()

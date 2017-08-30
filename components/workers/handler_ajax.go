@@ -75,7 +75,7 @@ func (h *AjaxHandler) fillResponseTask(t task.Tasker) *ajaxHandlerResponseTask {
 	}
 }
 
-func (h *AjaxHandler) actionStats(w *dashboard.Response, r *dashboard.Request) {
+func (h *AjaxHandler) actionStats(w *dashboard.Response, _ *dashboard.Request) {
 	tasksList := []ajaxHandlerResponseTask{}
 
 	for _, t := range h.component.dispatcher.GetTasks() {
@@ -186,7 +186,7 @@ func (h *AjaxHandler) actionWorkersReset(w *dashboard.Response, r *dashboard.Req
 		for _, worker := range workers {
 			if checkId == "" || worker.GetId() == checkId {
 				worker.Reset()
-				h.component.logger.Infof("Reseted worker #%s", worker.GetId())
+				r.Logger().Infof("Reseted worker #%s", worker.GetId())
 
 				if checkId != "" {
 					break
