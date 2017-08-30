@@ -304,6 +304,13 @@ gulp.task('frontend', ['compress-components'], function() {
         .pipe(rename({suffix:'.min'}))
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/pnotify/css'));
 
+    // select2
+    gulp.src(['bower_components/select2/dist/js/select2.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/select2/js'));
+    
+    gulp.src(['bower_components/select2/dist/css/*.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/select2/css'));
+
     // switchery
     gulp.src(['bower_components/switchery/dist/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/switchery/js'));

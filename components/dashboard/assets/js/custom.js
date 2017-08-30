@@ -146,6 +146,7 @@ $(document).ready(function () {
     init_password_show();
     init_progressbar();
     init_sidebar();
+    init_select2();
     init_switchery();
     init_tabs();
     init_tagsinput();
@@ -238,7 +239,7 @@ function init_datatables() {
         return;
     }
 
-    $('.datatable').dataTable({
+    var t = $('.datatable').DataTable({
         paging: false,
         fixedHeader: true
     });
@@ -412,12 +413,20 @@ function init_sidebar() {
     }
 }
 
+function init_select2() {
+    if (typeof $.fn.select2 === 'undefined') {
+        return;
+    }
+
+    $('.select2').select2();
+}
+
 function init_switchery() {
     if (typeof Switchery === 'undefined') {
         return;
     }
 
-    if ($(".js-switch")[0]) {
+    if ($('.js-switch')[0]) {
         var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
         elems.forEach(function (html) {
             var switchery = new Switchery(html, {
