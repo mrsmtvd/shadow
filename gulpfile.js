@@ -237,6 +237,11 @@ gulp.task('frontend', ['compress-components'], function() {
 
     gulp.src(['bower_components/datatables.net-fixedheader-bs/css/*.min.css'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-fixedheader-bs/css'));
+    
+    // echarts
+    gulp.src(['bower_components/echarts/dist/echarts.common.min.js'])
+        .pipe(rename('echarts.min.js'))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/echarts/js'));
 
     // fastclick
     gulp.src(['bower_components/fastclick/lib/*.js'])

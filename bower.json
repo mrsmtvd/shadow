@@ -24,6 +24,7 @@
     "datatables.net-bs": "^2.1.1",
     "datatables.net-fixedheader": "^3.1.2",
     "datatables.net-fixedheader-bs": "^3.1.2",
+    "echarts": "^3.7.0",
     "fastclick": "^1.0.6",
     "flipclock": "FlipClock#^0.7.7",
     "font-awesome": "~4.7.0",
