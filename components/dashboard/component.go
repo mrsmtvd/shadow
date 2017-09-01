@@ -6,6 +6,8 @@ import (
 	"os"
 	"sync"
 
+	"github.com/alexedwards/scs"
+	"github.com/alexedwards/scs/stores/memstore"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
@@ -20,6 +22,7 @@ type Component struct {
 	config      *config.Component
 	logger      logger.Logger
 	renderer    *Renderer
+	session     *scs.Manager
 }
 
 func (c *Component) GetName() string {
@@ -60,6 +63,8 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		return err
 	}
 
+	c.initSession()
+
 	mux, err := c.getServeMux()
 	if err != nil {
 		return err
@@ -85,4 +90,19 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}()
 
 	return nil
+}
+
+func (c *Component) initSession() {
+	scs.CookieName = c.config.GetString(ConfigSessionCookieName)
+
+	store := memstore.New(0)
+	c.session = scs.NewManager(store)
+
+	c.session.Domain(c.config.GetString(ConfigSessionDomain))
+	c.session.HttpOnly(c.config.GetBool(ConfigSessionHttpOnly))
+	c.session.IdleTimeout(c.config.GetDuration(ConfigSessionIdleTimeout))
+	c.session.Lifetime(c.config.GetDuration(ConfigSessionLifetime))
+	c.session.Path(c.config.GetString(ConfigSessionPath))
+	c.session.Persist(c.config.GetBool(ConfigSessionPersist))
+	c.session.Secure(c.config.GetBool(ConfigSessionSecure))
 }

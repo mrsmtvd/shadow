@@ -39,7 +39,7 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 			password := r.Original().PostForm.Get("password")
 
 			if checkUsername == username && checkPassword == password {
-				if err = r.Session().RegenerateToken(); err == nil {
+				if err = r.Session().RenewToken(); err == nil {
 					if err = r.Session().PutString(SessionUsername, username); err == nil {
 						h.Redirect("/", http.StatusFound, w, r)
 						return

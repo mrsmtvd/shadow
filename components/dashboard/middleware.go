@@ -5,17 +5,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/alexedwards/scs"
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
 )
 
-func ContextMiddleware(router *Router, config *config.Component, logger logger.Logger, renderer *Renderer) alice.Constructor {
+func ContextMiddleware(router *Router, config *config.Component, logger logger.Logger, renderer *Renderer, sessionManager *scs.Manager) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := NewResponse(w)
 			request := NewRequest(r)
-			session := NewSession(w, r)
+			session := NewSession(sessionManager.Load(r), w)
 
 			ctx := context.WithValue(r.Context(), ConfigContextKey, config)
 			ctx = context.WithValue(ctx, LoggerContextKey, logger)
@@ -28,7 +29,6 @@ func ContextMiddleware(router *Router, config *config.Component, logger logger.L
 
 			// TODO: dirty hack
 			request.original = r
-			session.request = r
 
 			next.ServeHTTP(writer, r)
 		})

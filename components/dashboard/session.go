@@ -4,8 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alexedwards/scs/engine/memstore"
-	"github.com/alexedwards/scs/session"
+	"github.com/alexedwards/scs"
 )
 
 const (
@@ -13,144 +12,133 @@ const (
 )
 
 type Session struct {
+	session  *scs.Session
 	response http.ResponseWriter
-	request  *http.Request
 }
 
-func NewSession(w http.ResponseWriter, r *http.Request) *Session {
+func NewSession(s *scs.Session, w http.ResponseWriter) *Session {
 	return &Session{
+		session:  s,
 		response: w,
-		request:  r,
 	}
 }
 
-func NewSessionManager() func(h http.Handler) http.Handler {
-	session.CookieName = "shadow.token"
-
-	sessionEngine := memstore.New(0)
-	return session.Manage(sessionEngine)
-}
-
-func (s *Session) RegenerateToken() error {
-	return session.RegenerateToken(s.request)
-}
-
-func (s *Session) Renew() error {
-	return session.Renew(s.request)
+func (s *Session) RenewToken() error {
+	return s.session.RenewToken(s.response)
 }
 
 func (s *Session) Destroy() error {
-	return session.Destroy(s.response, s.request)
+	return s.session.Destroy(s.response)
 }
 
 func (s *Session) GetString(k string) (string, error) {
-	return session.GetString(s.request, k)
+	return s.session.GetString(k)
 }
 
 func (s *Session) PutString(k string, v string) error {
-	return session.PutString(s.request, k, v)
+	return s.session.PutString(s.response, k, v)
 }
 
 func (s *Session) PopString(k string) (string, error) {
-	return session.PopString(s.request, k)
+	return s.session.PopString(s.response, k)
 }
 
 func (s *Session) GetBool(k string) (bool, error) {
-	return session.GetBool(s.request, k)
+	return s.session.GetBool(k)
 }
 
 func (s *Session) PutBool(k string, v bool) error {
-	return session.PutBool(s.request, k, v)
+	return s.session.PutBool(s.response, k, v)
 }
 
 func (s *Session) PopBool(k string) (bool, error) {
-	return session.PopBool(s.request, k)
+	return s.session.PopBool(s.response, k)
 }
 
 func (s *Session) GetInt(k string) (int, error) {
-	return session.GetInt(s.request, k)
+	return s.session.GetInt(k)
 }
 
 func (s *Session) PutInt(k string, v int) error {
-	return session.PutInt(s.request, k, v)
+	return s.session.PutInt(s.response, k, v)
 }
 
 func (s *Session) PopInt(k string) (int, error) {
-	return session.PopInt(s.request, k)
+	return s.session.PopInt(s.response, k)
 }
 
 func (s *Session) GetInt64(k string) (int64, error) {
-	return session.GetInt64(s.request, k)
+	return s.session.GetInt64(k)
 }
 
 func (s *Session) PutInt64(k string, v int64) error {
-	return session.PutInt64(s.request, k, v)
+	return s.session.PutInt64(s.response, k, v)
 }
 
 func (s *Session) PopInt64(k string) (int64, error) {
-	return session.PopInt64(s.request, k)
+	return s.session.PopInt64(s.response, k)
 }
 
 func (s *Session) GetFloat(k string) (float64, error) {
-	return session.GetFloat(s.request, k)
+	return s.session.GetFloat(k)
 }
 
 func (s *Session) PutFloat(k string, v float64) error {
-	return session.PutFloat(s.request, k, v)
+	return s.session.PutFloat(s.response, k, v)
 }
 
 func (s *Session) PopFloat(k string) (float64, error) {
-	return session.PopFloat(s.request, k)
+	return s.session.PopFloat(s.response, k)
 }
 
 func (s *Session) GetTime(k string) (time.Time, error) {
-	return session.GetTime(s.request, k)
+	return s.session.GetTime(k)
 }
 
 func (s *Session) PutTime(k string, v time.Time) error {
-	return session.PutTime(s.request, k, v)
+	return s.session.PutTime(s.response, k, v)
 }
 
 func (s *Session) PopTime(k string) (time.Time, error) {
-	return session.PopTime(s.request, k)
+	return s.session.PopTime(s.response, k)
 }
 
 func (s *Session) GetBytes(k string) ([]byte, error) {
-	return session.GetBytes(s.request, k)
+	return s.session.GetBytes(k)
 }
 
 func (s *Session) PutBytes(k string, v []byte) error {
-	return session.PutBytes(s.request, k, v)
+	return s.session.PutBytes(s.response, k, v)
 }
 
 func (s *Session) PopBytes(k string) ([]byte, error) {
-	return session.PopBytes(s.request, k)
+	return s.session.PopBytes(s.response, k)
 }
 
 func (s *Session) GetObject(k string, d interface{}) error {
-	return session.GetObject(s.request, k, d)
+	return s.session.GetObject(k, d)
 }
 
 func (s *Session) PutObject(k string, v interface{}) error {
-	return session.PutObject(s.request, k, v)
+	return s.session.PutObject(s.response, k, v)
 }
 
 func (s *Session) PopObject(k string, d interface{}) error {
-	return session.PopObject(s.request, k, d)
+	return s.session.PopObject(s.response, k, d)
 }
 
 func (s *Session) Keys() ([]string, error) {
-	return session.Keys(s.request)
+	return s.session.Keys()
 }
 
 func (s *Session) Exists(k string) (bool, error) {
-	return session.Exists(s.request, k)
+	return s.session.Exists(k)
 }
 
 func (s *Session) Remove(k string) error {
-	return session.Remove(s.request, k)
+	return s.session.Remove(s.response, k)
 }
 
 func (s *Session) Clear() error {
-	return session.Clear(s.request)
+	return s.session.Clear(s.response)
 }

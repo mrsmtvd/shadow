@@ -44,7 +44,7 @@ func NewRouter(c *Component) *Router {
 
 	// chains
 	r.chain = alice.New(
-		ContextMiddleware(r, c.config, c.logger, c.renderer),
+		ContextMiddleware(r, c.config, c.logger, c.renderer, c.session),
 		MetricsMiddleware(c),
 		LoggerMiddleware(),
 	)

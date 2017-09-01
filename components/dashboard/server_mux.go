@@ -51,8 +51,5 @@ func (c *Component) getServeMux() (http.Handler, error) {
 
 	router.Handle("*", "/", mainHandler, false)
 
-	// init session
-	mux := NewSessionManager()(router)
-
-	return mux, nil
+	return router, nil
 }
