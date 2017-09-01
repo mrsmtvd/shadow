@@ -24,12 +24,9 @@ const (
 
 type Component struct {
 	application shadow.Application
-
-	config  *config.Component
-	loggers map[string]Logger
-
-	mutex        sync.RWMutex
-	loggerConfig xlog.Config
+	config      *config.Component
+	loggers     map[string]Logger
+	mutex       sync.RWMutex
 }
 
 func (c *Component) GetName() string {
@@ -58,12 +55,6 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.loggerConfig = xlog.Config{
-		Output: xlog.NewConsoleOutput(),
-		Level:  c.getLevel(),
-		Fields: c.getDefaultFields(),
-	}
-
 	log.SetOutput(c.Get(c.GetName()))
 
 	return nil
@@ -98,15 +89,21 @@ func (c *Component) Get(key string) Logger {
 		return r
 	}
 
-	l := newLogger(c.loggerConfig)
-	l.SetField(FieldComponent, key)
+	loggerConfig := xlog.Config{
+		Output: xlog.NewConsoleOutput(),
+		Level:  c.getConfigLevel(),
+		Fields: c.getFields(),
+	}
 
+	loggerConfig.Fields[FieldComponent] = key
+
+	l := newLogger(loggerConfig)
 	c.loggers[key] = l
 
 	return l
 }
 
-func (c *Component) getLevel() xlog.Level {
+func (c *Component) getConfigLevel() xlog.Level {
 	switch c.config.GetInt(ConfigLevel) {
 	case 0:
 		return xlog.LevelFatal
@@ -129,27 +126,38 @@ func (c *Component) getLevel() xlog.Level {
 	return xlog.LevelInfo
 }
 
-func (c *Component) getDefaultFields() map[string]interface{} {
-	fields := map[string]interface{}{
-		FieldAppName:    c.application.GetName(),
-		FieldAppVersion: c.application.GetVersion(),
-		FieldAppBuild:   c.application.GetBuild(),
+func (c *Component) getFields() map[string]interface{} {
+	fields := c.parseFields(c.config.GetString(ConfigFields))
+
+	if _, ok := fields[FieldComponent]; ok {
+		delete(fields, FieldComponent)
 	}
+
+	fields[FieldAppName] = c.application.GetName()
+	fields[FieldAppVersion] = c.application.GetVersion()
+	fields[FieldAppBuild] = c.application.GetBuild()
 
 	if hostname, err := os.Hostname(); err == nil {
 		fields[FieldHostname] = hostname
 	}
 
-	fieldsFromConfig := c.config.GetString(ConfigFields)
-	if len(fieldsFromConfig) > 0 {
-		var parts []string
+	return fields
+}
 
-		for _, tag := range strings.Split(fieldsFromConfig, ",") {
-			parts = strings.Split(tag, "=")
+func (c *Component) parseFields(f string) map[string]interface{} {
+	fields := map[string]interface{}{}
 
-			if len(parts) > 1 {
-				fields[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
-			}
+	if len(f) == 0 {
+		return fields
+	}
+
+	var parts []string
+
+	for _, tag := range strings.Split(f, ",") {
+		parts = strings.Split(tag, "=")
+
+		if len(parts) > 1 {
+			fields[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 		}
 	}
 

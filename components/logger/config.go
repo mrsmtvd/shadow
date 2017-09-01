@@ -23,25 +23,63 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Usage:    "Fields list with format: field_name=field1_value,field2_name=field2_value",
 			Type:     config.ValueTypeString,
 			Editable: true,
+			View:     []string{config.ViewTags},
+			ViewOptions: map[string]interface{}{
+				config.ViewOptionTagsDefaultText: "add a field",
+			},
 		},
 	}
 }
 
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
-		ConfigLevel:  {c.watchLoggerConfig},
-		ConfigFields: {c.watchLoggerConfig},
+		ConfigLevel:  {c.watchLoggerLevel},
+		ConfigFields: {c.watchLoggerFields},
 	}
 }
 
-func (c *Component) watchLoggerConfig(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
+func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface{}) {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
 
-	c.loggerConfig.Level = c.getLevel()
-	c.loggerConfig.Fields = c.getDefaultFields()
+	level := c.getConfigLevel()
 
 	for key, _ := range c.loggers {
-		c.loggers[key].(*logger).setConfig(c.loggerConfig)
+		c.loggers[key].(*logger).setLevel(level)
+	}
+}
+
+func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue interface{}) {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	removeFields := map[string]struct{}{}
+	newFields := c.parseFields(newValue.(string))
+	oldFields := c.parseFields(oldValue.(string))
+
+	for k, _ := range oldFields {
+		if _, ok := newFields[k]; !ok {
+			removeFields[k] = struct{}{}
+		}
+	}
+
+	globalFields := c.getFields()
+
+	for key, _ := range c.loggers {
+		l := c.loggers[key].(*logger)
+
+		existsFields := map[string]interface{}{}
+
+		for k, v := range l.GetFields() {
+			if _, ok := removeFields[k]; !ok {
+				existsFields[k] = v
+			}
+		}
+
+		for k, v := range globalFields {
+			existsFields[k] = v
+		}
+
+		l.setFields(existsFields)
 	}
 }

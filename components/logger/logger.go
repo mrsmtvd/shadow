@@ -22,28 +22,47 @@ type Logger interface {
 }
 
 type logger struct {
-	x xlog.Logger
+	x      xlog.Logger
+	config xlog.Config
 
-	fields map[string]interface{}
-	mutex  sync.RWMutex
+	mutex sync.RWMutex
 }
 
 func newLogger(c xlog.Config) *logger {
-	return &logger{
+	l := &logger{
 		x:      xlog.New(c),
-		fields: map[string]interface{}{},
+		config: c,
 	}
+
+	// free memory
+	l.config.Fields = nil
+
+	return l
 }
 
-func (l *logger) setConfig(c xlog.Config) {
-	x := xlog.New(c)
-	for k, v := range l.fields {
-		x.SetField(k, v)
-	}
-
+func (l *logger) setLevel(lv xlog.Level) {
 	l.mutex.Lock()
-	l.x = x
-	l.mutex.Unlock()
+	defer l.mutex.Unlock()
+
+	l.config.Level = lv
+	l.config.Fields = l.x.GetFields()
+
+	l.x = xlog.New(l.config)
+
+	// free memory
+	l.config.Fields = nil
+}
+
+func (l *logger) setFields(f map[string]interface{}) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+
+	l.config.Fields = f
+
+	l.x = xlog.New(l.config)
+
+	// free memory
+	l.config.Fields = nil
 }
 
 func (l *logger) setCallFile(c int, f map[string]interface{}) {
@@ -83,12 +102,17 @@ func (l *logger) Write(p []byte) (n int, err error) {
 }
 
 func (l *logger) SetField(n string, v interface{}) {
-	l.mutex.Lock()
-	defer l.mutex.Unlock()
-
-	l.fields[n] = v
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
 
 	l.x.SetField(n, v)
+}
+
+func (l *logger) GetFields() xlog.F {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
+	return l.x.GetFields()
 }
 
 func (l *logger) Debug(v ...interface{}) {

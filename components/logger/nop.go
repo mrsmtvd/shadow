@@ -14,6 +14,8 @@ func (n nop) Write(p []byte) (_ int, _ error) { return len(p), nil }
 
 func (n nop) SetField(_ string, _ interface{}) {}
 
+func (n nop) GetFields() xlog.F { return map[string]interface{}{} }
+
 func (n nop) Debug(_ ...interface{}) {}
 
 func (n nop) Debugf(_ string, _ ...interface{}) {}
