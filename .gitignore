@@ -9,3 +9,5 @@ server
 env.json
 *.tar.gz
 .DS_Store
+glide.lock
+vendor

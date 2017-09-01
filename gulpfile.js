@@ -349,7 +349,7 @@ gulp.task('backend', [], function() {
 });
 
 gulp.task('golang', function() {
-    return gulp.src(__dirname + '/**/*.go')
+    return gulp.src([__dirname + '/**/*.go', '!' + __dirname + '/vendor/**'])
         .pipe(exec('goimports -w <%= file.path %>'))
         .pipe(exec.reporter(execOptions));
 });
