@@ -63,6 +63,9 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
+	var serverOptions []grpc.ServerOption
+
+	// interceptors
 	unaryInterceptors := []grpc.UnaryServerInterceptor{
 		NewConfigUnaryServerInterceptor(c.config),
 		NewLoggerUnaryServerInterceptor(c.logger),
@@ -82,10 +85,10 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	unaryInterceptors = append(unaryInterceptors, grpc_recovery.UnaryServerInterceptor())
 	streamInterceptors = append(streamInterceptors, grpc_recovery.StreamServerInterceptor())
 
-	c.server = grpc.NewServer(
-		grpc_middleware.WithUnaryServerChain(unaryInterceptors...),
-		grpc_middleware.WithStreamServerChain(streamInterceptors...),
-	)
+	serverOptions = append(serverOptions, grpc_middleware.WithUnaryServerChain(unaryInterceptors...))
+	serverOptions = append(serverOptions, grpc_middleware.WithStreamServerChain(streamInterceptors...))
+
+	c.server = grpc.NewServer(serverOptions...)
 
 	components, err := c.application.GetComponents()
 	if err != nil {
