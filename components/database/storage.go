@@ -16,6 +16,10 @@ const (
 	DialectPostgres = "postgres"
 	DialectSQLite3  = "sqlite3"
 	DialectMSSQL    = "mssql"
+
+	DialectOptionEngine   = "engine"
+	DialectOptionEncoding = "encoding"
+	DialectOptionVersion  = "version"
 )
 
 type SqlStorage struct {
@@ -35,11 +39,11 @@ func NewSQLStorage(driver string, dataSourceName string, options map[string]stri
 			encoding string
 		)
 
-		if engine, ok = options["engine"]; !ok {
+		if engine, ok = options[DialectOptionEngine]; !ok {
 			engine = "InnoDB"
 		}
 
-		if encoding, ok = options["encoding"]; !ok {
+		if encoding, ok = options[DialectOptionEncoding]; !ok {
 			encoding = "UTF8"
 		}
 
@@ -66,7 +70,7 @@ func NewSQLStorage(driver string, dataSourceName string, options map[string]stri
 	case DialectMSSQL:
 		version := ""
 
-		if v, ok := options["version"]; ok {
+		if v, ok := options[DialectOptionVersion]; ok {
 			version = v
 		}
 

@@ -56,9 +56,9 @@ func (c *Component) Run() (err error) {
 		c.config.GetString(ConfigDriver),
 		c.config.GetString(ConfigDsn),
 		map[string]string{
-			"engine":   c.config.GetString(ConfigDialectEngine),
-			"encoding": c.config.GetString(ConfigDialectEncoding),
-			"version":  c.config.GetString(ConfigDialectVersion),
+			DialectOptionEngine:   c.config.GetString(ConfigDialectEngine),
+			DialectOptionEncoding: c.config.GetString(ConfigDialectEncoding),
+			DialectOptionVersion:  c.config.GetString(ConfigDialectVersion),
 		},
 	)
 

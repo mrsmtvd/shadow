@@ -3,6 +3,8 @@ package main // import "github.com/kihamo/shadow/examples/base"
 import (
 	"log"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/alerts"
 	"github.com/kihamo/shadow/components/config"
