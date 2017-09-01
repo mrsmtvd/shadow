@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/go-gorp/gorp"
 	sq "gopkg.in/Masterminds/squirrel.v1"
@@ -59,6 +60,8 @@ func (s *SqlStorage) GetDialect() (string, error) {
 }
 
 func (s *SqlStorage) CreateTablesIfNotExists() error {
+	defer updateMetric(OperationCreate, time.Now())
+
 	return s.executor.(*gorp.DbMap).CreateTablesIfNotExists()
 }
 
@@ -100,6 +103,8 @@ func (s *SqlStorage) Rollback() error {
 }
 
 func (s *SqlStorage) SelectByQuery(i interface{}, query string, args ...interface{}) ([]interface{}, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	data, err := s.executor.Select(i, query, args...)
 	if err != nil {
 		return data, fmt.Errorf("Error getting collection from DB, query: '%s', error: '%s'", query, err.Error())
@@ -116,6 +121,8 @@ func (s *SqlStorage) Select(i interface{}, builder *sq.SelectBuilder) ([]interfa
 }
 
 func (s *SqlStorage) SelectOneByQuery(holder interface{}, query string, args ...interface{}) error {
+	defer updateMetric(OperationSelect, time.Now())
+
 	err := s.executor.SelectOne(holder, query, args...)
 	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("Error getting value from DB, query: '%s', error: '%s'", query, err.Error())
@@ -132,6 +139,8 @@ func (s *SqlStorage) SelectOne(holder interface{}, builder *sq.SelectBuilder) er
 }
 
 func (s *SqlStorage) SelectIntByQuery(query string, args ...interface{}) (int64, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	result, err := s.executor.SelectInt(query, args...)
 
 	if err != nil {
@@ -150,6 +159,8 @@ func (s *SqlStorage) SelectInt(builder *sq.SelectBuilder) (int64, error) {
 }
 
 func (s *SqlStorage) SelectNullIntByQuery(query string, args ...interface{}) (sql.NullInt64, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	result, err := s.executor.SelectNullInt(query, args...)
 
 	if err != nil {
@@ -170,6 +181,8 @@ func (s *SqlStorage) SelectNullInt(builder *sq.SelectBuilder) (sql.NullInt64, er
 }
 
 func (s *SqlStorage) SelectFloatByQuery(query string, args ...interface{}) (float64, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	result, err := s.executor.SelectFloat(query, args...)
 
 	if err != nil {
@@ -188,6 +201,8 @@ func (s *SqlStorage) SelectFloat(builder *sq.SelectBuilder) (float64, error) {
 }
 
 func (s *SqlStorage) SelectNullFloatByQuery(query string, args ...interface{}) (sql.NullFloat64, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	result, err := s.executor.SelectNullFloat(query, args...)
 
 	if err != nil {
@@ -208,6 +223,8 @@ func (s *SqlStorage) SelectNullFloat(builder *sq.SelectBuilder) (sql.NullFloat64
 }
 
 func (s *SqlStorage) SelectStrByQuery(query string, args ...interface{}) (string, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	result, err := s.executor.SelectStr(query, args...)
 
 	if err != nil {
@@ -226,6 +243,8 @@ func (s *SqlStorage) SelectStr(builder *sq.SelectBuilder) (string, error) {
 }
 
 func (s *SqlStorage) SelectNullStrByQuery(query string, args ...interface{}) (sql.NullString, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	result, err := s.executor.SelectNullStr(query, args...)
 
 	if err != nil {
@@ -246,6 +265,8 @@ func (s *SqlStorage) SelectNullStr(builder *sq.SelectBuilder) (sql.NullString, e
 }
 
 func (s *SqlStorage) Get(i interface{}, keys ...interface{}) (interface{}, error) {
+	defer updateMetric(OperationSelect, time.Now())
+
 	entity, err := s.executor.Get(i, keys...)
 
 	if err != nil {
@@ -256,6 +277,8 @@ func (s *SqlStorage) Get(i interface{}, keys ...interface{}) (interface{}, error
 }
 
 func (s *SqlStorage) Insert(list ...interface{}) error {
+	defer updateMetric(OperationInsert, time.Now())
+
 	if err := s.executor.Insert(list...); err != nil {
 		return fmt.Errorf("Error inserting data into DB, error: '%s'", err.Error())
 	}
@@ -264,6 +287,8 @@ func (s *SqlStorage) Insert(list ...interface{}) error {
 }
 
 func (s *SqlStorage) Update(list ...interface{}) (int64, error) {
+	defer updateMetric(OperationUpdate, time.Now())
+
 	count, err := s.executor.Update(list...)
 
 	if err != nil {
@@ -274,6 +299,8 @@ func (s *SqlStorage) Update(list ...interface{}) (int64, error) {
 }
 
 func (s *SqlStorage) Delete(list ...interface{}) (int64, error) {
+	defer updateMetric(OperationDelete, time.Now())
+
 	count, err := s.executor.Delete(list...)
 
 	if err != nil {
@@ -294,6 +321,8 @@ func (s *SqlStorage) Prepare(query string) (*sql.Stmt, error) {
 }
 
 func (s *SqlStorage) ExecByQuery(query string, args ...interface{}) (sql.Result, error) {
+	defer updateMetric(OperationExec, time.Now())
+
 	result, err := s.executor.Exec(query, args...)
 	if err != nil {
 		return result, fmt.Errorf("Error executing DB query, query: '%s', error: '%s'", query, err.Error())
