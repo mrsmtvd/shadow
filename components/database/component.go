@@ -52,7 +52,15 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run() (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
-	c.storage, err = NewSQLStorage(c.config.GetString(ConfigDriver), c.config.GetString(ConfigDsn))
+	c.storage, err = NewSQLStorage(
+		c.config.GetString(ConfigDriver),
+		c.config.GetString(ConfigDsn),
+		map[string]string{
+			"engine":   c.config.GetString(ConfigDialectEngine),
+			"encoding": c.config.GetString(ConfigDialectEncoding),
+			"version":  c.config.GetString(ConfigDialectVersion),
+		},
+	)
 
 	if err != nil {
 		return err

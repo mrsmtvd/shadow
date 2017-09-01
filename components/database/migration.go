@@ -50,10 +50,7 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 
 func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 	storage := c.GetStorage()
-	dialect, err := storage.GetDialect()
-	if err != nil {
-		return 0, err
-	}
+	dialect := storage.GetDialect()
 
 	if dialect == "mysql" {
 		lockName := c.config.GetString(ConfigMigrationsTable) + ".lock"

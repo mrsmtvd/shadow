@@ -8,27 +8,74 @@ import (
 
 	"github.com/go-gorp/gorp"
 	sq "gopkg.in/Masterminds/squirrel.v1"
-
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
 )
 
-var StorageDialects = map[string]gorp.Dialect{
-	"sqlite3":  gorp.SqliteDialect{},
-	"postgres": gorp.PostgresDialect{},
-	"mysql":    gorp.MySQLDialect{"InnoDB", "UTF8"},
-	// "mssql":    gorp.SqlServerDialect{},
-	// "oci8":     gorp.OracleDialect{},
-}
+const (
+	DialectMySQL    = "mysql"
+	DialectOracle   = "oracle"
+	DialectPostgres = "postgres"
+	DialectSQLite3  = "sqlite3"
+	DialectMSSQL    = "mssql"
+)
 
 type SqlStorage struct {
 	executor gorp.SqlExecutor
+	dialect  string
 }
 
-func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
-	dialect, ok := StorageDialects[driver]
-	if !ok {
+func NewSQLStorage(driver string, dataSourceName string, options map[string]string) (*SqlStorage, error) {
+	var dialect gorp.Dialect
+	dialectName := driver
+
+	switch driver {
+	case DialectMySQL:
+		var (
+			ok       bool
+			engine   string
+			encoding string
+		)
+
+		if engine, ok = options["engine"]; !ok {
+			engine = "InnoDB"
+		}
+
+		if encoding, ok = options["encoding"]; !ok {
+			encoding = "UTF8"
+		}
+
+		dialect = gorp.MySQLDialect{
+			Engine:   engine,
+			Encoding: encoding,
+		}
+		break
+
+	case DialectOracle, "oci8":
+		dialect = gorp.OracleDialect{}
+		driver = "oci8"
+		dialectName = DialectOracle
+		break
+
+	case DialectPostgres:
+		dialect = gorp.PostgresDialect{}
+		break
+
+	case DialectSQLite3:
+		dialect = gorp.SqliteDialect{}
+		break
+
+	case DialectMSSQL:
+		version := ""
+
+		if v, ok := options["version"]; ok {
+			version = v
+		}
+
+		dialect = gorp.SqlServerDialect{
+			Version: version,
+		}
+		break
+
+	default:
 		return nil, fmt.Errorf("Storage driver %s not found", driver)
 	}
 
@@ -44,19 +91,12 @@ func NewSQLStorage(driver string, dataSourceName string) (*SqlStorage, error) {
 
 	return &SqlStorage{
 		executor: dbMap,
+		dialect:  dialectName,
 	}, nil
 }
 
-func (s *SqlStorage) GetDialect() (string, error) {
-	dialect := s.executor.(*gorp.DbMap).Dialect
-
-	for key := range StorageDialects {
-		if StorageDialects[key] == dialect {
-			return key, nil
-		}
-	}
-
-	return "", errors.New("Unknown dialect")
+func (s *SqlStorage) GetDialect() string {
+	return s.dialect
 }
 
 func (s *SqlStorage) CreateTablesIfNotExists() error {

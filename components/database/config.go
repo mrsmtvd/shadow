@@ -7,6 +7,9 @@ import (
 
 const (
 	ConfigDriver          = ComponentName + ".driver"
+	ConfigDialectEngine   = ComponentName + ".dialect.engine"
+	ConfigDialectEncoding = ComponentName + ".dialect.encoding"
+	ConfigDialectVersion  = ComponentName + ".dialect.version"
 	ConfigDsn             = ComponentName + ".dsn"
 	ConfigMigrationsTable = ComponentName + ".migrations.table"
 	ConfigMaxIdleConns    = ComponentName + ".max_idle_conns"
@@ -22,6 +25,23 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Default: "mysql",
 			Usage:   "Database driver (sqlite3, postgres, mysql, mssql and oci8)",
 			Type:    config.ValueTypeString,
+		},
+		{
+			Key:     ConfigDialectEngine,
+			Default: "InnoDB",
+			Usage:   "Dialect engine (mysql)",
+			Type:    config.ValueTypeString,
+		},
+		{
+			Key:     ConfigDialectEncoding,
+			Default: "InnoDB",
+			Usage:   "Dialect encoding (mysql)",
+			Type:    config.ValueTypeString,
+		},
+		{
+			Key:   ConfigDialectVersion,
+			Usage: "Dialect version (mssql)",
+			Type:  config.ValueTypeString,
 		},
 		{
 			Key:   ConfigDsn,
