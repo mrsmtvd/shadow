@@ -9,6 +9,7 @@ import (
 
 const (
 	SessionUsername = "username"
+	SessionLastURL  = "last-url"
 )
 
 type Session struct {

@@ -9,9 +9,20 @@ type ForbiddenHandler struct {
 	Handler
 }
 
+func (h *ForbiddenHandler) getRedirectURL(r *Request) string {
+	redirectURL, err := r.Session().GetString(SessionLastURL)
+	if err == nil && redirectURL != "" {
+		return redirectURL
+	}
+
+	return "/"
+}
+
 func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
-	if username, err := r.Session().GetString(SessionUsername); err == nil && username != "" {
-		h.Redirect("/", http.StatusFound, w, r)
+	session := r.Session()
+
+	if username, err := session.GetString(SessionUsername); err == nil && username != "" {
+		h.Redirect(h.getRedirectURL(r), http.StatusFound, w, r)
 		return
 	}
 
@@ -19,14 +30,15 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 	checkPassword := r.Config().GetString(ConfigAuthPassword)
 
 	if checkUsername == "" && checkPassword == "" {
-		r.Session().PutString(SessionUsername, "anonymous")
-		h.Redirect("/", http.StatusFound, w, r)
+		session.PutString(SessionUsername, "anonymous")
+		h.Redirect(h.getRedirectURL(r), http.StatusFound, w, r)
 		return
 	}
 
 	handleUrl := "/dashboard/login"
 
 	if r.URL().Path != handleUrl {
+		session.PutString(SessionLastURL, r.URL().Path)
 		h.Redirect(handleUrl, http.StatusFound, w, r)
 		return
 	}
@@ -39,9 +51,9 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 			password := r.Original().PostForm.Get("password")
 
 			if checkUsername == username && checkPassword == password {
-				if err = r.Session().RenewToken(); err == nil {
-					if err = r.Session().PutString(SessionUsername, username); err == nil {
-						h.Redirect("/", http.StatusFound, w, r)
+				if err = session.RenewToken(); err == nil {
+					if err = session.PutString(SessionUsername, username); err == nil {
+						h.Redirect(h.getRedirectURL(r), http.StatusFound, w, r)
 						return
 					}
 				}
