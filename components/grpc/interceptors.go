@@ -1,15 +1,12 @@
 package grpc
 
 import (
-	"sync"
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
-	"github.com/kihamo/shadow/components/metrics"
-	"github.com/kihamo/snitch"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -18,9 +15,6 @@ import (
 var (
 	ConfigContextKey = &ContextKey{"config"}
 	LoggerContextKey = &ContextKey{"logger"}
-
-	metricsMutex             sync.RWMutex
-	metricsMethodExecuteTime = map[string]snitch.Timer{}
 )
 
 type ContextKey struct {
@@ -104,47 +98,32 @@ func NewLoggerStreamServerInterceptor(l logger.Logger) grpc.StreamServerIntercep
 	}
 }
 
-func doMetrics(m *metrics.Component, method string, startTime time.Time) {
+func doMetrics(method string, startTime time.Time) {
 	if metricExecuteTime != nil {
 		metricExecuteTime.UpdateSince(startTime)
+		metricExecuteTime.With("method", method).UpdateSince(startTime)
 	}
-
-	metricsMutex.RLock()
-	metric, ok := metricsMethodExecuteTime[method]
-	metricsMutex.RUnlock()
-
-	if !ok {
-		metric = snitch.NewTimer(MetricMethodExecuteTime, "Total method duration", "method", method)
-
-		metricsMutex.Lock()
-		metricsMethodExecuteTime[method] = metric
-		metricsMutex.Unlock()
-
-		m.Register(metric)
-	}
-
-	metric.UpdateSince(startTime)
 }
 
-func NewMetricsUnaryServerInterceptor(m *metrics.Component) grpc.UnaryServerInterceptor {
+func NewMetricsUnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		startTime := time.Now()
 
 		resp, err = handler(ctx, req)
 
-		doMetrics(m, info.FullMethod, startTime)
+		doMetrics(info.FullMethod, startTime)
 
 		return resp, err
 	}
 }
 
-func NewMetricsStreamServerInterceptor(m *metrics.Component) grpc.StreamServerInterceptor {
+func NewMetricsStreamServerInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		startTime := time.Now()
 
 		err := handler(srv, ss)
 
-		doMetrics(m, info.FullMethod, startTime)
+		doMetrics(info.FullMethod, startTime)
 
 		return err
 	}

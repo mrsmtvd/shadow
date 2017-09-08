@@ -16,20 +16,20 @@ type IndextHandler struct {
 func (h *IndextHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	var updated time.Time
 
-	metrics, err := h.component.Registry().Gather()
+	measures, err := h.component.Registry().Gather()
 	if err == nil {
-		sort.Sort(metrics)
+		sort.Sort(measures)
 
-		for _, metric := range metrics {
-			if metric.CreatedAt.After(updated) {
-				updated = metric.CreatedAt
+		for _, measure := range measures {
+			if measure.CreatedAt.After(updated) {
+				updated = measure.CreatedAt
 			}
 		}
 	}
 
 	h.Render(r.Context(), ComponentName, "list", map[string]interface{}{
-		"metrics": metrics,
-		"error":   err,
-		"updated": updated,
+		"measures": measures,
+		"error":    err,
+		"updated":  updated,
 	})
 }

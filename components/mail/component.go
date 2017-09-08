@@ -92,13 +92,13 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 				}
 
 				err := c.execute(task)
-				if err != nil {
-					if metricMailTotalFailed != nil {
-						metricMailTotalFailed.Inc()
-					}
-				} else {
-					if metricMailTotalSuccess != nil {
-						metricMailTotalSuccess.Inc()
+				if metricMailTotal != nil {
+					metricMailTotal.Inc()
+
+					if err != nil {
+						metricMailTotal.With("status", "failed").Inc()
+					} else {
+						metricMailTotal.With("status", "success").Inc()
 					}
 				}
 

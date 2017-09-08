@@ -100,47 +100,51 @@ func (c *Component) setLogListener(wg *sync.WaitGroup) {
 				case task.TaskStatusWait:
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "wait"}))
 
-					if metricTasksStatusWait != nil {
-						metricTasksStatusWait.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "wait").Inc()
 					}
 				case task.TaskStatusProcess:
 					c.logger.Debug("Finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "process"}))
 
-					if metricTasksStatusProcess != nil {
-						metricTasksStatusProcess.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "process").Inc()
 					}
 				case task.TaskStatusSuccess:
 					c.logger.Debug("Success finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "success"}))
 
-					if metricTasksStatusSuccess != nil {
-						metricTasksStatusSuccess.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "success").Inc()
 					}
 				case task.TaskStatusFail:
 					c.logger.Error("Fail finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail"}))
 
-					if metricTasksStatusFail != nil {
-						metricTasksStatusFail.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "fail").Inc()
 					}
 				case task.TaskStatusFailByTimeout:
 					c.logger.Error("Fail by timeout finished", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "fail-by-timeout"}))
 
-					if metricTasksStatusFailByTimeout != nil {
-						metricTasksStatusFailByTimeout.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "fail-by-timeout").Inc()
 					}
 				case task.TaskStatusKill:
 					c.logger.Warn("Execute killed", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "kill"}))
 
-					if metricTasksStatusKill != nil {
-						metricTasksStatusKill.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "kill").Inc()
 					}
 				case task.TaskStatusRepeatWait:
 					c.logger.Debug("Repeat execute", c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "repeat-wait"}))
 
-					if metricTasksStatusRepeatWait != nil {
-						metricTasksStatusRepeatWait.Inc()
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "repeat-wait").Inc()
 					}
 				default:
 					c.logger.Warnf("Unknown task status %s", status, c.getLogFieldsForTask(t, map[string]interface{}{"task.status": "unknown"}))
+
+					if metricTasksTotal != nil {
+						metricTasksTotal.With("status", "unknown").Inc()
+					}
 				}
 			}
 		}

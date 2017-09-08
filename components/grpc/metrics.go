@@ -5,8 +5,7 @@ import (
 )
 
 const (
-	MetricExecuteTime       = ComponentName + "_request_duration_seconds"
-	MetricMethodExecuteTime = ComponentName + "_method_duration_seconds"
+	MetricExecuteTime = ComponentName + "_request_duration_seconds"
 )
 
 var (

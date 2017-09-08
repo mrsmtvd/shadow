@@ -38,7 +38,10 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 	handleUrl := "/dashboard/login"
 
 	if r.URL().Path != handleUrl {
-		session.PutString(SessionLastURL, r.URL().Path)
+		if !r.IsAjax() {
+			session.PutString(SessionLastURL, r.URL().Path)
+		}
+
 		h.Redirect(handleUrl, http.StatusFound, w, r)
 		return
 	}

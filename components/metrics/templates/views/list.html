@@ -15,10 +15,10 @@
         </div>
         <div class="x_content">
             <p class="text-muted font-13 m-b-30">
-                Shows {{ len .metrics }} metrics{{ if .updated }} last updated at <script type="application/javascript">document.write(dateToString('{{ .updated.Format "2006-01-02T15:04:05Z07:00" }}'))</script>{{ end }}
+                Shows {{ len .measures }} measures{{ if .updated }} last updated at <script type="application/javascript">document.write(dateToString('{{ .updated.Format "2006-01-02T15:04:05Z07:00" }}'))</script>{{ end }}
             </p>
 
-            <table class="table table-striped datatable" id="metrics">
+            <table class="table table-striped datatable">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -29,40 +29,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{ range $m, $metric := .metrics }}
+                    {{ range $m, $measure := .measures }}
                     <tr>
-                        <td>{{ $metric.Description.Name }}</td>
-                        <td>{{ $metric.Description.Help }}</td>
-                        <td>{{ $metric.Description.Type }}</td>
+                        <td>{{ $measure.Description.Name }}</td>
+                        <td>{{ $measure.Description.Help }}</td>
+                        <td>{{ $measure.Description.Type }}</td>
                         <td>
-                            {{ range $l, $label := $metric.Description.Labels }}
+                            {{ range $l, $label := $measure.Description.Labels }}
                             <span class="label label-success">{{ $label.Key }}: {{ $label.Value }}</span>
                             {{ end }}
                         </td>
                         <td>
-                            {{ $type := $metric.Description.Type.String }}
-                            {{ if eq $type "counter" }}
-                            <span class="label label-info">value: {{ $metric.Counter.Value }}</span>
-                            {{ else if eq $type "gauge" }}
-                            <span class="label label-info">value: {{ $metric.Gauge.Value }}</span>
-                            {{ else if eq $type "histogram" }}
-                            <span class="label label-info">count: {{ $metric.Histogram.SampleCount }}</span>
-                            <span class="label label-info">min: {{ $metric.Histogram.SampleMin }}</span>
-                            <span class="label label-info">max: {{ $metric.Histogram.SampleMax }}</span>
-                            <span class="label label-info">variance: {{ $metric.Histogram.SampleVariance }}</span>
+                            {{ $type := $measure.Description.Type.String }}
+                            {{ if or (eq $type "histogram") (eq $type "timer") }}
+                            <span class="label label-info">count: {{ $measure.Value.SampleCount }}</span>
+                            <span class="label label-info">min: {{ $measure.Value.SampleMin }}</span>
+                            <span class="label label-info">max: {{ $measure.Value.SampleMax }}</span>
+                            <span class="label label-info">variance: {{ $measure.Value.SampleVariance }}</span>
 
-                            {{ range $q, $value := $metric.Histogram.Quantiles }}
+                            {{ range $q, $value := $measure.Value.Quantiles }}
                             <span class="label label-info">{{ $q }}: {{ $value }}</span>
                             {{ end }}
-                            {{ else if eq $type "timer" }}
-                            <span class="label label-info">count: {{ $metric.Timer.SampleCount }}</span>
-                            <span class="label label-info">min: {{ $metric.Timer.SampleMin }}</span>
-                            <span class="label label-info">max: {{ $metric.Timer.SampleMax }}</span>
-                            <span class="label label-info">variance: {{ $metric.Timer.SampleVariance }}</span>
-
-                            {{ range $q, $value := $metric.Timer.Quantiles }}
-                            <span class="label label-info">{{ $q }}: {{ $value }}</span>
-                            {{ end }}
+                            {{ else }}
+                            <span class="label label-info">value: {{ $measure.Value.Value }}</span>
                             {{ end }}
                         </td>
                     </tr>

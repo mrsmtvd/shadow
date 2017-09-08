@@ -76,10 +76,8 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}
 
 	if c.application.HasComponent(metrics.ComponentName) {
-		m := c.application.GetComponent(metrics.ComponentName).(*metrics.Component)
-
-		unaryInterceptors = append(unaryInterceptors, NewMetricsUnaryServerInterceptor(m))
-		streamInterceptors = append(streamInterceptors, NewMetricsStreamServerInterceptor(m))
+		unaryInterceptors = append(unaryInterceptors, NewMetricsUnaryServerInterceptor())
+		streamInterceptors = append(streamInterceptors, NewMetricsStreamServerInterceptor())
 	}
 
 	unaryInterceptors = append(unaryInterceptors, grpc_recovery.UnaryServerInterceptor())
