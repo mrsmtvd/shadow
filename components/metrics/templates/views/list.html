@@ -51,6 +51,7 @@
                             <span class="label label-info">{{ $q }}: {{ $value }}</span>
                             {{ end }}
                             {{ else }}
+                            <span class="label label-info">count: {{ $measure.Value.SampleCount }}</span>
                             <span class="label label-info">value: {{ $measure.Value.Value }}</span>
                             {{ end }}
                         </td>
