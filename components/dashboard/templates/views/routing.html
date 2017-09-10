@@ -1,0 +1,62 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Routers</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table class="table table-striped datatable" id="routes">
+                <thead>
+                <tr>
+                    <th>Methods</th>
+                    <th>Path</th>
+                    <th>Component</th>
+                    <th>Handler</th>
+                    <th>Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{ range $r, $route := .routes }}
+                <tr>
+                    <td>
+                        {{ range $m, $method := $route.Methods }}
+                        <span class="label label-success">{{ $method }}</span>
+                        {{ end }}
+                    </td>
+                    <td>{{ $route.Path }}</td>
+                    <td>{{ $route.ComponentName }}</td>
+                    <td>{{ $route.HandlerName }}</td>
+                    <td>
+                        {{ if $route.Direct }}
+                        <span class="label label-info">direct</span>
+                        {{ end }}
+
+                        {{ if $route.Auth }}
+                        <span class="label label-info">auth</span>
+                        {{ end }}
+                    </td>
+                </tr>
+                {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+<link href="/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+<link href="/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+{{ end }}
+
+{{ define "js" }}
+<script src="/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js?v={{ .Application.build }}"></script>
+<script src="/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js?v={{ .Application.build }}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#routes').DataTable().order([2, 'asc']).draw();
+    });
+</script>
+{{ end }}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"runtime"
+	"sync"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
@@ -29,8 +30,10 @@ type Router struct {
 
 	Forbidden http.Handler
 
+	mutex  sync.RWMutex
 	chain  alice.Chain
 	logger logger.Logger
+	routes []*Route
 }
 
 type Route struct {
@@ -75,11 +78,11 @@ func (r *Router) getHandlerName(h interface{}) string {
 	return t.Name()
 }
 
-func (r *Router) setMetaMiddleware(hhandler http.Handler, route *Route) http.Handler {
+func (r *Router) setMetaMiddleware(handler http.Handler, route *Route) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
 		ctx := context.WithValue(rq.Context(), RouteContextKey, route)
 
-		hhandler.ServeHTTP(w, rq.WithContext(ctx))
+		handler.ServeHTTP(w, rq.WithContext(ctx))
 	})
 }
 
@@ -137,6 +140,18 @@ func (r *Router) SetNotAllowedHandler(h RouterHandler) {
 	r.MethodNotAllowed = r.chain.Then(FromRouteHandler(h))
 }
 
+func (r *Router) GetRoutes() []Route {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	routes := make([]Route, 0, len(r.routes))
+	for _, route := range r.routes {
+		routes = append(routes, *route)
+	}
+
+	return routes
+}
+
 func (r *Router) AddRoute(route *Route) {
 	if !route.Direct {
 		route.Path = "/" + route.ComponentName + route.Path
@@ -169,7 +184,7 @@ func (r *Router) AddRoute(route *Route) {
 
 	handler = r.chain.Then(handler)
 
-	for _, method := range route.Methods {
+	for i, method := range route.Methods {
 		r.logger.Debug("Add handler", map[string]interface{}{
 			"component": route.ComponentName,
 			"handler":   route.HandlerName,
@@ -180,5 +195,11 @@ func (r *Router) AddRoute(route *Route) {
 		})
 
 		r.Router.Handler(method, route.Path, r.setMetaMiddleware(handler, route))
+
+		if i == 0 {
+			r.mutex.Lock()
+			r.routes = append(r.routes, route)
+			r.mutex.Unlock()
+		}
 	}
 }

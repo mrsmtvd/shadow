@@ -55,7 +55,12 @@ func ResponseFromContext(c context.Context) *Response {
 }
 
 func RouteFromContext(c context.Context) *Route {
-	return c.Value(RouteContextKey).(*Route)
+	v := c.Value(RouteContextKey)
+	if v != nil {
+		return v.(*Route)
+	}
+
+	return nil
 }
 
 func RouterFromContext(c context.Context) *Router {

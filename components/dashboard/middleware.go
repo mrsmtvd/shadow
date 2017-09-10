@@ -71,9 +71,12 @@ func MetricsMiddleware(c *Component) alice.Constructor {
 
 			next.ServeHTTP(w, r)
 
-			if c.application.HasComponent("metrics") {
-				route := RouteFromContext(r.Context())
+			if !c.application.HasComponent("metrics") {
+				return
+			}
 
+			route := RouteFromContext(r.Context())
+			if route != nil {
 				metricHandlerExecuteTime.With(
 					"component", route.ComponentName,
 					"handler", route.HandlerName,

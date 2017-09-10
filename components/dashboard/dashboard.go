@@ -36,6 +36,10 @@ func (c *Component) GetDashboardMenu() *Menu {
 				Name: "Bindata",
 				Url:  "/bindata",
 			},
+			{
+				Name: "Routing",
+				Url:  "/routing",
+			},
 		},
 	}
 }
@@ -83,6 +87,12 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Methods: []string{http.MethodGet},
 			Path:    "/logout",
 			Handler: &LogoutHandler{},
+			Auth:    true,
+		},
+		{
+			Methods: []string{http.MethodGet},
+			Path:    "/routing",
+			Handler: &RoutingHandler{},
 			Auth:    true,
 		},
 	}
