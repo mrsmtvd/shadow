@@ -27,7 +27,7 @@ import:
 - package: github.com/kihamo/gotypes
   version: c1b2b85a41fe44ea31cb3f713b175448cfb08b84
 - package: github.com/kihamo/snitch
-  version: 480c264e265b89599bdb58a1c26a3ddbf7137858
+  version: b6481ecec8a6671dfe285b345a4baf3f2fab7045
 - package: github.com/OneOfOne/xxhash
   version: 7606720496774045c25ea52eda5fe51c3f2cfd2a
 - package: github.com/mailru/easyjson

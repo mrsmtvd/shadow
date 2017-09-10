@@ -13,6 +13,7 @@ var (
 	RenderContextKey   = &ContextKey{"render"}
 	RequestContextKey  = &ContextKey{"request"}
 	ResponseContextKey = &ContextKey{"response"}
+	RouteContextKey    = &ContextKey{"route"}
 	RouterContextKey   = &ContextKey{"router"}
 	PanicContextKey    = &ContextKey{"panic"}
 	SessionContextKey  = &ContextKey{"session"}
@@ -51,6 +52,10 @@ func RequestFromContext(c context.Context) *Request {
 
 func ResponseFromContext(c context.Context) *Response {
 	return c.Value(ResponseContextKey).(*Response)
+}
+
+func RouteFromContext(c context.Context) *Route {
+	return c.Value(RouteContextKey).(*Route)
 }
 
 func RouterFromContext(c context.Context) *Router {

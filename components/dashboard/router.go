@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 	"runtime"
 
 	"github.com/julienschmidt/httprouter"
@@ -11,7 +12,7 @@ import (
 	"github.com/kihamo/shadow/components/logger"
 )
 
-var httpMethods = [9]string{
+var httpMethods = []string{
 	http.MethodGet,
 	http.MethodHead,
 	http.MethodPost,
@@ -30,6 +31,16 @@ type Router struct {
 
 	chain  alice.Chain
 	logger logger.Logger
+}
+
+type Route struct {
+	ComponentName string
+	HandlerName   string
+	Handler       interface{}
+	Methods       []string
+	Path          string
+	Direct        bool
+	Auth          bool
 }
 
 type RouterHandler interface {
@@ -52,6 +63,24 @@ func NewRouter(c *Component) *Router {
 	r.logger = c.logger
 
 	return r
+}
+
+func (r *Router) getHandlerName(h interface{}) string {
+	t := reflect.TypeOf(h)
+
+	if t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	}
+
+	return t.Name()
+}
+
+func (r *Router) setMetaMiddleware(hhandler http.Handler, route *Route) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
+		ctx := context.WithValue(rq.Context(), RouteContextKey, route)
+
+		hhandler.ServeHTTP(w, rq.WithContext(ctx))
+	})
 }
 
 func (r *Router) setAuthMiddleware(h http.Handler, a bool) http.Handler {
@@ -108,37 +137,48 @@ func (r *Router) SetNotAllowedHandler(h RouterHandler) {
 	r.MethodNotAllowed = r.chain.Then(FromRouteHandler(h))
 }
 
-func (r *Router) Handle(m, p string, h interface{}, a bool) {
-	if m == "" || m == "*" {
-		for _, method := range httpMethods {
-			r.Handle(method, p, h, a)
-		}
+func (r *Router) AddRoute(route *Route) {
+	if !route.Direct {
+		route.Path = "/" + route.ComponentName + route.Path
+	}
 
-		return
+	if len(route.Methods) == 0 {
+		route.Methods = httpMethods
+	}
+
+	if route.HandlerName == "" {
+		route.HandlerName = r.getHandlerName(route.Handler)
 	}
 
 	var handler http.Handler
 
-	if h0, ok := h.(RouterHandler); ok {
-		handler = r.setAuthMiddleware(FromRouteHandler(h0), a)
-	} else if h1, ok := h.(http.Handler); ok {
-		handler = r.setAuthMiddleware(h1, a)
-	} else if h2, ok := h.(http.HandlerFunc); ok {
-		handler = r.setAuthMiddleware(h2, a)
-	} else if h3, ok := h.(http.FileSystem); ok {
-		r.Router.ServeFiles(p, h3)
+	if h0, ok := route.Handler.(RouterHandler); ok {
+		handler = r.setAuthMiddleware(FromRouteHandler(h0), route.Auth)
+	} else if h1, ok := route.Handler.(http.Handler); ok {
+		handler = r.setAuthMiddleware(h1, route.Auth)
+	} else if h2, ok := route.Handler.(http.HandlerFunc); ok {
+		handler = r.setAuthMiddleware(h2, route.Auth)
+	} else if h3, ok := route.Handler.(http.FileSystem); ok {
+		r.Router.ServeFiles(route.Path, h3)
 
-		// TODO: set auth
+		// TODO: set auth, metrics
 		return
 	} else {
-		panic(fmt.Sprintf("Unknown handler type %s %s %T", m, p, h))
+		panic(fmt.Sprintf("Unknown handler type %s.%s for path %s", route.ComponentName, route.HandlerName, route.Path))
 	}
 
-	r.Router.Handler(m, p, r.chain.Then(handler))
+	handler = r.chain.Then(handler)
 
-	if a {
-		r.logger.Debugf("Add security handler for %s %s", m, p)
-	} else {
-		r.logger.Debugf("Add handler for %s %s", m, p)
+	for _, method := range route.Methods {
+		r.logger.Debug("Add handler", map[string]interface{}{
+			"component": route.ComponentName,
+			"handler":   route.HandlerName,
+			"method":    method,
+			"path":      route.Path,
+			"direct":    route.Direct,
+			"auth":      route.Auth,
+		})
+
+		r.Router.Handler(method, route.Path, r.setMetaMiddleware(handler, route))
 	}
 }

@@ -4,14 +4,6 @@ import (
 	"net/http"
 )
 
-type Route struct {
-	Methods []string
-	Path    string
-	Direct  bool
-	Handler interface{}
-	Auth    bool
-}
-
 type hasRoute interface {
 	GetDashboardRoutes() []*Route
 }
@@ -33,23 +25,25 @@ func (c *Component) getServeMux() (http.Handler, error) {
 	for _, component := range components {
 		if componentRoute, ok := component.(hasRoute); ok {
 			for _, route := range componentRoute.GetDashboardRoutes() {
-				path := route.Path
-				if !route.Direct {
-					path = "/" + component.GetName() + path
+				if route.ComponentName == "" {
+					route.ComponentName = component.GetName()
 				}
 
-				for _, method := range route.Methods {
-					router.Handle(method, path, route.Handler, route.Auth)
-				}
+				router.AddRoute(route)
 			}
 		}
 	}
 
-	mainHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/"+c.GetName(), http.StatusMovedPermanently)
-	})
+	mainRouter := &Route{
+		ComponentName: c.GetName(),
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/"+c.GetName(), http.StatusMovedPermanently)
+		}),
+		Path:   "/",
+		Direct: true,
+	}
 
-	router.Handle("*", "/", mainHandler, false)
+	router.AddRoute(mainRouter)
 
 	return router, nil
 }
