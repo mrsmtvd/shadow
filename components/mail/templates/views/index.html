@@ -71,5 +71,5 @@
 {{ end }}
 
 {{ define "js" }}
-<script src="/dashboard/assets/vendors/validator/js/validator.min.js?v={{ .Application.build }}"></script>
+{{ staticHTML (staticURL "/dashboard/assets/vendors/validator/js/validator.min.js" false) }}
 {{ end }}

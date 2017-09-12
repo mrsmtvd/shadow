@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"net/url"
+	"path"
 	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
@@ -35,10 +37,15 @@ func NewRenderer() *Renderer {
 		"add":        r.funcAdd,
 		"mod":        r.funcMod,
 		"replace":    r.funcReplace,
+		"staticHTML": r.funcStaticHTML,
 		"date_since": shadow.DateSinceAsMessage,
 	}
 
 	return r
+}
+
+func (r *Renderer) AddFunc(name string, f interface{}) {
+	r.funcs[name] = f
 }
 
 func (r *Renderer) AddBaseLayouts(f *assetfs.AssetFS) error {
@@ -180,4 +187,26 @@ func (r *Renderer) funcMod(x, y int) (bool, error) {
 
 func (r *Renderer) funcReplace(input, from, to string) string {
 	return strings.Replace(input, from, to, -1)
+}
+
+func (r *Renderer) funcStaticHTML(file string) template.HTML {
+	if file == "" {
+		return template.HTML(file)
+	}
+
+	u, err := url.Parse(file)
+	if err != nil {
+		return template.HTML(file)
+	}
+
+	ext := path.Ext(u.Path)
+
+	switch strings.ToLower(ext) {
+	case ".css":
+		return template.HTML("<link href=\"" + file + "\" rel=\"stylesheet\">")
+	case ".js":
+		return template.HTML("<script src=\"" + file + "\"></script>")
+	}
+
+	return template.HTML(file)
 }

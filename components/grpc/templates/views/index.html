@@ -146,5 +146,5 @@
 {{ end }}
 
 {{ define "js" }}
-<script src="/grpc/assets/js/index.min.js?v={{ .Application.build }}"></script>
+{{ staticHTML (staticURL "/grpc/assets/js/index.js" true) }}
 {{ end }}

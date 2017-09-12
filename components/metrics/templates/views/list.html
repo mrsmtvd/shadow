@@ -65,12 +65,12 @@
 {{ end }}
 
 {{ define "head" }}
-<link href="/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
-<link href="/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" false) }}
 {{ end }}
 
 {{ define "js" }}
-<script src="/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js?v={{ .Application.build }}"></script>
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" false) }}
 {{ end }}

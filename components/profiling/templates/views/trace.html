@@ -1,6 +1,6 @@
 {{ define "head" }}
     {{ if .started }}
-    <link href="/profiling/assets/vendors/flipclock/css/flipclock.min.css?v={{ .Application.build }}" rel="stylesheet">
+    {{ staticHTML (staticURL "/profiling/assets/vendors/flipclock/css/flipclock.min.css" false) }}
     {{ end }}
 {{ end }}
 
@@ -144,11 +144,10 @@
 
 {{ define "js" }}
     {{ if .started }}
-    <script src="/profiling/assets/vendors/flipclock/js/flipclock.min.js?v={{ .Application.build }}"></script>
+    {{ staticHTML (staticURL "/profiling/assets/vendors/flipclock/js/flipclock.min.js" false) }}
     {{ end }}
 
-
-<script src="/profiling/assets/js/trace.min.js?v={{ .Application.build }}"></script>
+{{ staticHTML (staticURL "/profiling/assets/js/trace.js" true) }}
 
 <script type="text/javascript">
     $(document).ready(function () {

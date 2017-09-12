@@ -9,13 +9,13 @@
 
     <title>{{ .Application.GetName }}</title>
 
-    <link rel="shortcut icon" href="/dashboard/assets/images/favicon.svg?v={{ .Application.build }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ staticURL "/dashboard/assets/images/favicon.svg" false }}" type="image/svg+xml">
 
-    <link href="/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/vendors/nprogress/css/nprogress.min.css?v={{ .Application.build }}" rel="stylesheet">
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/nprogress/css/nprogress.min.css" false) }}
 
-    <link href="/dashboard/assets/css/dashboard.min.css?v={{ .Application.build }}" rel="stylesheet">
+    {{ staticHTML (staticURL "/dashboard/assets/css/dashboard.css" true) }}
 </head>
 
 <body class="login">
@@ -51,8 +51,8 @@
     </div>
 </div>
 
-<script src="/dashboard/assets/vendors/jquery/js/jquery.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js?v={{ .Application.build }}"></script>
+{{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
+{{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js" false) }}
 </body>
 </html>
 {{ end }}

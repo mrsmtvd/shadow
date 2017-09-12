@@ -8,15 +8,15 @@
 
     <title>{{ .Application.GetName }}</title>
 
-    <link rel="shortcut icon" href="/dashboard/assets/images/favicon.svg?v={{ .Application.build }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ staticURL "/dashboard/assets/images/favicon.svg" false }}" type="image/svg+xml">
 
-    <link href="/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/vendors/nprogress/css/nprogress.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/css/dashboard.min.css?v={{ .Application.build }}" rel="stylesheet">
-    <link href="/dashboard/assets/css/custom.min.css?v={{ .Application.build }}" rel="stylesheet">
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/nprogress/css/nprogress.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/css/dashboard.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/css/custom.min.css" false) }}
 
-    <script src="/dashboard/assets/js/functions.min.js?v={{ .Application.build }}"></script>
+    {{ staticHTML (staticURL "/dashboard/assets/js/functions.js" true) }}
 
     {{ block "head" . }} {{ end }}
 </head>
@@ -28,11 +28,12 @@
     </div>
 </div>
 
-<script src="/dashboard/assets/vendors/jquery/js/jquery.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/fastclick/js/fastclick.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/nprogress/js/nprogress.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/js/custom.min.js?v={{ .Application.build }}"></script>
+{{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
+{{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js" false) }}
+{{ staticHTML (staticURL "/dashboard/assets/vendors/fastclick/js/fastclick.min.js" false) }}
+{{ staticHTML (staticURL "/dashboard/assets/vendors/nprogress/js/nprogress.min.js" false) }}
+
+{{ staticHTML (staticURL "/dashboard/assets/js/custom.js" true) }}
 {{ block "js" . }} {{ end }}
 
 </body>
