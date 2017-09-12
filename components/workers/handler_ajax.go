@@ -183,10 +183,10 @@ func (h *AjaxHandler) actionWorkersReset(w *dashboard.Response, r *dashboard.Req
 	checkId := r.Original().FormValue("id")
 
 	go func() {
-		for _, worker := range workers {
-			if checkId == "" || worker.GetId() == checkId {
-				worker.Reset()
-				r.Logger().Infof("Reseted worker #%s", worker.GetId())
+		for _, w := range workers {
+			if checkId == "" || w.GetId() == checkId {
+				w.Reset()
+				r.Logger().Infof("Reseted worker #%s", w.GetId())
 
 				if checkId != "" {
 					break
@@ -204,9 +204,9 @@ func (h *AjaxHandler) actionWorkersKill(w *dashboard.Response, r *dashboard.Requ
 	workers := h.component.dispatcher.GetWorkers()
 	checkId := r.Original().FormValue("id")
 
-	for _, worker := range workers {
-		if checkId == "" || worker.GetId() == checkId {
-			h.component.RemoveWorker(worker)
+	for _, w := range workers {
+		if checkId == "" || w.GetId() == checkId {
+			h.component.RemoveWorker(w)
 
 			if checkId != "" {
 				break

@@ -29,7 +29,7 @@
                         {{ range $name, $vars := .variables }}
                         <div role="tabpanel" class="tab-pane{{ if eq $name "main" }} active{{ end }}" id="{{ $name }}">
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped datatable">
+                                <table class="table table-hover">
                                     <thead>
                                     <tr>
                                         <th width="20%">Name</th>
@@ -52,7 +52,13 @@
                                         <td>
                                             {{ if $config.Editable }}
                                             <div class="form-group">
-                                                {{ if eq $config.Type "bool" }}
+                                                {{ if $config.HasView "enum" }}
+                                                <select class="form-control select2" name="{{ $config.Key }}" id="{{ $varId }}">
+                                                    {{ range $o, $option := ($config.GetViewOption "options") }}
+                                                    <option value="{{ index $option 0 }}"{{ if eq (index $option 0) $config.Value }} selected="selected"{{ end }}>{{ index $option 1 }}</option>
+                                                    {{ end }}
+                                                </select>
+                                                {{ else if eq $config.Type "bool" }}
                                                 <input type="checkbox" class="js-switch" name="{{ $config.Key }}" id="{{ $varId }}" {{ if eq (print $config.Value) "true" }} checked{{ end }} />
                                                 {{ else if or (eq $config.Type "int") (eq $config.Type "int64") }}
                                                 <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[-+]?[0-9]*$"/>
@@ -62,25 +68,18 @@
                                                 <input type="number" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[-+]?[0-9]*(\.[0-9]*)?$"/>
                                                 {{ else if eq $config.Type "duration" }}
                                                 <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}" pattern="^[-+]?([0-9]*(\.[0-9]*)?[a-z]+)+$"/>
+                                                {{ else if $config.HasView "password" }}
+                                                <input type="password" class="form-control password-show" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
+                                                {{ else if $config.HasView "tags" }}
+                                                {{ $defaultText := $config.GetViewOption "default-text" }}
+                                                <input type="text" class="form-control tags" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"
+                                                    {{ if $defaultText }}data-default-text="{{ $defaultText }}"{{ end }}/>
                                                 {{ else }}
-                                                    {{ if $config.HasView "password" }}
-                                                    <input type="password" class="form-control password-show" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
-                                                    {{ else }}
-                                                        {{ if $config.HasView "tags" }}
-                                                        {{ $defaultText := $config.GetViewOption "default-text" }}
-                                                        <input type="text" class="form-control tags" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"
-                                                               {{ if $defaultText }}
-                                                               data-default-text="{{ $defaultText }}"
-                                                               {{ end }}
-                                                        />
-                                                        {{ else }}
-                                                        <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
-                                                        {{ end }}
-                                                    {{ end }}
+                                                <input type="text" class="form-control" name="{{ $config.Key }}" value="{{ $config.Value }}" id="{{ $varId }}"/>
                                                 {{ end }}
                                             </div>
                                             {{ else }}
-                                            {{ $config.Value }}
+                                            <span>{{ $config.Value }}</span>
                                             {{ end }}
                                         </td>
                                         <td>

@@ -34,7 +34,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		},
 		{
 			Key:     ConfigDialectEncoding,
-			Default: "InnoDB",
+			Default: "UTF8",
 			Usage:   "Dialect encoding (mysql)",
 			Type:    config.ValueTypeString,
 		},

@@ -9,3 +9,13 @@
 .tagsinput .tag span {
     line-height: 1.42857143;
 }
+
+table tr.group, table tr.group:hover {
+    background: rgba(52, 73, 94, 0.94);
+    color: #ECF0F1;
+    cursor: pointer;
+}
+
+table .form-group {
+    width: 100%;
+}

@@ -1,9 +1,11 @@
 package config
 
 const (
+	ViewEnum     = "enum"
 	ViewPassword = "password"
 	ViewTags     = "tags"
 
+	ViewOptionEnumOptions     = "options"
 	ViewOptionTagsDefaultText = "default-text"
 )
 

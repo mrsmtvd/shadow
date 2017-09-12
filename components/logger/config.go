@@ -14,9 +14,22 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		{
 			Key:      ConfigLevel,
 			Default:  6,
-			Usage:    "Log level in RFC5424: 0 - Emergency, 1 - Alert, 2 - Critical, 3 - Error, 4 - Warning, 5 - Notice, 6 - Informational, 7 - Debug",
+			Usage:    "Log level in RFC5424",
 			Type:     config.ValueTypeInt,
 			Editable: true,
+			View:     []string{config.ViewEnum},
+			ViewOptions: map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{0, "Emergency"},
+					{1, "Alert"},
+					{2, "Critical"},
+					{3, "Error"},
+					{4, "Warning"},
+					{5, "Notice"},
+					{6, "Informational"},
+					{7, "Debug"},
+				},
+			},
 		},
 		{
 			Key:      ConfigFields,

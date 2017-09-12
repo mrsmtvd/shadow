@@ -10,8 +10,8 @@ import (
 const (
 	ConfigHost               = ComponentName + ".host"
 	ConfigPort               = ComponentName + ".port"
-	ConfigAuthUser           = ComponentName + ".auth-user"
-	ConfigAuthPassword       = ComponentName + ".auth-password"
+	ConfigAuthUser           = ComponentName + ".auth.user"
+	ConfigAuthPassword       = ComponentName + ".auth.password"
 	ConfigSessionCookieName  = ComponentName + ".session.cookie-name"
 	ConfigSessionDomain      = ComponentName + ".session.domain"
 	ConfigSessionHttpOnly    = ComponentName + ".session.http-only"

@@ -1,7 +1,7 @@
 package config
 
 const (
-	ConfigDebug = "debug"
+	ConfigDebug = ComponentName + ".debug"
 )
 
 func (c *Component) GetConfigVariables() []Variable {
