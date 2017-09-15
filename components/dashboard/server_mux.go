@@ -17,10 +17,20 @@ func (c *Component) getServeMux() (http.Handler, error) {
 
 	router := NewRouter(c)
 
+	// Special pages
 	router.SetPanicHandler(&PanicHandler{})
-	router.SetForbiddenHandler(&ForbiddenHandler{})
 	router.SetNotFoundHandler(&NotFoundHandler{})
 	router.SetNotAllowedHandler(&MethodNotAllowedHandler{})
+
+	// Middleware
+	router.AddMiddleware(ContextMiddleware(router, c.config, c.logger, c.renderer, c.session))
+
+	if c.application.HasComponent("metrics") {
+		router.AddMiddleware(MetricsMiddleware())
+	}
+
+	router.AddMiddleware(LoggerMiddleware())
+	router.AddMiddleware(AuthorizationMiddleware())
 
 	for _, component := range components {
 		if componentRoute, ok := component.(hasRoute); ok {

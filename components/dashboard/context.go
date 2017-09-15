@@ -35,23 +35,48 @@ type PanicError struct {
 }
 
 func ConfigFromContext(c context.Context) *config.Component {
-	return c.Value(ConfigContextKey).(*config.Component)
+	v := c.Value(ConfigContextKey)
+	if v != nil {
+		return v.(*config.Component)
+	}
+
+	return nil
 }
 
 func LoggerFromContext(c context.Context) logger.Logger {
-	return c.Value(LoggerContextKey).(logger.Logger)
+	v := c.Value(LoggerContextKey)
+	if v != nil {
+		return v.(logger.Logger)
+	}
+
+	return nil
 }
 
 func RenderFromContext(c context.Context) *Renderer {
-	return c.Value(RenderContextKey).(*Renderer)
+	v := c.Value(RenderContextKey)
+	if v != nil {
+		return v.(*Renderer)
+	}
+
+	return nil
 }
 
 func RequestFromContext(c context.Context) *Request {
-	return c.Value(RequestContextKey).(*Request)
+	v := c.Value(RequestContextKey)
+	if v != nil {
+		return v.(*Request)
+	}
+
+	return nil
 }
 
 func ResponseFromContext(c context.Context) *Response {
-	return c.Value(ResponseContextKey).(*Response)
+	v := c.Value(ResponseContextKey)
+	if v != nil {
+		return v.(*Response)
+	}
+
+	return nil
 }
 
 func RouteFromContext(c context.Context) *Route {
@@ -64,13 +89,28 @@ func RouteFromContext(c context.Context) *Route {
 }
 
 func RouterFromContext(c context.Context) *Router {
-	return c.Value(RouterContextKey).(*Router)
+	v := c.Value(RouterContextKey)
+	if v != nil {
+		return v.(*Router)
+	}
+
+	return nil
 }
 
 func PanicFromContext(c context.Context) *PanicError {
-	return c.Value(PanicContextKey).(*PanicError)
+	v := c.Value(PanicContextKey)
+	if v != nil {
+		return v.(*PanicError)
+	}
+
+	return nil
 }
 
 func SessionFromContext(c context.Context) *Session {
-	return c.Value(SessionContextKey).(*Session)
+	v := c.Value(SessionContextKey)
+	if v != nil {
+		return v.(*Session)
+	}
+
+	return nil
 }

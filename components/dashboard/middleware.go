@@ -64,16 +64,12 @@ func LoggerMiddleware() alice.Constructor {
 	}
 }
 
-func MetricsMiddleware(c *Component) alice.Constructor {
+func MetricsMiddleware() alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			now := time.Now()
 
 			next.ServeHTTP(w, r)
-
-			if !c.application.HasComponent("metrics") {
-				return
-			}
 
 			route := RouteFromContext(r.Context())
 			if route != nil {
@@ -82,6 +78,33 @@ func MetricsMiddleware(c *Component) alice.Constructor {
 					"handler", route.HandlerName,
 				).UpdateSince(now)
 			}
+		})
+	}
+}
+
+func AuthorizationMiddleware() alice.Constructor {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			route := RouteFromContext(r.Context())
+			if route != nil && route.Auth {
+				session := SessionFromContext(r.Context())
+				if session == nil {
+					panic("Session isn't set in context")
+				}
+
+				auth, err := session.GetString(SessionUsername)
+				if err != nil || auth == "" {
+					request := RequestFromContext(r.Context())
+					session := SessionFromContext(r.Context())
+					if request != nil && session != nil && !request.IsAjax() && request.IsGet() {
+						session.PutString(SessionLastURL, request.URL().Path)
+					}
+
+					http.Redirect(w, r, "/dashboard/login", http.StatusFound)
+				}
+			}
+
+			next.ServeHTTP(w, r)
 		})
 	}
 }

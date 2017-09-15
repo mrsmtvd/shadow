@@ -23,7 +23,7 @@
     <div class="login_wrapper">
         <div class="form login_form">
             <section class="login_content">
-                <form action="{{ .login_url }}" method="post">
+                <form action="/dashboard/login" method="post">
                     <h1>Login Form</h1>
 
                     {{ if .error }}
@@ -36,6 +36,7 @@
                     <div>
                         <input type="text" class="form-control" placeholder="Username" required="required" name="username" autofocus />
                     </div>
+
                     <div>
                         <input type="password" class="form-control" placeholder="Password" required="required" name="password" />
                     </div>

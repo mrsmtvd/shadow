@@ -20,25 +20,41 @@ func (h *Handler) Redirect(l string, c int, w *Response, r *Request) {
 }
 
 func (h *Handler) NotFound(w *Response, r *Request) {
-	RouterFromContext(r.Context()).NotFound.ServeHTTP(w, r.Original())
+	router := RouterFromContext(r.Context())
+	if router == nil {
+		panic("Router isn't set in context")
+	}
+
+	router.NotFound.ServeHTTP(w, r.Original())
 }
 
 func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
-	RouterFromContext(r.Context()).MethodNotAllowed.ServeHTTP(w, r.Original())
+	router := RouterFromContext(r.Context())
+	if router == nil {
+		panic("Router isn't set in context")
+	}
+
+	router.MethodNotAllowed.ServeHTTP(w, r.Original())
 }
 
 func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interface{}) {
-	err := RenderFromContext(ctx).Render(ctx, c, v, d)
+	render := RenderFromContext(ctx)
+	if render == nil {
+		panic("Render isn't set in context")
+	}
 
-	if err != nil {
+	if err := render.Render(ctx, c, v, d); err != nil {
 		panic(err.Error())
 	}
 }
 
 func (h *Handler) RenderLayout(ctx context.Context, c, v, l string, d map[string]interface{}) {
-	err := RenderFromContext(ctx).RenderLayout(ctx, c, v, l, d)
+	render := RenderFromContext(ctx)
+	if render == nil {
+		panic("Render isn't set in context")
+	}
 
-	if err != nil {
+	if err := render.RenderLayout(ctx, c, v, l, d); err != nil {
 		panic(err.Error())
 	}
 }

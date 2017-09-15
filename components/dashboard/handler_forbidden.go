@@ -35,17 +35,6 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 		return
 	}
 
-	handleUrl := "/dashboard/login"
-
-	if r.URL().Path != handleUrl {
-		if !r.IsAjax() {
-			session.PutString(SessionLastURL, r.URL().Path)
-		}
-
-		h.Redirect(handleUrl, http.StatusFound, w, r)
-		return
-	}
-
 	var err error
 
 	if r.IsPost() {
@@ -56,6 +45,8 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 			if checkUsername == username && checkPassword == password {
 				if err = session.RenewToken(); err == nil {
 					if err = session.PutString(SessionUsername, username); err == nil {
+						r.Logger().Infof("Auth success for %s", username)
+
 						h.Redirect(h.getRedirectURL(r), http.StatusFound, w, r)
 						return
 					}
@@ -68,7 +59,6 @@ func (h *ForbiddenHandler) ServeHTTP(w *Response, r *Request) {
 
 	w.WriteHeader(http.StatusForbidden)
 	h.RenderLayout(r.Context(), ComponentName, "login", "blank", map[string]interface{}{
-		"login_url": handleUrl,
-		"error":     err,
+		"error": err,
 	})
 }

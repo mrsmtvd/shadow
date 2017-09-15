@@ -28,8 +28,6 @@ var httpMethods = []string{
 type Router struct {
 	httprouter.Router
 
-	Forbidden http.Handler
-
 	mutex  sync.RWMutex
 	chain  alice.Chain
 	logger logger.Logger
@@ -57,57 +55,14 @@ func NewRouter(c *Component) *Router {
 	r.HandleMethodNotAllowed = true
 
 	// chains
-	r.chain = alice.New(
-		ContextMiddleware(r, c.config, c.logger, c.renderer, c.session),
-		MetricsMiddleware(c),
-		LoggerMiddleware(),
-	)
-
+	r.chain = alice.New()
 	r.logger = c.logger
 
 	return r
 }
 
-func (r *Router) getHandlerName(h interface{}) string {
-	t := reflect.TypeOf(h)
-
-	if t.Kind() == reflect.Ptr {
-		return t.Elem().Name()
-	}
-
-	return t.Name()
-}
-
-func (r *Router) setMetaMiddleware(handler http.Handler, route *Route) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
-		ctx := context.WithValue(rq.Context(), RouteContextKey, route)
-
-		handler.ServeHTTP(w, rq.WithContext(ctx))
-	})
-}
-
-func (r *Router) setAuthMiddleware(h http.Handler, a bool) http.Handler {
-	if !a || r.Forbidden == nil {
-		return h
-	}
-
-	if _, ok := h.(http.HandlerFunc); !ok && r.Forbidden == h {
-		return h
-	}
-
-	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
-		auth, err := SessionFromContext(rq.Context()).GetString(SessionUsername)
-
-		if err == nil && auth != "" {
-			h.ServeHTTP(w, rq)
-		} else {
-			r.Forbidden.ServeHTTP(w, rq)
-		}
-	})
-}
-
 func (r *Router) SetPanicHandler(h RouterHandler) {
-	panicHadler := FromRouteHandler(h)
+	panicHandler := FromRouteHandler(h)
 
 	r.PanicHandler = func(pw http.ResponseWriter, pr *http.Request, pe interface{}) {
 		stack := make([]byte, 4096)
@@ -123,21 +78,25 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 			})
 
 			hr = hr.WithContext(ctx)
-			panicHadler.ServeHTTP(hw, hr)
+			panicHandler.ServeHTTP(hw, hr)
 		})).ServeHTTP(pw, pr)
 	}
 }
 
-func (r *Router) SetForbiddenHandler(h RouterHandler) {
-	r.Forbidden = r.chain.Then(FromRouteHandler(h))
-}
-
 func (r *Router) SetNotFoundHandler(h RouterHandler) {
-	r.NotFound = r.chain.Then(FromRouteHandler(h))
+	handler := FromRouteHandler(h)
+
+	r.NotFound = http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
+		r.chain.Then(handler).ServeHTTP(w, rq)
+	})
 }
 
 func (r *Router) SetNotAllowedHandler(h RouterHandler) {
-	r.MethodNotAllowed = r.chain.Then(FromRouteHandler(h))
+	handler := FromRouteHandler(h)
+
+	r.MethodNotAllowed = http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
+		r.chain.Then(handler).ServeHTTP(w, rq)
+	})
 }
 
 func (r *Router) GetRoutes() []Route {
@@ -152,6 +111,10 @@ func (r *Router) GetRoutes() []Route {
 	return routes
 }
 
+func (r *Router) AddMiddleware(m alice.Constructor) {
+	r.chain = r.chain.Append(m)
+}
+
 func (r *Router) AddRoute(route *Route) {
 	if !route.Direct {
 		route.Path = "/" + route.ComponentName + route.Path
@@ -162,17 +125,23 @@ func (r *Router) AddRoute(route *Route) {
 	}
 
 	if route.HandlerName == "" {
-		route.HandlerName = r.getHandlerName(route.Handler)
+		t := reflect.TypeOf(route.Handler)
+
+		if t.Kind() == reflect.Ptr {
+			route.HandlerName = t.Elem().Name()
+		} else {
+			route.HandlerName = t.Name()
+		}
 	}
 
 	var handler http.Handler
 
 	if h0, ok := route.Handler.(RouterHandler); ok {
-		handler = r.setAuthMiddleware(FromRouteHandler(h0), route.Auth)
+		handler = FromRouteHandler(h0)
 	} else if h1, ok := route.Handler.(http.Handler); ok {
-		handler = r.setAuthMiddleware(h1, route.Auth)
+		handler = h1
 	} else if h2, ok := route.Handler.(http.HandlerFunc); ok {
-		handler = r.setAuthMiddleware(h2, route.Auth)
+		handler = h2
 	} else if h3, ok := route.Handler.(http.FileSystem); ok {
 		r.Router.ServeFiles(route.Path, h3)
 
@@ -181,8 +150,6 @@ func (r *Router) AddRoute(route *Route) {
 	} else {
 		panic(fmt.Sprintf("Unknown handler type %s.%s for path %s", route.ComponentName, route.HandlerName, route.Path))
 	}
-
-	handler = r.chain.Then(handler)
 
 	for i, method := range route.Methods {
 		r.logger.Debug("Add handler", map[string]interface{}{
@@ -194,7 +161,14 @@ func (r *Router) AddRoute(route *Route) {
 			"auth":      route.Auth,
 		})
 
-		r.Router.Handler(method, route.Path, r.setMetaMiddleware(handler, route))
+		localChan := alice.New(func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				ctx := context.WithValue(r.Context(), RouteContextKey, route)
+				next.ServeHTTP(w, r.WithContext(ctx))
+			})
+		})
+
+		r.Router.Handler(method, route.Path, localChan.Extend(r.chain).Then(handler))
 
 		if i == 0 {
 			r.mutex.Lock()
