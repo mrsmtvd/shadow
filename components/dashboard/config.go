@@ -10,8 +10,17 @@ import (
 const (
 	ConfigHost               = ComponentName + ".host"
 	ConfigPort               = ComponentName + ".port"
+	ConfigAuthEnabled        = ComponentName + ".auth.enabled"
 	ConfigAuthUser           = ComponentName + ".auth.user"
 	ConfigAuthPassword       = ComponentName + ".auth.password"
+	ConfigOAuth2Enabled      = ComponentName + ".oauth2.enabled"
+	ConfigOAuth2ID           = ComponentName + ".oauth2.id"
+	ConfigOAuth2Secret       = ComponentName + ".oauth2.secret"
+	ConfigOAuth2Scopes       = ComponentName + ".oauth2.scopes"
+	ConfigOAuth2AuthURL      = ComponentName + ".oauth2.auth-url"
+	ConfigOAuth2TokenURL     = ComponentName + ".oauth2.token-url"
+	ConfigOAuth2ProfileURL   = ComponentName + ".oauth2.profile-url"
+	ConfigOAuth2RedirectURL  = ComponentName + ".oauth2.redirect-url"
 	ConfigSessionCookieName  = ComponentName + ".session.cookie-name"
 	ConfigSessionDomain      = ComponentName + ".session.domain"
 	ConfigSessionHttpOnly    = ComponentName + ".session.http-only"
@@ -37,17 +46,77 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			Type:    config.ValueTypeInt,
 		},
 		{
+			Key:      ConfigAuthEnabled,
+			Usage:    "Enabled standard auth",
+			Type:     config.ValueTypeBool,
+			Editable: true,
+			Default:  true,
+		},
+		{
 			Key:      ConfigAuthUser,
-			Usage:    "User login",
+			Usage:    "Standard auth user login",
 			Type:     config.ValueTypeString,
 			Editable: true,
 		},
 		{
 			Key:      ConfigAuthPassword,
-			Usage:    "User password",
+			Usage:    "Standard auth password",
 			Type:     config.ValueTypeString,
 			Editable: true,
 			View:     []string{config.ViewPassword},
+		},
+		{
+			Key:      ConfigOAuth2Enabled,
+			Usage:    "Enabled oAuth2",
+			Type:     config.ValueTypeBool,
+			Editable: true,
+		},
+		{
+			Key:      ConfigOAuth2ID,
+			Usage:    "oAuth2 client id",
+			Type:     config.ValueTypeString,
+			Editable: true,
+		},
+		{
+			Key:      ConfigOAuth2Secret,
+			Usage:    "oAuth2 client secret",
+			Type:     config.ValueTypeString,
+			Editable: true,
+			View:     []string{config.ViewPassword},
+		},
+		{
+			Key:      ConfigOAuth2Scopes,
+			Usage:    "oAuth2 scopes",
+			Type:     config.ValueTypeString,
+			Editable: true,
+			View:     []string{config.ViewTags},
+			ViewOptions: map[string]interface{}{
+				config.ViewOptionTagsDefaultText: "add a scope",
+			},
+		},
+		{
+			Key:      ConfigOAuth2AuthURL,
+			Usage:    "oAuth2 endpoint auth URL",
+			Type:     config.ValueTypeString,
+			Editable: true,
+		},
+		{
+			Key:      ConfigOAuth2TokenURL,
+			Usage:    "oAuth2 endpoint token URL",
+			Type:     config.ValueTypeString,
+			Editable: true,
+		},
+		{
+			Key:      ConfigOAuth2ProfileURL,
+			Usage:    "oAuth2 endpoint profile URL",
+			Type:     config.ValueTypeString,
+			Editable: true,
+		},
+		{
+			Key:      ConfigOAuth2RedirectURL,
+			Usage:    "oAuth2 redirect URL",
+			Type:     config.ValueTypeString,
+			Editable: true,
 		},
 		{
 			Key:      ConfigSessionCookieName,
@@ -110,6 +179,17 @@ func (c *Component) GetConfigVariables() []config.Variable {
 func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 	return map[string][]config.Watcher{
 		config.WatcherForAll:     {c.watchConfig},
+		ConfigAuthEnabled:        {c.watchAuth},
+		ConfigAuthUser:           {c.watchAuth},
+		ConfigAuthPassword:       {c.watchAuth},
+		ConfigOAuth2Enabled:      {c.watchAuth},
+		ConfigOAuth2ID:           {c.watchAuth},
+		ConfigOAuth2Secret:       {c.watchAuth},
+		ConfigOAuth2Scopes:       {c.watchAuth},
+		ConfigOAuth2AuthURL:      {c.watchAuth},
+		ConfigOAuth2TokenURL:     {c.watchAuth},
+		ConfigOAuth2ProfileURL:   {c.watchAuth},
+		ConfigOAuth2RedirectURL:  {c.watchAuth},
 		ConfigSessionCookieName:  {c.watchSessionCookieName},
 		ConfigSessionDomain:      {c.watchSessionDomain},
 		ConfigSessionHttpOnly:    {c.watchSessionHttpOnly},
@@ -123,6 +203,10 @@ func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
 
 func (c *Component) watchConfig(key string, newValue interface{}, oldValue interface{}) {
 	c.logger.Infof("Change value for %s with '%v' to '%v'", key, oldValue, newValue)
+}
+
+func (c *Component) watchAuth(_ string, _ interface{}, _ interface{}) {
+	c.initAuth()
 }
 
 func (c *Component) watchSessionCookieName(_ string, v interface{}, _ interface{}) {
