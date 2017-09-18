@@ -10,8 +10,27 @@ type Handler struct {
 }
 
 func FromRouteHandler(h RouterHandler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
-		h.ServeHTTP(NewResponse(w), NewRequest(rq))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var (
+			rq *Request
+			wq *Response
+		)
+
+		if fromContext := RequestFromContext(r.Context()); fromContext != nil {
+			rq = fromContext
+		} else {
+			rq = NewRequest(r)
+		}
+
+		if resp, ok := w.(*Response); ok {
+			wq = resp
+		} else if fromContext := ResponseFromContext(r.Context()); fromContext != nil {
+			wq = fromContext
+		} else {
+			wq = NewResponse(w)
+		}
+
+		h.ServeHTTP(wq, rq)
 	})
 }
 
