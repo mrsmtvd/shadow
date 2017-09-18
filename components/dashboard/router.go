@@ -77,8 +77,7 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 				line:  line,
 			})
 
-			hr = hr.WithContext(ctx)
-			panicHandler.ServeHTTP(hw, hr)
+			panicHandler.ServeHTTP(hw, hr.WithContext(ctx))
 		})).ServeHTTP(pw, pr)
 	}
 }
@@ -168,7 +167,15 @@ func (r *Router) AddRoute(route *Route) {
 			})
 		})
 
-		r.Router.Handler(method, route.Path, localChan.Extend(r.chain).Then(handler))
+		r.Router.Handle(method, route.Path, func(w http.ResponseWriter, rq *http.Request, p httprouter.Params) {
+			values := rq.URL.Query()
+			for _, param := range p {
+				values.Add(":"+param.Key, param.Value)
+			}
+			rq.URL.RawQuery = values.Encode()
+
+			localChan.Extend(r.chain).Then(handler).ServeHTTP(w, rq)
+		})
 
 		if i == 0 {
 			r.mutex.Lock()
