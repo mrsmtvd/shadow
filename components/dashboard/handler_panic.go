@@ -23,5 +23,5 @@ func (h *PanicHandler) ServeHTTP(w *Response, r *Request) {
 		"panic": fields,
 	})
 
-	r.Logger().Error("Frontend reguest error", fields)
+	r.Logger().Error("Frontend request error", fields)
 }

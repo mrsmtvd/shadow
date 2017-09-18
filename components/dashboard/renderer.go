@@ -143,13 +143,10 @@ func (r *Renderer) RenderLayout(ctx context.Context, c, v, l string, d map[strin
 
 func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface{} {
 	request := RequestFromContext(ctx)
-	username, _ := request.Session().GetString(SessionUsername)
 
 	return map[string]interface{}{
 		"Request": request,
-		"User": map[string]interface{}{
-			"username": username,
-		},
+		"User":    request.User(),
 	}
 }
 

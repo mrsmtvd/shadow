@@ -3203,7 +3203,7 @@ a.hiddenanchor {
   padding: 25px 0 0;
   position: relative;
   text-align: center;
-  text-shadow: 0 1px 0 #fff;
+  /* text-shadow: 0 1px 0 #fff; */
   min-width: 280px; }
 
 .login_content a,
@@ -3253,7 +3253,7 @@ a.hiddenanchor {
   background: linear-gradient(to left, #7e7e7e 0%, white 100%);
   left: 0; }
 
-.login_content form {
+.login_form {
   margin: 20px 0;
   position: relative; }
 

@@ -6,6 +6,10 @@ import (
 	"github.com/elazarl/go-bindata-assetfs"
 )
 
+const (
+	AuthPath = "/" + ComponentName + "/auth"
+)
+
 func (c *Component) GetTemplates() *assetfs.AssetFS {
 	return &assetfs.AssetFS{
 		Asset:     Asset,
@@ -79,20 +83,40 @@ func (c *Component) GetDashboardRoutes() []*Route {
 			Auth:    true,
 		},
 		{
+			Methods: []string{http.MethodGet},
+			Path:    "/routing",
+			Handler: &RoutingHandler{},
+			Auth:    true,
+		},
+		{
 			Methods: []string{http.MethodGet, http.MethodPost},
-			Path:    "/login",
-			Handler: &ForbiddenHandler{},
+			Path:    AuthPath + "/:provider/callback",
+			Handler: &AuthHandler{
+				component:  c,
+				isCallback: true,
+			},
+			Direct: true,
+		},
+		{
+			Methods: []string{http.MethodGet, http.MethodPost},
+			Path:    AuthPath + "/:provider",
+			Handler: &AuthHandler{
+				component: c,
+			},
+			Direct: true,
+		},
+		{
+			Methods: []string{http.MethodGet},
+			Path:    AuthPath,
+			Handler: &AuthHandler{
+				component: c,
+			},
+			Direct: true,
 		},
 		{
 			Methods: []string{http.MethodGet},
 			Path:    "/logout",
 			Handler: &LogoutHandler{},
-			Auth:    true,
-		},
-		{
-			Methods: []string{http.MethodGet},
-			Path:    "/routing",
-			Handler: &RoutingHandler{},
 			Auth:    true,
 		},
 	}

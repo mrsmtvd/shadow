@@ -8,6 +8,7 @@ import (
 	"github.com/alexedwards/scs"
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/kihamo/shadow/components/logger"
 )
 
@@ -87,20 +88,18 @@ func AuthorizationMiddleware() alice.Constructor {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			route := RouteFromContext(r.Context())
 			if route != nil && route.Auth {
-				session := SessionFromContext(r.Context())
-				if session == nil {
-					panic("Session isn't set in context")
+				request := RequestFromContext(r.Context())
+				if request == nil {
+					panic("Request isn't set in context")
 				}
 
-				auth, err := session.GetString(SessionUsername)
-				if err != nil || auth == "" {
-					request := RequestFromContext(r.Context())
-					session := SessionFromContext(r.Context())
-					if request != nil && session != nil && !request.IsAjax() && request.IsGet() {
-						session.PutString(SessionLastURL, request.URL().Path)
+				if len(auth.GetProviders()) > 0 && !request.User().IsAuthorized() {
+					if !request.IsAjax() && request.IsGet() {
+						request.Session().PutString(SessionLastURL, request.URL().Path)
 					}
 
-					http.Redirect(w, r, "/dashboard/login", http.StatusFound)
+					http.Redirect(w, r, AuthPath, http.StatusFound)
+					return
 				}
 			}
 

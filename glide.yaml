@@ -46,3 +46,5 @@ import:
   version: a6b93000bd219143c56c16e6cb1c4b91da3f224b
 - package: gopkg.in/gomail.v2
   version: 81ebce5c23dfd25c6c67194b37d3dd3f338c98b1
+- package: github.com/markbates/goth
+  version: v1.41.0

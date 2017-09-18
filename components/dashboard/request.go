@@ -9,6 +9,7 @@ import (
 
 	"github.com/kihamo/gotypes"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/kihamo/shadow/components/logger"
 )
 
@@ -48,6 +49,12 @@ func (r *Request) Panic() *PanicError {
 
 func (r *Request) Session() *Session {
 	return SessionFromContext(r.Context())
+}
+
+func (r *Request) User() *auth.User {
+	user := &auth.User{}
+	r.Session().GetObject(SessionUser, user)
+	return user
 }
 
 func (r *Request) URL() *url.URL {

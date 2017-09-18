@@ -5,16 +5,21 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs"
+	"github.com/markbates/goth"
 )
 
 const (
-	SessionUsername = "username"
-	SessionLastURL  = "last-url"
+	SessionUser    = "user"
+	SessionLastURL = "last-url"
 )
 
 type Session struct {
 	session  *scs.Session
 	response http.ResponseWriter
+}
+
+func SessionAuthProvider(provider goth.Provider) string {
+	return ComponentName + ":" + provider.Name()
 }
 
 func NewSession(s *scs.Session, w http.ResponseWriter) *Session {
