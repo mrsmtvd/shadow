@@ -33,7 +33,7 @@ func (c *Component) getServeMux() (http.Handler, error) {
 	router.AddMiddleware(AuthorizationMiddleware())
 
 	for _, component := range components {
-		if componentRoute, ok := component.(dashboard.HasRoute); ok {
+		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
 			for _, route := range componentRoute.GetDashboardRoutes() {
 				router.AddRoute(route)
 			}

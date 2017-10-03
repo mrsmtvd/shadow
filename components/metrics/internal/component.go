@@ -36,10 +36,6 @@ type Component struct {
 	storage  *storage.Influx
 }
 
-type hasMetrics interface {
-	Metrics() snitch.Collector
-}
-
 func (c *Component) GetName() string {
 	return metrics.ComponentName
 }
@@ -111,8 +107,8 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}
 
 	for _, component := range components {
-		if metrics, ok := component.(hasMetrics); ok {
-			c.Register(metrics.Metrics())
+		if m, ok := component.(metrics.HasMetrics); ok {
+			c.Register(m.Metrics())
 		}
 	}
 

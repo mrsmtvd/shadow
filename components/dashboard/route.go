@@ -26,7 +26,7 @@ type Route interface {
 	Auth() bool
 }
 
-type HasRoute interface {
+type HasRoutes interface {
 	GetDashboardRoutes() []Route
 }
 

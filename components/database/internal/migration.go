@@ -15,10 +15,6 @@ const (
 
 var idRegexp = regexp.MustCompile(`^(\d+)(.*)$`)
 
-type hasMigrations interface {
-	GetMigrations() migrate.MigrationSource
-}
-
 func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 	components, err := c.application.GetComponents()
 	if err != nil {
@@ -28,7 +24,7 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 	list := []*migrate.Migration{}
 
 	for _, s := range components {
-		if service, ok := s.(hasMigrations); ok {
+		if service, ok := s.(database.HasMigrations); ok {
 			migrations, err := service.GetMigrations().FindMigrations()
 
 			if err != nil {

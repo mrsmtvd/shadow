@@ -89,7 +89,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}
 
 	for _, cmp := range components {
-		if cmpGrpc, ok := cmp.(grpc.HasGrpcService); ok {
+		if cmpGrpc, ok := cmp.(grpc.HasGrpcServer); ok {
 			cmpGrpc.RegisterGrpcServer(c.server)
 		}
 	}

@@ -11,6 +11,6 @@ type Renderer interface {
 	RenderLayout(ctx context.Context, c, v, l string, d map[string]interface{}) error
 }
 
-type HasTemplate interface {
+type HasTemplates interface {
 	GetTemplates() *assetfs.AssetFS
 }

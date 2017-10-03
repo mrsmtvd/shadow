@@ -51,7 +51,7 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 	}
 
 	for _, component := range components {
-		if componentTemplate, ok := component.(dashboard.HasTemplate); ok {
+		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
 			fs := componentTemplate.GetTemplates()
 			if fs == nil {
 				continue
@@ -76,7 +76,7 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 		return nil, fmt.Errorf("Component %s not found", name)
 	}
 
-	componentTemplate, ok := h.Application.GetComponent(name).(dashboard.HasTemplate)
+	componentTemplate, ok := h.Application.GetComponent(name).(dashboard.HasTemplates)
 	if !ok {
 		return nil, fmt.Errorf("Component %s haven't templates", name)
 	}

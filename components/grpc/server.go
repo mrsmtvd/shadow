@@ -4,6 +4,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-type HasGrpcService interface {
+type HasGrpcServer interface {
 	RegisterGrpcServer(s *grpc.Server)
 }
