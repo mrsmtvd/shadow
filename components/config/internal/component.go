@@ -28,6 +28,7 @@ func EnvKey(name string) string {
 type Component struct {
 	mutex       sync.RWMutex
 	application shadow.Application
+	logger      logger.Logger
 	envPrefix   string
 	variables   map[string]config.Variable
 	watchers    map[string][]config.Watcher
@@ -81,10 +82,8 @@ func (c *Component) Run() error {
 
 	for _, component := range components {
 		if watchers, ok := component.(config.HasWatchers); ok {
-			for key, list := range watchers.GetConfigWatchers() {
-				for _, watcher := range list {
-					c.WatchVariable(key, watcher)
-				}
+			for _, watcher := range watchers.GetConfigWatchers() {
+				c.Watch(watcher)
 			}
 		}
 	}
@@ -148,15 +147,45 @@ func (c *Component) EnvPrefix() string {
 	return c.envPrefix
 }
 
-func (c *Component) WatchVariable(key string, watcher config.Watcher) {
+func (c *Component) GetWatchers(key string) []config.Watcher {
+	watchers := []config.Watcher{}
+
+	if watchersForAll, ok := c.watchers[config.WatcherForAll]; ok {
+		for _, w := range watchersForAll {
+			watchers = append(watchers, w)
+		}
+	}
+
+	if key != config.WatcherForAll {
+		if watchersByKey, ok := c.watchers[key]; ok {
+			for _, w := range watchersByKey {
+				watchers = append(watchers, w)
+			}
+		}
+	}
+
+	return watchers
+}
+
+func (c *Component) Watch(watcher config.Watcher) {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	if watchers, ok := c.watchers[key]; ok {
-		c.watchers[key] = append(watchers, watcher)
-	} else {
-		c.watchers[key] = []config.Watcher{watcher}
+	for _, key := range watcher.Keys() {
+		if watchers, ok := c.watchers[key]; ok {
+			c.watchers[key] = append(watchers, watcher)
+		} else {
+			c.watchers[key] = []config.Watcher{watcher}
+		}
 	}
+}
+
+func (c *Component) log() logger.Logger {
+	if c.logger == nil {
+		c.logger = logger.NewOrNop(c.GetName(), c.application)
+	}
+
+	return c.logger
 }
 
 func (c *Component) logConfig() {
@@ -170,8 +199,7 @@ func (c *Component) logConfig() {
 		fields[v.Key()] = v.Value()
 	}
 
-	l := logger.NewOrNop(c.GetName(), c.application)
-	l.Info("Init config", fields)
+	c.log().Info("Init config", fields)
 }
 
 func (c *Component) Has(key string) bool {
@@ -248,24 +276,12 @@ func (c *Component) Set(key string, value interface{}) error {
 		return err
 	}
 
-	watchers := []config.Watcher{}
-
-	if watchersForAll, ok := c.watchers[config.WatcherForAll]; ok {
-		for _, w := range watchersForAll {
-			watchers = append(watchers, w)
-		}
-	}
-
-	if watchersByKey, ok := c.watchers[key]; ok {
-		for _, w := range watchersByKey {
-			watchers = append(watchers, w)
-		}
-	}
+	watchers := c.GetWatchers(key)
 
 	if len(watchers) > 0 {
 		go func() {
-			for _, watcher := range watchers {
-				watcher(key, value, oldValue)
+			for _, item := range watchers {
+				item.Callback(key, value, oldValue)
 			}
 		}()
 	}

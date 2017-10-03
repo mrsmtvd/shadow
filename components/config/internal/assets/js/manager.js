@@ -95,7 +95,7 @@ $(document).ready(function () {
 
                     if ( last !== name ) {
                         $(rows).eq(i).before(
-                            '<tr class="group"><td colspan="4">' + name + '</td></tr>'
+                            '<tr class="group"><td colspan="5">' + name + '</td></tr>'
                         );
                     }
 

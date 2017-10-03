@@ -16,6 +16,9 @@ type Component interface {
 	Set(key string, value interface{}) error
 	IsEditable(key string) bool
 
+	Watch(watcher Watcher)
+	GetWatchers(key string) []Watcher
+
 	GetAllVariables() map[string]Variable
 	GetBool(key string) bool
 	GetBoolDefault(key string, value interface{}) bool

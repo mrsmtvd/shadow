@@ -26,9 +26,9 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		profiling.ConfigGCPercent: {c.watchGCPercent},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(profiling.ComponentName, []string{profiling.ConfigGCPercent}, c.watchGCPercent),
 	}
 }
 

@@ -190,33 +190,30 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		config.WatcherForAll:               {c.watchConfig},
-		dashboard.ConfigAuthEnabled:        {c.watchAuth},
-		dashboard.ConfigAuthUser:           {c.watchAuth},
-		dashboard.ConfigAuthPassword:       {c.watchAuth},
-		dashboard.ConfigOAuth2Enabled:      {c.watchAuth},
-		dashboard.ConfigOAuth2ID:           {c.watchAuth},
-		dashboard.ConfigOAuth2Secret:       {c.watchAuth},
-		dashboard.ConfigOAuth2Scopes:       {c.watchAuth},
-		dashboard.ConfigOAuth2AuthURL:      {c.watchAuth},
-		dashboard.ConfigOAuth2TokenURL:     {c.watchAuth},
-		dashboard.ConfigOAuth2ProfileURL:   {c.watchAuth},
-		dashboard.ConfigOAuth2RedirectURL:  {c.watchAuth},
-		dashboard.ConfigSessionCookieName:  {c.watchSessionCookieName},
-		dashboard.ConfigSessionDomain:      {c.watchSessionDomain},
-		dashboard.ConfigSessionHttpOnly:    {c.watchSessionHttpOnly},
-		dashboard.ConfigSessionIdleTimeout: {c.watchSessionIdleTimeout},
-		dashboard.ConfigSessionLifetime:    {c.watchSessionLifetime},
-		dashboard.ConfigSessionPath:        {c.watchSessionPath},
-		dashboard.ConfigSessionPersist:     {c.watchSessionPersist},
-		dashboard.ConfigSessionSecure:      {c.watchSessionSecure},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(dashboard.ComponentName, []string{
+			dashboard.ConfigAuthEnabled,
+			dashboard.ConfigAuthUser,
+			dashboard.ConfigAuthPassword,
+			dashboard.ConfigOAuth2Enabled,
+			dashboard.ConfigOAuth2ID,
+			dashboard.ConfigOAuth2Secret,
+			dashboard.ConfigOAuth2Scopes,
+			dashboard.ConfigOAuth2AuthURL,
+			dashboard.ConfigOAuth2TokenURL,
+			dashboard.ConfigOAuth2ProfileURL,
+			dashboard.ConfigOAuth2RedirectURL,
+		}, c.watchAuth),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionCookieName}, c.watchSessionCookieName),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionDomain}, c.watchSessionDomain),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionHttpOnly}, c.watchSessionHttpOnly),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionIdleTimeout}, c.watchSessionIdleTimeout),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionLifetime}, c.watchSessionLifetime),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionPath}, c.watchSessionPath),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionPersist}, c.watchSessionPersist),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionSecure}, c.watchSessionSecure),
 	}
-}
-
-func (c *Component) watchConfig(key string, newValue interface{}, oldValue interface{}) {
-	c.logger.Infof("Change value for %s with '%v' to '%v'", key, oldValue, newValue)
 }
 
 func (c *Component) watchAuth(_ string, _ interface{}, _ interface{}) {

@@ -15,6 +15,7 @@ const (
 
 type variableView struct {
 	Variable config.Variable
+	Watchers []config.Watcher
 }
 
 func (v variableView) HasView(n string) bool {
@@ -84,7 +85,10 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 			cmp = variables[cmpName]
 		}
 
-		cmp[k] = variableView{v}
+		cmp[k] = variableView{
+			Variable: v,
+			Watchers: h.Component.GetWatchers(k),
+		}
 		variables[cmpName] = cmp
 	}
 

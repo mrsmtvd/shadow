@@ -58,47 +58,22 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		mail.ConfigSmtpHost:     {c.watchHost},
-		mail.ConfigSmtpPort:     {c.watchPort},
-		mail.ConfigSmtpUsername: {c.watchUsername},
-		mail.ConfigSmtpPassword: {c.watchPassword},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(mail.ComponentName, []string{
+			mail.ConfigSmtpHost,
+			mail.ConfigSmtpPort,
+			mail.ConfigSmtpUsername,
+			mail.ConfigSmtpPassword,
+		}, c.watchForDialer),
 	}
 }
 
-func (c *Component) watchHost(_ string, newValue interface{}, _ interface{}) {
-	c.initDialer(
-		newValue.(string),
-		c.config.GetInt(mail.ConfigSmtpPort),
-		c.config.GetString(mail.ConfigSmtpUsername),
-		c.config.GetString(mail.ConfigSmtpPassword),
-	)
-}
-
-func (c *Component) watchPort(_ string, newValue interface{}, _ interface{}) {
-	c.initDialer(
-		c.config.GetString(mail.ConfigSmtpHost),
-		newValue.(int),
-		c.config.GetString(mail.ConfigSmtpUsername),
-		c.config.GetString(mail.ConfigSmtpPassword),
-	)
-}
-
-func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{}) {
-	c.initDialer(
-		c.config.GetString(mail.ConfigSmtpHost),
-		c.config.GetInt(mail.ConfigSmtpPort),
-		newValue.(string),
-		c.config.GetString(mail.ConfigSmtpPassword),
-	)
-}
-
-func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{}) {
+func (c *Component) watchForDialer(_ string, _ interface{}, _ interface{}) {
 	c.initDialer(
 		c.config.GetString(mail.ConfigSmtpHost),
 		c.config.GetInt(mail.ConfigSmtpPort),
 		c.config.GetString(mail.ConfigSmtpUsername),
-		newValue.(string),
+		c.config.GetString(mail.ConfigSmtpPassword),
 	)
 }

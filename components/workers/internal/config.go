@@ -36,11 +36,11 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		workers.ConfigCount:                         {c.watchCount},
-		workers.ConfigTickerExecuteTasksDuration:    {c.watchTickerExecuteTasksDuration},
-		workers.ConfigTickerNotifyListenersDuration: {c.watchTickerNotifyListenersDuration},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(workers.ComponentName, []string{workers.ConfigCount}, c.watchCount),
+		config.NewWatcher(workers.ComponentName, []string{workers.ConfigTickerExecuteTasksDuration}, c.watchTickerExecuteTasksDuration),
+		config.NewWatcher(workers.ComponentName, []string{workers.ConfigTickerNotifyListenersDuration}, c.watchTickerNotifyListenersDuration),
 	}
 }
 

@@ -39,10 +39,10 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		logger.ConfigLevel:  {c.watchLoggerLevel},
-		logger.ConfigFields: {c.watchLoggerFields},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(logger.ComponentName, []string{logger.ConfigLevel}, c.watchLoggerLevel),
+		config.NewWatcher(logger.ComponentName, []string{logger.ConfigFields}, c.watchLoggerFields),
 	}
 }
 

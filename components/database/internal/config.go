@@ -105,12 +105,14 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		config.ConfigDebug:             {c.watchDebug},
-		database.ConfigMigrationsTable: {c.watchMigrationsTable},
-		database.ConfigMaxIdleConns:    {c.watchMaxIdleConns},
-		database.ConfigMaxOpenConns:    {c.watchMaxOpenConns},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(database.ComponentName, []string{config.ConfigDebug}, c.watchDebug),
+		config.NewWatcher(database.ComponentName, []string{database.ConfigMigrationsTable}, c.watchMigrationsTable),
+		config.NewWatcher(database.ComponentName, []string{
+			database.ConfigMaxIdleConns,
+			database.ConfigMaxOpenConns,
+		}, c.watchFoxMaxConns),
 	}
 }
 
@@ -122,10 +124,6 @@ func (c *Component) watchMigrationsTable(_ string, newValue interface{}, _ inter
 	migrate.SetTable(newValue.(string))
 }
 
-func (c *Component) watchMaxIdleConns(_ string, newValue interface{}, _ interface{}) {
-	c.initConns(newValue.(int), c.config.GetInt(database.ConfigMaxOpenConns))
-}
-
-func (c *Component) watchMaxOpenConns(_ string, newValue interface{}, _ interface{}) {
-	c.initConns(c.config.GetInt(database.ConfigMaxIdleConns), newValue.(int))
+func (c *Component) watchFoxMaxConns(_ string, _ interface{}, _ interface{}) {
+	c.initConns(c.config.GetInt(database.ConfigMaxIdleConns), c.config.GetInt(database.ConfigMaxOpenConns))
 }

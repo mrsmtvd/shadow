@@ -70,67 +70,21 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() map[string][]config.Watcher {
-	return map[string][]config.Watcher{
-		metrics.ConfigUrl:       {c.watchUrl},
-		metrics.ConfigDatabase:  {c.watchDatabase},
-		metrics.ConfigUsername:  {c.watchUsername},
-		metrics.ConfigPassword:  {c.watchPassword},
-		metrics.ConfigPrecision: {c.watchPrecision},
-		metrics.ConfigInterval:  {c.watchInterval},
-		metrics.ConfigLabels:    {c.watchLabels},
+func (c *Component) GetConfigWatchers() []config.Watcher {
+	return []config.Watcher{
+		config.NewWatcher(metrics.ComponentName, []string{
+			metrics.ConfigUrl,
+			metrics.ConfigDatabase,
+			metrics.ConfigUsername,
+			metrics.ConfigPassword,
+			metrics.ConfigPrecision,
+		}, c.watchForStorage),
+		config.NewWatcher(metrics.ComponentName, []string{metrics.ConfigInterval}, c.watchInterval),
+		config.NewWatcher(metrics.ComponentName, []string{metrics.ConfigLabels}, c.watchLabels),
 	}
 }
 
-func (c *Component) watchUrl(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	c.storage.Reinitialization(
-		newValue.(string),
-		c.config.GetString(metrics.ConfigDatabase),
-		c.config.GetString(metrics.ConfigUsername),
-		c.config.GetString(metrics.ConfigPassword),
-		c.config.GetString(metrics.ConfigPrecision))
-}
-
-func (c *Component) watchDatabase(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	c.storage.Reinitialization(
-		c.config.GetString(metrics.ConfigUrl),
-		newValue.(string),
-		c.config.GetString(metrics.ConfigUsername),
-		c.config.GetString(metrics.ConfigPassword),
-		c.config.GetString(metrics.ConfigPrecision))
-}
-
-func (c *Component) watchUsername(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	c.storage.Reinitialization(
-		c.config.GetString(metrics.ConfigUrl),
-		c.config.GetString(metrics.ConfigDatabase),
-		newValue.(string),
-		c.config.GetString(metrics.ConfigPassword),
-		c.config.GetString(metrics.ConfigPrecision))
-}
-
-func (c *Component) watchPassword(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	c.storage.Reinitialization(
-		c.config.GetString(metrics.ConfigUrl),
-		c.config.GetString(metrics.ConfigDatabase),
-		c.config.GetString(metrics.ConfigUsername),
-		newValue.(string),
-		c.config.GetString(metrics.ConfigPrecision))
-}
-
-func (c *Component) watchPrecision(_ string, newValue interface{}, _ interface{}) {
+func (c *Component) watchForStorage(_ string, newValue interface{}, _ interface{}) {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -139,7 +93,7 @@ func (c *Component) watchPrecision(_ string, newValue interface{}, _ interface{}
 		c.config.GetString(metrics.ConfigDatabase),
 		c.config.GetString(metrics.ConfigUsername),
 		c.config.GetString(metrics.ConfigPassword),
-		newValue.(string))
+		c.config.GetString(metrics.ConfigPrecision))
 }
 
 func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {
