@@ -30,16 +30,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/",
-				&handlers.IndexHandler{
-					Component: c,
-				},
-				"",
-				true),
-			dashboard.NewRouteItem(
-				c.GetName(),
-				[]string{http.MethodGet},
-				"/"+c.GetName()+"/ajax/",
-				&handlers.AjaxHandler{
+				&handlers.ListHandler{
 					Component: c,
 				},
 				"",

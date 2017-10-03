@@ -57,7 +57,7 @@
                             {{ end }}
 
                             {{ if $component.has_database_migrations }}
-                            <span class="label label-success">migrations</span>
+                            <a href="/database/migrations/" class="label label-success">database migrations</a>
                             {{ end }}
 
                             {{ if $component.has_grpc_server }}

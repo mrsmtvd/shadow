@@ -58,7 +58,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 			dashboard.NewRouteItem(
 				c.GetName(),
 				[]string{http.MethodGet, http.MethodPost},
-				"/"+c.GetName()+"/trace",
+				"/"+c.GetName()+"/trace/",
 				&handlers.TraceHandler{},
 				"",
 				true),

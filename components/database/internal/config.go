@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"fmt"
+
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/database"
 	"github.com/rubenv/sql-migrate"
@@ -15,16 +17,24 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		config.NewVariableItem(
 			database.ConfigDriver,
 			config.ValueTypeString,
-			"mysql",
-			"Database driver (sqlite3, postgres, mysql, mssql and oci8)",
+			DialectMySQL,
+			fmt.Sprintf("Database driver (%s, %s, %s, %s and %s)", DialectMySQL, DialectOracle, DialectPostgres, DialectSQLite3, DialectMSSQL),
 			false,
-			nil,
-			nil),
+			[]string{
+				config.ViewEnum,
+			},
+			map[string]interface{}{
+				DialectMySQL:    "MySQL",
+				DialectOracle:   "Oracle",
+				DialectPostgres: "Postgres",
+				DialectSQLite3:  "SQLite3",
+				DialectMSSQL:    "MSSQL",
+			}),
 		config.NewVariableItem(
 			database.ConfigDialectEngine,
 			config.ValueTypeString,
 			"InnoDB",
-			"Dialect engine (mysql)",
+			fmt.Sprintf("Dialect engine (%s)", DialectMySQL),
 			false,
 			nil,
 			nil),
@@ -32,7 +42,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			database.ConfigDialectEncoding,
 			config.ValueTypeString,
 			"UTF8",
-			"Dialect encoding (mysql)",
+			fmt.Sprintf("Dialect encoding (%s)", DialectMySQL),
 			false,
 			nil,
 			nil),
@@ -40,7 +50,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			database.ConfigDialectVersion,
 			config.ValueTypeString,
 			nil,
-			"Dialect version (mssql)",
+			fmt.Sprintf("Dialect version (%s)", DialectMSSQL),
 			false,
 			nil,
 			nil),

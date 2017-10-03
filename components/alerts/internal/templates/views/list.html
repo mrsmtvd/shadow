@@ -1,0 +1,25 @@
+{{ define "content" }}
+<div class="page-title">
+    <div class="title_left">
+        <h3>Alerts</h3>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="panel-body">
+    <div class="list-group">
+        {{ range $i, $alert := .alerts }}
+        <a href="#" class="list-group-item">
+            {{ if $alert.GetIcon }}
+            <i class="fa fa-{{ $alert.GetIcon }} fa-fw"></i>
+            {{ end }}
+            <span class="pull-right text-muted small"><em>{{ $alert.GetDateAsMessage }}</em></span>
+
+            <strong>{{ $alert.GetTitle }}</strong><br />
+            {{ $alert.GetMessageAsHTML }}
+        </a>
+        {{ end }}
+    </div>
+</div>
+{{ end }}

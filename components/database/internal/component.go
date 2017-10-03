@@ -6,6 +6,7 @@ import (
 	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/database"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/rubenv/sql-migrate"
@@ -16,6 +17,7 @@ type Component struct {
 	config      config.Component
 	storage     *SqlStorage
 	logger      logger.Logger
+	routes      []dashboard.Route
 
 	mutex sync.Mutex
 }

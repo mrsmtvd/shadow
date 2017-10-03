@@ -182,7 +182,7 @@ function init_alerts() {
     function alertUpdate() {
         $.ajax({
             type: 'GET',
-            url: '/alerts/ajax/',
+            url: '/alerts/',
             success: function(r){
                 if (!r.length) {
                     e.find('.badge').hide();

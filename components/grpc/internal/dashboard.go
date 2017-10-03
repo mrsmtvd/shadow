@@ -42,7 +42,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				c.GetName(),
 				[]string{http.MethodGet, http.MethodPost},
 				"/"+c.GetName()+"/",
-				handlers.NewIndexHandler(c.config, c.server),
+				handlers.NewManagerHandler(c.config, c.server),
 				"",
 				true),
 		}

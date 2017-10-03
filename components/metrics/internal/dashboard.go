@@ -29,8 +29,8 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 			dashboard.NewRouteItem(
 				c.GetName(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/",
-				&handlers.IndextHandler{
+				"/"+c.GetName()+"/list/",
+				&handlers.ListHandler{
 					Component: c,
 				},
 				"",
