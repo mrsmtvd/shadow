@@ -1,72 +1,70 @@
 package dashboard
 
-import (
-	"sort"
-	"strings"
-)
-
-type Menu struct {
-	Name    string
-	Url     string
-	Direct  bool
-	Icon    string
-	SubMenu []*Menu
+type Menu interface {
+	Title() string
+	Url() string
+	Route() Route
+	Icon() string
+	Childs() []Menu
+	Show(request *Request) bool
 }
 
-type hasMenu interface {
-	GetDashboardMenu() *Menu
+type HasMenu interface {
+	GetDashboardMenu() Menu
 }
 
-type orderedMenus []*Menu
-
-func (m orderedMenus) Len() int {
-	return len(m)
-}
-func (m orderedMenus) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-func (m orderedMenus) Less(i, j int) bool {
-	return strings.Compare(m[i].Name, m[j].Name) < 0
+type MenuItem struct {
+	title  string
+	url    string
+	route  Route
+	icon   string
+	childs []Menu
+	show   func(*Request) bool
 }
 
-func (c *Component) loadMenu() error {
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return err
+func newMenuItem(title string, url string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
+	return MenuItem{
+		title:  title,
+		url:    url,
+		route:  route,
+		icon:   icon,
+		childs: childs,
+		show:   show,
+	}
+}
+
+func NewMenuItemWithUrl(title string, url string, icon string, childs []Menu, show func(*Request) bool) Menu {
+	return newMenuItem(title, url, nil, icon, childs, show)
+}
+
+func NewMenuItemWithRoute(title string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
+	return newMenuItem(title, "", route, icon, childs, show)
+}
+
+func (m MenuItem) Title() string {
+	return m.title
+}
+
+func (m MenuItem) Url() string {
+	return m.url
+}
+
+func (m MenuItem) Route() Route {
+	return m.route
+}
+
+func (m MenuItem) Icon() string {
+	return m.icon
+}
+
+func (m MenuItem) Childs() []Menu {
+	return m.childs
+}
+
+func (m MenuItem) Show(request *Request) bool {
+	if m.show != nil {
+		return m.show(request)
 	}
 
-	menus := make([]*Menu, 0)
-
-	for _, component := range components {
-		if componentMenu, ok := component.(hasMenu); ok {
-			menu := componentMenu.GetDashboardMenu()
-			if menu != nil {
-				c.changeUrlMenu(menu, component.GetName())
-
-				if component == c {
-					menus = append([]*Menu{menu}, menus...)
-				} else {
-					menus = append(menus, menu)
-				}
-			}
-		}
-	}
-
-	contextMenus := orderedMenus(menus)
-	sort.Sort(contextMenus)
-
-	c.renderer.AddGlobalVar("Menu", contextMenus)
-	return nil
-}
-
-func (c *Component) changeUrlMenu(m *Menu, p string) {
-	if !m.Direct {
-		m.Url = "/" + p + m.Url
-	}
-
-	if len(m.SubMenu) > 0 {
-		for i := range m.SubMenu {
-			c.changeUrlMenu(m.SubMenu[i], p)
-		}
-	}
+	return true
 }

@@ -32,8 +32,6 @@ import:
   version: 7606720496774045c25ea52eda5fe51c3f2cfd2a
 - package: github.com/mailru/easyjson
   version: 25b3d385daae0e6256f602fce175180fcf1a7183
-- package: github.com/rakyll/globalconf
-  version: 7afbf15d8da4ed30174874a9db565d16755e99f7
 - package: github.com/rs/xlog
   version: 7ed5dc1cca34bb0c9e8f0e58dcf19b6dea3044d5
 - package: github.com/rubenv/sql-migrate

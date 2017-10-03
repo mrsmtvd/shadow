@@ -31,7 +31,12 @@ func (r *Request) Context() context.Context {
 	return r.original.Context()
 }
 
-func (r *Request) Config() *config.Component {
+func (r *Request) WithContext(ctx context.Context) *Request {
+	r.original = r.original.WithContext(ctx)
+	return r
+}
+
+func (r *Request) Config() config.Component {
 	return ConfigFromContext(r.Context())
 }
 
@@ -39,21 +44,22 @@ func (r *Request) Logger() logger.Logger {
 	return LoggerFromContext(r.Context())
 }
 
-func (r *Request) Render() *Renderer {
+func (r *Request) Render() Renderer {
 	return RenderFromContext(r.Context())
 }
 
-func (r *Request) Panic() *PanicError {
-	return PanicFromContext(r.Context())
-}
-
-func (r *Request) Session() *Session {
+func (r *Request) Session() Session {
 	return SessionFromContext(r.Context())
 }
 
 func (r *Request) User() *auth.User {
 	user := &auth.User{}
-	r.Session().GetObject(SessionUser, user)
+
+	session := r.Session()
+	if session != nil {
+		session.GetObject(SessionUser, user)
+	}
+
 	return user
 }
 

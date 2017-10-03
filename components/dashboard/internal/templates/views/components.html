@@ -1,0 +1,48 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Components</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th>Dependencies</th>
+                        <th>Functions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $component := .components }}
+                    <tr>
+                        <td>{{ add $i 1 }}</td>
+                        <td>{{ $component.name }}</td>
+                        <td>{{ $component.version }}</td>
+                        <td>
+                            {{ range $j, $dep := $component.dependencies }}
+                            {{ if $dep.Required }}
+                            <span class="label label-warning">{{ $dep.Name }}</span>
+                            {{ else }}
+                            <span class="label label-info">{{ $dep.Name }}</span>
+                            {{ end }}
+                            {{ end }}
+                        </td>
+                        <td>
+                            {{ if $component.has_menu }}
+                            has_menu
+                            {{ end }}
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

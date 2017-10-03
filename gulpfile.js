@@ -4,6 +4,7 @@ var child          = require('child_process'),
     
     gulp           = require('gulp'),
     cleanCss       = require('gulp-clean-css'),
+    debug          = require('gulp-debug'),
     env            = require('gulp-env'),
     exec           = require('gulp-exec'),
     filterBy       = require('gulp-filter-by'),
@@ -15,8 +16,8 @@ var child          = require('child_process'),
     runSequence    = require('run-sequence');
 
 var COMPONENTS = __dirname + '/components',
-    VENDORS_DASHBOARD = COMPONENTS + '/dashboard/assets/vendors/',
-    VENDORS_PROFILING = COMPONENTS + '/profiling/assets/vendors/',
+    VENDORS_DASHBOARD = COMPONENTS + '/dashboard/internal/assets/vendors/',
+    VENDORS_PROFILING = COMPONENTS + '/profiling/internal/assets/vendors/',
     DEV_ENV = 'development';
 
 var execOptions = {
@@ -366,8 +367,8 @@ gulp.task('bindata', function() {
     }
     
     return gulp.src([
-        COMPONENTS + '/*/templates',
-        COMPONENTS + '/*/assets'
+        COMPONENTS + '/**/templates',
+        COMPONENTS + '/**/assets'
     ])
         .pipe(groupAggregate({
             group: function (file){

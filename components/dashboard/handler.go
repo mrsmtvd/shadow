@@ -9,20 +9,6 @@ type Handler struct {
 	http.Handler
 }
 
-func FromRouteHandler(h RouterHandler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var wq *Response
-
-		if resp, ok := w.(*Response); ok {
-			wq = resp
-		} else {
-			wq = NewResponse(w)
-		}
-
-		h.ServeHTTP(wq, NewRequest(r))
-	})
-}
-
 func (h *Handler) Redirect(l string, c int, w *Response, r *Request) {
 	http.Redirect(w, r.Original(), l, c)
 }
@@ -33,7 +19,7 @@ func (h *Handler) NotFound(w *Response, r *Request) {
 		panic("Router isn't set in context")
 	}
 
-	router.NotFound.ServeHTTP(w, r.Original())
+	router.NotFoundServeHTTP(w, r.Original())
 }
 
 func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
@@ -42,7 +28,7 @@ func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
 		panic("Router isn't set in context")
 	}
 
-	router.MethodNotAllowed.ServeHTTP(w, r.Original())
+	router.MethodNotAllowedServeHTTP(w, r.Original())
 }
 
 func (h *Handler) Render(ctx context.Context, c, v string, d map[string]interface{}) {
