@@ -18,6 +18,11 @@ const (
 	DialectSQLite3  = "sqlite3"
 	DialectMSSQL    = "mssql"
 
+	EngineInnoDB = "InnoDB"
+	EngineMyISAM = "MyISAM"
+
+	Version2005 = "2005"
+
 	DialectOptionEngine   = "engine"
 	DialectOptionEncoding = "encoding"
 	DialectOptionVersion  = "version"

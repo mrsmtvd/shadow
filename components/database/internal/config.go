@@ -18,17 +18,20 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			database.ConfigDriver,
 			config.ValueTypeString,
 			DialectMySQL,
-			fmt.Sprintf("Database driver (%s, %s, %s, %s and %s)", DialectMySQL, DialectOracle, DialectPostgres, DialectSQLite3, DialectMSSQL),
+			"Database driver",
 			false,
 			[]string{
 				config.ViewEnum,
 			},
 			map[string]interface{}{
-				DialectMySQL:    "MySQL",
-				DialectOracle:   "Oracle",
-				DialectPostgres: "Postgres",
-				DialectSQLite3:  "SQLite3",
-				DialectMSSQL:    "MSSQL",
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{DialectMSSQL, "MSSQL"},
+					{DialectMySQL, "MySQL"},
+					{DialectOracle, "Oracle"},
+					{"oci8", "Oracle"},
+					{DialectPostgres, "Postgres"},
+					{DialectSQLite3, "SQLite3"},
+				},
 			}),
 		config.NewVariableItem(
 			database.ConfigDialectEngine,
@@ -36,8 +39,15 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"InnoDB",
 			fmt.Sprintf("Dialect engine (%s)", DialectMySQL),
 			false,
-			nil,
-			nil),
+			[]string{
+				config.ViewEnum,
+			},
+			map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{EngineInnoDB, EngineInnoDB},
+					{EngineMyISAM, EngineMyISAM},
+				},
+			}),
 		config.NewVariableItem(
 			database.ConfigDialectEncoding,
 			config.ValueTypeString,
@@ -52,8 +62,14 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			fmt.Sprintf("Dialect version (%s)", DialectMSSQL),
 			false,
-			nil,
-			nil),
+			[]string{
+				config.ViewEnum,
+			},
+			map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{Version2005, "Legacy datatypes will be used"},
+				},
+			}),
 		config.NewVariableItem(
 			database.ConfigDsn,
 			config.ValueTypeString,

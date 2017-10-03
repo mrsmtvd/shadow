@@ -91,7 +91,22 @@
                                                 {{ end }}
                                             </span>
                                         </td>
-                                        <td><span>{{ $config.Variable.Usage }}</span></td>
+                                        <td>
+                                            <span>{{ $config.Variable.Usage }}
+                                            {{ if and (ne $config.Variable.Editable true) ($config.HasView "enum") }}
+                                                <br />Allowed values:
+                                                <ul>
+                                                {{ range $o, $option := ($config.GetViewOption "options") }}
+                                                    {{ if eq (index $option 0) (index $option 1) }}
+                                                    <li>{{ index $option 0 }}</li>
+                                                    {{ else }}
+                                                    <li>{{ index $option 0 }} &mdash; {{ index $option 1 }}</li>
+                                                    {{ end }}
+                                                {{ end }}
+                                                </ul>
+                                            {{ end }}
+                                            </span>
+                                        </td>
                                     </tr>
                                     {{ end }}
                                     </tbody>
