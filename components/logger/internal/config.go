@@ -7,7 +7,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			logger.ConfigLevel,
 			config.ValueTypeInt,
 			6,
@@ -26,7 +26,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 					{7, "Debug"},
 				},
 			}),
-		config.NewVariableItem(
+		config.NewVariable(
 			logger.ConfigFields,
 			config.ValueTypeString,
 			nil,

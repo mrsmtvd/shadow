@@ -7,7 +7,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			mail.ConfigSmtpUsername,
 			config.ValueTypeString,
 			nil,
@@ -15,7 +15,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			mail.ConfigSmtpPassword,
 			config.ValueTypeString,
 			nil,
@@ -23,7 +23,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			[]string{config.ViewPassword},
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			mail.ConfigSmtpHost,
 			config.ValueTypeString,
 			nil,
@@ -31,7 +31,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			mail.ConfigSmtpPort,
 			config.ValueTypeInt,
 			25,
@@ -39,7 +39,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			mail.ConfigFromAddress,
 			config.ValueTypeString,
 			nil,
@@ -47,7 +47,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			mail.ConfigFromName,
 			config.ValueTypeString,
 			nil,

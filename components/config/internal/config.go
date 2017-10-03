@@ -6,7 +6,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			config.ConfigDebug,
 			config.ValueTypeBool,
 			false,

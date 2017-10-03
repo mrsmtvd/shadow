@@ -39,7 +39,7 @@ type RouteItem struct {
 	auth          bool
 }
 
-func NewRouteItem(componentName string, methods []string, path string, handler interface{}, handlerName string, auth bool) Route {
+func NewRoute(componentName string, methods []string, path string, handler interface{}, handlerName string, auth bool) Route {
 	return RouteItem{
 		componentName: componentName,
 		handlerName:   handlerName,

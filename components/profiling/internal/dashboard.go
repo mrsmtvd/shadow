@@ -27,14 +27,14 @@ func (c *Component) GetDashboardMenu() dashboard.Menu {
 		return r.Config().GetBool(config.ConfigDebug)
 	}
 
-	return dashboard.NewMenuItemWithUrl(
+	return dashboard.NewMenuWithUrl(
 		"Profiling",
 		"",
 		"terminal",
 		[]dashboard.Menu{
-			dashboard.NewMenuItemWithRoute("Traces", routes[1], "", nil, show),
-			dashboard.NewMenuItemWithRoute("Pprof", routes[7], "", nil, show),
-			dashboard.NewMenuItemWithRoute("Expvar", routes[2], "", nil, show),
+			dashboard.NewMenuWithRoute("Traces", routes[1], "", nil, show),
+			dashboard.NewMenuWithRoute("Pprof", routes[7], "", nil, show),
+			dashboard.NewMenuWithRoute("Expvar", routes[2], "", nil, show),
 		},
 		show,
 	)
@@ -43,7 +43,7 @@ func (c *Component) GetDashboardMenu() dashboard.Menu {
 func (c *Component) GetDashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/assets/*filepath",
@@ -55,21 +55,21 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet, http.MethodPost},
 				"/"+c.GetName()+"/trace/",
 				&handlers.TraceHandler{},
 				"",
 				true),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/vars/",
 				&handlers.ExpvarHandler{},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/pprof/cmdline",
@@ -78,7 +78,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/pprof/profile",
@@ -87,7 +87,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/pprof/symbol",
@@ -96,7 +96,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/pprof/trace",
@@ -105,7 +105,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/pprof/",
@@ -117,7 +117,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 		}
 
 		for _, profile := range pprof.Profiles() {
-			c.routes = append(c.routes, dashboard.NewRouteItem(
+			c.routes = append(c.routes, dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/debug/pprof/"+profile.Name(),

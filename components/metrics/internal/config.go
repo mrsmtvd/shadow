@@ -9,7 +9,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigUrl,
 			config.ValueTypeString,
 			nil,
@@ -17,7 +17,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigDatabase,
 			config.ValueTypeString,
 			nil,
@@ -25,7 +25,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigUsername,
 			config.ValueTypeString,
 			nil,
@@ -33,7 +33,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigPassword,
 			config.ValueTypeString,
 			nil,
@@ -41,7 +41,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			[]string{config.ViewPassword},
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigPrecision,
 			config.ValueTypeString,
 			"s",
@@ -49,7 +49,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigInterval,
 			config.ValueTypeDuration,
 			"1m",
@@ -57,7 +57,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			metrics.ConfigLabels,
 			config.ValueTypeString,
 			nil,

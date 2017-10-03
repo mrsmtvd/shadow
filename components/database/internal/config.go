@@ -14,7 +14,7 @@ const (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigDriver,
 			config.ValueTypeString,
 			DialectMySQL,
@@ -33,7 +33,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 					{DialectSQLite3, "SQLite3"},
 				},
 			}),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigDialectEngine,
 			config.ValueTypeString,
 			"InnoDB",
@@ -48,7 +48,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 					{EngineMyISAM, EngineMyISAM},
 				},
 			}),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigDialectEncoding,
 			config.ValueTypeString,
 			"UTF8",
@@ -56,7 +56,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigDialectVersion,
 			config.ValueTypeString,
 			nil,
@@ -70,7 +70,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 					{Version2005, "Legacy datatypes will be used"},
 				},
 			}),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigDsn,
 			config.ValueTypeString,
 			nil,
@@ -78,7 +78,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigMigrationsTable,
 			config.ValueTypeString,
 			defaultMigrationsTableName,
@@ -86,7 +86,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigMaxIdleConns,
 			config.ValueTypeInt,
 			0,
@@ -94,7 +94,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			database.ConfigMaxOpenConns,
 			config.ValueTypeInt,
 			0,

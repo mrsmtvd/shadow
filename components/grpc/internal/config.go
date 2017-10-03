@@ -7,7 +7,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			grpc.ConfigHost,
 			config.ValueTypeString,
 			"localhost",
@@ -15,7 +15,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			grpc.ConfigPort,
 			config.ValueTypeInt,
 			50052,
@@ -23,7 +23,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			grpc.ConfigReflectionEnabled,
 			config.ValueTypeInt,
 			true,

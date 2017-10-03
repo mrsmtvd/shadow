@@ -9,7 +9,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			workers.ConfigCount,
 			config.ValueTypeInt,
 			2,
@@ -17,7 +17,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			workers.ConfigTickerExecuteTasksDuration,
 			config.ValueTypeDuration,
 			"1s",
@@ -25,7 +25,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			workers.ConfigTickerNotifyListenersDuration,
 			config.ValueTypeDuration,
 			"1s",

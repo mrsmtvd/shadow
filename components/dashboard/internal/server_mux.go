@@ -40,7 +40,7 @@ func (c *Component) getServeMux() (http.Handler, error) {
 		}
 	}
 
-	router.AddRoute(dashboard.NewRouteItem(
+	router.AddRoute(dashboard.NewRoute(
 		dashboard.ComponentName,
 		nil,
 		"/",

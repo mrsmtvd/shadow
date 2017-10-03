@@ -22,7 +22,7 @@ type MenuItem struct {
 	show   func(*Request) bool
 }
 
-func newMenuItem(title string, url string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
+func newMenu(title string, url string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
 	return MenuItem{
 		title:  title,
 		url:    url,
@@ -33,12 +33,12 @@ func newMenuItem(title string, url string, route Route, icon string, childs []Me
 	}
 }
 
-func NewMenuItemWithUrl(title string, url string, icon string, childs []Menu, show func(*Request) bool) Menu {
-	return newMenuItem(title, url, nil, icon, childs, show)
+func NewMenuWithUrl(title string, url string, icon string, childs []Menu, show func(*Request) bool) Menu {
+	return newMenu(title, url, nil, icon, childs, show)
 }
 
-func NewMenuItemWithRoute(title string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
-	return newMenuItem(title, "", route, icon, childs, show)
+func NewMenuWithRoute(title string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
+	return newMenu(title, "", route, icon, childs, show)
 }
 
 func (m MenuItem) Title() string {

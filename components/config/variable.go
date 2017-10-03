@@ -42,7 +42,7 @@ type VariableItem struct {
 	viewOptions map[string]interface{}
 }
 
-func NewVariableItem(key string, typ string, def interface{}, usage string, editable bool, view []string, viewOptions map[string]interface{}) Variable {
+func NewVariable(key string, typ string, def interface{}, usage string, editable bool, view []string, viewOptions map[string]interface{}) Variable {
 	return &VariableItem{
 		key:         key,
 		typ:         typ,

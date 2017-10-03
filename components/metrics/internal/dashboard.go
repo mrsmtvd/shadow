@@ -20,13 +20,13 @@ func (c *Component) GetTemplates() *assetfs.AssetFS {
 func (c *Component) GetDashboardMenu() dashboard.Menu {
 	routes := c.GetDashboardRoutes()
 
-	return dashboard.NewMenuItemWithRoute("Metrics", routes[0], "thermometer-empty", nil, nil)
+	return dashboard.NewMenuWithRoute("Metrics", routes[0], "thermometer-empty", nil, nil)
 }
 
 func (c *Component) GetDashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/list/",

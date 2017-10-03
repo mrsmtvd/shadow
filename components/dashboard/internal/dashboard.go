@@ -20,15 +20,15 @@ func (c *Component) GetTemplates() *assetfs.AssetFS {
 func (c *Component) GetDashboardMenu() dashboard.Menu {
 	routes := c.GetDashboardRoutes()
 
-	return dashboard.NewMenuItemWithRoute(
+	return dashboard.NewMenuWithRoute(
 		"Dashboard",
 		routes[9],
 		"dashboard",
 		[]dashboard.Menu{
-			dashboard.NewMenuItemWithRoute("Components", routes[8], "", nil, nil),
-			dashboard.NewMenuItemWithRoute("Environment", routes[2], "", nil, nil),
-			dashboard.NewMenuItemWithRoute("Bindata", routes[1], "", nil, nil),
-			dashboard.NewMenuItemWithRoute("Routing", routes[3], "", nil, nil),
+			dashboard.NewMenuWithRoute("Components", routes[8], "", nil, nil),
+			dashboard.NewMenuWithRoute("Environment", routes[2], "", nil, nil),
+			dashboard.NewMenuWithRoute("Bindata", routes[1], "", nil, nil),
+			dashboard.NewMenuWithRoute("Routing", routes[3], "", nil, nil),
 		},
 		nil,
 	)
@@ -37,7 +37,7 @@ func (c *Component) GetDashboardMenu() dashboard.Menu {
 func (c *Component) GetDashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/assets/*filepath",
@@ -49,7 +49,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/bindata",
@@ -58,21 +58,21 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				true),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/environment",
 				&handlers.EnvironmentHandler{},
 				"",
 				true),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/routing",
 				&handlers.RoutingHandler{},
 				"",
 				true),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider/callback",
@@ -81,21 +81,21 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider",
 				&handlers.AuthHandler{},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				dashboard.AuthPath,
 				&handlers.AuthHandler{},
 				"",
 				false),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/logout",
@@ -109,14 +109,14 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 		}
 
 		c.routes = append(c.routes, []dashboard.Route{
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/components",
 				componentsHandler,
 				"",
 				true),
-			dashboard.NewRouteItem(
+			dashboard.NewRoute(
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/",

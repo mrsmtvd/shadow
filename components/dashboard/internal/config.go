@@ -10,7 +10,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigHost,
 			config.ValueTypeString,
 			"localhost",
@@ -18,14 +18,14 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			nil,
 			nil),
-		config.NewVariableItem(dashboard.ConfigPort,
+		config.NewVariable(dashboard.ConfigPort,
 			config.ValueTypeInt,
 			8080,
 			"Frontend port number",
 			false,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigAuthEnabled,
 			config.ValueTypeBool,
 			false,
@@ -33,7 +33,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigAuthUser,
 			config.ValueTypeString,
 			nil,
@@ -41,7 +41,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigAuthPassword,
 			config.ValueTypeString,
 			nil,
@@ -49,7 +49,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			[]string{config.ViewPassword},
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2Enabled,
 			config.ValueTypeBool,
 			nil,
@@ -57,7 +57,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2ID,
 			config.ValueTypeString,
 			nil,
@@ -65,7 +65,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2Secret,
 			config.ValueTypeString,
 			nil,
@@ -73,7 +73,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			[]string{config.ViewPassword},
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2Scopes,
 			config.ValueTypeString,
 			nil,
@@ -83,7 +83,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a scope",
 			}),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2AuthURL,
 			config.ValueTypeString,
 			nil,
@@ -91,7 +91,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2TokenURL,
 			config.ValueTypeString,
 			nil,
@@ -99,7 +99,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2ProfileURL,
 			config.ValueTypeString,
 			nil,
@@ -107,7 +107,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigOAuth2RedirectURL,
 			config.ValueTypeString,
 			nil,
@@ -115,7 +115,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionCookieName,
 			config.ValueTypeString,
 			"shadow.session",
@@ -123,7 +123,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionDomain,
 			config.ValueTypeString,
 			nil,
@@ -131,7 +131,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionHttpOnly,
 			config.ValueTypeBool,
 			true,
@@ -139,7 +139,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionIdleTimeout,
 			config.ValueTypeDuration,
 			0,
@@ -147,7 +147,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionLifetime,
 			config.ValueTypeDuration,
 			24*time.Hour,
@@ -155,7 +155,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionPath,
 			config.ValueTypeString,
 			"/",
@@ -163,7 +163,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionPersist,
 			config.ValueTypeBool,
 			false,
@@ -171,7 +171,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigSessionSecure,
 			config.ValueTypeBool,
 			false,
@@ -179,7 +179,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			dashboard.ConfigFrontendMinifyEnabled,
 			config.ValueTypeBool,
 			true,

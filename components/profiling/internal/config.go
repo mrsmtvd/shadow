@@ -7,7 +7,7 @@ import (
 
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariableItem(
+		config.NewVariable(
 			profiling.ConfigDumpDirectory,
 			config.ValueTypeString,
 			"./",
@@ -15,7 +15,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
-		config.NewVariableItem(
+		config.NewVariable(
 			profiling.ConfigGCPercent,
 			config.ValueTypeInt,
 			100,
