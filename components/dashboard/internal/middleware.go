@@ -52,12 +52,12 @@ func LoggerMiddleware() alice.Constructor {
 				"user-agent":     r.UserAgent(),
 			}
 
-			logger := dashboard.LoggerFromContext(r.Context())
+			log := dashboard.LoggerFromContext(r.Context())
 
 			if statusCode/100 == 5 {
-				logger.Error(http.StatusText(statusCode), fields)
+				log.Error(http.StatusText(statusCode), fields)
 			} else {
-				logger.Info(http.StatusText(statusCode), fields)
+				log.Info(http.StatusText(statusCode), fields)
 			}
 		})
 	}

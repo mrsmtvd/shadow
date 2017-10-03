@@ -5,6 +5,7 @@ import (
 
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
+	"github.com/kihamo/shadow/components/metrics"
 )
 
 func (c *Component) getServeMux() (http.Handler, error) {
@@ -24,7 +25,7 @@ func (c *Component) getServeMux() (http.Handler, error) {
 	// Middleware
 	router.AddMiddleware(ContextMiddleware(router, c.config, c.logger, c.renderer, c.session))
 
-	if c.application.HasComponent("metrics") {
+	if c.application.HasComponent(metrics.ComponentName) {
 		router.AddMiddleware(MetricsMiddleware())
 	}
 

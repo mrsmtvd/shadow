@@ -5,7 +5,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/alerts"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -21,7 +21,7 @@ func (c *Component) loadTemplates() error {
 		"uptime":     c.application.GetUptime(),
 	})
 	c.renderer.AddGlobalVar("Config", c.config.GetAllVariables())
-	c.renderer.AddGlobalVar("AlertsEnabled", c.application.HasComponent("alerts"))
+	c.renderer.AddGlobalVar("AlertsEnabled", c.application.HasComponent(alerts.ComponentName))
 
 	c.renderer.AddFunc("staticURL", c.funcStaticURL)
 
@@ -67,7 +67,7 @@ func (c *Component) funcStaticURL(file string, prefix bool) string {
 		ext := path.Ext(u.Path)
 		lowerExt := strings.ToLower(ext)
 
-		if !c.config.GetBool(config.ConfigDebug) && (lowerExt == ".css" || lowerExt == ".js") {
+		if c.config.GetBool(dashboard.ConfigFrontendMinifyEnabled) && (lowerExt == ".css" || lowerExt == ".js") {
 			u.Path = u.Path[0:len(u.Path)-len(ext)] + ".min" + ext
 		}
 	}

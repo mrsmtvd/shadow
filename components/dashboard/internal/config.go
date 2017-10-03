@@ -179,6 +179,14 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
+		config.NewVariableItem(
+			dashboard.ConfigFrontendMinifyEnabled,
+			config.ValueTypeBool,
+			true,
+			"Use minified static files",
+			true,
+			nil,
+			nil),
 	}
 }
 
