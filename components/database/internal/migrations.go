@@ -3,6 +3,9 @@ package internal
 import (
 	"fmt"
 	"regexp"
+	"sort"
+	"strings"
+	"time"
 
 	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/components/database"
@@ -15,34 +18,112 @@ const (
 
 var idRegexp = regexp.MustCompile(`^(\d+)(.*)$`)
 
-func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return nil, err
+type migrations []database.Migration
+
+func (m migrations) Len() int {
+	return len(m)
+}
+
+func (m migrations) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
+func (m migrations) Less(i, j int) bool {
+	bySource := strings.Compare(m[i].Source(), m[j].Source())
+
+	if bySource == 0 {
+		return strings.Compare(m[i].Id(), m[j].Id()) < 0
 	}
 
-	list := []*migrate.Migration{}
+	return bySource < 0
+}
 
-	for _, s := range components {
-		if service, ok := s.(database.HasMigrations); ok {
-			migrations, err := service.GetMigrations().FindMigrations()
+func formatId(source, id string) string {
+	parts := idRegexp.FindStringSubmatch(id)
+	if len(parts) > 2 {
+		id = fmt.Sprintf("%s_%s%s", parts[1], source, parts[2])
+	}
 
-			if err != nil {
-				return nil, err
-			}
+	return id
+}
 
-			for i := range migrations {
-				parts := idRegexp.FindStringSubmatch(migrations[i].Id)
-				if len(parts) > 2 {
-					migrations[i].Id = fmt.Sprintf("%s_%s%s", parts[1], s.GetName(), parts[2])
-				}
-			}
-
-			list = append(list, migrations...)
+func (c *Component) GetMigration(id, source string) database.Migration {
+	for _, m := range c.GetAllMigrations() {
+		if m.Id() == id && m.Source() == source {
+			return m
 		}
 	}
 
-	return list, nil
+	return nil
+}
+
+func (c *Component) GetAllMigrations() []database.Migration {
+	exists := c.getCollect()
+	if len(exists) == 0 {
+		return nil
+	}
+
+	migrations := make([]database.Migration, len(exists), len(exists))
+	storage := c.GetStorage()
+
+	records, err := migrate.GetMigrationRecords(storage.(*SqlStorage).executor.(*gorp.DbMap).Db, storage.GetDialect())
+	if err == nil {
+		for i, m := range exists {
+			var appliedAt *time.Time
+
+			for _, record := range records {
+				if record.Id == formatId(m.Source(), m.Id()) {
+					appliedAt = &record.AppliedAt
+					break
+				}
+			}
+
+			migrations[i] = database.NewMigration(m.Source(), m.Id(), m.Up(), m.Down(), appliedAt)
+		}
+	} else {
+		for i, m := range exists {
+			migrations[i] = database.NewMigration(m.Source(), m.Id(), m.Up(), m.Down(), nil)
+		}
+	}
+
+	return migrations
+}
+
+func (c *Component) getCollect() []database.Migration {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return nil
+	}
+
+	migrations := migrations{}
+
+	for _, s := range components {
+		if service, ok := s.(database.HasMigrations); ok {
+			for _, migration := range service.GetMigrations() {
+				migrations = append(migrations, migration)
+			}
+		}
+	}
+
+	sort.Sort(migrations)
+
+	return migrations
+}
+
+func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
+	migrations := []*migrate.Migration{}
+
+	for _, m := range c.getCollect() {
+		mig := migrate.Migration{
+			Id:   formatId(m.Source(), m.Id()),
+			Up:   m.Up(),
+			Down: m.Down(),
+		}
+
+		migrations = append(migrations, &mig)
+	}
+
+	return migrations, nil
 }
 
 func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {

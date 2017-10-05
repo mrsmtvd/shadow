@@ -70,11 +70,8 @@ func (c *Component) Run() (err error) {
 
 	c.storage.SetTypeConverter(TypeConverter{})
 
-	tableName := c.config.GetString(database.ConfigMigrationsTable)
-	if tableName == "" {
-		tableName = defaultMigrationsTableName
-	}
-	migrate.SetTable(tableName)
+	migrate.SetSchema(c.config.GetString(database.ConfigMigrationsSchema))
+	migrate.SetTable(c.config.GetString(database.ConfigMigrationsTable))
 
 	n, err := c.UpMigrations()
 	if err != nil {

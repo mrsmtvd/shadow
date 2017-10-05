@@ -19,14 +19,14 @@
             {{ end }}
 
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="bindata">
                     <thead>
                     <tr>
                         <th>Name</th>
                         <th class="col-md-1">Size</th>
                         <th class="col-md-1">Mode</th>
                         <th class="col-md-1">Modified</th>
-                        <th class="col-md-1">Actions</th>
+                        <th class="col-md-1 actions">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -60,6 +60,14 @@
         </div>
     </div>
 </div>
+{{ end }}
+
+{{ define "head" }}
+    <style type="text/css">
+        #bindata th.actions {
+            min-width: 70px;
+        }
+    </style>
 {{ end }}
 
 {{ define "js" }}

@@ -8,10 +8,6 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
-const (
-	defaultMigrationsTableName = "migrations"
-)
-
 func (c *Component) GetConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
@@ -79,9 +75,17 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			nil),
 		config.NewVariable(
+			database.ConfigMigrationsSchema,
+			config.ValueTypeString,
+			"",
+			"Database migrations schema name",
+			true,
+			nil,
+			nil),
+		config.NewVariable(
 			database.ConfigMigrationsTable,
 			config.ValueTypeString,
-			defaultMigrationsTableName,
+			"migrations",
 			"Database migrations table name",
 			true,
 			nil,
@@ -108,6 +112,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 func (c *Component) GetConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher(database.ComponentName, []string{config.ConfigDebug}, c.watchDebug),
+		config.NewWatcher(database.ComponentName, []string{database.ConfigMigrationsSchema}, c.watchMigrationsSchema),
 		config.NewWatcher(database.ComponentName, []string{database.ConfigMigrationsTable}, c.watchMigrationsTable),
 		config.NewWatcher(database.ComponentName, []string{
 			database.ConfigMaxIdleConns,
@@ -122,6 +127,10 @@ func (c *Component) watchDebug(_ string, newValue interface{}, _ interface{}) {
 
 func (c *Component) watchMigrationsTable(_ string, newValue interface{}, _ interface{}) {
 	migrate.SetTable(newValue.(string))
+}
+
+func (c *Component) watchMigrationsSchema(_ string, newValue interface{}, _ interface{}) {
+	migrate.SetSchema(newValue.(string))
 }
 
 func (c *Component) watchFoxMaxConns(_ string, _ interface{}, _ interface{}) {

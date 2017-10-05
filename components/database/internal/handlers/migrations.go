@@ -12,10 +12,7 @@ type MigrationsHandler struct {
 }
 
 func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	migrations, err := h.Component.FindMigrations()
-
 	h.Render(r.Context(), h.Component.GetName(), "migrations", map[string]interface{}{
-		"error":      err,
-		"migrations": migrations,
+		"migrations": h.Component.GetAllMigrations(),
 	})
 }

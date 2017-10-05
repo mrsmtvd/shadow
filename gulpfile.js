@@ -16,6 +16,7 @@ var child          = require('child_process'),
     runSequence    = require('run-sequence');
 
 var COMPONENTS = __dirname + '/components',
+    VENDORS_DATABASE = COMPONENTS + '/database/internal/assets/vendors/',
     VENDORS_DASHBOARD = COMPONENTS + '/dashboard/internal/assets/vendors/',
     VENDORS_PROFILING = COMPONENTS + '/profiling/internal/assets/vendors/',
     DEV_ENV = 'development';
@@ -267,6 +268,15 @@ gulp.task('frontend', ['compress-components'], function() {
     ])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/font-awesome'));
 
+    // highlightjs
+    gulp.src(['bower_components/highlightjs/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DATABASE + '/highlightjs/js'));
+
+    gulp.src(['bower_components/highlightjs/styles/tomorrow.css'])
+        .pipe(cleanCss())
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DATABASE + '/highlightjs/css'));
+
     // iCheck
     gulp.src(['bower_components/iCheck/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/icheck/js'));
@@ -368,7 +378,8 @@ gulp.task('bindata', function() {
     
     return gulp.src([
         COMPONENTS + '/**/templates',
-        COMPONENTS + '/**/assets'
+        COMPONENTS + '/**/assets',
+        COMPONENTS + '/**/migrations'
     ])
         .pipe(groupAggregate({
             group: function (file){
