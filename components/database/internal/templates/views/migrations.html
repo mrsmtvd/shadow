@@ -1,0 +1,63 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Migrations</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-hover" id="migrations">
+                    <thead>
+                    <tr>
+                        <th class="col-md-1">Id</th>
+                        <th class="col-md-2">Source</th>
+                        <th class="col-md-1">Applied at</th>
+                        <th class="col-md-1 actions">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $migration := .migrations }}
+                    <tr class="migration">
+                        <td>{{ $migration.Id }}</td>
+                        <td>{{ $migration.Source }}</td>
+                        <td>
+                            {{ if $migration.AppliedAt }}
+                            <script type="application/javascript">document.write(dateToString('{{ $migration.AppliedAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script>
+                            {{ end }}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-xs">
+                                <button class="btn btn-success btn-icon"><i class="glyphicon glyphicon glyphicon-eye-open" title="Show"></i></button>
+                                <a href="/dashboard/bindata/?path=/{{ $migration.Source }}/migrations/{{ $migration.Id }}&mode=raw" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-file" title="Raw"></i></a>
+                                <a href="/dashboard/bindata/?path=/{{ $migration.Source }}/migrations/{{ $migration.Id }}&mode=file" class="btn btn-warning btn-icon"><i class="glyphicon glyphicon-save-file" title="Download"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="no-hover" style="display: none">
+                        <td colspan="4">
+                            <pre>
+                                <button type="button" class="close">×</button>
+                                <code class="sql">{{ range $s, $sql := $migration.Up }}{{ $sql }}
+{{ end }}{{ range $s, $sql := $migration.Down }}{{ $sql }}
+{{ end }}</code></pre>
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+    {{ staticHTML (staticURL "/database/assets/vendors/highlightjs/css/tomorrow.min.css" false) }}
+    {{ staticHTML (staticURL "/database/assets/css/migrations.css" true) }}
+{{ end }}
+
+{{ define "js" }}
+    {{ staticHTML (staticURL "/database/assets/vendors/highlightjs/js/highlight.pack.min.js" false) }}
+    {{ staticHTML (staticURL "/database/assets/js/migrations.js" true) }}
+{{ end }}

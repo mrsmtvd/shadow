@@ -1,0 +1,79 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Components</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th>Dependencies</th>
+                        <th>Functions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $component := .components }}
+                    <tr>
+                        <td>{{ add $i 1 }}</td>
+                        <td>{{ $component.name }}</td>
+                        <td>{{ $component.version }}</td>
+                        <td>
+                            {{ range $j, $dep := $component.dependencies }}
+                            {{ if $dep.Required }}
+                            <span class="label label-warning">{{ $dep.Name }}</span>
+                            {{ else }}
+                            <span class="label label-info">{{ $dep.Name }}</span>
+                            {{ end }}
+                            {{ end }}
+                        </td>
+                        <td>
+                            {{ if $component.has_config_variables }}
+                                {{ if $component.has_config_watchers }}
+                                <a href="/config/" class="label label-success">config with watchers</a>
+                                {{ else }}
+                                <a href="/config/" class="label label-success">config</a>
+                                {{ end }}
+                            </a>
+                            {{ else if $component.has_config_watchers }}
+                            <span class="label label-success">config with watchers</span>
+                            {{ end }}
+
+                            {{ if $component.has_dashboard_menu }}
+                            <span class="label label-success">menu</span>
+                            {{ end }}
+
+                            {{ if $component.has_dashboard_routes }}
+                            <a href="/dashboard/routing/" class="label label-success">routes</a>
+                            {{ end }}
+
+                            {{ if $component.has_dashboard_templates }}
+                            <a href="/dashboard/bindata/?path=/{{ $component.name }}/{{ $component.has_dashboard_templates }}" class="label label-success">templates</a>
+                            {{ end }}
+
+                            {{ if $component.has_database_migrations }}
+                            <a href="/database/migrations/" class="label label-success">database migrations</a>
+                            {{ end }}
+
+                            {{ if $component.has_grpc_server }}
+                            <a href="/grpc/" class="label label-success">grpc</a>
+                            {{ end }}
+
+                            {{ if $component.has_metrics }}
+                            <a href="/metrics/" class="label label-success">metrics</a>
+                            {{ end }}
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

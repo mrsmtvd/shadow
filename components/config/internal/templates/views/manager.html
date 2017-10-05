@@ -1,0 +1,169 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Configuration</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            {{ if .error }}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ .error.Error }}
+            </div>
+            {{ end }}
+
+            <form role="form" action="#" method="post" id="configs" data-toggle="validator">
+                <div role="tabpanel">
+                    <ul class="nav nav-tabs bar_tabs" role="tablist">
+                        {{ range $name, $vars := .variables }}
+                        <li role="presentation" {{ if eq $name "config" }} class="active"{{ end }}>
+                            <a href="#{{ $name }}" aria-controls="{{ $name }}" role="tab" data-toggle="tab" aria-expanded="{{ if eq $name "config" }}true{{ else }}false{{ end }}">
+                                {{ $name }}
+                            </a>
+                        </li>
+                        {{ end }}
+                    </ul>
+
+                    <div class="tab-content">
+                        {{ range $name, $vars := .variables }}
+                        <div role="tabpanel" class="tab-pane{{ if eq $name "config" }} active in{{ end }}" id="{{ $name }}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th width="20%">Name</th>
+                                        <th width="25%">Value</th>
+                                        <th width="15%">Default</th>
+                                        <th width="10%">Watchers</th>
+                                        <th>Description</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $i, $config := $vars }}
+                                    {{ $varId := replace $config.Variable.Key "." "_" }}
+                                    <tr>
+                                        <td>
+                                            {{ if $config.Variable.Editable }}
+                                            <label class="control-label" for="{{ $varId }}">{{ $config.Variable.Key }}</label>
+                                            {{ else }}
+                                            <label class="control-label">{{ $config.Variable.Key }}</label>
+                                            {{ end }}
+                                        </td>
+                                        <td>
+                                            {{ if $config.Variable.Editable }}
+                                            <div class="form-group">
+                                                {{ if $config.HasView "enum" }}
+                                                <select class="form-control select2" name="{{ $config.Variable.Key }}" id="{{ $varId }}">
+                                                    {{ range $o, $option := ($config.GetViewOption "options") }}
+                                                    <option value="{{ index $option 0 }}"{{ if eq (index $option 0) $config.Variable.Value }} selected="selected"{{ end }}>{{ index $option 1 }}</option>
+                                                    {{ end }}
+                                                </select>
+                                                {{ else if eq $config.Variable.Type "bool" }}
+                                                <input type="checkbox" class="js-switch" name="{{ $config.Variable.Key }}" id="{{ $varId }}" {{ if eq (print $config.Variable.Value) "true" }} checked{{ end }} />
+                                                {{ else if or (eq $config.Variable.Type "int") (eq $config.Variable.Type "int64") }}
+                                                <input type="number" class="form-control" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}" pattern="^[-+]?[0-9]*$"/>
+                                                {{ else if or (eq $config.Variable.Type "uint") (eq $config.Variable.Type "uint64") }}
+                                                <input type="number" class="form-control" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}" pattern="^[+]?[0-9]*$"/>
+                                                {{ else if eq $config.Variable.Type "float64" }}
+                                                <input type="number" class="form-control" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}" pattern="^[-+]?[0-9]*(\.[0-9]*)?$"/>
+                                                {{ else if eq $config.Variable.Type "duration" }}
+                                                <input type="text" class="form-control" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}" pattern="^[-+]?([0-9]*(\.[0-9]*)?[a-z]+)+$"/>
+                                                {{ else if $config.HasView "password" }}
+                                                <input type="password" class="form-control password-show" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}"/>
+                                                {{ else if $config.HasView "tags" }}
+                                                {{ $defaultText := $config.GetViewOption "default-text" }}
+                                                <input type="text" class="form-control tags" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}"
+                                                    {{ if $defaultText }}data-default-text="{{ $defaultText }}"{{ end }}/>
+                                                {{ else }}
+                                                <input type="text" class="form-control" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}"/>
+                                                {{ end }}
+                                            </div>
+                                            {{ else }}
+                                            <span>{{ $config.Variable.Value }}</span>
+                                            {{ end }}
+                                        </td>
+                                        <td>
+                                            <span id="{{ $varId }}_value" data-value="{{ $config.Variable.Default }}">
+                                                {{ if $config.HasView "password" }}
+                                                ******
+                                                {{ else }}
+                                                    {{ $config.Variable.Default }}
+                                                {{ end }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ if $config.Watchers }}
+                                            <span>
+                                                {{ range $w, $watcher := $config.Watchers }}
+                                                <span class="label label-default">{{ $watcher.Source }}</span>
+                                                {{ end }}
+                                            </span>
+                                            {{ end }}
+                                        </td>
+                                        <td>
+                                            <span>{{ $config.Variable.Usage }}
+                                            {{ if and (ne $config.Variable.Editable true) ($config.HasView "enum") }}
+                                                <br />Allowed values:
+                                                <ul>
+                                                {{ range $o, $option := ($config.GetViewOption "options") }}
+                                                    {{ if eq (index $option 0) (index $option 1) }}
+                                                    <li>{{ index $option 0 }}</li>
+                                                    {{ else }}
+                                                    <li>{{ index $option 0 }} &mdash; {{ index $option 1 }}</li>
+                                                    {{ end }}
+                                                {{ end }}
+                                                </ul>
+                                            {{ end }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-md-offset-3">
+                        <button type="reset" class="btn btn-info" value="reset">Reset</button>
+                        <button type="submit" class="btn btn-success" value="save" disabled="disabled">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalConfig" tabindex="-1" role="dialog" aria-labelledby="modalConfigLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modalConfigLabel">Confirm save configuration</h4>
+            </div>
+            <div class="modal-body">Are you sure?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" false) }}
+{{ end }}
+
+{{ define "js" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" false) }}
+    {{ staticHTML (staticURL "/config/assets/js/manager.js" true) }}
+{{ end }}

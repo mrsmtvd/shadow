@@ -6,16 +6,16 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/alerts"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/grpc"
-	"github.com/kihamo/shadow/components/logger"
-	"github.com/kihamo/shadow/components/mail"
-	"github.com/kihamo/shadow/components/metrics"
-	"github.com/kihamo/shadow/components/profiling"
-	"github.com/kihamo/shadow/components/workers"
+	alerts "github.com/kihamo/shadow/components/alerts/instance"
+	config "github.com/kihamo/shadow/components/config/instance"
+	dashboard "github.com/kihamo/shadow/components/dashboard/instance"
+	database "github.com/kihamo/shadow/components/database/instance"
+	grpc "github.com/kihamo/shadow/components/grpc/instance"
+	logger "github.com/kihamo/shadow/components/logger/instance"
+	mail "github.com/kihamo/shadow/components/mail/instance"
+	metrics "github.com/kihamo/shadow/components/metrics/instance"
+	profiling "github.com/kihamo/shadow/components/profiling/instance"
+	workers "github.com/kihamo/shadow/components/workers/instance"
 )
 
 var (
@@ -28,16 +28,16 @@ func main() {
 		"1.0",
 		build,
 		[]shadow.Component{
-			new(alerts.Component),
-			new(config.Component),
-			new(dashboard.Component),
-			new(database.Component),
-			new(grpc.Component),
-			new(logger.Component),
-			new(mail.Component),
-			new(metrics.Component),
-			new(profiling.Component),
-			new(workers.Component),
+			alerts.NewComponent(),
+			config.NewComponent(),
+			dashboard.NewComponent(),
+			database.NewComponent(),
+			grpc.NewComponent(),
+			logger.NewComponent(),
+			mail.NewComponent(),
+			metrics.NewComponent(),
+			profiling.NewComponent(),
+			workers.NewComponent(),
 		},
 	)
 
