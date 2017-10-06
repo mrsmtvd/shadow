@@ -11,13 +11,13 @@
     <div class="list-group">
         {{ range $i, $alert := .alerts }}
         <a href="#" class="list-group-item">
-            {{ if $alert.GetIcon }}
-            <i class="fa fa-{{ $alert.GetIcon }} fa-fw"></i>
+            {{ if $alert.Icon }}
+            <i class="fa fa-{{ $alert.Icon }} fa-fw"></i>
             {{ end }}
-            <span class="pull-right text-muted small"><em>{{ $alert.GetDateAsMessage }}</em></span>
+            <span class="pull-right text-muted small"><em>{{ $alert.DateAsMessage }}</em></span>
 
-            <strong>{{ $alert.GetTitle }}</strong><br />
-            {{ $alert.GetMessageAsHTML }}
+            <strong>{{ $alert.Title }}</strong><br />
+            {{ $alert.MessageAsHTML }}
         </a>
         {{ end }}
     </div>

@@ -6,10 +6,10 @@ import (
 )
 
 type Alert interface {
-	GetTitle() string
-	GetMessage() string
-	GetMessageAsHTML() template.HTML
-	GetIcon() string
-	GetDate() time.Time
-	GetDateAsMessage() string
+	Title() string
+	Message() string
+	MessageAsHTML() template.HTML
+	Icon() string
+	Date() time.Time
+	DateAsMessage() string
 }

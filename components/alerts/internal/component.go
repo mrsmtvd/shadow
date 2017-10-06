@@ -89,7 +89,7 @@ func (c *Component) GetAlerts() []alerts.Alert {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	list := make([]alerts.Alert, len(c.alerts))
+	list := make([]alerts.Alert, 0, len(c.alerts))
 	for _, a := range c.alerts {
 		list = append(list, a)
 	}

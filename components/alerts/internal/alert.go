@@ -23,26 +23,26 @@ func NewAlert(title, message, icon string, date time.Time) *Alert {
 	}
 }
 
-func (a *Alert) GetTitle() string {
+func (a *Alert) Title() string {
 	return a.title
 }
 
-func (a *Alert) GetMessage() string {
+func (a *Alert) Message() string {
 	return a.message
 }
 
-func (a *Alert) GetMessageAsHTML() template.HTML {
+func (a *Alert) MessageAsHTML() template.HTML {
 	return template.HTML(a.message)
 }
 
-func (a *Alert) GetIcon() string {
+func (a *Alert) Icon() string {
 	return a.icon
 }
 
-func (a *Alert) GetDate() time.Time {
+func (a *Alert) Date() time.Time {
 	return a.date
 }
 
-func (a *Alert) GetDateAsMessage() string {
+func (a *Alert) DateAsMessage() string {
 	return shadow.DateSinceAsMessage(a.date)
 }

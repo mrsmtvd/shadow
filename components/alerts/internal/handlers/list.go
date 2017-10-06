@@ -23,25 +23,26 @@ type ListHandler struct {
 }
 
 func (h *ListHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+	list := h.Component.GetAlerts()
+
 	if r.IsAjax() {
-		list := h.Component.GetAlerts()
-		alertsShort := make([]listHandlerResponse, 0, cap(list))
+		reply := make([]listHandlerResponse, 0, len(list))
 
 		for i := range list {
-			alertsShort = append(alertsShort, listHandlerResponse{
-				Icon:    list[i].GetIcon(),
-				Title:   list[i].GetTitle(),
-				Message: list[i].GetMessage(),
-				Elapsed: list[i].GetDateAsMessage(),
-				Date:    list[i].GetDate(),
+			reply = append(reply, listHandlerResponse{
+				Icon:    list[i].Icon(),
+				Title:   list[i].Title(),
+				Message: list[i].Message(),
+				Elapsed: list[i].DateAsMessage(),
+				Date:    list[i].Date(),
 			})
 		}
 
-		w.SendJSON(alertsShort)
+		w.SendJSON(reply)
 		return
 	}
 
 	h.Render(r.Context(), h.Component.GetName(), "list", map[string]interface{}{
-		"alerts": h.Component.GetAlerts(),
+		"alerts": list,
 	})
 }
