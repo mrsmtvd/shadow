@@ -16,7 +16,7 @@ const (
 	lockTimeoutInSeconds = 1
 )
 
-var idRegexp = regexp.MustCompile(`^(\d+)(.*)$`)
+var nameRegexp = regexp.MustCompile(`^([1-9]\d{3}[0-1]\d[0-3]\d[0-2]\d[0-5]\d[0-5]\d)(.*)$`)
 
 type migrations []database.Migration
 
@@ -29,17 +29,11 @@ func (m migrations) Swap(i, j int) {
 }
 
 func (m migrations) Less(i, j int) bool {
-	bySource := strings.Compare(m[i].Source(), m[j].Source())
-
-	if bySource == 0 {
-		return strings.Compare(m[i].Id(), m[j].Id()) < 0
-	}
-
-	return bySource < 0
+	return strings.Compare(m[i].Id(), m[j].Id()) < 0
 }
 
 func formatId(source, id string) string {
-	parts := idRegexp.FindStringSubmatch(id)
+	parts := nameRegexp.FindStringSubmatch(id)
 	if len(parts) > 2 {
 		id = fmt.Sprintf("%s_%s%s", parts[1], source, parts[2])
 	}
@@ -78,11 +72,11 @@ func (c *Component) GetAllMigrations() []database.Migration {
 				}
 			}
 
-			migrations[i] = database.NewMigration(m.Source(), m.Id(), m.Up(), m.Down(), appliedAt)
+			migrations[i] = database.NewMigration(m.Source(), m.Id(), m.Up(), m.Down(), m.ModAt(), appliedAt)
 		}
 	} else {
 		for i, m := range exists {
-			migrations[i] = database.NewMigration(m.Source(), m.Id(), m.Up(), m.Down(), nil)
+			migrations[i] = database.NewMigration(m.Source(), m.Id(), m.Up(), m.Down(), m.ModAt(), nil)
 		}
 	}
 
@@ -100,7 +94,13 @@ func (c *Component) getCollect() []database.Migration {
 	for _, s := range components {
 		if service, ok := s.(database.HasMigrations); ok {
 			for _, migration := range service.GetMigrations() {
+				if !nameRegexp.MatchString(migration.Id()) {
+					c.logger.Warnf("Skip migration with wrong id %s", migration.Id())
+					continue
+				}
+
 				migrations = append(migrations, migration)
+
 			}
 		}
 	}

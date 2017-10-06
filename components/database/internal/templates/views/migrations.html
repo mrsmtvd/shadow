@@ -12,6 +12,7 @@
                     <tr>
                         <th class="col-md-1">Id</th>
                         <th class="col-md-2">Source</th>
+                        <th class="col-md-1">Modified at</th>
                         <th class="col-md-1">Applied at</th>
                         <th class="col-md-1 actions">Actions</th>
                     </tr>
@@ -21,6 +22,9 @@
                     <tr class="migration">
                         <td>{{ $migration.Id }}</td>
                         <td>{{ $migration.Source }}</td>
+                        <td>
+                            <script type="application/javascript">document.write(dateToString('{{ $migration.ModAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script>
+                        </td>
                         <td>
                             {{ if $migration.AppliedAt }}
                             <script type="application/javascript">document.write(dateToString('{{ $migration.AppliedAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script>
@@ -35,7 +39,7 @@
                         </td>
                     </tr>
                     <tr class="no-hover" style="display: none">
-                        <td colspan="4">
+                        <td colspan="5">
                             <pre>
                                 <button type="button" class="close">×</button>
                                 <code class="sql">{{ range $s, $sql := $migration.Up }}{{ $sql }}

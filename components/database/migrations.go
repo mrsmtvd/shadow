@@ -13,6 +13,7 @@ type Migration interface {
 	Id() string
 	Up() []string
 	Down() []string
+	ModAt() time.Time
 	AppliedAt() *time.Time
 }
 
@@ -21,15 +22,17 @@ type MigrationItem struct {
 	id        string
 	up        []string
 	down      []string
+	modAt     time.Time
 	appliedAt *time.Time
 }
 
-func NewMigration(source, id string, up, down []string, appliedAt *time.Time) Migration {
+func NewMigration(source, id string, up, down []string, modAt time.Time, appliedAt *time.Time) Migration {
 	return &MigrationItem{
 		source:    source,
 		id:        id,
 		up:        up,
 		down:      down,
+		modAt:     modAt,
 		appliedAt: appliedAt,
 	}
 }
@@ -48,6 +51,10 @@ func (m *MigrationItem) Up() []string {
 
 func (m *MigrationItem) Down() []string {
 	return m.down
+}
+
+func (m *MigrationItem) ModAt() time.Time {
+	return m.modAt
 }
 
 func (m *MigrationItem) AppliedAt() *time.Time {

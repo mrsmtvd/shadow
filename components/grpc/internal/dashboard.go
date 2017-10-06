@@ -3,7 +3,7 @@ package internal
 import (
 	"net/http"
 
-	assetfs "github.com/elazarl/go-bindata-assetfs"
+	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc/internal/handlers"
 )

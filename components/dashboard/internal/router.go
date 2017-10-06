@@ -61,8 +61,6 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 		stack = stack[:runtime.Stack(stack, false)]
 		_, file, line, _ := runtime.Caller(6)
 
-		fmt.Println(dashboard.SessionFromContext(pr.Context()))
-
 		r.chain.Then(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
 			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, &dashboard.PanicError{
 				Error: pe,

@@ -19,8 +19,8 @@ type Component struct {
 	application shadow.Application
 
 	mutex  sync.RWMutex
-	alerts []*Alert
-	queue  chan *Alert
+	alerts []alerts.Alert
+	queue  chan alerts.Alert
 	routes []dashboard.Route
 }
 
@@ -45,8 +45,8 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
-	c.alerts = make([]*Alert, 0)
-	c.queue = make(chan *Alert)
+	c.alerts = make([]alerts.Alert, 0)
+	c.queue = make(chan alerts.Alert)
 
 	return nil
 }
@@ -61,7 +61,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 			select {
 			case alert := <-c.queue:
 				c.mutex.Lock()
-				c.alerts = append([]*Alert{alert}, c.alerts...)
+				c.alerts = append([]alerts.Alert{alert}, c.alerts...)
 				c.mutex.Unlock()
 
 				if metricAlertsTotal != nil {
@@ -89,10 +89,10 @@ func (c *Component) GetAlerts() []alerts.Alert {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	alerts := make([]alerts.Alert, len(c.alerts))
+	list := make([]alerts.Alert, len(c.alerts))
 	for _, a := range c.alerts {
-		alerts = append(alerts, a)
+		list = append(list, a)
 	}
 
-	return alerts
+	return list
 }
