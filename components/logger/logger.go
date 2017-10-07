@@ -4,6 +4,17 @@ import (
 	"github.com/rs/xlog"
 )
 
+const (
+	LevelEmergency = iota
+	LevelAlert
+	LevelCritical
+	LevelError
+	LevelWarning
+	LevelNotice
+	LevelInformational
+	LevelDebug
+)
+
 type Logger interface {
 	xlog.Logger
 

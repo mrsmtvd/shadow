@@ -3,12 +3,21 @@ package logger
 import (
 	"os"
 
+	"github.com/kihamo/shadow"
 	"github.com/rs/xlog"
 )
 
 type nop struct{}
 
 var NopLogger = &nop{}
+
+func NewOrNop(name string, application shadow.Application) Logger {
+	if cmp := application.GetComponent(ComponentName); cmp != nil {
+		return cmp.(Component).Get(name)
+	}
+
+	return NopLogger
+}
 
 func (n nop) Write(p []byte) (_ int, _ error) { return len(p), nil }
 

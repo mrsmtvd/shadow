@@ -68,7 +68,7 @@ func (c *Component) Get(key string) logger.Logger {
 
 	loggerConfig := xlog.Config{
 		Output: xlog.NewConsoleOutput(),
-		Level:  c.getConfigLevel(),
+		Level:  c.getXLogLevel(),
 		Fields: c.getFields(),
 	}
 
@@ -80,23 +80,23 @@ func (c *Component) Get(key string) logger.Logger {
 	return l
 }
 
-func (c *Component) getConfigLevel() xlog.Level {
+func (c *Component) getXLogLevel() xlog.Level {
 	switch c.config.GetIntDefault(logger.ConfigLevel, 5) {
-	case 0:
+	case logger.LevelEmergency:
 		return xlog.LevelFatal
-	case 1:
+	case logger.LevelAlert:
 		return xlog.LevelFatal
-	case 2:
+	case logger.LevelCritical:
 		return xlog.LevelFatal
-	case 3:
+	case logger.LevelError:
 		return xlog.LevelError
-	case 4:
+	case logger.LevelWarning:
 		return xlog.LevelWarn
-	case 5:
+	case logger.LevelNotice:
 		return xlog.LevelInfo
-	case 6:
+	case logger.LevelInformational:
 		return xlog.LevelInfo
-	case 7:
+	case logger.LevelDebug:
 		return xlog.LevelDebug
 	}
 

@@ -121,6 +121,7 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 		}
 
 		migrations = append(migrations, &mig)
+		c.logger.Debugf("Found %s migration and converted to %s", m.Id(), mig.Id)
 	}
 
 	return migrations, nil

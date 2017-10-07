@@ -10,20 +10,20 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		config.NewVariable(
 			logger.ConfigLevel,
 			config.ValueTypeInt,
-			6,
+			logger.LevelInformational,
 			"Log level in RFC5424",
 			true,
 			[]string{config.ViewEnum},
 			map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
-					{0, "Emergency"},
-					{1, "Alert"},
-					{2, "Critical"},
-					{3, "Error"},
-					{4, "Warning"},
-					{5, "Notice"},
-					{6, "Informational"},
-					{7, "Debug"},
+					{logger.LevelEmergency, "Emergency"},
+					{logger.LevelAlert, "Alert"},
+					{logger.LevelCritical, "Critical"},
+					{logger.LevelError, "Error"},
+					{logger.LevelWarning, "Warning"},
+					{logger.LevelNotice, "Notice"},
+					{logger.LevelInformational, "Informational"},
+					{logger.LevelDebug, "Debug"},
 				},
 			}),
 		config.NewVariable(
@@ -50,7 +50,7 @@ func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	level := c.getConfigLevel()
+	level := c.getXLogLevel()
 
 	for key, _ := range c.loggers {
 		c.loggers[key].(*loggerWrapper).setLevel(level)

@@ -88,7 +88,15 @@
                                                 {{ if $config.HasView "password" }}
                                                 ******
                                                 {{ else }}
-                                                    {{ $config.Variable.Default }}
+                                                    {{ if and $config.Variable.Editable (and ($config.HasView "enum") ($config.Variable.Default)) }}
+                                                        {{ range $o, $option := ($config.GetViewOption "options") }}
+                                                            {{ if eq (index $option 0) $config.Variable.Default }}
+                                                                {{ index $option 1 }}
+                                                            {{ end }}
+                                                        {{ end }}
+                                                    {{ else }}
+                                                        {{ $config.Variable.Default }}
+                                                    {{ end }}
                                                 {{ end }}
                                             </span>
                                         </td>
