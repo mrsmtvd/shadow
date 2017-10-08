@@ -44,19 +44,15 @@ func (c *Component) GetVersion() string {
 }
 
 func (c *Component) Init(a shadow.Application) (err error) {
+	components, err := a.GetComponents()
+	if err != nil {
+		return err
+	}
+
 	c.application = a
 	c.envPrefix = EnvKey(a.GetName()) + "_"
 	c.variables = make(map[string]config.Variable)
 	c.watchers = make(map[string][]config.Watcher)
-
-	return err
-}
-
-func (c *Component) Run() error {
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return err
-	}
 
 	for _, component := range components {
 		if variables, ok := component.(config.HasVariables); ok {
@@ -88,7 +84,21 @@ func (c *Component) Run() error {
 		}
 	}
 
-	c.logConfig()
+	return err
+}
+
+func (c *Component) Run() error {
+	fields := make(map[string]interface{}, 0)
+
+	if c.envPrefix != "" {
+		fields["config.prefix"] = c.envPrefix
+	}
+
+	for _, v := range c.GetAllVariables() {
+		fields[v.Key()] = v.Value()
+	}
+
+	c.log().Info("Init config", fields)
 
 	return nil
 }
@@ -186,20 +196,6 @@ func (c *Component) log() logger.Logger {
 	}
 
 	return c.logger
-}
-
-func (c *Component) logConfig() {
-	fields := make(map[string]interface{}, 0)
-
-	if c.envPrefix != "" {
-		fields["config.prefix"] = c.envPrefix
-	}
-
-	for _, v := range c.GetAllVariables() {
-		fields[v.Key()] = v.Value()
-	}
-
-	c.log().Info("Init config", fields)
 }
 
 func (c *Component) Has(key string) bool {
