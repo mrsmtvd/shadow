@@ -1,12 +1,15 @@
 package database
 
 import (
+	"strings"
 	"time"
 )
 
 type HasMigrations interface {
-	GetMigrations() []Migration
+	GetMigrations() Migrations
 }
+
+type Migrations []Migration
 
 type Migration interface {
 	Source() string
@@ -15,6 +18,18 @@ type Migration interface {
 	Down() []string
 	ModAt() time.Time
 	AppliedAt() *time.Time
+}
+
+func (m Migrations) Len() int {
+	return len(m)
+}
+
+func (m Migrations) Less(i, j int) bool {
+	return strings.Compare(m[i].Id(), m[j].Id()) < 0
+}
+
+func (m Migrations) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
 }
 
 type MigrationItem struct {

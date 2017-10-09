@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/go-gorp/gorp"
@@ -17,20 +16,6 @@ const (
 )
 
 var nameRegexp = regexp.MustCompile(`^([1-9]\d{3}[0-1]\d[0-3]\d[0-2]\d[0-5]\d[0-5]\d)(.*)$`)
-
-type migrations []database.Migration
-
-func (m migrations) Len() int {
-	return len(m)
-}
-
-func (m migrations) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-
-func (m migrations) Less(i, j int) bool {
-	return strings.Compare(m[i].Id(), m[j].Id()) < 0
-}
 
 func formatId(source, id string) string {
 	parts := nameRegexp.FindStringSubmatch(id)
@@ -51,13 +36,13 @@ func (c *Component) GetMigration(id, source string) database.Migration {
 	return nil
 }
 
-func (c *Component) GetAllMigrations() []database.Migration {
+func (c *Component) GetAllMigrations() database.Migrations {
 	exists := c.getCollect()
 	if len(exists) == 0 {
 		return nil
 	}
 
-	migrations := make([]database.Migration, len(exists), len(exists))
+	migrations := make(database.Migrations, len(exists), len(exists))
 	storage := c.GetStorage()
 
 	records, err := migrate.GetMigrationRecords(storage.(*SqlStorage).executor.(*gorp.DbMap).Db, storage.GetDialect())
@@ -83,13 +68,13 @@ func (c *Component) GetAllMigrations() []database.Migration {
 	return migrations
 }
 
-func (c *Component) getCollect() []database.Migration {
+func (c *Component) getCollect() database.Migrations {
 	components, err := c.application.GetComponents()
 	if err != nil {
 		return nil
 	}
 
-	migrations := migrations{}
+	migrations := database.Migrations{}
 
 	for _, s := range components {
 		if service, ok := s.(database.HasMigrations); ok {

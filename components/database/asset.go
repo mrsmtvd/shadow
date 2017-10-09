@@ -9,8 +9,8 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
-func GetMigrationsFromAsset(source string, dir string, asset func(path string) ([]byte, error), assetInfo func(name string) (os.FileInfo, error), assetDir func(path string) ([]string, error)) []Migration {
-	migrations := []Migration{}
+func GetMigrationsFromAsset(source string, dir string, asset func(path string) ([]byte, error), assetInfo func(name string) (os.FileInfo, error), assetDir func(path string) ([]string, error)) Migrations {
+	migrations := Migrations{}
 
 	files, err := assetDir(dir)
 	if err != nil {

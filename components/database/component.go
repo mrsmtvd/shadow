@@ -9,5 +9,5 @@ type Component interface {
 
 	GetStorage() Storage
 	GetMigration(id, source string) Migration
-	GetAllMigrations() []Migration
+	GetAllMigrations() Migrations
 }

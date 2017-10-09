@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"sort"
+
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/database"
 )
@@ -12,7 +14,11 @@ type MigrationsHandler struct {
 }
 
 func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+	migrations := h.Component.GetAllMigrations()
+
+	sort.Sort(sort.Reverse(migrations))
+
 	h.Render(r.Context(), h.Component.GetName(), "migrations", map[string]interface{}{
-		"migrations": h.Component.GetAllMigrations(),
+		"migrations": migrations,
 	})
 }
