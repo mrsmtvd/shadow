@@ -62,11 +62,24 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 					continue
 				}
 
-				r.Config().Set(key, values[0])
+				err = r.Config().Set(key, values[0])
+				if err != nil {
+					break
+				}
+
+				user := r.User()
+				if user != nil {
+					r.Logger().Infof("User change config %s", key, map[string]interface{}{
+						"user.id":   user.UserID,
+						"user.name": user.Name,
+					})
+				}
 			}
 
-			h.Redirect(r.URL().String(), http.StatusFound, w, r)
-			return
+			if err == nil {
+				h.Redirect(r.URL().String(), http.StatusFound, w, r)
+				return
+			}
 		}
 	}
 
