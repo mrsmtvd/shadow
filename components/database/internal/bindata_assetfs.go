@@ -93,7 +93,7 @@ func templatesViewsMigrationsHtml() (*asset, error) {
 	return a, nil
 }
 
-var _assetsCssMigrationsMinCss = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x52\xce\xcd\x4c\x2f\x4a\x2c\xc9\xcc\xcf\x2b\x56\x28\x28\x4a\xad\x4e\x4a\x4c\xce\x4e\x2f\xca\x2f\xcd\x4b\xd1\x4d\xce\xcf\xc9\x2f\xb2\x52\x4e\x4b\x4b\xab\x45\x53\xa5\x90\x9c\x9f\x92\x5a\x9d\x9b\x58\x94\x9e\x99\xa7\x5b\x92\x5f\x60\xa5\x6b\x64\x58\x50\x81\xa2\xaa\x24\x43\x2f\x31\x19\xcc\xac\xce\xcd\xcc\xd3\x2d\xcf\x4c\x29\xc9\xb0\xb2\x30\x28\xa8\xa8\x05\x04\x00\x00\xff\xff\x99\xbe\x66\xc2\x72\x00\x00\x00")
+var _assetsCssMigrationsMinCss = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x5c\xca\xc1\x0a\xc2\x30\x0c\x00\xd0\x5f\x19\xec\x1c\x71\x3b\xf6\x6f\x62\xba\x76\x41\x9b\x84\x18\xb1\x50\xfa\xef\x82\x37\xbd\xbd\xc3\x5b\x1b\x57\xc7\x60\x95\xe7\x62\x7e\x8c\x1b\xd2\xbd\xba\xbe\x24\x03\xe9\x43\x3d\xad\xa5\x94\xf9\xb7\x16\xd2\x7c\x8c\x86\x5e\x59\x20\xd4\x12\xec\x9b\xf5\x9f\x15\xe7\x05\xe9\xcb\xd1\x58\xe0\xcd\x39\xce\xb4\xed\x57\xeb\xf3\x13\x00\x00\xff\xff\x3a\x50\x18\xc0\x73\x00\x00\x00")
 
 func assetsCssMigrationsMinCssBytes() ([]byte, error) {
 	return bindataRead(
@@ -108,7 +108,7 @@ func assetsCssMigrationsMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 114, mode: os.FileMode(420), modTime: time.Unix(1507248266, 0)}
+	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1507616646, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -128,7 +128,7 @@ func assetsJsMigrationsMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1507248267, 0)}
+	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1507616646, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -148,7 +148,7 @@ func assetsVendorsHighlightjsCssTomorrowMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1507248264, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1507616645, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -168,7 +168,7 @@ func assetsVendorsHighlightjsJsHighlightPackMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1507248264, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1507616645, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
