@@ -407,7 +407,7 @@ gulp.task('bindata', function() {
 
 gulp.task('protobuf', function() {
     return gulp.src(COMPONENTS + '/**/*.proto')
-        .pipe(exec('protoc --proto_path=<%= options.path.dirname(file.path) %> --go_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types:. <%= file.path %>', {
+        .pipe(exec('protoc --proto_path=<%= options.path.dirname(file.path) %> --go_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/golang/protobuf/ptypes/timestamp,Mgoogle/protobuf/duration.proto=github.com/golang/protobuf/ptypes/duration:. <%= file.path %>', {
             path: path
         }))
         .pipe(exec.reporter(execOptions));

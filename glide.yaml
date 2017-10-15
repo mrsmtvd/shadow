@@ -11,7 +11,7 @@ import:
 - package: github.com/go-gorp/gorp
   version: 6a3c8a87d0457cf700e57046c41e19b7cf3c44fa
 - package: github.com/golang/protobuf
-  version: 5afd06f9d81a86d6e3bb7dc702d6bd148ea3ff23
+  version: 130e6b02ab059e7b717a096f397c5b60111cae74
 - package: github.com/grpc-ecosystem/go-grpc-middleware
   version: 645b33ed7ba8739747bf2df55d0349d4bba2e7f6
 - package: github.com/jhump/protoreflect
