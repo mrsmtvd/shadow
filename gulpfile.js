@@ -360,7 +360,7 @@ gulp.task('backend', [], function() {
 });
 
 gulp.task('golang', function() {
-    return gulp.src([__dirname + '/**/*.go', '!' + __dirname + '/vendor/**'])
+    return gulp.src([__dirname + '/**/*.go', '!' + __dirname + '/vendor/**', '!/**/bindata_assetfs.go'])
         .pipe(exec('goimports -w <%= file.path %>'))
         .pipe(exec.reporter(execOptions));
 });
