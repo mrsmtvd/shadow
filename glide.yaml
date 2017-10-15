@@ -15,7 +15,7 @@ import:
 - package: github.com/grpc-ecosystem/go-grpc-middleware
   version: 645b33ed7ba8739747bf2df55d0349d4bba2e7f6
 - package: github.com/jhump/protoreflect
-  version: 323379dfec681ce18c421ed797a41e9dd3f3b8b6
+  version: 8083885e1b19048ab0cd2b12dae8405050864ff1
 - package: github.com/julienschmidt/httprouter
   version: 975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e
 - package: github.com/justinas/alice
@@ -39,7 +39,7 @@ import:
 - package: golang.org/x/net
   version: 66aacef3dd8a676686c7ae3716979581e8b03c47
 - package: google.golang.org/grpc
-  version: v1.6.0
+  version: ~1.6.0
 - package: gopkg.in/Masterminds/squirrel.v1
   version: a6b93000bd219143c56c16e6cb1c4b91da3f224b
 - package: gopkg.in/gomail.v2

@@ -50,7 +50,7 @@
                                             <div class="clearfix"></div>
                                         </div>
                                         <div class="x_content">
-                                            <form method="post" action="?action=call" class="call" data-result="r-{{ $serviceId }}-{{ $methodId }}">
+                                            <form method="post" action="?action=call" class="call" data-result="r-{{ $serviceId }}-{{ $methodId }}" data-toggle="validator">
                                                 <input type="hidden" name="service" value="{{ $service.Name }}">
                                                 <input type="hidden" name="method" value="{{ $method.Name }}">
 
@@ -61,15 +61,66 @@
                                                         <tr>
                                                             <th>Field</th>
                                                             <th>Type</th>
+                                                            <th>Label</th>
                                                             <th>Action</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
                                                         {{ range $f, $field := $method.InputType.Fields }}
+                                                        {{ $varId := replace $field.Name "." "_" }}
                                                         <tr>
                                                             <td>{{ $field.Name }}</td>
-                                                            <td>{{ $field.Type }}</td>
-                                                            <td></td>
+                                                            <td>{{ $field.Type }}
+                                                                {{/*
+                                                                <pre>{{ raw $field.JSON }}</pre>
+                                                                {{ if $field.IsMessage }}
+                                                                    <a href="javascript:void(0)">{{ $field.Type }}</a>
+                                                                {{ else }}
+                                                                    {{ $field.Type }}
+                                                                {{ end }}
+                                                                */}}
+                                                            </td>
+                                                            <td><span class="label label-success">{{ $field.Label }}</span></td>
+                                                            <td>{{/*
+                                                                <div class="input-group">
+                                                                    {{ if not $field.IsRepeated }}
+                                                                        {{ if or (eq $field.Type "double") (eq $field.Type "float") }}
+                                                                            <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
+                                                                        {{ else if or (eq $field.Type "int32") (eq $field.Type "int64") (eq $field.Type "sint32") (eq $field.Type "sint64") (eq $field.Type "sfixed32") (eq $field.Type "sfixed64") }}
+                                                                            <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*$" value="{{ $field.Default }}" />
+                                                                        {{ else if or (eq $field.Type "uint32") (eq $field.Type "uint64") (eq $field.Type "fixed32") (eq $field.Type "fixed64") }}
+                                                                            <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[+]?[0-9]*$" value="{{ $field.Default }}" />
+                                                                        {{ else if eq $field.Type "bool" }}
+                                                                            <input type="checkbox" name="{{ $field.Name }}" class="js-switch form-control" {{ if $field.Default }}checked {{ end }}/>
+                                                                        {{ else if or (eq $field.Type "string") (eq $field.Type "bytes") }}
+                                                                            <input type="text" name="{{ $field.Name }}" class="form-control" value="{{ $field.Default }}" />
+                                                                        {{ else }}
+                                                                            {{ if $field.IsEnum }}
+                                                                                <select name="{{ $field.Name }}" class="form-control select2">
+                                                                                    {{ range $e, $enum := $field.Enum }}
+                                                                                    <option value="{{ $enum.Number }}"{{ if $enum.IsDefault }} selected="selected"{{ end }}>{{ $enum.Name }}</option>
+                                                                                    {{ end }}
+                                                                                </select>
+                                                                            {{ else }}
+                                                                                <textarea name="{{ $field.Name }}" class="form-control"></textarea>
+                                                                            {{ end }}
+                                                                        {{ end }}
+                                                                    {{ end }}
+
+                                                                    {{ if and $field.IsRepeated }}
+                                                                    <div class="input-group-btn">
+                                                                        <!--
+                                                                        <button type="button" class="btn btn-danger">
+                                                                            <span class="fa fa-trash-o"></span>
+                                                                        </button>
+                                                                        -->
+                                                                        <button type="button" class="btn btn-info">
+                                                                            <span class="fa fa-plus"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                    {{ end }}
+                                                                </div>
+                                                            */}}</td>
                                                         </tr>
                                                         {{ end }}
                                                         </tbody>
@@ -113,13 +164,32 @@
                                                     <tr>
                                                         <th>Field</th>
                                                         <th>Type</th>
+                                                        <th>Label</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
                                                     {{ range $f, $field := $method.OutputType.Fields }}
                                                     <tr>
                                                         <td>{{ $field.Name }}</td>
-                                                        <td>{{ $field.Type }}</td>
+                                                        <td>{{ $field.Type }}
+                                                            {{/*
+                                                            <pre>{{ raw $field.JSON }}</pre>
+
+                                                            {{ if $field.IsMessage }}
+                                                                <a href="javascript:void(0)">{{ $field.Type }}</a>
+
+                                                            {{ else }}
+                                                                {{ $field.Type }}
+                                                            {{ end }}
+                                                            */}}
+                                                        </td>
+                                                        <td>
+                                                            <span class="label label-success">{{ $field.Label }}</span>
+
+                                                            {{ if $field.IsMap }}
+                                                                <span class="label label-success">map</span>
+                                                            {{ end }}
+                                                        </td>
                                                     </tr>
                                                     {{ end }}
                                                     </tbody>
@@ -146,5 +216,6 @@
 {{ end }}
 
 {{ define "js" }}
+{{ staticHTML (staticURL "/dashboard/assets/vendors/validator/js/validator.min.js" false) }}
 {{ staticHTML (staticURL "/grpc/assets/js/manager.js" true) }}
 {{ end }}

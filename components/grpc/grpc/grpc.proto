@@ -1,6 +1,11 @@
 syntax = "proto3";
 
-package grpc;
+package shadow.grpc;
+
+option go_package = "components/grpc/grpc";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 
 message VersionRequest {}
 
@@ -8,8 +13,8 @@ message VersionResponse {
     string name = 1;
     string version = 2;
     string build = 3;
-    string build_date = 4;
-    uint64 uptime = 5;
+    google.protobuf.Timestamp build_datetime = 4;
+    google.protobuf.Duration uptime = 5;
 }
 
 service Grpc {

@@ -35,6 +35,7 @@ func NewRenderer() *Renderer {
 	}
 
 	r.funcs = template.FuncMap{
+		"raw":        r.funcRaw,
 		"add":        r.funcAdd,
 		"mod":        r.funcMod,
 		"replace":    r.funcReplace,
@@ -173,6 +174,10 @@ func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]st
 	}
 
 	return templates, nil
+}
+
+func (r *Renderer) funcRaw(x string) template.HTML {
+	return template.HTML(x)
 }
 
 func (r *Renderer) funcAdd(x, y int) (interface{}, error) {

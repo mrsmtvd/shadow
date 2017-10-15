@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net"
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/dynamic"
 	"github.com/jhump/protoreflect/dynamic/grpcdynamic"
@@ -33,31 +36,156 @@ type ManagerHandlerMethodViewData struct {
 	Name         string
 	InputStream  bool
 	OutputStream bool
-	InputType    *ManagerHandlerTypeViewData
-	OutputType   *ManagerHandlerTypeViewData
+	InputType    *ManagerHandlerMessageViewData
+	OutputType   *ManagerHandlerMessageViewData
 }
 
-type ManagerHandlerTypeViewData struct {
+type ManagerHandlerMessageViewData struct {
 	Name   string
 	Fields []*ManagerHandlerFieldViewData
 }
 
 type ManagerHandlerFieldViewData struct {
-	Name   string
-	Type   string
-	Labels []string
+	Name        string
+	Type        string
+	Default     interface{}
+	Label       string
+	Enum        []*ManagerHandlerFieldViewDataEnum
+	Message     *ManagerHandlerMessageViewData
+	IsEnum      bool
+	IsExtension bool
+	IsMap       bool
+	IsMessage   bool
+	IsRepeated  bool
+}
+
+type ManagerHandlerFieldViewDataEnum struct {
+	Number    int32
+	Name      string
+	IsDefault bool
 }
 
 type ManagerHandler struct {
 	dashboard.Handler
+
+	config config.Component
 
 	connect *g.ClientConn
 	cli     *grpcreflect.Client
 	server  *g.Server
 }
 
+func getTypeName(field *desc.FieldDescriptor) string {
+	var name string
+
+	if field.IsMap() {
+		name = fmt.Sprintf("map<%s>%s", getTypeName(field.GetMapKeyType()), getTypeName(field.GetMapValueType()))
+	} else if field.GetMessageType() != nil {
+		name = field.GetMessageType().GetName()
+	} else if field.GetEnumType() != nil {
+		name = field.GetEnumType().GetName()
+	} else {
+		name = strings.ToLower(field.GetType().String()[5:])
+	}
+
+	if field.IsRepeated() {
+		name = "[]" + name
+	}
+
+	return name
+}
+
+func getMessageViewDate(message *desc.MessageDescriptor, currentLevel, maxLevel int64) *ManagerHandlerMessageViewData {
+	fields := message.GetFields()
+
+	view := &ManagerHandlerMessageViewData{
+		Name:   message.GetName(),
+		Fields: make([]*ManagerHandlerFieldViewData, len(fields), len(fields)),
+	}
+
+	for i, f := range fields {
+		view.Fields[i] = getFieldViewDate(f, currentLevel, maxLevel)
+	}
+
+	return view
+}
+
+func getFieldViewDate(field *desc.FieldDescriptor, currentLevel, maxLevel int64) *ManagerHandlerFieldViewData {
+	data := &ManagerHandlerFieldViewData{
+		Name:        field.GetName(),
+		Type:        getTypeName(field),
+		Default:     field.GetDefaultValue(),
+		Label:       strings.ToLower(field.GetLabel().String()[6:]),
+		IsExtension: field.IsExtension(),
+		IsEnum:      field.GetEnumType() != nil,
+		IsMap:       field.IsMap(),
+		IsMessage:   field.GetMessageType() != nil,
+		IsRepeated:  field.IsRepeated(),
+	}
+
+	if field.GetMessageType() != nil && currentLevel <= maxLevel {
+		data.Message = getMessageViewDate(field.GetMessageType(), currentLevel+1, maxLevel)
+	}
+
+	// Scalar Value Types
+	if field.GetType() == descriptor.FieldDescriptorProto_TYPE_BYTES {
+		data.Default = ""
+	}
+
+	// Enumerations
+	if field.GetEnumType() != nil {
+		values := field.GetEnumType().GetValues()
+		data.Enum = make([]*ManagerHandlerFieldViewDataEnum, len(values), len(values))
+
+		for e, enum := range values {
+			def, ok := field.GetDefaultValue().(int32)
+
+			data.Enum[e] = &ManagerHandlerFieldViewDataEnum{
+				Number:    enum.GetNumber(),
+				Name:      enum.GetName(),
+				IsDefault: ok && def == enum.GetNumber(),
+			}
+		}
+	}
+
+	return data
+}
+
+func (v *ManagerHandlerFieldViewData) MarshalJSON() ([]byte, error) {
+	var d interface{}
+
+	if v.Message != nil {
+		s := make(map[string]interface{}, len(v.Message.Fields))
+
+		for _, f := range v.Message.Fields {
+			s[f.Name] = f
+		}
+
+		d = s
+	} else if v.IsMap {
+		d = map[string]interface{}(nil)
+	} else {
+		d = v.Default
+	}
+
+	if v.IsRepeated {
+		d = []interface{}{d}
+	}
+
+	return json.Marshal(d)
+}
+
+func (v *ManagerHandlerFieldViewData) JSON() string {
+	if j, err := json.MarshalIndent(v, "", "    "); err == nil {
+		return string(j)
+	}
+
+	return ""
+}
+
 func NewManagerHandler(c config.Component, s *g.Server) *ManagerHandler {
 	h := &ManagerHandler{
+		config: c,
 		server: s,
 	}
 
@@ -99,24 +227,6 @@ func (h *ManagerHandler) getServicesLightViewData() ([]managerHandlerServiceView
 }
 
 func (h *ManagerHandler) getServicesViewData() ([]managerHandlerServiceViewData, error) {
-	fillType := func(t *desc.MessageDescriptor) *ManagerHandlerTypeViewData {
-		fields := t.GetFields()
-
-		view := &ManagerHandlerTypeViewData{
-			Name:   t.GetName(),
-			Fields: make([]*ManagerHandlerFieldViewData, len(fields), len(fields)),
-		}
-
-		for i, f := range fields {
-			view.Fields[i] = &ManagerHandlerFieldViewData{
-				Name: f.GetName(),
-				Type: strings.ToLower(f.GetType().String()[5:]),
-			}
-		}
-
-		return view
-	}
-
 	ret := []managerHandlerServiceViewData{}
 	if services, err := h.cli.ListServices(); err == nil {
 		for _, s := range services {
@@ -135,8 +245,8 @@ func (h *ManagerHandler) getServicesViewData() ([]managerHandlerServiceViewData,
 					Name:         m.GetName(),
 					InputStream:  m.IsClientStreaming(),
 					OutputStream: m.IsServerStreaming(),
-					InputType:    fillType(m.GetInputType()),
-					OutputType:   fillType(m.GetOutputType()),
+					InputType:    getMessageViewDate(m.GetInputType(), 1, h.config.GetInt64(grpc.ConfigManagerMaxLevel)),
+					OutputType:   getMessageViewDate(m.GetOutputType(), 1, h.config.GetInt64(grpc.ConfigManagerMaxLevel)),
 				})
 			}
 

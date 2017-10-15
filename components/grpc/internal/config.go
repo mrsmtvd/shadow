@@ -31,5 +31,13 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			nil,
 			nil),
+		config.NewVariable(
+			grpc.ConfigManagerMaxLevel,
+			config.ValueTypeInt,
+			2,
+			"Max level of parsing types",
+			true,
+			nil,
+			nil),
 	}
 }
