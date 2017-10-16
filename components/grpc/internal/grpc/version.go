@@ -23,5 +23,14 @@ func (s *Server) Version(ctx context.Context, in *proto.VersionRequest) (*proto.
 		response.BuildDatetime = buildDatetime
 	}
 
+	if s.Application.GetStartDate() != nil {
+		startDatetime, err := ptypes.TimestampProto(*s.Application.GetStartDate())
+		if err != nil {
+			return response, err
+		}
+
+		response.StartDatetime = startDatetime
+	}
+
 	return response, nil
 }

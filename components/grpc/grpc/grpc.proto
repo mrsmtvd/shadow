@@ -14,7 +14,8 @@ message VersionResponse {
     string version = 2;
     string build = 3;
     google.protobuf.Timestamp build_datetime = 4;
-    google.protobuf.Duration uptime = 5;
+    google.protobuf.Timestamp start_datetime = 5;
+    google.protobuf.Duration uptime = 6;
 }
 
 service Grpc {
