@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package shadow.grpc;
 
-option go_package = "components/grpc/grpc";
+option go_package = "github.com/kihamo/shadow/components/grpc/grpc";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
