@@ -15,7 +15,7 @@ import:
 - package: github.com/grpc-ecosystem/go-grpc-middleware
   version: 645b33ed7ba8739747bf2df55d0349d4bba2e7f6
 - package: github.com/jhump/protoreflect
-  version: 8083885e1b19048ab0cd2b12dae8405050864ff1
+  version: 4a27d441563c8e0ef6ce0775bc3b5ab467ae28f6
 - package: github.com/julienschmidt/httprouter
   version: 975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e
 - package: github.com/justinas/alice

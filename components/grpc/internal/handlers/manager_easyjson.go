@@ -7,6 +7,7 @@ import (
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	metadata "google.golang.org/grpc/metadata"
 )
 
 // suppress unused package warning
@@ -40,6 +41,88 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsGrpcInternalHandlers(i
 			out.Result = string(in.String())
 		case "error":
 			out.Error = string(in.String())
+		case "headers":
+			if in.IsNull() {
+				in.Skip()
+			} else {
+				in.Delim('{')
+				if !in.IsDelim('}') {
+					out.Headers = make(metadata.MD)
+				} else {
+					out.Headers = nil
+				}
+				for !in.IsDelim('}') {
+					key := string(in.String())
+					in.WantColon()
+					var v1 []string
+					if in.IsNull() {
+						in.Skip()
+						v1 = nil
+					} else {
+						in.Delim('[')
+						if v1 == nil {
+							if !in.IsDelim(']') {
+								v1 = make([]string, 0, 4)
+							} else {
+								v1 = []string{}
+							}
+						} else {
+							v1 = (v1)[:0]
+						}
+						for !in.IsDelim(']') {
+							var v2 string
+							v2 = string(in.String())
+							v1 = append(v1, v2)
+							in.WantComma()
+						}
+						in.Delim(']')
+					}
+					(out.Headers)[key] = v1
+					in.WantComma()
+				}
+				in.Delim('}')
+			}
+		case "trailers":
+			if in.IsNull() {
+				in.Skip()
+			} else {
+				in.Delim('{')
+				if !in.IsDelim('}') {
+					out.Trailers = make(metadata.MD)
+				} else {
+					out.Trailers = nil
+				}
+				for !in.IsDelim('}') {
+					key := string(in.String())
+					in.WantColon()
+					var v3 []string
+					if in.IsNull() {
+						in.Skip()
+						v3 = nil
+					} else {
+						in.Delim('[')
+						if v3 == nil {
+							if !in.IsDelim(']') {
+								v3 = make([]string, 0, 4)
+							} else {
+								v3 = []string{}
+							}
+						} else {
+							v3 = (v3)[:0]
+						}
+						for !in.IsDelim(']') {
+							var v4 string
+							v4 = string(in.String())
+							v3 = append(v3, v4)
+							in.WantComma()
+						}
+						in.Delim(']')
+					}
+					(out.Trailers)[key] = v3
+					in.WantComma()
+				}
+				in.Delim('}')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -69,6 +152,74 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsGrpcInternalHandlers(o
 		first = false
 		out.RawString("\"error\":")
 		out.String(string(in.Error))
+	}
+	if len(in.Headers) != 0 {
+		if !first {
+			out.RawByte(',')
+		}
+		first = false
+		out.RawString("\"headers\":")
+		if in.Headers == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
+			out.RawString(`null`)
+		} else {
+			out.RawByte('{')
+			v5First := true
+			for v5Name, v5Value := range in.Headers {
+				if !v5First {
+					out.RawByte(',')
+				}
+				v5First = false
+				out.String(string(v5Name))
+				out.RawByte(':')
+				if v5Value == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+					out.RawString("null")
+				} else {
+					out.RawByte('[')
+					for v6, v7 := range v5Value {
+						if v6 > 0 {
+							out.RawByte(',')
+						}
+						out.String(string(v7))
+					}
+					out.RawByte(']')
+				}
+			}
+			out.RawByte('}')
+		}
+	}
+	if len(in.Trailers) != 0 {
+		if !first {
+			out.RawByte(',')
+		}
+		first = false
+		out.RawString("\"trailers\":")
+		if in.Trailers == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
+			out.RawString(`null`)
+		} else {
+			out.RawByte('{')
+			v8First := true
+			for v8Name, v8Value := range in.Trailers {
+				if !v8First {
+					out.RawByte(',')
+				}
+				v8First = false
+				out.String(string(v8Name))
+				out.RawByte(':')
+				if v8Value == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+					out.RawString("null")
+				} else {
+					out.RawByte('[')
+					for v9, v10 := range v8Value {
+						if v9 > 0 {
+							out.RawByte(',')
+						}
+						out.String(string(v10))
+					}
+					out.RawByte(']')
+				}
+			}
+			out.RawByte('}')
+		}
 	}
 	out.RawByte('}')
 }

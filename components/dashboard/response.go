@@ -37,14 +37,14 @@ func (w *Response) GetStatusCode() int {
 	return w.status
 }
 
-func (w *Response) SendJSON(r interface{}) []byte {
+func (w *Response) SendJSON(r interface{}) error {
 	response, err := json.Marshal(r)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	w.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.ResponseWriter.Write(response)
 
-	return response
+	return nil
 }

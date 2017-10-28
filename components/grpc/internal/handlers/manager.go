@@ -18,13 +18,17 @@ import (
 	"github.com/kihamo/shadow/components/grpc"
 	"golang.org/x/net/context"
 	g "google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	rpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
+	"google.golang.org/grpc/status"
 )
 
 // easyjson:json
 type managerHandlerResponseCall struct {
-	Result string `json:"result,omitempty"`
-	Error  string `json:"error,omitempty"`
+	Result   string      `json:"result,omitempty"`
+	Error    string      `json:"error,omitempty"`
+	Headers  metadata.MD `json:"headers,omitempty"`
+	Trailers metadata.MD `json:"trailers,omitempty"`
 }
 
 type managerHandlerServiceViewData struct {
@@ -257,9 +261,9 @@ func (h *ManagerHandler) getServicesViewData() ([]managerHandlerServiceViewData,
 	return ret, nil
 }
 
-func (h *ManagerHandler) call(w *dashboard.Response, r *dashboard.Request) {
-	s := r.Original().FormValue("service")
-	m := r.Original().FormValue("method")
+func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request) {
+	s := r.Original().FormValue("_service")
+	m := r.Original().FormValue("_method")
 
 	if s == "" || m == "" {
 		h.NotFound(w, r)
@@ -286,32 +290,42 @@ func (h *ManagerHandler) call(w *dashboard.Response, r *dashboard.Request) {
 	ctx := context.Background()
 	request := dynamic.NewMessage(method.GetInputType())
 
-	result, err := stub.InvokeRpc(ctx, method, request)
+	var (
+		headerMD  metadata.MD
+		trailerMD metadata.MD
+	)
+
+	result, err := stub.InvokeRpc(ctx, method, request, g.Header(&headerMD), g.Trailer(&trailerMD))
+	response := managerHandlerResponseCall{
+		Headers:  headerMD,
+		Trailers: trailerMD,
+	}
+
 	if err != nil {
-		w.SendJSON(managerHandlerResponseCall{
-			Error: err.Error(),
-		})
-		return
+		response.Error = err.Error()
+
+		st, ok := status.FromError(err)
+		if ok {
+			result = st.Proto()
+		}
 	}
 
 	marshaler := &jsonpb.Marshaler{}
-	responseJSON, err := marshaler.MarshalToString(result)
-	if err != nil {
-		w.SendJSON(managerHandlerResponseCall{
-			Error: err.Error(),
-		})
-		return
+
+	if result != nil {
+		resultJSON, err := marshaler.MarshalToString(result)
+		if err == nil {
+			response.Result = resultJSON
+		}
 	}
 
-	w.SendJSON(managerHandlerResponseCall{
-		Result: responseJSON,
-	})
+	w.SendJSON(response)
 }
 
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	if r.IsPost() {
 		if r.URL().Query().Get("action") == "call" {
-			h.call(w, r)
+			h.actionCall(w, r)
 		} else {
 			h.NotFound(w, r)
 		}

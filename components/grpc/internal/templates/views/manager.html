@@ -50,19 +50,19 @@
                                             <div class="clearfix"></div>
                                         </div>
                                         <div class="x_content">
-                                            <form method="post" action="?action=call" class="call" data-result="r-{{ $serviceId }}-{{ $methodId }}" data-toggle="validator">
-                                                <input type="hidden" name="service" value="{{ $service.Name }}">
-                                                <input type="hidden" name="method" value="{{ $method.Name }}">
+                                            <form method="post" action="?action=call" class="call form-horizontal" data-result="r-{{ $serviceId }}-{{ $methodId }}" role="form" data-toggle="validator">
+                                                <input type="hidden" name="_service" value="{{ $service.Name }}">
+                                                <input type="hidden" name="_method" value="{{ $method.Name }}">
 
                                                 {{ if $method.InputType.Fields }}
                                                 <div class="table-responsive">
                                                     <table class="table table-hover table-striped">
                                                         <thead>
                                                         <tr>
-                                                            <th>Field</th>
-                                                            <th>Type</th>
-                                                            <th>Label</th>
-                                                            <th>Action</th>
+                                                            <th width="10%">Field</th>
+                                                            <th width="50%">Type</th>
+                                                            <th width="10%">Label</th>
+                                                            <th width="30%">Action</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
@@ -70,20 +70,18 @@
                                                         {{ $varId := replace $field.Name "." "_" }}
                                                         <tr>
                                                             <td>{{ $field.Name }}</td>
-                                                            <td>{{ $field.Type }}
-                                                                {{/*
-                                                                <pre>{{ raw $field.JSON }}</pre>
+                                                            <td>
                                                                 {{ if $field.IsMessage }}
-                                                                    <a href="javascript:void(0)">{{ $field.Type }}</a>
+                                                                    <a href="javascript:void(0)" data-toggle="collapse" data-target="#r-{{ $serviceId }}-{{ $methodId }}-{{ $varId }}-json">{{ $field.Type }}</a>
+                                                                    <pre id="r-{{ $serviceId }}-{{ $methodId }}-{{ $varId }}-json" class="collapse out">{{ raw $field.JSON }}</pre>
                                                                 {{ else }}
                                                                     {{ $field.Type }}
                                                                 {{ end }}
-                                                                */}}
                                                             </td>
                                                             <td><span class="label label-success">{{ $field.Label }}</span></td>
-                                                            <td>{{/*
-                                                                <div class="input-group">
-                                                                    {{ if not $field.IsRepeated }}
+                                                            <td class="action">
+                                                                {{ if not $field.IsRepeated }}
+                                                                    <div class="input-group">
                                                                         {{ if or (eq $field.Type "double") (eq $field.Type "float") }}
                                                                             <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
                                                                         {{ else if or (eq $field.Type "int32") (eq $field.Type "int64") (eq $field.Type "sint32") (eq $field.Type "sint64") (eq $field.Type "sfixed32") (eq $field.Type "sfixed64") }}
@@ -102,25 +100,42 @@
                                                                                     {{ end }}
                                                                                 </select>
                                                                             {{ else }}
-                                                                                <textarea name="{{ $field.Name }}" class="form-control"></textarea>
+                                                                                <textarea name="{{ $field.Name }}" class="form-control">{{ $field.JSON }}</textarea>
                                                                             {{ end }}
                                                                         {{ end }}
-                                                                    {{ end }}
-
-                                                                    {{ if and $field.IsRepeated }}
-                                                                    <div class="input-group-btn">
-                                                                        <!--
-                                                                        <button type="button" class="btn btn-danger">
-                                                                            <span class="fa fa-trash-o"></span>
-                                                                        </button>
-                                                                        -->
-                                                                        <button type="button" class="btn btn-info">
-                                                                            <span class="fa fa-plus"></span>
-                                                                        </button>
                                                                     </div>
-                                                                    {{ end }}
-                                                                </div>
-                                                            */}}</td>
+                                                                {{ else }}
+                                                                    <div class="input-group">
+                                                                        <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
+                                                                        <div class="input-group-btn">
+                                                                            <button type="button" class="btn btn-danger">
+                                                                                <span class="fa fa-trash-o"></span>
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-info">
+                                                                                <span class="fa fa-plus"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="input-group">
+                                                                        <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
+                                                                        <div class="input-group-btn">
+                                                                            <button type="button" class="btn btn-danger">
+                                                                                <span class="fa fa-trash-o"></span>
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-info">
+                                                                                <span class="fa fa-plus"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-btn">
+                                                                            <button type="button" class="btn btn-info">
+                                                                                <span class="fa fa-plus"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                {{ end }}
+                                                            </td>
                                                         </tr>
                                                         {{ end }}
                                                         </tbody>
@@ -131,7 +146,7 @@
                                                 <div id="r-{{ $serviceId }}-{{ $methodId }}" class="call-result" style="display:none">
                                                     <hr />
                                                     <button type="button" class="close">&times;</button>
-                                                    <div class="response" style="white-space:pre-wrap"></div>
+                                                    <div class="response alert"></div>
                                                 </div>
 
                                                 <div class="ln_solid"></div>
@@ -162,26 +177,23 @@
                                                 <table class="table table-hover table-striped">
                                                     <thead>
                                                     <tr>
-                                                        <th>Field</th>
-                                                        <th>Type</th>
-                                                        <th>Label</th>
+                                                        <th width="15%">Field</th>
+                                                        <th width="35%">Type</th>
+                                                        <th width="50%">Label</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
                                                     {{ range $f, $field := $method.OutputType.Fields }}
+                                                    {{ $varId := replace $field.Name "." "_" }}
                                                     <tr>
                                                         <td>{{ $field.Name }}</td>
-                                                        <td>{{ $field.Type }}
-                                                            {{/*
-                                                            <pre>{{ raw $field.JSON }}</pre>
-
+                                                        <td>
                                                             {{ if $field.IsMessage }}
-                                                                <a href="javascript:void(0)">{{ $field.Type }}</a>
-
+                                                                <a href="javascript:void(0)" data-toggle="collapse" data-target="#w-{{ $serviceId }}-{{ $methodId }}-{{ $varId }}-json">{{ $field.Type }}</a>
+                                                                <pre id="w-{{ $serviceId }}-{{ $methodId }}-{{ $varId }}-json" class="collapse out">{{ raw $field.JSON }}</pre>
                                                             {{ else }}
                                                                 {{ $field.Type }}
                                                             {{ end }}
-                                                            */}}
                                                         </td>
                                                         <td>
                                                             <span class="label label-success">{{ $field.Label }}</span>
@@ -213,6 +225,23 @@
     {{ end }}
     </div>
 </div>
+{{ end }}
+
+{{ define "head" }}
+<style type="text/css">
+    .response {
+        white-space: pre-wrap;
+    }
+
+    .input-group-btn button {
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+
+    .action .input-group {
+        width: 100%;
+    }
+</style>
 {{ end }}
 
 {{ define "js" }}
