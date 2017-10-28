@@ -48,13 +48,13 @@ $(function() {
                         }
                     }
 
-                    p = headers.join("\n")
+                    p = headers.join("\n") + "\n\n"
                 }
 
                 if (r.result) {
-                    p += "\n\n" + JSON.stringify(JSON.parse(r.result), null, 4);
+                    p += JSON.stringify(JSON.parse(r.result), null, 4);
                 } else if (r.error) {
-                    p += "\n\n" + r.error
+                    p += r.error
                 }
 
                 response.html(p);
