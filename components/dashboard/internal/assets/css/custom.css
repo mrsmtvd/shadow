@@ -28,3 +28,7 @@ table .form-group {
 pre code span {
     line-height: 1.42857143;
 }
+
+.tab-pane .table-responsive {
+    width: 100%;
+}

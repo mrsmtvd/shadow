@@ -231,11 +231,25 @@
 <style type="text/css">
     .response {
         white-space: pre-wrap;
+        overflow-y: auto;
+        max-height: 30em;
+        width: 100%;
     }
 
     .input-group-btn button {
         margin-right: 0;
         margin-bottom: 0;
+
+    }
+
+    .call-result {
+        position: relative;
+    }
+
+    .close {
+        position: absolute;
+        right: 5px;
+        top: 25px;
     }
 
     .action .input-group {
