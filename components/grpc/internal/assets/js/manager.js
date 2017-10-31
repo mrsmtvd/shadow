@@ -1,8 +1,60 @@
 $(function() {
+    $('.action button.action-remove').click(function() {
+        var
+            e = $(this),
+            r = e.closest('.input-group'),
+            p = r.parent();
+
+        if (!r.data('repeated')) {
+            e.addClass('hide');
+            r.find('.action-add').removeClass('hide');
+            r.find('.action-input').addClass('hide');
+        } else {
+            var rs = p.find('.input-group');
+
+            if (rs.length > 1) {
+                r.remove();
+
+                if (rs.length === 2 && r.data('required')) {
+                    r.find('.action-remove').addClass('hide');
+                }
+            } else {
+                r.find('.action-remove').addClass('hide');
+
+                if (!r.data('required')) {
+                    r.find('.action-input').addClass('hide');
+                }
+            }
+        }
+    });
+
+    $('.action button.action-add').click(function() {
+        var
+            e = $(this),
+            r = e.parent().closest('.input-group'),
+            v = r.find('.action-input');
+
+        r.find('.action-remove').removeClass('hide');
+
+        if (r.data('repeated')) {
+            if (v.hasClass('hide')) {
+                v.removeClass('hide');
+            } else {
+                var c = r.clone(true);
+                r.parent().append(c);
+
+                // TODO: select2 & icheck
+            }
+        } else {
+            v.removeClass('hide');
+            e.addClass('hide');
+        }
+    });
+
     $('.call-result button.close').click(function(){
         $(this).parent().hide();
     });
-    
+
     $('form.call').submit(function () {
         event.preventDefault();
         var e = $(this),

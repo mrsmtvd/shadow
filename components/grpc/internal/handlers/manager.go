@@ -60,6 +60,7 @@ type ManagerHandlerFieldViewData struct {
 	IsExtension bool
 	IsMap       bool
 	IsMessage   bool
+	IsRequired  bool
 	IsRepeated  bool
 }
 
@@ -124,6 +125,7 @@ func getFieldViewDate(field *desc.FieldDescriptor, currentLevel, maxLevel int64)
 		IsEnum:      field.GetEnumType() != nil,
 		IsMap:       field.IsMap(),
 		IsMessage:   field.GetMessageType() != nil,
+		IsRequired:  field.IsRequired(),
 		IsRepeated:  field.IsRepeated(),
 	}
 
@@ -132,7 +134,24 @@ func getFieldViewDate(field *desc.FieldDescriptor, currentLevel, maxLevel int64)
 	}
 
 	// Scalar Value Types
-	if field.GetType() == descriptor.FieldDescriptorProto_TYPE_BYTES {
+	switch field.GetType() {
+	case descriptor.FieldDescriptorProto_TYPE_FIXED32,
+		descriptor.FieldDescriptorProto_TYPE_UINT32,
+		descriptor.FieldDescriptorProto_TYPE_SFIXED32,
+		descriptor.FieldDescriptorProto_TYPE_INT32,
+		descriptor.FieldDescriptorProto_TYPE_SINT32,
+		descriptor.FieldDescriptorProto_TYPE_FIXED64,
+		descriptor.FieldDescriptorProto_TYPE_UINT64,
+		descriptor.FieldDescriptorProto_TYPE_SFIXED64,
+		descriptor.FieldDescriptorProto_TYPE_INT64,
+		descriptor.FieldDescriptorProto_TYPE_SINT64,
+		descriptor.FieldDescriptorProto_TYPE_FLOAT,
+		descriptor.FieldDescriptorProto_TYPE_DOUBLE:
+		data.Default = 0
+	case descriptor.FieldDescriptorProto_TYPE_BOOL:
+		data.Default = false
+	case descriptor.FieldDescriptorProto_TYPE_BYTES,
+		descriptor.FieldDescriptorProto_TYPE_STRING:
 		data.Default = ""
 	}
 
@@ -172,9 +191,11 @@ func (v *ManagerHandlerFieldViewData) MarshalJSON() ([]byte, error) {
 		d = v.Default
 	}
 
-	if v.IsRepeated {
-		d = []interface{}{d}
-	}
+	/*
+		if v.IsRepeated {
+			d = []interface{}{d}
+		}
+	*/
 
 	return json.Marshal(d)
 }

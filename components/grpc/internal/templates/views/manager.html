@@ -80,61 +80,42 @@
                                                             </td>
                                                             <td><span class="label label-success">{{ $field.Label }}</span></td>
                                                             <td class="action">
-                                                                {{ if not $field.IsRepeated }}
-                                                                    <div class="input-group">
-                                                                        {{ if or (eq $field.Type "double") (eq $field.Type "float") }}
-                                                                            <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
-                                                                        {{ else if or (eq $field.Type "int32") (eq $field.Type "int64") (eq $field.Type "sint32") (eq $field.Type "sint64") (eq $field.Type "sfixed32") (eq $field.Type "sfixed64") }}
-                                                                            <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*$" value="{{ $field.Default }}" />
-                                                                        {{ else if or (eq $field.Type "uint32") (eq $field.Type "uint64") (eq $field.Type "fixed32") (eq $field.Type "fixed64") }}
-                                                                            <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[+]?[0-9]*$" value="{{ $field.Default }}" />
-                                                                        {{ else if eq $field.Type "bool" }}
-                                                                            <input type="checkbox" name="{{ $field.Name }}" class="js-switch form-control" {{ if $field.Default }}checked {{ end }}/>
-                                                                        {{ else if or (eq $field.Type "string") (eq $field.Type "bytes") }}
-                                                                            <input type="text" name="{{ $field.Name }}" class="form-control" value="{{ $field.Default }}" />
-                                                                        {{ else }}
-                                                                            {{ if $field.IsEnum }}
-                                                                                <select name="{{ $field.Name }}" class="form-control select2">
-                                                                                    {{ range $e, $enum := $field.Enum }}
-                                                                                    <option value="{{ $enum.Number }}"{{ if $enum.IsDefault }} selected="selected"{{ end }}>{{ $enum.Name }}</option>
-                                                                                    {{ end }}
-                                                                                </select>
-                                                                            {{ else }}
-                                                                                <textarea name="{{ $field.Name }}" class="form-control">{{ $field.JSON }}</textarea>
+                                                                <div class="input-group" data-required="{{ if $field.IsRequired }}true{{ else }}false{{ end }}" data-repeated="{{ if $field.IsRepeated }}true{{ else }}false{{ end }}">
+                                                                    <div class="action-input{{ if not $field.IsRequired }} hide{{ end }}">
+                                                                    {{ if or (eq $field.Type "double") (eq $field.Type "[]double") (eq $field.Type "float") (eq $field.Type "[]float") }}
+                                                                    <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
+                                                                    {{ else if or (eq $field.Type "int32") (eq $field.Type "[]int32") (eq $field.Type "int64") (eq $field.Type "[]int64") (eq $field.Type "sint32") (eq $field.Type "[]sint32") (eq $field.Type "sint64") (eq $field.Type "[]sint64") (eq $field.Type "sfixed32") (eq $field.Type "[]sfixed32") (eq $field.Type "sfixed64") (eq $field.Type "[]sfixed64") }}
+                                                                    <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*$" value="{{ $field.Default }}" />
+                                                                    {{ else if or (eq $field.Type "uint32") (eq $field.Type "[]uint32") (eq $field.Type "uint64") (eq $field.Type "[]uint64") (eq $field.Type "fixed32") (eq $field.Type "[]fixed32") (eq $field.Type "fixed64") (eq $field.Type "[]fixed64") }}
+                                                                    <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[+]?[0-9]*$" value="{{ $field.Default }}" />
+                                                                    {{ else if or (eq $field.Type "bool") (eq $field.Type "[]bool") }}
+                                                                    <input type="checkbox" name="{{ $field.Name }}" class="js-switch form-control" {{ if $field.Default }}checked {{ end }}/>
+                                                                    {{ else if or (eq $field.Type "string") (eq $field.Type "[]string") (eq $field.Type "bytes") (eq $field.Type "[]bytes") }}
+                                                                    <input type="text" name="{{ $field.Name }}" class="form-control" value="{{ $field.Default }}" />
+                                                                    {{ else }}
+                                                                        {{ if $field.IsEnum }}
+                                                                        <select name="{{ $field.Name }}" class="form-control select2">
+                                                                            {{ range $e, $enum := $field.Enum }}
+                                                                            <option value="{{ $enum.Number }}"{{ if $enum.IsDefault }} selected="selected"{{ end }}>{{ $enum.Name }}</option>
                                                                             {{ end }}
+                                                                        </select>
+                                                                        {{ else }}
+                                                                        <textarea name="{{ $field.Name }}" class="form-control" rows="3">{{ $field.JSON }}</textarea>
                                                                         {{ end }}
+                                                                    {{ end }}
                                                                     </div>
-                                                                {{ else }}
-                                                                    <div class="input-group">
-                                                                        <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
-                                                                        <div class="input-group-btn">
-                                                                            <button type="button" class="btn btn-danger">
-                                                                                <span class="fa fa-trash-o"></span>
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-info">
-                                                                                <span class="fa fa-plus"></span>
-                                                                            </button>
-                                                                        </div>
+
+                                                                    {{ if or (not $field.IsRequired) $field.IsRepeated }}
+                                                                    <div class="input-group-btn">
+                                                                        <button type="button" class="btn btn-danger action-remove{{ if not $field.IsRequired }} hide{{ end }}">
+                                                                            <span class="fa fa-trash-o"></span>
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-info action-add">
+                                                                            <span class="fa fa-plus"></span>
+                                                                        </button>
                                                                     </div>
-                                                                    <div class="input-group">
-                                                                        <input type="number" name="{{ $field.Name }}" class="form-control" pattern="^[-+]?[0-9]*(\.[0-9]*)?$" value="{{ $field.Default }}" />
-                                                                        <div class="input-group-btn">
-                                                                            <button type="button" class="btn btn-danger">
-                                                                                <span class="fa fa-trash-o"></span>
-                                                                            </button>
-                                                                            <button type="button" class="btn btn-info">
-                                                                                <span class="fa fa-plus"></span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="input-group">
-                                                                        <div class="input-group-btn">
-                                                                            <button type="button" class="btn btn-info">
-                                                                                <span class="fa fa-plus"></span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                {{ end }}
+                                                                    {{ end }}
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         {{ end }}
@@ -252,8 +233,20 @@
         top: 25px;
     }
 
+    .action {
+        text-align: right;
+    }
+
+    .action .action-input {
+        text-align: left;
+    }
+
     .action .input-group {
         width: 100%;
+    }
+
+    .action .input-group-btn {
+        vertical-align: top;
     }
 </style>
 {{ end }}

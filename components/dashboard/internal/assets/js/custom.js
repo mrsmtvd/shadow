@@ -631,6 +631,8 @@ function init_select2() {
         return;
     }
 
+    $.fn.select2.defaults.set('width', '100%');
+
     $('.select2').select2();
 }
 
