@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -16,6 +17,9 @@ const (
 )
 
 type Variable interface {
+	fmt.Stringer
+	fmt.GoStringer
+
 	Key() string
 	Default() interface{}
 	Value() interface{}
@@ -112,4 +116,34 @@ func (v *VariableItem) ViewOptions() map[string]interface{} {
 func (v *VariableItem) Change(value interface{}) error {
 	v.value = value
 	return nil
+}
+
+func (v *VariableItem) String() string {
+	for _, view := range v.view {
+		if view != ViewEnum {
+			continue
+		}
+
+		opts, ok := v.viewOptions[ViewOptionEnumOptions]
+		if !ok {
+			continue
+		}
+
+		sliceOpts, ok := opts.([][]interface{})
+		if !ok {
+			continue
+		}
+
+		for _, value := range sliceOpts {
+			if len(value) > 1 && value[0] == v.value {
+				return fmt.Sprintf("%s", value[1])
+			}
+		}
+	}
+
+	return fmt.Sprintf("%s", v.value)
+}
+
+func (v *VariableItem) GoString() string {
+	return v.String()
 }
