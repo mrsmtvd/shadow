@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"time"
+	"sync/atomic"
 )
 
 const (
@@ -35,11 +36,15 @@ type HasVariables interface {
 	GetConfigVariables() []Variable
 }
 
+type variableValue struct {
+	original interface{}
+}
+
 type VariableItem struct {
 	key         string
 	typ         string
 	def         interface{}
-	value       interface{}
+	value       atomic.Value
 	usage       string
 	editable    bool
 	view        []string
@@ -47,16 +52,18 @@ type VariableItem struct {
 }
 
 func NewVariable(key string, typ string, def interface{}, usage string, editable bool, view []string, viewOptions map[string]interface{}) Variable {
-	return &VariableItem{
+	v := &VariableItem{
 		key:         key,
 		typ:         typ,
 		def:         def,
-		value:       def,
 		usage:       usage,
 		editable:    editable,
 		view:        view,
 		viewOptions: viewOptions,
 	}
+	v.Change(def)
+
+	return v
 }
 
 func (v *VariableItem) Key() string {
@@ -65,7 +72,7 @@ func (v *VariableItem) Key() string {
 
 func (v *VariableItem) Type() string {
 	// autodetect type of value
-	if v.typ == "" && (v.def != nil || v.value != nil) {
+	if v.typ == "" && (v.Default() != nil || v.Value() != nil) {
 		switch v.Value().(type) {
 		case bool:
 			v.typ = ValueTypeBool
@@ -94,7 +101,13 @@ func (v *VariableItem) Default() interface{} {
 }
 
 func (v *VariableItem) Value() interface{} {
-	return v.value
+	var value interface{}
+
+	if l := v.value.Load(); l != nil {
+		value = l.(*variableValue).original
+	}
+
+	return value
 }
 
 func (v *VariableItem) Usage() string {
@@ -114,17 +127,20 @@ func (v *VariableItem) ViewOptions() map[string]interface{} {
 }
 
 func (v *VariableItem) Change(value interface{}) error {
-	v.value = value
+	v.value.Store(&variableValue{value})
 	return nil
 }
 
 func (v *VariableItem) String() string {
-	for _, view := range v.view {
+	value := v.Value()
+	viewOptions := v.ViewOptions()
+
+	for _, view := range v.View() {
 		if view != ViewEnum {
 			continue
 		}
 
-		opts, ok := v.viewOptions[ViewOptionEnumOptions]
+		opts, ok := viewOptions[ViewOptionEnumOptions]
 		if !ok {
 			continue
 		}
@@ -134,14 +150,14 @@ func (v *VariableItem) String() string {
 			continue
 		}
 
-		for _, value := range sliceOpts {
-			if len(value) > 1 && value[0] == v.value {
-				return fmt.Sprintf("%s", value[1])
+		for _, optValue := range sliceOpts {
+			if len(optValue) > 1 && optValue[0] == value {
+				return fmt.Sprintf("%s", optValue[1])
 			}
 		}
 	}
 
-	return fmt.Sprintf("%s", v.value)
+	return fmt.Sprintf("%s", value)
 }
 
 func (v *VariableItem) GoString() string {
