@@ -2,8 +2,9 @@ package config
 
 import (
 	"testing"
-	"github.com/stretchr/testify/suite"
+
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type VariableSuite struct {

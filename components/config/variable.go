@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"time"
 	"sync/atomic"
+	"time"
 )
 
 const (

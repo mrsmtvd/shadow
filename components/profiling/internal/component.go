@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"expvar"
+	"runtime"
 	"runtime/debug"
 
 	"github.com/kihamo/shadow"
@@ -38,11 +40,15 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
+	expvar.Publish(c.GetName()+".runtime", expvar.Func(expvarRuntime))
+
 	return nil
 }
 
 func (c *Component) Run() error {
 	c.initGCPercent()
+	c.initGoMaxProc()
+
 	trace.LoadDumps(c.config.GetString(profiling.ConfigDumpDirectory))
 
 	return nil
@@ -50,4 +56,8 @@ func (c *Component) Run() error {
 
 func (c *Component) initGCPercent() {
 	debug.SetGCPercent(c.config.GetInt(profiling.ConfigGCPercent))
+}
+
+func (c *Component) initGoMaxProc() {
+	runtime.GOMAXPROCS(c.config.GetInt(profiling.ConfigGoMaxProc))
 }
