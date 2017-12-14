@@ -30,7 +30,7 @@ func (c *Component) GetName() string {
 }
 
 func (c *Component) GetVersion() string {
-	return grpc.ComponentVersion
+	return grpc.ComponentVersion + "/" + g.Version
 }
 
 func (c *Component) GetDependencies() []shadow.Dependency {

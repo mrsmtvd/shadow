@@ -39,7 +39,7 @@ import:
 - package: golang.org/x/net
   version: 66aacef3dd8a676686c7ae3716979581e8b03c47
 - package: google.golang.org/grpc
-  version: ~1.6.0
+  version: ~1.8.2
 - package: gopkg.in/Masterminds/squirrel.v1
   version: a6b93000bd219143c56c16e6cb1c4b91da3f224b
 - package: gopkg.in/gomail.v2
