@@ -35,8 +35,8 @@
     <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-tasks fa-5x"></i></div>
-            <div class="count" id="tasks-wait-count">0</div>
-            <h3>Wait tasks</h3>
+            <div class="count" id="tasks-count">0</div>
+            <h3>Tasks</h3>
         </div>
     </div>
 </div>
@@ -62,20 +62,13 @@
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-striped">
                     <thead>
                     <tr>
+                        <th>Event</th>
                         <th>Name</th>
-                        <th>Created</th>
-                        <th>Count success</th>
-                        <th>Last success</th>
-                        <th>Count failed</th>
-                        <th>Last failed</th>
-                        <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -103,13 +96,8 @@
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm reset all workers" data-modal-callback="workersReset();">
-                                <i class="glyphicon glyphicon-refresh"></i> Reset all
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill and remove all workers" data-modal-callback="workersKill();">
-                                <i class="glyphicon glyphicon-trash"></i> Kill all
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all workers" data-modal-callback="workersRemove();">
+                                <i class="glyphicon glyphicon-trash"></i> Remove all
                             </a>
                         </li>
                         <li class="divider"></li>
@@ -125,7 +113,7 @@
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-hover table-striped">
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -135,8 +123,6 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -146,15 +132,25 @@
 <div id="tasks">
     <div class="x_panel">
         <div class="x_title">
-            <h2><i class="fa fa-tasks"></i> Wait tasks</h2>
+            <h2><i class="fa fa-tasks"></i> Tasks</h2>
             <ul class="nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all tasks" data-modal-callback="tasksRemove();">
+                                <i class="glyphicon glyphicon-trash"></i> Remove all
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-striped">
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -167,8 +163,6 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -199,9 +193,12 @@
 </div>
 {{ end }}
 
+{{ define "head" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+{{ end }}
+
 {{ define "js" }}
-<script type="application/javascript">
-    var defaultListenerName = '{{ .defaultListenerName }}';
-</script>
-{{ staticHTML (staticURL "/workers/assets/js/manager.js" true) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/workers/assets/js/manager.js" true) }}
 {{ end }}

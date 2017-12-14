@@ -23,7 +23,7 @@ import:
 - package: github.com/kardianos/osext
   version: ae77be60afb1dcacde03767a8c37337fad28ac14
 - package: github.com/kihamo/go-workers
-  version: d5557a1f986c24d991ba762f7c53c8c08e4183a0
+  version: 07def28cb7882520fd9de85c0367aa655d6fea40
 - package: github.com/kihamo/gotypes
   version: c1b2b85a41fe44ea31cb3f713b175448cfb08b84
 - package: github.com/kihamo/snitch

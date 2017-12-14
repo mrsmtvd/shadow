@@ -1,25 +1,25 @@
 package workers
 
 import (
-	"github.com/kihamo/go-workers/dispatcher"
-	"github.com/kihamo/go-workers/task"
-	"github.com/kihamo/go-workers/worker"
+	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/shadow"
 )
 
 type Component interface {
 	shadow.Component
 
-	AddTask(t task.Tasker)
-	AddNamedTaskByFunc(n string, f task.TaskFunction, a ...interface{}) task.Tasker
-	AddTaskByFunc(f task.TaskFunction, a ...interface{}) task.Tasker
-	AddTaskByPriorityAndFunc(p int64, f task.TaskFunction, a ...interface{}) task.Tasker
-	RemoveTask(t task.Tasker)
-	RemoveTaskById(id string)
-	AddWorker()
-	RemoveWorker(w worker.Worker)
-	GetWorkers() []worker.Worker
-	GetDefaultListenerName() string
-	AddListener(l dispatcher.Listener)
-	RemoveListener(l dispatcher.Listener)
+	AddSimpleWorker()
+	AddWorker(ws.Worker)
+	RemoveWorker(ws.Worker)
+	GetWorkers() []ws.Worker
+	GetWorkerMetadata(string) ws.Metadata
+
+	AddTask(ws.Task)
+	RemoveTask(ws.Task)
+	GetTasks() []ws.Task
+	GetTaskMetadata(string) ws.Metadata
+
+	AddListener(ws.EventId, ws.Listener)
+	RemoveListener(ws.EventId, ws.Listener)
+	GetListeners() map[ws.EventId][]ws.Listener
 }

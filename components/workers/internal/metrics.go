@@ -1,75 +1,71 @@
 package internal
 
 import (
-	"github.com/kihamo/go-workers/dispatcher"
-	"github.com/kihamo/go-workers/worker"
+	"strings"
+	"time"
+
+	w "github.com/kihamo/go-workers"
 	"github.com/kihamo/shadow/components/workers"
 	"github.com/kihamo/snitch"
 )
 
 const (
 	MetricListenersTotal = workers.ComponentName + "_listeners_total"
-	MetricListenersTasks = workers.ComponentName + "_listeners_tasks_total"
 	MetricWorkersTotal   = workers.ComponentName + "_workers_total"
 	MetricTasksTotal     = workers.ComponentName + "_tasks_total"
 )
 
 var (
 	metricListenersTotal snitch.Gauge
-	metricListenersTasks snitch.Gauge
 	metricWorkersTotal   snitch.Gauge
 	metricTasksTotal     snitch.Gauge
 )
 
 type metricsCollector struct {
-	dispatcher *dispatcher.Dispatcher
+	component *Component
 }
 
 func (c *metricsCollector) Describe(ch chan<- *snitch.Description) {
 	metricListenersTotal.Describe(ch)
-	metricListenersTasks.Describe(ch)
 	metricWorkersTotal.Describe(ch)
 	metricTasksTotal.Describe(ch)
 }
 
 func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
-	metricListenersTotal.Set(float64(len(c.dispatcher.GetListeners())))
-	metricListenersTasks.Set(float64(len(c.dispatcher.GetListenersTasks())))
 
-	var (
-		workerStatusWait    float64
-		workerStatusProcess float64
-		workerStatusBusy    float64
-	)
+	metricWorkersTotal.Set(float64(len(c.component.GetWorkers())))
+	metricTasksTotal.Set(float64(len(c.component.GetTasks())))
 
-	for _, w := range c.dispatcher.GetWorkers() {
-		switch w.GetStatus() {
-		case worker.WorkerStatusWait:
-			workerStatusWait++
-		case worker.WorkerStatusProcess:
-			workerStatusProcess++
-		case worker.WorkerStatusBusy:
-			workerStatusBusy++
-		}
+	var totalListeners float64
+	for _, list := range c.component.GetListeners() {
+		totalListeners += float64(len(list))
 	}
-
-	metricWorkersTotal.With("status", "wait").Set(workerStatusWait)
-	metricWorkersTotal.With("status", "process").Set(workerStatusProcess)
-	metricWorkersTotal.With("status", "busy").Set(workerStatusBusy)
+	metricListenersTotal.Set(totalListeners)
 
 	metricListenersTotal.Collect(ch)
-	metricListenersTasks.Collect(ch)
 	metricWorkersTotal.Collect(ch)
 	metricTasksTotal.Collect(ch)
 }
 
+func (c *metricsCollector) listenWorkerStatusChanged(_ time.Time, args ...interface{}) {
+	metricWorkersTotal.With("status", strings.ToLower(args[1].(w.Status).String())).Inc()
+}
+
+func (c *metricsCollector) listenTaskStatusChanged(_ time.Time, args ...interface{}) {
+	metricTasksTotal.With("status", strings.ToLower(args[1].(w.Status).String())).Inc()
+}
+
 func (c *Component) Metrics() snitch.Collector {
 	metricListenersTotal = snitch.NewGauge(MetricListenersTotal, "Number of listeners")
-	metricListenersTasks = snitch.NewGauge(MetricListenersTasks, "Number of tasks in listeners")
 	metricWorkersTotal = snitch.NewGauge(MetricWorkersTotal, "Number of workers")
 	metricTasksTotal = snitch.NewGauge(MetricTasksTotal, "Number of tasks")
 
-	return &metricsCollector{
-		dispatcher: c.dispatcher,
+	collector := &metricsCollector{
+		component: c,
 	}
+
+	collector.component.AddListener(w.EventIdWorkerStatusChanged, collector.listenWorkerStatusChanged)
+	collector.component.AddListener(w.EventIdTaskStatusChanged, collector.listenTaskStatusChanged)
+
+	return collector
 }

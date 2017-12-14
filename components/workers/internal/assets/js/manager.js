@@ -1,90 +1,4 @@
-function getWorkerStatusName(status) {
-    switch(status) {
-        case 0:
-            return 'wait';
-            break;
-        case 1:
-            return 'process';
-            break;
-        case 2:
-            return 'busy';
-            break;
-        default:
-            return 'unknown';
-            break;
-    }
-}
-
-function getTaskStatusName(status) {
-    switch(status) {
-        case 0:
-            return 'wait';
-            break;
-        case 1:
-            return 'process';
-            break;
-        case 2:
-            return 'success';
-            break;
-        case 3:
-            return 'fail';
-            break;
-        case 4:
-            return 'fail by timeout';
-            break;
-        case 5:
-            return 'kill';
-            break;
-        case 6:
-            return 'wait repeat';
-            break;
-        default:
-            return 'unknown';
-            break;
-    }
-}
-
-function update() {
-    $.ajax({
-        type: 'GET',
-        url: '/workers/?action=stats',
-        success: function(r){
-            var tL = $('#listeners tbody').empty();
-            var tW = $('#workers tbody').empty();
-            var tT = $('#tasks tbody').empty();
-
-            var listeners = r.listeners_count || 0;
-            var workers = r.workers_count || 0;
-            var tasks_wait = 0;
-
-            if (Array.isArray(r.listeners)) {
-                for (var i in r.listeners) {
-                    var listener = r.listeners[i];
-
-                    var lC = '<tr>'
-                    + '<td>' + listener.name + '</td>'
-                    + '<td>' + dateToString(listener.created_at) + '</td>'
-                    + '<td>' + listener.count_task_success + '</td>'
-                    + '<td>' + (listener.last_task_success_at ? dateToString(listener.last_task_success_at) : '') + '</td>' 
-                    + '<td>' + listener.count_task_failed + '</td>'
-                    + '<td>' + (listener.last_task_failed_at ? dateToString(listener.last_task_failed_at) : '') + '</td>'
-                    ;
-                    
-                    if (listener.name != defaultListenerName) {
-                        lC += '<td><div class="btn-group btn-group-xs">'
-                            + '<button type="button" class="btn btn-danger btn-icon listener-remove" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener ' + listener.name + '" data-modal-callback="listenersRemove(\'' + listener.name + '\');"><i class="glyphicon glyphicon-trash" title="Remove"></i></button>'
-                            + '</div></td>'
-                    } else {
-                        lC += '<td></td>';
-                    }
-                    
-                    lC += '</tr>';
-                    
-                    tL.append(lC);
-                }
-                listeners = r.listeners.length
-            }
-
+/*
             if (Array.isArray(r.workers)) {
                 for (var i in r.workers) {
                     var worker = r.workers[i];
@@ -92,71 +6,25 @@ function update() {
                     var wC ='<tr>'
                         + '<td>' + worker.id + '</td>'
                         + '<td>' + dateToString(worker.created) + '</td>'
-                        + '<td>' + getWorkerStatusName(worker.status) + '</td>';
+                        + '<td>' + worker.status + '</td>';
 
                     if (task) {
-                        wC += '<td><button type="button" class="btn btn-success btn-circle task-show" data-task="' + i + '"><i class="glyphicon glyphicon-eye-open"></i></button></td>';
+                        wC += '<td><div class="btn-group btn-group-xs"><button type="button" class="btn btn-success btn-circle task-show" data-task="' + i + '"><i class="glyphicon glyphicon-eye-open"></i></button></div></td>';
                     } else {
                         wC += '<td></td>';
                     }
 
-                    wC += '<td><div class="btn-group btn-group-xs">'
-                        + '<button type="button" class="btn btn-info btn-icon worker-reset" data-toggle="modal" data-target="#modal" data-modal-title="Confirm reset worker #' + worker.id + '" data-modal-callback="workersReset(\'' + worker.id + '\');"><i class="glyphicon glyphicon-refresh" title="Reset"></i></button>'
-                        + '<button type="button" class="btn btn-danger btn-icon worker-kill" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill worker #' + worker.id + '" data-modal-callback="workersKill(\'' + worker.id + '\');"><i class="glyphicon glyphicon-trash" title="Kill"></i></button>'
-                        + '</div></td>'
-                        + '</tr>';
-
                     tW.append(wC);
-
-                    if (task) {
-                        tW.append(
-                            '<tr style="display:none" id="task-' + i + '">'
-                            + '<td colspan="5">'
-                            + '<ul class="list-group">'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.id + '</em></span><strong>ID</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.name + '</em></span><strong>Name</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + getTaskStatusName(task.status) + '</em></span><strong>Status</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.priority + '</em></span><strong>Priority</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.attempts + '</em></span><strong>Attempts</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.last_error ? task.last_error : '&mdash;') + '</em></span><strong>Last error</strong><br /></li>'
-                            + '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + new Date(task.created).toLocaleString() + '</em></span><strong>Created</strong><br /></li>'
-                            + '</ul>'
-                            + '</td>'
-                            + '</tr>'
-                        )
-                    }
                 }
                 workers = r.workers.length
             }
 
-            if (Array.isArray(r.tasks_wait)) {
-                for (var i in r.tasks_wait) {
-                    var task = r.tasks_wait[i];
-                    tT.append('<tr>'
-                        + '<td>' + task.id + '</td>'
-                        + '<td>' + task.name + '</td>'
-                        + '<td>' + getTaskStatusName(task.status) + '</td>'
-                        + '<td>' + task.priority + '</td>'
-                        + '<td>' + task.attempts + '</td>'
-                        + '<td>' + (task.last_error ? task.last_error : '&mdash;') + '</td>'
-                        + '<td>' + dateToString(task.created) + '</td>'
-                        + '<td><div class="btn-group btn-group-sm">'
-                        + '<button type="button" class="btn btn-info btn-icon task-remove" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove task #' + task.id + '" data-modal-callback="taskRemove(\'' + task.id + '\');"><i class="glyphicon glyphicon-trash" title="Remove"></i></button>'
-                        + '</div></td>'
-                        + '</tr>');
-                }
-                tasks_wait = r.tasks_wait.length
-            }
-
-            $('#listeners-count').text(listeners);
-            $('#workers-count').text(workers);
-            $('#tasks-title').text(tasks_wait + ' wait tasks');
-            $('#tasks-wait-count').text(tasks_wait);
-
             $('#workers .task-show').click(function () {
-                var e = $(this);
-                var b = e.find('i');
-                var i = e.data('task');
+                var
+                    e = $(this),
+                    b = e.find('i'),
+                    i = e.data('task')
+                ;
                 
                 if (b.hasClass('glyphicon-eye-open')) {
                     b.removeClass('glyphicon-eye-open');
@@ -171,50 +39,7 @@ function update() {
         }
     });
 }
-
-function listenersRemove(id) {
-    $.ajax({
-        type: 'POST',
-        url: '/workers/?action=listeners-remove',
-        data: {
-            id: id
-        },
-        success: update
-    });
-}
-
-function taskRemove(id) {
-    $.ajax({
-        type: 'POST',
-        url: '/workers/?action=task-remove',
-        data: {
-            id: id
-        },
-        success: update
-    });
-}
-
-function workersKill(id) {
-    $.ajax({
-        type: 'POST',
-        url: '/workers/?action=workers-kill',
-        data: {
-            id: id
-        },
-        success: update
-    });
-}
-
-function workersReset(id) {
-    $.ajax({
-        type: 'POST',
-        url: '/workers/?action=workers-reset',
-        data: {
-            id: id
-        },
-        success: update
-    });
-}
+*/
 
 $(document).ready(function () {
     $('#workers-show').click(function () {
@@ -236,7 +61,151 @@ $(document).ready(function () {
         });
     });
 
-    update();
+    var tableListeners = $('#listeners table')
+        .on('draw.dt', function (e, settings) {
+            if (settings.json) {
+                $('#listeners-count').text(settings.json.recordsTotal);
+            }
+        })
+        .DataTable({
+            ajax: {
+                url: '/workers/?action=stats&entity=listeners',
+                dataSrc: 'data'
+            },
+            columns: [
+                { data: 'event' },
+                { data: 'name' }
+            ]
+        });
+
+    var tableWorkers = $('#workers table')
+        .on('draw.dt', function (e, settings) {
+            if (settings.json) {
+                $('#workers-count').text(settings.json.recordsTotal);
+            }
+        })
+        .DataTable({
+            ajax: {
+                url: '/workers/?action=stats&entity=workers',
+                dataSrc: 'data'
+            },
+            columns: [
+                { data: 'id' },
+                {
+                    data: 'created',
+                    render: function (date) {
+                        return dateToString(date);
+                    }
+                },
+                { data: 'status' },
+                {
+                    data: null,
+                    defaultContent: ''
+                },
+                {
+                    orderable: false,
+                    data: null,
+                    className: 'worker-actions',
+                    render: function(data) {
+                        var content = '<div class="btn-group btn-group-xs">';
+
+                        if (data.task) {
+                            content += '<button type="button" class="btn btn-success btn-circle task-show" data-task="\' + i + \'"><i class="glyphicon glyphicon-eye-open" title="Show task\'s details"></i></button>';
+                        }
+
+                        content += '<button type="button" class="btn btn-danger btn-icon" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill worker #' + data.id + '" data-modal-callback="workersRemove(\'' + data.id + '\');">'
+                                 + '<i class="glyphicon glyphicon-trash" title="Remove worker"></i>'
+                                 + '</button>'
+                                 + '</div>';
+
+                        return content
+                    }
+                }
+            ],
+            'order': [[ 2, 'asc' ], [ 0, 'asc' ]]
+        });
+
+    $('#workers table tbody').on('click', 'button.task-show', function (e) {
+            e.preventDefault();
+            var b = $(this).find('i');
+            var row = tableWorkers.row($(this).closest('tr'));
+
+            if (b.hasClass('glyphicon-eye-open')) {
+                var task = row.data().task;
+
+                b.removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
+                row.child(
+                    '<table width="100%">' +
+                        '<tr>' +
+                            '<td>' +
+                                '<ul class="list-group">' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.id + '</em></span><strong>ID</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.name + '</em></span><strong>Name</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.status + '</em></span><strong>Status</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.priority + '</em></span><strong>Priority</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.attempts + '</em></span><strong>Attempts</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.last_error ? task.last_error : '&mdash;') + '</em></span><strong>Last error</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + dateToString(task.created) + '</em></span><strong>Created</strong><br /></li>' +
+                                '</ul>' +
+                            '</td>' +
+                        '</tr>' +
+                    '</table>'
+                ).show();
+            } else {
+                b.removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
+                row.child.hide();
+            }
+     });
+
+    var tableTasks = $('#tasks table')
+        .on('draw.dt', function (e, settings) {
+            if (settings.json) {
+                $('#tasks-count').text(settings.json.recordsTotal);
+            }
+        })
+        .DataTable({
+            ajax: {
+                url: '/workers/?action=stats&entity=tasks',
+                dataSrc: 'data'
+            },
+            columns: [
+                { data: 'id' },
+                { data: 'name' },
+                { data: 'status' },
+                { data: 'priority' },
+                { data: 'attempts' },
+                {
+                    data: null,
+                    defaultContent: ''
+                },
+                {
+                    data: 'created',
+                    render: function (date) {
+                        return dateToString(date);
+                    }
+
+                },
+                {
+                    orderable: false,
+                    data: null,
+                    render: function (data) {
+                        return '<div class="btn-group btn-group-xs">'
+                            + '<button type="button" class="btn btn-danger btn-icon task-remove" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove task #' + data.id + '" data-modal-callback="tasksRemove(\'' + data.id + '\');">'
+                            + '<i class="glyphicon glyphicon-trash" title="Remove task"></i>'
+                            + '</button>'
+                            + '</div>';
+                    }
+                }
+            ],
+            'order': [[ 2, 'asc' ], [ 3, 'asc' ]]
+        });
+
+    var update = function() {
+        tableListeners.ajax.reload();
+        tableWorkers.ajax.reload();
+        tableTasks.ajax.reload();
+    };
+
     var autorefresh = null;
     $('#autorefresh').click(function() {
         if (this.checked) {
@@ -249,4 +218,43 @@ $(document).ready(function () {
             autorefresh = null;
         }
     });
+
+    window.listenersRemove = function(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/workers/?action=listeners-remove',
+            data: {
+                id: id
+            },
+            success: tableListeners.ajax.reload
+        });
+    };
+
+    window.workersRemove = function(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/workers/?action=workers-remove',
+            data: {
+                id: id
+            },
+            success: function() {
+                tableWorkers.ajax.reload();
+                tableTasks.ajax.reload();
+            }
+        });
+    };
+
+    window.tasksRemove = function(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/workers/?action=tasks-remove',
+            data: {
+                id: id
+            },
+            success: function() {
+                tableWorkers.ajax.reload();
+                tableTasks.ajax.reload();
+            }
+        });
+    }
 });

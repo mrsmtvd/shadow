@@ -41,11 +41,10 @@
                 <div class="clearfix"></div>
 
                 <div class="profile clearfix">
-                    {{ if .User.AvatarURL }}
                     <div class="profile_pic">
-                        <img src="{{ .User.AvatarURL }}" alt="{{ .User.Name }}" class="img-circle profile_img">
+                        <img src="{{ if .User.AvatarURL }}{{ .User.AvatarURL }}{{ else }}/dashboard/assets/images/anonymous.png{{ end }}" alt="{{ .User.Name }}" class="img-circle profile_img">
                     </div>
-                    {{ end }}
+
                     <div class="profile_info">
                         <span>Welcome,</span>
                         <h2>{{ if .User.Name }}{{ .User.Name }}{{ else }}Anonymous{{ end }}</h2>
@@ -118,7 +117,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                {{ if .User.AvatarURL }}<img src="{{ .User.AvatarURL }}" alt="{{ .User.Name }}">{{ end }}
+                                <img src="{{ if .User.AvatarURL }}{{ .User.AvatarURL }}{{ else }}/dashboard/assets/images/anonymous.png{{ end }}" alt="{{ .User.Name }}" style="background: #fff">
                                 {{ if .User.Name }}{{ .User.Name }}{{ else }}Anonymous{{ end }}
                                 {{ if .User.IsAuthorized }}<span class=" fa fa-angle-down"></span>{{ end }}
                             </a>
