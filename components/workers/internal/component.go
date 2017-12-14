@@ -1,13 +1,10 @@
 package internal
 
 import (
-	"fmt"
 	"sync"
-	"time"
 
 	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/go-workers/dispatcher"
-	"github.com/kihamo/go-workers/task"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -82,18 +79,6 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 		defer wg.Done()
 		c.dispatcher.Run()
 	}()
-
-	for i := 0; i < 10; i++ {
-		t := task.NewFunctionTask(func() (interface{}, error) {
-			time.Sleep(time.Hour * 10)
-
-			return nil, fmt.Errorf("Error in time %s", time.Now().String())
-		})
-		t.SetName("test")
-		t.SetPriority(int64(i))
-		t.SetRepeats(-2)
-		c.AddTask(t)
-	}
 
 	return nil
 }
