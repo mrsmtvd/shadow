@@ -1,25 +1,25 @@
 package: github.com/kihamo/shadow
 import:
 - package: github.com/alexedwards/scs
-  version: v1.0.0
+  version: ~v1.1.0
 - package: github.com/bugsnag/osext
   version: 0dd3f918b21bec95ace9dc86c7e70266cfc5c702
 - package: github.com/deckarep/golang-set
-  version: b3af78e1d186c53529e3c916055d734665f68121
+  version: ~v1.7
 - package: github.com/elazarl/go-bindata-assetfs
   version: 30f82fa23fd844bd5bb1e5f216db87fd77b5eb43
 - package: github.com/go-gorp/gorp
   version: 6a3c8a87d0457cf700e57046c41e19b7cf3c44fa
 - package: github.com/golang/protobuf
-  version: 130e6b02ab059e7b717a096f397c5b60111cae74
+  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
 - package: github.com/grpc-ecosystem/go-grpc-middleware
-  version: 645b33ed7ba8739747bf2df55d0349d4bba2e7f6
+  version: 93790b4a90fab4022bb148faf5e3f3580d817d50
 - package: github.com/jhump/protoreflect
-  version: 4a27d441563c8e0ef6ce0775bc3b5ab467ae28f6
+  version: 6b9c222f688ee46f85a3bb509b7c8721df855004
 - package: github.com/julienschmidt/httprouter
-  version: 975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e
+  version: e1b9828bc9e5904baec057a154c09ca40fe7fae0
 - package: github.com/justinas/alice
-  version: 1051eaf52fcafdd87ead59d28b065f1fcb8274ec
+  version: 03f45bd4b7dad4734bc4620e46a35789349abb20
 - package: github.com/kardianos/osext
   version: ae77be60afb1dcacde03767a8c37337fad28ac14
 - package: github.com/kihamo/go-workers
@@ -29,15 +29,13 @@ import:
 - package: github.com/kihamo/snitch
   version: e4d6b609e3e7317796ace171d60477ee95f8410e
 - package: github.com/OneOfOne/xxhash
-  version: 7606720496774045c25ea52eda5fe51c3f2cfd2a
+  version: ~v1.2.1
 - package: github.com/mailru/easyjson
-  version: 25b3d385daae0e6256f602fce175180fcf1a7183
+  version: 32fa128f234d041f196a9f3e0fea5ac9772c08e1
 - package: github.com/rs/xlog
   version: 7ed5dc1cca34bb0c9e8f0e58dcf19b6dea3044d5
 - package: github.com/rubenv/sql-migrate
-  version: 79fe99e24311fa42469fb2ca23eb3f8f065e6155
-- package: golang.org/x/net
-  version: 66aacef3dd8a676686c7ae3716979581e8b03c47
+  version: 6edbfbd6a369ee82463312ec67b2c92f97a1d4dc
 - package: google.golang.org/grpc
   version: ~1.8.2
 - package: gopkg.in/Masterminds/squirrel.v1
@@ -45,4 +43,10 @@ import:
 - package: gopkg.in/gomail.v2
   version: 81ebce5c23dfd25c6c67194b37d3dd3f338c98b1
 - package: github.com/markbates/goth
-  version: v1.41.0
+  version: ~v1.43.0
+- package: golang.org/x/net
+  version: d866cfc389cec985d6fda2859936a575a55a3ab6
+- package: golang.org/x/text
+  version: 6eab0e8f74e86c598ec3b6fad4888e0c11482d48
+- package: github.com/influxdata/influxdb
+  version: ~v1.3.8
