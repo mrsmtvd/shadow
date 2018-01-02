@@ -1,10 +1,12 @@
 package internal
 
 import (
+	"context"
 	"strings"
 	"time"
 
-	w "github.com/kihamo/go-workers"
+	ws "github.com/kihamo/go-workers"
+	"github.com/kihamo/go-workers/listener"
 	"github.com/kihamo/shadow/components/workers"
 	"github.com/kihamo/snitch"
 )
@@ -35,24 +37,20 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 
 	metricWorkersTotal.Set(float64(len(c.component.GetWorkers())))
 	metricTasksTotal.Set(float64(len(c.component.GetTasks())))
-
-	var totalListeners float64
-	for _, list := range c.component.GetListeners() {
-		totalListeners += float64(len(list))
-	}
-	metricListenersTotal.Set(totalListeners)
+	metricListenersTotal.Set(float64(len(c.component.GetListeners())))
 
 	metricListenersTotal.Collect(ch)
 	metricWorkersTotal.Collect(ch)
 	metricTasksTotal.Collect(ch)
 }
 
-func (c *metricsCollector) listenWorkerStatusChanged(_ time.Time, args ...interface{}) {
-	metricWorkersTotal.With("status", strings.ToLower(args[1].(w.Status).String())).Inc()
-}
-
-func (c *metricsCollector) listenTaskStatusChanged(_ time.Time, args ...interface{}) {
-	metricTasksTotal.With("status", strings.ToLower(args[1].(w.Status).String())).Inc()
+func (c *metricsCollector) listener(_ context.Context, eventId ws.EventId, _ time.Time, args ...interface{}) {
+	switch eventId {
+	case ws.EventIdWorkerStatusChanged:
+		metricWorkersTotal.With("status", strings.ToLower(args[1].(ws.Status).String())).Inc()
+	case ws.EventIdTaskStatusChanged:
+		metricTasksTotal.With("status", strings.ToLower(args[1].(ws.Status).String())).Inc()
+	}
 }
 
 func (c *Component) Metrics() snitch.Collector {
@@ -64,8 +62,12 @@ func (c *Component) Metrics() snitch.Collector {
 		component: c,
 	}
 
-	collector.component.AddListener(w.EventIdWorkerStatusChanged, collector.listenWorkerStatusChanged)
-	collector.component.AddListener(w.EventIdTaskStatusChanged, collector.listenTaskStatusChanged)
+	l := listener.NewFunctionListener(collector.listener)
+	l.SetName(c.GetName() + ".metrics")
+
+	c.AddLockedListener(l.Id())
+	c.AddListener(ws.EventIdWorkerStatusChanged, l)
+	c.AddListener(ws.EventIdTaskStatusChanged, l)
 
 	return collector
 }

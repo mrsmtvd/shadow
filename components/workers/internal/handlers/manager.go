@@ -46,14 +46,29 @@ type managerHandlerItemTask struct {
 
 // easyjson:json
 type managerHandlerItemListener struct {
-	Event string `json:"event"`
-	Name  string `json:"name"`
+	Id           string           `json:"id"`
+	Name         string           `json:"name"`
+	Locked       bool             `json:"locked"`
+	Events       map[string]int64 `json:"events"`
+	Fires        int64            `json:"fires"`
+	FirstFiredAt *time.Time       `json:"first_fired_at"`
+	LastFiredAt  *time.Time       `json:"last_fired_at"`
 }
 
 type ManagerHandler struct {
 	dashboard.Handler
 
 	Component workers.Component
+}
+
+func (h *ManagerHandler) isLocked(id string) bool {
+	for _, listenerId := range h.Component.GetLockedListeners() {
+		if id == listenerId {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request) {
@@ -71,13 +86,26 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 	case "listeners":
 		list := make([]managerHandlerItemListener, 0, 0)
 
-		for event, items := range h.Component.GetListeners() {
-			for _, item := range items {
-				list = append(list, managerHandlerItemListener{
-					Event: event.String(),
-					Name:  item.String(),
-				})
+		for _, item := range h.Component.GetListeners() {
+			listener := managerHandlerItemListener{
+				Id:     item.Id(),
+				Name:   item.Name(),
+				Locked: h.isLocked(item.Id()),
 			}
+
+			if md := h.Component.GetListenerMetadata(item.Id()); md != nil {
+				listener.Fires = md[ws.ListenerMetadataFires].(int64)
+				listener.FirstFiredAt = md[ws.ListenerMetadataFirstFiredAt].(*time.Time)
+				listener.LastFiredAt = md[ws.ListenerMetadataLastFireAt].(*time.Time)
+
+				events := md[ws.ListenerMetadataEventIds].([]ws.EventId)
+				listener.Events = make(map[string]int64, len(events))
+				for _, eventId := range events {
+					listener.Events[eventId.String()] = eventId.Int64()
+				}
+			}
+
+			list = append(list, listener)
 		}
 
 		stats.Data = list
@@ -151,6 +179,30 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 }
 
 func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboard.Request) {
+	checkId := r.Original().PostFormValue("id")
+
+	if checkId != "" && !h.isLocked(checkId) {
+		for _, listener := range h.Component.GetListeners() {
+			if listener.Id() == checkId {
+				checkEvents := r.Original().PostForm["events[]"]
+
+				if len(checkEvents) != 0 {
+					for _, eventId := range checkEvents {
+						if i, err := strconv.ParseInt(eventId, 10, 64); err == nil {
+							h.Component.RemoveListener(ws.EventId(i), listener)
+						}
+					}
+				} else if md := h.Component.GetListenerMetadata(checkId); md != nil {
+					for _, eventId := range md[ws.ListenerMetadataEventIds].([]ws.EventId) {
+						h.Component.RemoveListener(eventId, listener)
+					}
+				}
+
+				break
+			}
+		}
+	}
+
 	w.SendJSON(managerHandlerResponseSuccess{
 		Result: "success",
 	})

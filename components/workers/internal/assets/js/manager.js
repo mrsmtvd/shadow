@@ -1,46 +1,3 @@
-/*
-            if (Array.isArray(r.workers)) {
-                for (var i in r.workers) {
-                    var worker = r.workers[i];
-                    var task = worker.task;
-                    var wC ='<tr>'
-                        + '<td>' + worker.id + '</td>'
-                        + '<td>' + dateToString(worker.created) + '</td>'
-                        + '<td>' + worker.status + '</td>';
-
-                    if (task) {
-                        wC += '<td><div class="btn-group btn-group-xs"><button type="button" class="btn btn-success btn-circle task-show" data-task="' + i + '"><i class="glyphicon glyphicon-eye-open"></i></button></div></td>';
-                    } else {
-                        wC += '<td></td>';
-                    }
-
-                    tW.append(wC);
-                }
-                workers = r.workers.length
-            }
-
-            $('#workers .task-show').click(function () {
-                var
-                    e = $(this),
-                    b = e.find('i'),
-                    i = e.data('task')
-                ;
-                
-                if (b.hasClass('glyphicon-eye-open')) {
-                    b.removeClass('glyphicon-eye-open');
-                    b.addClass('glyphicon-eye-close');
-                    $('#task-' + i).show('fast');
-                } else {
-                    b.removeClass('glyphicon-eye-close');
-                    b.addClass('glyphicon-eye-open');
-                    $('#task-' + i).hide('fast');
-                }
-            });
-        }
-    });
-}
-*/
-
 $(document).ready(function () {
     $('#workers-show').click(function () {
         $('#workers .task-show:has(i.glyphicon-eye-open)').click();
@@ -73,9 +30,58 @@ $(document).ready(function () {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'event' },
-                { data: 'name' }
-            ]
+                { data: 'id' },
+                { data: 'name' },
+                {
+                    data: 'events',
+                    render: function (data, type, row) {
+                        var
+                            content = '',
+                            keys = Object.keys(data);
+
+                        keys.sort();
+
+                        for (var i = 0; i < keys.length; i++) {
+                            if (!row.locked) {
+                                content += '<a href="#" title="Removing listener" class="label label-info" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener #' + row.id + ' for event ' + keys[i] + '" data-modal-callback="listenersRemove(\'' + row.id + '\', \'' + data[keys[i]] + '\');">' + keys[i] + ' x</a> '
+                            } else {
+                                content += '<span class="label label-info">' + keys[i] + '</span> ';
+                            }
+                        }
+
+                        return content;
+                    }
+                },
+                { data: 'fires' },
+                {
+                    data: 'first_fired_at',
+                    render: function (date) {
+                        return date ? dateToString(date) : '';
+                    }
+                },
+                {
+                    data: 'last_fired_at',
+                    render: function (date) {
+                        return date ? dateToString(date) : '';
+                    }
+                },
+                {
+                    orderable: false,
+                    data: null,
+                    render: function(data, type, row) {
+                        if (row.locked) {
+                            return '';
+                        }
+
+                        return '<div class="btn-group btn-group-xs">'
+                            + '<button type="button" class="btn btn-danger btn-icon" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener #' + row.id + ' for all events" data-modal-callback="listenersRemove(\'' + row.id + '\');">'
+                            + '<i class="glyphicon glyphicon-trash" title="Remove listeners for all events"></i>'
+                            + '</button>'
+                            + '</div>';
+                    }
+                }
+            ],
+            order: [[ 1, 'asc' ], [ 2, 'asc' ]]
         });
 
     var tableWorkers = $('#workers table')
@@ -105,7 +111,6 @@ $(document).ready(function () {
                 {
                     orderable: false,
                     data: null,
-                    className: 'worker-actions',
                     render: function(data) {
                         var content = '<div class="btn-group btn-group-xs">';
 
@@ -118,11 +123,11 @@ $(document).ready(function () {
                                  + '</button>'
                                  + '</div>';
 
-                        return content
+                        return content;
                     }
                 }
             ],
-            'order': [[ 2, 'asc' ], [ 0, 'asc' ]]
+            order: [[ 2, 'asc' ], [ 0, 'asc' ]]
         });
 
     $('#workers table tbody').on('click', 'button.task-show', function (e) {
@@ -183,7 +188,6 @@ $(document).ready(function () {
                     render: function (date) {
                         return dateToString(date);
                     }
-
                 },
                 {
                     orderable: false,
@@ -197,7 +201,7 @@ $(document).ready(function () {
                     }
                 }
             ],
-            'order': [[ 2, 'asc' ], [ 3, 'asc' ]]
+            order: [[ 2, 'asc' ], [ 3, 'asc' ]]
         });
 
     var update = function() {
@@ -219,14 +223,19 @@ $(document).ready(function () {
         }
     });
 
-    window.listenersRemove = function(id) {
+    window.listenersRemove = function(listenerId) {
+        console.log(arguments);
+
         $.ajax({
             type: 'POST',
             url: '/workers/?action=listeners-remove',
             data: {
-                id: id
+                id: listenerId,
+                events: Array.apply(null, arguments).slice(1)
             },
-            success: tableListeners.ajax.reload
+            success: function() {
+                tableListeners.ajax.reload();
+            }
         });
     };
 

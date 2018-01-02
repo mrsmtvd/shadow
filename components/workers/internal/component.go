@@ -5,6 +5,7 @@ import (
 
 	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/go-workers/dispatcher"
+	"github.com/kihamo/go-workers/listener"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -19,7 +20,9 @@ type Component struct {
 	logger      logger.Logger
 	routes      []dashboard.Route
 
-	dispatcher ws.Dispatcher
+	mutex              sync.RWMutex
+	dispatcher         ws.Dispatcher
+	lockedListenersIds []string
 }
 
 func (c *Component) GetName() string {
@@ -52,6 +55,7 @@ func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.dispatcher = dispatcher.NewSimpleDispatcher()
+	c.lockedListenersIds = []string{}
 
 	return nil
 }
@@ -59,17 +63,21 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
-	c.AddListener(ws.EventIdWorkerAdd, c.listenWorkerAdd)
-	c.AddListener(ws.EventIdWorkerRemove, c.listenWorkerRemove)
-	c.AddListener(ws.EventIdTaskAdd, c.listenTaskAdd)
-	c.AddListener(ws.EventIdTaskRemove, c.listenTaskRemove)
-	c.AddListener(ws.EventIdListenerAdd, c.listenListenerAdd)
-	c.AddListener(ws.EventIdListenerRemove, c.listenListenerRemove)
-	c.AddListener(ws.EventIdTaskExecuteStart, c.listenTaskExecuteStart)
-	c.AddListener(ws.EventIdTaskExecuteStop, c.listenTaskExecuteStop)
-	c.AddListener(ws.EventIdDispatcherStatusChanged, c.listenDispatcherStatusChanged)
-	c.AddListener(ws.EventIdWorkerStatusChanged, c.listenWorkerStatusChanged)
-	c.AddListener(ws.EventIdTaskStatusChanged, c.listenTaskStatusChanged)
+	l := listener.NewFunctionListener(c.listenerLogging)
+	l.SetName(c.GetName() + ".logging")
+	c.AddLockedListener(l.Id())
+
+	c.AddListener(ws.EventIdListenerAdd, l)
+	c.AddListener(ws.EventIdListenerRemove, l)
+	c.AddListener(ws.EventIdWorkerAdd, l)
+	c.AddListener(ws.EventIdWorkerRemove, l)
+	c.AddListener(ws.EventIdTaskAdd, l)
+	c.AddListener(ws.EventIdTaskRemove, l)
+	c.AddListener(ws.EventIdTaskExecuteStart, l)
+	c.AddListener(ws.EventIdTaskExecuteStop, l)
+	c.AddListener(ws.EventIdDispatcherStatusChanged, l)
+	c.AddListener(ws.EventIdWorkerStatusChanged, l)
+	c.AddListener(ws.EventIdTaskStatusChanged, l)
 
 	for i := 1; i <= c.config.GetInt(workers.ConfigWorkersCount); i++ {
 		c.AddSimpleWorker()
@@ -81,4 +89,21 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	}()
 
 	return nil
+}
+
+func (c *Component) GetLockedListeners() []string {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	tmp := make([]string, len(c.lockedListenersIds))
+	copy(tmp, c.lockedListenersIds)
+
+	return tmp
+}
+
+func (c *Component) AddLockedListener(id string) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	c.lockedListenersIds = append(c.lockedListenersIds, id)
 }
