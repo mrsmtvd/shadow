@@ -62,36 +62,56 @@ func easyjsonEf7cfe30EncodeGithubComKihamoShadowComponentsAlertsInternalHandlers
 	out.RawByte('{')
 	first := true
 	_ = first
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"icon\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Icon))
 	}
-	first = false
-	out.RawString("\"icon\":")
-	out.String(string(in.Icon))
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
 	}
-	first = false
-	out.RawString("\"title\":")
-	out.String(string(in.Title))
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"message\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Message))
 	}
-	first = false
-	out.RawString("\"message\":")
-	out.String(string(in.Message))
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"elapsed\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Elapsed))
 	}
-	first = false
-	out.RawString("\"elapsed\":")
-	out.String(string(in.Elapsed))
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"date\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Date).MarshalJSON())
 	}
-	first = false
-	out.RawString("\"date\":")
-	out.Raw((in.Date).MarshalJSON())
 	out.RawByte('}')
 }
 

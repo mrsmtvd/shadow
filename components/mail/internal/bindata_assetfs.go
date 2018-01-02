@@ -84,7 +84,7 @@ func templatesViewsSendHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/views/send.html", size: 3591, mode: os.FileMode(420), modTime: time.Unix(1507062152, 0)}
+	info := bindataFileInfo{name: "templates/views/send.html", size: 3591, mode: os.FileMode(420), modTime: time.Unix(1507221864, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -240,8 +240,11 @@ func _filePath(dir, name string) string {
 
 
 func assetFS() *assetfs.AssetFS {
+	assetInfo := func(path string) (os.FileInfo, error) {
+		return os.Stat(path)
+	}
 	for k := range _bintree.Children {
-		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: k}
+		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: assetInfo, Prefix: k}
 	}
 	panic("unreachable")
 }

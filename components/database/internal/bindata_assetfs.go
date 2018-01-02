@@ -108,7 +108,7 @@ func assetsCssMigrationsMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1507616646, 0)}
+	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1514899969, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -128,7 +128,7 @@ func assetsJsMigrationsMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1507616646, 0)}
+	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1514899969, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -148,7 +148,7 @@ func assetsVendorsHighlightjsCssTomorrowMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1507616645, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1514899968, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -168,7 +168,7 @@ func assetsVendorsHighlightjsJsHighlightPackMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1507616645, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1514899968, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -346,8 +346,11 @@ func _filePath(dir, name string) string {
 
 
 func assetFS() *assetfs.AssetFS {
+	assetInfo := func(path string) (os.FileInfo, error) {
+		return os.Stat(path)
+	}
 	for k := range _bintree.Children {
-		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: k}
+		return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: assetInfo, Prefix: k}
 	}
 	panic("unreachable")
 }

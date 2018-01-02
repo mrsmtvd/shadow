@@ -138,37 +138,42 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsGrpcInternalHandlers(o
 	first := true
 	_ = first
 	if in.Result != "" {
-		if !first {
-			out.RawByte(',')
+		const prefix string = ",\"result\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
 		}
-		first = false
-		out.RawString("\"result\":")
 		out.String(string(in.Result))
 	}
 	if in.Error != "" {
-		if !first {
-			out.RawByte(',')
+		const prefix string = ",\"error\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
 		}
-		first = false
-		out.RawString("\"error\":")
 		out.String(string(in.Error))
 	}
 	if len(in.Headers) != 0 {
-		if !first {
-			out.RawByte(',')
-		}
-		first = false
-		out.RawString("\"headers\":")
-		if in.Headers == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
-			out.RawString(`null`)
+		const prefix string = ",\"headers\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
 		} else {
+			out.RawString(prefix)
+		}
+		{
 			out.RawByte('{')
 			v5First := true
 			for v5Name, v5Value := range in.Headers {
-				if !v5First {
+				if v5First {
+					v5First = false
+				} else {
 					out.RawByte(',')
 				}
-				v5First = false
 				out.String(string(v5Name))
 				out.RawByte(':')
 				if v5Value == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
@@ -188,21 +193,22 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsGrpcInternalHandlers(o
 		}
 	}
 	if len(in.Trailers) != 0 {
-		if !first {
-			out.RawByte(',')
-		}
-		first = false
-		out.RawString("\"trailers\":")
-		if in.Trailers == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
-			out.RawString(`null`)
+		const prefix string = ",\"trailers\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
 		} else {
+			out.RawString(prefix)
+		}
+		{
 			out.RawByte('{')
 			v8First := true
 			for v8Name, v8Value := range in.Trailers {
-				if !v8First {
+				if v8First {
+					v8First = false
+				} else {
 					out.RawByte(',')
 				}
-				v8First = false
 				out.String(string(v8Name))
 				out.RawByte(':')
 				if v8Value == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
