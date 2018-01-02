@@ -12,15 +12,17 @@ import (
 )
 
 const (
-	MetricListenersTotal = workers.ComponentName + "_listeners_total"
-	MetricWorkersTotal   = workers.ComponentName + "_workers_total"
-	MetricTasksTotal     = workers.ComponentName + "_tasks_total"
+	MetricListenersTotal       = workers.ComponentName + "_listeners_total"
+	MetricListenersEventsTotal = workers.ComponentName + "_listeners_events_total"
+	MetricWorkersTotal         = workers.ComponentName + "_workers_total"
+	MetricTasksTotal           = workers.ComponentName + "_tasks_total"
 )
 
 var (
-	metricListenersTotal snitch.Gauge
-	metricWorkersTotal   snitch.Gauge
-	metricTasksTotal     snitch.Gauge
+	metricListenersTotal       snitch.Gauge
+	metricListenersEventsTotal snitch.Gauge
+	metricWorkersTotal         snitch.Gauge
+	metricTasksTotal           snitch.Gauge
 )
 
 type metricsCollector struct {
@@ -29,6 +31,7 @@ type metricsCollector struct {
 
 func (c *metricsCollector) Describe(ch chan<- *snitch.Description) {
 	metricListenersTotal.Describe(ch)
+	metricListenersEventsTotal.Describe(ch)
 	metricWorkersTotal.Describe(ch)
 	metricTasksTotal.Describe(ch)
 }
@@ -37,9 +40,21 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 
 	metricWorkersTotal.Set(float64(len(c.component.GetWorkers())))
 	metricTasksTotal.Set(float64(len(c.component.GetTasks())))
-	metricListenersTotal.Set(float64(len(c.component.GetListeners())))
+
+	listeners := c.component.GetListeners()
+	events := 0
+
+	for _, l := range listeners {
+		if md := c.component.GetListenerMetadata(l.Id()); md != nil {
+			events += len(md[ws.ListenerMetadataEventIds].([]ws.EventId))
+		}
+	}
+
+	metricListenersTotal.Set(float64(len(listeners)))
+	metricListenersEventsTotal.Set(float64(events))
 
 	metricListenersTotal.Collect(ch)
+	metricListenersEventsTotal.Collect(ch)
 	metricWorkersTotal.Collect(ch)
 	metricTasksTotal.Collect(ch)
 }
@@ -55,6 +70,7 @@ func (c *metricsCollector) listener(_ context.Context, eventId ws.EventId, _ tim
 
 func (c *Component) Metrics() snitch.Collector {
 	metricListenersTotal = snitch.NewGauge(MetricListenersTotal, "Number of listeners")
+	metricListenersEventsTotal = snitch.NewGauge(MetricListenersEventsTotal, "Number of events of listeners")
 	metricWorkersTotal = snitch.NewGauge(MetricWorkersTotal, "Number of workers")
 	metricTasksTotal = snitch.NewGauge(MetricTasksTotal, "Number of tasks")
 
