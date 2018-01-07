@@ -82,7 +82,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			fields["task.err"] = args[3].(error).Error()
 		}
 
-		c.logger.Debugf("#%s execute stopped", fields["task.id"], fields)
+		c.logger.Debugf("%s execute stopped", task, fields)
 
 	case workers.EventIdDispatcherStatusChanged:
 		c.logger.Debug("Dispatcher status changed", map[string]interface{}{
@@ -104,7 +104,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 
 		c.logger.Debugf("%s status changed", task, map[string]interface{}{
 			"task.id":             task.Id(),
-			"task.namr":           task.Name(),
+			"task.name":           task.Name(),
 			"task.status.current": args[1].(workers.Status).String(),
 			"task.status.prev":    args[2].(workers.Status).String(),
 		})
