@@ -2,8 +2,6 @@ package dashboard
 
 import (
 	"time"
-
-	"github.com/markbates/goth"
 )
 
 type Session interface {
@@ -39,6 +37,6 @@ type Session interface {
 	Clear() error
 }
 
-func SessionAuthProvider(provider goth.Provider) string {
-	return ComponentName + ":" + provider.Name()
+func AuthSessionName() string {
+	return "__" + ComponentName
 }

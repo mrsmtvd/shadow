@@ -8,11 +8,11 @@ import (
 
 var mutex sync.RWMutex
 
-func UseProviders(viders ...goth.Provider) {
+func UseProviders(providers ...goth.Provider) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	goth.UseProviders(viders...)
+	goth.UseProviders(providers...)
 }
 func GetProviders() goth.Providers {
 	mutex.RLock()

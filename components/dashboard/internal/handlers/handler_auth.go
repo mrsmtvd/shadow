@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/markbates/goth"
@@ -28,6 +29,7 @@ type AuthHandler struct {
 	dashboard.Handler
 
 	IsCallback bool
+	Config     config.Component
 }
 
 func (h *AuthHandler) buildProvidersView(r *dashboard.Request) ProvidersView {
@@ -95,7 +97,7 @@ func (h *AuthHandler) getRedirectToLastURL(r *dashboard.Request) string {
 
 func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 	session := r.Session()
-	sessionKey := dashboard.SessionAuthProvider(provider)
+	sessionKey := dashboard.AuthSessionName()
 
 	exists, err := session.Exists(sessionKey)
 	if !exists {
@@ -141,18 +143,43 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		return err
 	}
 
-	if err = session.PutString(sessionKey, providerSession.Marshal()); err != nil {
+	providerUser, err := provider.FetchUser(providerSession)
+	if err != nil {
 		return err
 	}
 
-	providerUser, err := provider.FetchUser(providerSession)
-	if err != nil {
+	if provider.Name() != "password" {
+		emailsConfig := h.Config.GetString(dashboard.ConfigOAuth2EmailsAllowed)
+		if emailsConfig != "" {
+			emails := strings.Split(emailsConfig, ",")
+
+			if len(emails) > 0 {
+				var valid bool
+
+				if providerUser.Email != "" {
+					for _, email := range emails {
+						if email == providerUser.Email {
+							valid = true
+							break
+						}
+					}
+				}
+
+				if !valid {
+					return errors.New("Email not allowed")
+				}
+			}
+		}
+	}
+
+	if err = session.PutString(sessionKey, providerSession.Marshal()); err != nil {
 		return err
 	}
 
 	r.Logger().Debugf("Auth user %s is success", providerUser.Name, map[string]interface{}{
 		"auth.provider":            provider.Name(),
 		"auth.user-id":             providerUser.UserID,
+		"auth.email":               providerUser.Email,
 		"auth.access-token":        providerUser.AccessToken,
 		"auth.access-token-secret": providerUser.AccessTokenSecret,
 		"auth.refresh-token":       providerUser.RefreshToken,
@@ -167,9 +194,6 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 }
 
 func (h *AuthHandler) redirectToExternal(r *dashboard.Request, provider goth.Provider) (string, error) {
-	session := r.Session()
-	sessionKey := dashboard.SessionAuthProvider(provider)
-
 	state := r.URL().Query().Get("state")
 	if len(state) == 0 {
 		nonceBytes := make([]byte, 64)
@@ -194,7 +218,7 @@ func (h *AuthHandler) redirectToExternal(r *dashboard.Request, provider goth.Pro
 		return "", errors.New("External url for redirect is empty")
 	}
 
-	if err = session.PutString(sessionKey, providerSession.Marshal()); err != nil {
+	if err = r.Session().PutString(dashboard.AuthSessionName(), providerSession.Marshal()); err != nil {
 		return "", err
 	}
 
@@ -232,7 +256,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		}
 
 		r.Logger().Debugf("OAuth2 external redirect to %s", externalUrl)
-		h.Redirect(externalUrl, http.StatusSeeOther, w, r)
+		h.Redirect(externalUrl, http.StatusTemporaryRedirect, w, r)
 	} else {
 		if err = h.auth(r, provider); err != nil {
 			h.renderForm(r, err)
@@ -241,6 +265,6 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 
 		authUrl := h.getRedirectToLastURL(r)
 		r.Logger().Debugf("Redirect to %s after success auth", authUrl)
-		h.Redirect(authUrl, http.StatusSeeOther, w, r)
+		h.Redirect(authUrl, http.StatusTemporaryRedirect, w, r)
 	}
 }

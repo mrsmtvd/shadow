@@ -16,6 +16,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard/auth/providers/password"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
 )
 
@@ -109,15 +110,28 @@ func (c *Component) initAuth() {
 		))
 	}
 
-	if c.config.GetBool(dashboard.ConfigOAuth2Enabled) {
+	if c.config.GetBool(dashboard.ConfigOAuth2GithubEnabled) {
+		providers = append(providers, github.NewCustomisedURL(
+			c.config.GetString(dashboard.ConfigOAuth2GithubID),
+			c.config.GetString(dashboard.ConfigOAuth2GithubSecret),
+			c.config.GetString(dashboard.ConfigOAuth2GithubRedirectURL),
+			github.AuthURL,
+			github.TokenURL,
+			github.ProfileURL,
+			github.EmailURL,
+			strings.Split(c.config.GetString(dashboard.ConfigOAuth2GithubScopes), ",")...,
+		))
+	}
+
+	if c.config.GetBool(dashboard.ConfigOAuth2GitlabEnabled) {
 		providers = append(providers, gitlab.NewCustomisedURL(
-			c.config.GetString(dashboard.ConfigOAuth2ID),
-			c.config.GetString(dashboard.ConfigOAuth2Secret),
-			c.config.GetString(dashboard.ConfigOAuth2RedirectURL),
-			c.config.GetString(dashboard.ConfigOAuth2AuthURL),
-			c.config.GetString(dashboard.ConfigOAuth2TokenURL),
-			c.config.GetString(dashboard.ConfigOAuth2ProfileURL),
-			strings.Split(c.config.GetString(dashboard.ConfigOAuth2Scopes), ",")...,
+			c.config.GetString(dashboard.ConfigOAuth2GitlabID),
+			c.config.GetString(dashboard.ConfigOAuth2GitlabSecret),
+			c.config.GetString(dashboard.ConfigOAuth2GitlabRedirectURL),
+			c.config.GetString(dashboard.ConfigOAuth2GitlabAuthURL),
+			c.config.GetString(dashboard.ConfigOAuth2GitlabTokenURL),
+			c.config.GetString(dashboard.ConfigOAuth2GitlabProfileURL),
+			strings.Split(c.config.GetString(dashboard.ConfigOAuth2GitlabScopes), ",")...,
 		))
 	}
 

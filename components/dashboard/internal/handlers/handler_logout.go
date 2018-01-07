@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/dashboard/auth"
 )
 
 type LogoutHandler struct {
@@ -14,10 +13,7 @@ type LogoutHandler struct {
 func (h *LogoutHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	session := r.Session()
 	session.Remove(dashboard.SessionUser)
-
-	for _, provider := range auth.GetProviders() {
-		session.Remove(dashboard.SessionAuthProvider(provider))
-	}
+	session.Remove(dashboard.AuthSessionName())
 
 	h.Redirect("/", http.StatusFound, w, r)
 }

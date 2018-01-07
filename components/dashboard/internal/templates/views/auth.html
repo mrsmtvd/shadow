@@ -58,7 +58,9 @@
                     {{ range $p, $provider := .providers }}
                         {{ if $provider.NeedRedirect }}
                         <button type="button" class="btn btn-success" onclick="javascript:location.href='{{ $provider.CallbackURL }}'">
-                            {{ if eq $provider.Name "gitlab" }}
+                            {{ if eq $provider.Name "github" }}
+                            <i class="fa fa-github fa-fw fa-lg"></i>
+                            {{ else if eq $provider.Name "gitlab" }}
                             <i class="fa fa-gitlab fa-fw fa-lg"></i>
                             {{ end }}
                             Log in with {{ $provider.Name }}

@@ -43,7 +43,7 @@ import:
 - package: gopkg.in/gomail.v2
   version: 81ebce5c23dfd25c6c67194b37d3dd3f338c98b1
 - package: github.com/markbates/goth
-  version: ~v1.43.0
+  version: ~v1.44.0
 - package: golang.org/x/net
   version: d866cfc389cec985d6fda2859936a575a55a3ab6
 - package: golang.org/x/text
