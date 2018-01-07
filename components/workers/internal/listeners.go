@@ -10,56 +10,70 @@ import (
 func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, _ time.Time, args ...interface{}) {
 	switch eventId {
 	case workers.EventIdWorkerAdd:
-		id := args[0].(workers.Worker).Id()
+		worker := args[0].(workers.Worker)
 
-		c.logger.Debugf("Added worker #%s", id, map[string]interface{}{
-			"worker.id": id,
+		c.logger.Debugf("%s added", worker, map[string]interface{}{
+			"worker.id": worker.Id(),
 		})
 
 	case workers.EventIdWorkerRemove:
-		id := args[0].(workers.Worker).Id()
+		worker := args[0].(workers.Worker)
 
-		c.logger.Debugf("Removed worker #%s", id, map[string]interface{}{
-			"worker.id": id,
+		c.logger.Debugf("%s removed", worker, map[string]interface{}{
+			"worker.id": worker.Id(),
 		})
 
 	case workers.EventIdTaskAdd:
-		id := args[0].(workers.Task).Id()
+		task := args[0].(workers.Task)
 
-		c.logger.Debugf("Added task #%s", id, map[string]interface{}{
-			"task.id": id,
+		c.logger.Debugf("%s added", task, map[string]interface{}{
+			"task.id":   task.Id(),
+			"task.name": task.Name(),
 		})
 
 	case workers.EventIdTaskRemove:
-		id := args[0].(workers.Task).Id()
+		task := args[0].(workers.Task)
 
-		c.logger.Debugf("Removed task #%s", id, map[string]interface{}{
-			"task.id": id,
+		c.logger.Debugf("%s removed", task, map[string]interface{}{
+			"task.id":   task.Id(),
+			"task.name": task.Name(),
 		})
 
 	case workers.EventIdListenerAdd:
-		c.logger.Debug("Added listener", map[string]interface{}{
-			"event":    args[0].(workers.EventId).String(),
-			"listener": args[1].(workers.Listener),
+		event := args[0].(workers.EventId)
+		listener := args[1].(workers.Listener)
+
+		c.logger.Debugf("%s added for %s", listener, event, map[string]interface{}{
+			"event":         event.String(),
+			"listener.id":   listener.Id(),
+			"listener.name": listener.Name(),
 		})
 
 	case workers.EventIdListenerRemove:
-		c.logger.Debug("Removed listener", map[string]interface{}{
-			"event":    args[0].(workers.EventId).String(),
-			"listener": args[1].(workers.Listener),
+		event := args[0].(workers.EventId)
+		listener := args[1].(workers.Listener)
+
+		c.logger.Debugf("%s removed for %s", listener, event, map[string]interface{}{
+			"event":         event.String(),
+			"listener.id":   listener.Id(),
+			"listener.name": listener.Name(),
 		})
 
 	case workers.EventIdTaskExecuteStart:
-		id := args[0].(workers.Task).Id()
+		task := args[0].(workers.Task)
 
-		c.logger.Debugf("Execute task #%s started", id, map[string]interface{}{
-			"task.id":   id,
+		c.logger.Debugf("%s execute started", task, map[string]interface{}{
+			"task.id":   task.Id(),
+			"task.name": task.Name(),
 			"worker.id": args[1].(workers.Worker).Id(),
 		})
 
 	case workers.EventIdTaskExecuteStop:
+		task := args[0].(workers.Task)
+
 		fields := map[string]interface{}{
-			"task.id":     args[0].(workers.Task).Id(),
+			"task.id":     task.Id(),
+			"task.name":   task.Name(),
 			"worker.id":   args[1].(workers.Worker).Id(),
 			"task.result": args[2],
 		}
@@ -68,7 +82,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			fields["task.err"] = args[3].(error).Error()
 		}
 
-		c.logger.Debugf("Execute task #%s stopped", fields["task.id"], fields)
+		c.logger.Debugf("#%s execute stopped", fields["task.id"], fields)
 
 	case workers.EventIdDispatcherStatusChanged:
 		c.logger.Debug("Dispatcher status changed", map[string]interface{}{
@@ -77,19 +91,20 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 		})
 
 	case workers.EventIdWorkerStatusChanged:
-		id := args[0].(workers.Worker).Id()
+		worker := args[0].(workers.Worker)
 
-		c.logger.Debugf("Worker #%s status changed", id, map[string]interface{}{
-			"worker.id":             id,
+		c.logger.Debugf("%s status changed", worker, map[string]interface{}{
+			"worker.id":             worker.Id(),
 			"worker.status.current": args[1].(workers.Status).String(),
 			"worker.status.prev":    args[2].(workers.Status).String(),
 		})
 
 	case workers.EventIdTaskStatusChanged:
-		id := args[0].(workers.Task).Id()
+		task := args[0].(workers.Task)
 
-		c.logger.Debugf("Task #%s status changed", id, map[string]interface{}{
-			"task.id":             id,
+		c.logger.Debugf("%s status changed", task, map[string]interface{}{
+			"task.id":             task.Id(),
+			"task.namr":           task.Name(),
 			"task.status.current": args[1].(workers.Status).String(),
 			"task.status.prev":    args[2].(workers.Status).String(),
 		})
