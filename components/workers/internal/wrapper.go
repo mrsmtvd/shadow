@@ -41,12 +41,46 @@ func (c *Component) GetTasks() []ws.Task {
 	return c.dispatcher.GetTasks()
 }
 
-func (c *Component) AddListener(event ws.EventId, listener ws.Listener) {
+func (c *Component) AddListenerByEvent(event ws.EventId, listener ws.Listener) {
 	c.dispatcher.AddListener(event, listener)
 }
 
-func (c *Component) RemoveListener(event ws.EventId, listener ws.Listener) {
+func (c *Component) AddListenerByEvents(events []ws.EventId, listener ws.Listener) {
+	for _, eventId := range events {
+		c.AddListenerByEvent(eventId, listener)
+	}
+}
+
+func (c *Component) RemoveListenerByEvent(event ws.EventId, listener ws.Listener) {
 	c.dispatcher.RemoveListener(event, listener)
+}
+
+func (c *Component) RemoveListenerByEvents(events []ws.EventId, listener ws.Listener) {
+	for _, eventId := range events {
+		c.RemoveListenerByEvent(eventId, listener)
+	}
+}
+
+func (c *Component) RemoveListener(listener ws.Listener) {
+	md := c.GetListenerMetadata(listener.Id())
+
+	if md == nil {
+		return
+	}
+
+	mdValue, ok := md[ws.ListenerMetadataEventIds]
+	if !ok {
+		return
+	}
+
+	events, ok := mdValue.([]ws.EventId)
+	if !ok {
+		return
+	}
+
+	for _, eventId := range events {
+		c.RemoveListenerByEvent(eventId, listener)
+	}
 }
 
 func (c *Component) GetListenerMetadata(id string) ws.Metadata {

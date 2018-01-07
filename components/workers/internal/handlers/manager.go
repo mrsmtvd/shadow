@@ -189,13 +189,11 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 				if len(checkEvents) != 0 {
 					for _, eventId := range checkEvents {
 						if i, err := strconv.ParseInt(eventId, 10, 64); err == nil {
-							h.Component.RemoveListener(ws.EventId(i), listener)
+							h.Component.RemoveListenerByEvent(ws.EventId(i), listener)
 						}
 					}
-				} else if md := h.Component.GetListenerMetadata(checkId); md != nil {
-					for _, eventId := range md[ws.ListenerMetadataEventIds].([]ws.EventId) {
-						h.Component.RemoveListener(eventId, listener)
-					}
+				} else {
+					h.Component.RemoveListener(listener)
 				}
 
 				break
