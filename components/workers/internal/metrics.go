@@ -62,9 +62,9 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 func (c *metricsCollector) listener(_ context.Context, eventId ws.EventId, _ time.Time, args ...interface{}) {
 	switch eventId {
 	case ws.EventIdWorkerStatusChanged:
-		metricWorkersTotal.With("status", strings.ToLower(args[1].(ws.Status).String())).Inc()
+		metricWorkersTotal.With("status", strings.ToLower(args[2].(ws.Status).String())).Inc()
 	case ws.EventIdTaskStatusChanged:
-		metricTasksTotal.With("status", strings.ToLower(args[1].(ws.Status).String())).Inc()
+		metricTasksTotal.With("status", strings.ToLower(args[2].(ws.Status).String())).Inc()
 	}
 }
 
