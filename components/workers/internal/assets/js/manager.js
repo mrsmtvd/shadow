@@ -146,11 +146,17 @@ $(document).ready(function () {
                                 '<ul class="list-group">' +
                                     '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.id + '</em></span><strong>ID</strong><br /></li>' +
                                     '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.name + '</em></span><strong>Name</strong><br /></li>' +
-                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.status + '</em></span><strong>Status</strong><br /></li>' +
                                     '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.priority + '</em></span><strong>Priority</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.repeats + '</em></span><strong>Repeats</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + durationToReadableString(task.repeat_interval) + '</em></span><strong>RepeatInterval</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + durationToReadableString(task.timeout) + '</em></span><strong>Timeout</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + dateToString(task.created_at) + '</em></span><strong>Created</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.started_at ? dateToString(task.started_at) : '') + '</em></span><strong>Started</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.status + '</em></span><strong>Status</strong><br /></li>' +
                                     '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + task.attempts + '</em></span><strong>Attempts</strong><br /></li>' +
-                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.last_error ? task.last_error : '&mdash;') + '</em></span><strong>Last error</strong><br /></li>' +
-                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + dateToString(task.created) + '</em></span><strong>Created</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + dateToString(task.allow_start_at) + '</em></span><strong>Allow start</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.first_started_at ? dateToString(task.first_started_at) : '') + '</em></span><strong>First started</strong><br /></li>' +
+                                    '<li class="list-group-item"><span class="pull-right text-muted small"><em>' + (task.last_started_at ? dateToString(task.last_started_at) : '') + '</em></span><strong>Last started</strong><br /></li>' +
                                 '</ul>' +
                             '</td>' +
                         '</tr>' +
@@ -176,16 +182,61 @@ $(document).ready(function () {
             columns: [
                 { data: 'id' },
                 { data: 'name' },
-                { data: 'status' },
                 { data: 'priority' },
-                { data: 'attempts' },
+                { data: 'repeats' },
                 {
-                    data: null,
-                    defaultContent: ''
+                    data: 'repeat_interval',
+                    render: function (ns) {
+                        return durationToReadableString(ns);
+                    }
                 },
                 {
-                    data: 'created',
+                    data: 'timeout',
+                    render: function (ns) {
+                        return durationToReadableString(ns);
+                    }
+                },
+                {
+                    data: 'created_at',
                     render: function (date) {
+                        return dateToString(date);
+                    }
+                },
+                {
+                    data: 'started_at',
+                    render: function (date) {
+                        if (!date) {
+                            return '';
+                        }
+
+                        return dateToString(date);
+                    }
+                },
+                { data: 'status' },
+                { data: 'attempts' },
+                {
+                    data: 'allow_start_at',
+                    render: function (date) {
+                        return dateToString(date);
+                    }
+                },
+                {
+                    data: 'first_started_at',
+                    render: function (date) {
+                        if (!date) {
+                            return '';
+                        }
+
+                        return dateToString(date);
+                    }
+                },
+                {
+                    data: 'last_started_at',
+                    render: function (date) {
+                        if (!date) {
+                            return '';
+                        }
+
                         return dateToString(date);
                     }
                 },

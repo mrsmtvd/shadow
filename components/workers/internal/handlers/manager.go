@@ -36,12 +36,19 @@ type managerHandlerItemWorker struct {
 
 // easyjson:json
 type managerHandlerItemTask struct {
-	Id       string    `json:"id"`
-	Name     string    `json:"name"`
-	Status   string    `json:"status"`
-	Priority int64     `json:"priority"`
-	Attempts int64     `json:"attempts"`
-	Created  time.Time `json:"created"`
+	Id             string        `json:"id"`
+	Name           string        `json:"name"`
+	Priority       int64         `json:"priority"`
+	Repeats        int64         `json:"repeats"`
+	RepeatInterval time.Duration `json:"repeat_interval"`
+	Timeout        time.Duration `json:"timeout"`
+	CreatedAt      time.Time     `json:"created_at"`
+	StartedAt      *time.Time    `json:"started_at"`
+	Status         string        `json:"status"`
+	Attempts       int64         `json:"attempts"`
+	AllowStartAt   *time.Time    `json:"allow_start_at"`
+	FirstStartedAt *time.Time    `json:"first_started_at"`
+	LastStartedAt  *time.Time    `json:"last_started_at"`
 }
 
 // easyjson:json
@@ -127,15 +134,22 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 					item := task.(ws.Task)
 
 					data.Task = &managerHandlerItemTask{
-						Id:       item.Id(),
-						Name:     item.Name(),
-						Priority: item.Priority(),
-						Created:  item.CreatedAt(),
+						Id:             item.Id(),
+						Name:           item.Name(),
+						Priority:       item.Priority(),
+						Repeats:        item.Repeats(),
+						RepeatInterval: item.RepeatInterval(),
+						Timeout:        item.Timeout(),
+						CreatedAt:      item.CreatedAt(),
+						StartedAt:      item.StartedAt(),
 					}
 
 					if taskMD := h.Component.GetTaskMetadata(item.Id()); taskMD != nil {
 						data.Task.Status = taskMD[ws.TaskMetadataStatus].(ws.Status).String()
 						data.Task.Attempts = taskMD[ws.TaskMetadataAttempts].(int64)
+						data.Task.AllowStartAt = taskMD[ws.TaskMetadataAllowStartAt].(*time.Time)
+						data.Task.FirstStartedAt = taskMD[ws.TaskMetadataFirstStartedAt].(*time.Time)
+						data.Task.LastStartedAt = taskMD[ws.TaskMetadataLastStartedAt].(*time.Time)
 					}
 				}
 			}
@@ -151,15 +165,22 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 		for _, item := range h.Component.GetTasks() {
 			data := managerHandlerItemTask{
-				Id:       item.Id(),
-				Name:     item.Name(),
-				Priority: item.Priority(),
-				Created:  item.CreatedAt(),
+				Id:             item.Id(),
+				Name:           item.Name(),
+				Priority:       item.Priority(),
+				Repeats:        item.Repeats(),
+				RepeatInterval: item.RepeatInterval(),
+				Timeout:        item.Timeout(),
+				CreatedAt:      item.CreatedAt(),
+				StartedAt:      item.StartedAt(),
 			}
 
 			if md := h.Component.GetTaskMetadata(item.Id()); md != nil {
 				data.Status = md[ws.TaskMetadataStatus].(ws.Status).String()
 				data.Attempts = md[ws.TaskMetadataAttempts].(int64)
+				data.AllowStartAt = md[ws.TaskMetadataAllowStartAt].(*time.Time)
+				data.FirstStartedAt = md[ws.TaskMetadataFirstStartedAt].(*time.Time)
+				data.LastStartedAt = md[ws.TaskMetadataLastStartedAt].(*time.Time)
 			}
 
 			list = append(list, data)

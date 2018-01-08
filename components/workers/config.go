@@ -1,5 +1,6 @@
 package workers
 
 const (
-	ConfigWorkersCount = ComponentName + ".workers.count"
+	ConfigWorkersCount               = ComponentName + ".workers.count"
+	ConfigTickerExecuteTasksDuration = ComponentName + ".ticker-execute-tasks-duration"
 )

@@ -484,15 +484,69 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			out.Id = string(in.String())
 		case "name":
 			out.Name = string(in.String())
-		case "status":
-			out.Status = string(in.String())
 		case "priority":
 			out.Priority = int64(in.Int64())
+		case "repeats":
+			out.Repeats = int64(in.Int64())
+		case "repeat_interval":
+			out.RepeatInterval = time.Duration(in.Int64())
+		case "timeout":
+			out.Timeout = time.Duration(in.Int64())
+		case "created_at":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.CreatedAt).UnmarshalJSON(data))
+			}
+		case "started_at":
+			if in.IsNull() {
+				in.Skip()
+				out.StartedAt = nil
+			} else {
+				if out.StartedAt == nil {
+					out.StartedAt = new(time.Time)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.StartedAt).UnmarshalJSON(data))
+				}
+			}
+		case "status":
+			out.Status = string(in.String())
 		case "attempts":
 			out.Attempts = int64(in.Int64())
-		case "created":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Created).UnmarshalJSON(data))
+		case "allow_start_at":
+			if in.IsNull() {
+				in.Skip()
+				out.AllowStartAt = nil
+			} else {
+				if out.AllowStartAt == nil {
+					out.AllowStartAt = new(time.Time)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.AllowStartAt).UnmarshalJSON(data))
+				}
+			}
+		case "first_started_at":
+			if in.IsNull() {
+				in.Skip()
+				out.FirstStartedAt = nil
+			} else {
+				if out.FirstStartedAt == nil {
+					out.FirstStartedAt = new(time.Time)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.FirstStartedAt).UnmarshalJSON(data))
+				}
+			}
+		case "last_started_at":
+			if in.IsNull() {
+				in.Skip()
+				out.LastStartedAt = nil
+			} else {
+				if out.LastStartedAt == nil {
+					out.LastStartedAt = new(time.Time)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.LastStartedAt).UnmarshalJSON(data))
+				}
 			}
 		default:
 			in.SkipRecursive()
@@ -529,16 +583,6 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		out.String(string(in.Name))
 	}
 	{
-		const prefix string = ",\"status\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Status))
-	}
-	{
 		const prefix string = ",\"priority\":"
 		if first {
 			first = false
@@ -547,6 +591,70 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			out.RawString(prefix)
 		}
 		out.Int64(int64(in.Priority))
+	}
+	{
+		const prefix string = ",\"repeats\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int64(int64(in.Repeats))
+	}
+	{
+		const prefix string = ",\"repeat_interval\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int64(int64(in.RepeatInterval))
+	}
+	{
+		const prefix string = ",\"timeout\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int64(int64(in.Timeout))
+	}
+	{
+		const prefix string = ",\"created_at\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.CreatedAt).MarshalJSON())
+	}
+	{
+		const prefix string = ",\"started_at\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		if in.StartedAt == nil {
+			out.RawString("null")
+		} else {
+			out.Raw((*in.StartedAt).MarshalJSON())
+		}
+	}
+	{
+		const prefix string = ",\"status\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Status))
 	}
 	{
 		const prefix string = ",\"attempts\":"
@@ -559,14 +667,46 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		out.Int64(int64(in.Attempts))
 	}
 	{
-		const prefix string = ",\"created\":"
+		const prefix string = ",\"allow_start_at\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.Raw((in.Created).MarshalJSON())
+		if in.AllowStartAt == nil {
+			out.RawString("null")
+		} else {
+			out.Raw((*in.AllowStartAt).MarshalJSON())
+		}
+	}
+	{
+		const prefix string = ",\"first_started_at\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		if in.FirstStartedAt == nil {
+			out.RawString("null")
+		} else {
+			out.Raw((*in.FirstStartedAt).MarshalJSON())
+		}
+	}
+	{
+		const prefix string = ",\"last_started_at\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		if in.LastStartedAt == nil {
+			out.RawString("null")
+		} else {
+			out.Raw((*in.LastStartedAt).MarshalJSON())
+		}
 	}
 	out.RawByte('}')
 }

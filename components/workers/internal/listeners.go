@@ -76,6 +76,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"task.name":   task.Name(),
 			"worker.id":   args[1].(workers.Worker).Id(),
 			"task.result": args[2],
+			"task.err":    nil,
 		}
 
 		if args[3] != nil {

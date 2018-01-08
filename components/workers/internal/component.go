@@ -21,7 +21,7 @@ type Component struct {
 	routes      []dashboard.Route
 
 	mutex              sync.RWMutex
-	dispatcher         ws.Dispatcher
+	dispatcher         *dispatcher.SimpleDispatcher
 	lockedListenersIds []string
 }
 
@@ -62,6 +62,8 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
+
+	c.dispatcher.SetTickerExecuteTasksDuration(c.config.GetDuration(workers.ConfigTickerExecuteTasksDuration))
 
 	l := listener.NewFunctionListener(c.listenerLogging)
 	l.SetName(c.GetName() + ".logging")
