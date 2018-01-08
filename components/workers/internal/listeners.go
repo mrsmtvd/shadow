@@ -65,7 +65,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 		c.logger.Debugf("%s execute started", task, map[string]interface{}{
 			"task.id":   task.Id(),
 			"task.name": task.Name(),
-			"worker.id": args[1].(workers.Worker).Id(),
+			"worker.id": args[2].(workers.Worker).Id(),
 		})
 
 	case workers.EventIdTaskExecuteStop:
@@ -74,13 +74,13 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 		fields := map[string]interface{}{
 			"task.id":     task.Id(),
 			"task.name":   task.Name(),
-			"worker.id":   args[1].(workers.Worker).Id(),
-			"task.result": args[2],
+			"worker.id":   args[2].(workers.Worker).Id(),
+			"task.result": args[4],
 			"task.err":    nil,
 		}
 
-		if args[3] != nil {
-			fields["task.err"] = args[3].(error).Error()
+		if args[5] != nil {
+			fields["task.err"] = args[5].(error).Error()
 		}
 
 		c.logger.Debugf("%s execute stopped", task, fields)
@@ -96,8 +96,8 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 
 		c.logger.Debugf("%s status changed", worker, map[string]interface{}{
 			"worker.id":             worker.Id(),
-			"worker.status.current": args[1].(workers.Status).String(),
-			"worker.status.prev":    args[2].(workers.Status).String(),
+			"worker.status.current": args[2].(workers.Status).String(),
+			"worker.status.prev":    args[3].(workers.Status).String(),
 		})
 
 	case workers.EventIdTaskStatusChanged:
@@ -106,8 +106,8 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 		c.logger.Debugf("%s status changed", task, map[string]interface{}{
 			"task.id":             task.Id(),
 			"task.name":           task.Name(),
-			"task.status.current": args[1].(workers.Status).String(),
-			"task.status.prev":    args[2].(workers.Status).String(),
+			"task.status.current": args[2].(workers.Status).String(),
+			"task.status.prev":    args[3].(workers.Status).String(),
 		})
 	}
 }
