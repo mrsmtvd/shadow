@@ -3,11 +3,14 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
 type LogoutHandler struct {
 	dashboard.Handler
+
+	Config config.Component
 }
 
 func (h *LogoutHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -15,5 +18,5 @@ func (h *LogoutHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	session.Remove(dashboard.SessionUser)
 	session.Remove(dashboard.AuthSessionName())
 
-	h.Redirect("/", http.StatusFound, w, r)
+	h.Redirect(h.Config.GetString(dashboard.ConfigStartURL), http.StatusFound, w, r)
 }

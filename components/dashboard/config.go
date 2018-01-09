@@ -29,4 +29,5 @@ const (
 	ConfigSessionPersist          = ComponentName + ".session.persist"
 	ConfigSessionSecure           = ComponentName + ".session.secure"
 	ConfigFrontendMinifyEnabled   = ComponentName + ".frontend.minify-enabled"
+	ConfigStartURL                = ComponentName + ".start-url"
 )

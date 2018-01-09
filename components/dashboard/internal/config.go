@@ -239,6 +239,14 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
+		config.NewVariable(
+			dashboard.ConfigStartURL,
+			config.ValueTypeString,
+			"/" + c.GetName(),
+			"Start URL",
+			true,
+			nil,
+			nil),
 	}
 }
 

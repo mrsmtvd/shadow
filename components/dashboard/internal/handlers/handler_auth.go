@@ -92,7 +92,7 @@ func (h *AuthHandler) getRedirectToLastURL(r *dashboard.Request) string {
 		return redirectURL
 	}
 
-	return "/"
+	return h.Config.GetString(dashboard.ConfigStartURL)
 }
 
 func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {

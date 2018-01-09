@@ -104,7 +104,9 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				c.GetName(),
 				[]string{http.MethodGet},
 				"/"+c.GetName()+"/logout",
-				&handlers.LogoutHandler{},
+				&handlers.LogoutHandler{
+					Config: c.config,
+				},
 				"",
 				true),
 		}
