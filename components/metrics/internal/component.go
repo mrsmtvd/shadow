@@ -91,7 +91,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		c.config.GetString(metrics.ConfigPrecision))
 	if err != nil {
 		wg.Done()
-		return nil
+		return err
 	}
 
 	c.registry.AddStorages(storage)
