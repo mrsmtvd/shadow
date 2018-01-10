@@ -20,7 +20,7 @@ func (c *Component) loadTemplates() error {
 		"start_date": c.application.GetStartDate(),
 		"uptime":     c.application.GetUptime(),
 	})
-	c.renderer.AddGlobalVar("Config", c.config.GetAllVariables())
+	c.renderer.AddGlobalVar("Config", c.config)
 	c.renderer.AddGlobalVar("AlertsEnabled", c.application.HasComponent(alerts.ComponentName))
 
 	c.renderer.AddFunc("staticURL", c.funcStaticURL)
