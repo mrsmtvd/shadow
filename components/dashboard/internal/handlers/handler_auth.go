@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 
@@ -58,6 +59,8 @@ func (h *AuthHandler) buildProvidersView(r *dashboard.Request) ProvidersView {
 
 		providers = append(providers, provider)
 	}
+
+	sort.Slice(providers, func(i, j int) bool { return providers[i].Name < providers[j].Name })
 
 	return providers
 }
