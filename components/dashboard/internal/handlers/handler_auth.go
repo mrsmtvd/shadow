@@ -170,6 +170,30 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 				}
 			}
 		}
+
+		domainsConfig := h.Config.GetString(dashboard.ConfigOAuth2DomainsAllowed)
+		if domainsConfig != "" {
+			domains := strings.Split(domainsConfig, ",")
+
+			if len(domains) > 0 {
+				var valid bool
+
+				if providerUser.Email != "" {
+					components := strings.Split(providerUser.Email, "@")
+
+					for _, domain := range domains {
+						if domain == components[1] {
+							valid = true
+							break
+						}
+					}
+				}
+
+				if !valid {
+					return errors.New("Domain not allowed")
+				}
+			}
+		}
 	}
 
 	if err = session.PutString(sessionKey, providerSession.Marshal()); err != nil {

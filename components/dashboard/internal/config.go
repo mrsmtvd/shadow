@@ -3,7 +3,6 @@ package internal
 import (
 	"time"
 
-	"github.com/alexedwards/scs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 )
@@ -60,6 +59,24 @@ func (c *Component) GetConfigVariables() []config.Variable {
 				config.ViewOptionTagsDefaultText: "add a email",
 			}),
 		config.NewVariable(
+			dashboard.ConfigOAuth2DomainsAllowed,
+			config.ValueTypeString,
+			nil,
+			"OAuth domains allowed",
+			true,
+			[]string{config.ViewTags},
+			map[string]interface{}{
+				config.ViewOptionTagsDefaultText: "add a domain",
+			}),
+		config.NewVariable(
+			dashboard.ConfigOAuth2BaseURL,
+			config.ValueTypeString,
+			"http://localhost/",
+			"Base URL for redirect URL",
+			true,
+			nil,
+			nil),
+		config.NewVariable(
 			dashboard.ConfigOAuth2GithubEnabled,
 			config.ValueTypeBool,
 			nil,
@@ -93,14 +110,6 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a scope",
 			}),
-		config.NewVariable(
-			dashboard.ConfigOAuth2GithubRedirectURL,
-			config.ValueTypeString,
-			nil,
-			"Github redirect URL",
-			true,
-			nil,
-			nil),
 		config.NewVariable(
 			dashboard.ConfigOAuth2GitlabEnabled,
 			config.ValueTypeBool,
@@ -160,13 +169,39 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			nil),
 		config.NewVariable(
-			dashboard.ConfigOAuth2GitlabRedirectURL,
-			config.ValueTypeString,
+			dashboard.ConfigOAuth2GplusEnabled,
+			config.ValueTypeBool,
 			nil,
-			"Gitlab redirect URL",
+			"Enabled Google+ provider",
 			true,
 			nil,
 			nil),
+		config.NewVariable(
+			dashboard.ConfigOAuth2GplusID,
+			config.ValueTypeString,
+			nil,
+			"Google+ client id",
+			true,
+			nil,
+			nil),
+		config.NewVariable(
+			dashboard.ConfigOAuth2GplusSecret,
+			config.ValueTypeString,
+			nil,
+			"Google+ client secret",
+			true,
+			[]string{config.ViewPassword},
+			nil),
+		config.NewVariable(
+			dashboard.ConfigOAuth2GplusScopes,
+			config.ValueTypeString,
+			"profile,email,openid",
+			"Gplus scopes",
+			true,
+			[]string{config.ViewTags},
+			map[string]interface{}{
+				config.ViewOptionTagsDefaultText: "add a scope",
+			}),
 		config.NewVariable(
 			dashboard.ConfigSessionCookieName,
 			config.ValueTypeString,
@@ -257,6 +292,9 @@ func (c *Component) GetConfigWatchers() []config.Watcher {
 			dashboard.ConfigAuthUser,
 			dashboard.ConfigAuthPassword,
 			dashboard.ConfigOAuth2GithubEnabled,
+			dashboard.ConfigOAuth2GithubID,
+			dashboard.ConfigOAuth2GithubSecret,
+			dashboard.ConfigOAuth2GithubScopes,
 			dashboard.ConfigOAuth2GitlabEnabled,
 			dashboard.ConfigOAuth2GitlabID,
 			dashboard.ConfigOAuth2GitlabSecret,
@@ -264,7 +302,10 @@ func (c *Component) GetConfigWatchers() []config.Watcher {
 			dashboard.ConfigOAuth2GitlabAuthURL,
 			dashboard.ConfigOAuth2GitlabTokenURL,
 			dashboard.ConfigOAuth2GitlabProfileURL,
-			dashboard.ConfigOAuth2GitlabRedirectURL,
+			dashboard.ConfigOAuth2GplusEnabled,
+			dashboard.ConfigOAuth2GplusID,
+			dashboard.ConfigOAuth2GplusSecret,
+			dashboard.ConfigOAuth2GplusScopes,
 		}, c.watchAuth),
 		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionCookieName}, c.watchSessionCookieName),
 		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionDomain}, c.watchSessionDomain),
@@ -282,7 +323,7 @@ func (c *Component) watchAuth(_ string, _ interface{}, _ interface{}) {
 }
 
 func (c *Component) watchSessionCookieName(_ string, v interface{}, _ interface{}) {
-	scs.CookieName = v.(string)
+	c.session.Name(v.(string))
 }
 
 func (c *Component) watchSessionDomain(_ string, v interface{}, _ interface{}) {

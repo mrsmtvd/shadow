@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -18,6 +20,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
+	"github.com/markbates/goth/providers/gplus"
 )
 
 type Component struct {
@@ -68,7 +71,10 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	}
 
 	c.initSession()
-	c.initAuth()
+
+	if err := c.initAuth(); err != nil {
+		return err
+	}
 
 	mux, err := c.getServeMux()
 	if err != nil {
@@ -97,13 +103,32 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (c *Component) initAuth() {
+func (c *Component) initAuth() (err error) {
 	auth.ClearProviders()
 	providers := []goth.Provider{}
 
+	var baseURL *url.URL
+	baseURLFromConfig := c.config.GetString(dashboard.ConfigOAuth2BaseURL)
+	if baseURLFromConfig != "" {
+		if baseURL, err = url.Parse(baseURLFromConfig); err != nil {
+			return err
+		}
+	}
+
+	if baseURL == nil {
+		return fmt.Errorf("Base path for auth callbacks is empty")
+	}
+
+	baseURL.Path = strings.Trim(baseURL.Path, "/")
+	pathCallbackTpl := "%s/" + strings.Trim(dashboard.AuthPath, "/") + "/%s/callback"
+
 	if c.config.GetBool(dashboard.ConfigAuthEnabled) {
+		passwordRedirectURL := new(url.URL)
+		*passwordRedirectURL = *baseURL
+		passwordRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, passwordRedirectURL.Path, "github")
+
 		providers = append(providers, password.New(
-			dashboard.AuthPath+"/password/callback",
+			passwordRedirectURL.String(),
 			map[string]string{
 				c.config.GetString(dashboard.ConfigAuthUser): c.config.GetString(dashboard.ConfigAuthPassword),
 			},
@@ -111,10 +136,14 @@ func (c *Component) initAuth() {
 	}
 
 	if c.config.GetBool(dashboard.ConfigOAuth2GithubEnabled) {
+		githubRedirectURL := new(url.URL)
+		*githubRedirectURL = *baseURL
+		githubRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, githubRedirectURL.Path, "github")
+
 		providers = append(providers, github.NewCustomisedURL(
 			c.config.GetString(dashboard.ConfigOAuth2GithubID),
 			c.config.GetString(dashboard.ConfigOAuth2GithubSecret),
-			c.config.GetString(dashboard.ConfigOAuth2GithubRedirectURL),
+			githubRedirectURL.String(),
 			github.AuthURL,
 			github.TokenURL,
 			github.ProfileURL,
@@ -124,10 +153,14 @@ func (c *Component) initAuth() {
 	}
 
 	if c.config.GetBool(dashboard.ConfigOAuth2GitlabEnabled) {
+		gitlabRedirectURL := new(url.URL)
+		*gitlabRedirectURL = *baseURL
+		gitlabRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, gitlabRedirectURL.Path, "gitlab")
+
 		providers = append(providers, gitlab.NewCustomisedURL(
 			c.config.GetString(dashboard.ConfigOAuth2GitlabID),
 			c.config.GetString(dashboard.ConfigOAuth2GitlabSecret),
-			c.config.GetString(dashboard.ConfigOAuth2GitlabRedirectURL),
+			gitlabRedirectURL.String(),
 			c.config.GetString(dashboard.ConfigOAuth2GitlabAuthURL),
 			c.config.GetString(dashboard.ConfigOAuth2GitlabTokenURL),
 			c.config.GetString(dashboard.ConfigOAuth2GitlabProfileURL),
@@ -135,14 +168,28 @@ func (c *Component) initAuth() {
 		))
 	}
 
+	if c.config.GetBool(dashboard.ConfigOAuth2GplusEnabled) {
+		gplusRedirectURL := new(url.URL)
+		*gplusRedirectURL = *baseURL
+		gplusRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, gplusRedirectURL.Path, "gplus")
+
+		providers = append(providers, gplus.New(
+			c.config.GetString(dashboard.ConfigOAuth2GplusID),
+			c.config.GetString(dashboard.ConfigOAuth2GplusSecret),
+			gplusRedirectURL.String(),
+			strings.Split(c.config.GetString(dashboard.ConfigOAuth2GplusScopes), ",")...,
+		))
+	}
+
 	auth.UseProviders(providers...)
+
+	return nil
 }
 
 func (c *Component) initSession() {
-	scs.CookieName = c.config.GetString(dashboard.ConfigSessionCookieName)
-
 	store := memstore.New(0)
 	c.session = scs.NewManager(store)
+	c.session.Name(c.config.GetString(dashboard.ConfigSessionCookieName))
 
 	c.session.Domain(c.config.GetString(dashboard.ConfigSessionDomain))
 	c.session.HttpOnly(c.config.GetBool(dashboard.ConfigSessionHttpOnly))
