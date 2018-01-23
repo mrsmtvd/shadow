@@ -10,5 +10,5 @@ type Component interface {
 	AddStorage(string, Storage) error
 	RemoveStorage(string)
 	Create(Annotation) error
-	CreateForStorage(Annotation, []string) error
+	CreateInStorages(Annotation, []string) error
 }

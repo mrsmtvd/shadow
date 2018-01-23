@@ -57,8 +57,6 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.initStorageGrafana()
 	c.initStorageTelegram()
 
-	c.Create(annotations.NewAnnotation("Proverka", "Связи", []string{"123", "345", "578"}, nil, nil))
-
 	return nil
 }
 
@@ -66,7 +64,7 @@ func (c *Component) Create(annotation annotations.Annotation) error {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	if c.storages == nil {
+	if len(c.storages) == 0 {
 		return errors.New("Storage not init")
 	}
 
@@ -76,6 +74,33 @@ func (c *Component) Create(annotation annotations.Annotation) error {
 				"storage": name,
 				"error":   err.Error(),
 			})
+		}
+	}
+
+	return nil
+}
+
+func (c *Component) CreateInStorages(annotation annotations.Annotation, names []string) error {
+	c.mutex.RLock()
+	l := len(c.storages)
+	c.mutex.RUnlock()
+
+	if l == 0 {
+		return errors.New("Storage not init")
+	}
+
+	for _, name := range names {
+		c.mutex.RLock()
+		s, ok := c.storages[name]
+		c.mutex.RUnlock()
+
+		if ok {
+			if err := s.Create(annotation); err != nil {
+				c.logger.Error("Send annotation failed", map[string]interface{}{
+					"storage": name,
+					"error":   err.Error(),
+				})
+			}
 		}
 	}
 
