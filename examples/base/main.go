@@ -6,7 +6,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kihamo/shadow"
-	alerts "github.com/kihamo/shadow/components/alerts/instance"
 	annotations "github.com/kihamo/shadow/components/annotations/instance"
 	config "github.com/kihamo/shadow/components/config/instance"
 	dashboard "github.com/kihamo/shadow/components/dashboard/instance"
@@ -29,7 +28,6 @@ func main() {
 		"1.0",
 		build,
 		[]shadow.Component{
-			alerts.NewComponent(),
 			annotations.NewComponent(),
 			config.NewComponent(),
 			dashboard.NewComponent(),

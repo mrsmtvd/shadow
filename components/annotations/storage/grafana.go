@@ -53,8 +53,7 @@ func (s *Grafana) Create(annotation annotations.Annotation) (err error) {
 	for _, dashboardId := range s.dashboards {
 		input.DashboardId = grafana.Int64(dashboardId)
 
-		_, err = s.client.CreateAnnotation(context.Background(), input)
-		if err != nil {
+		if _, err = s.client.CreateAnnotation(context.Background(), input); err != nil {
 			break
 		}
 	}

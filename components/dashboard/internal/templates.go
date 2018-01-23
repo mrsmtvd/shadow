@@ -5,7 +5,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/kihamo/shadow/components/alerts"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -21,7 +20,6 @@ func (c *Component) loadTemplates() error {
 		"uptime":     c.application.GetUptime(),
 	})
 	c.renderer.AddGlobalVar("Config", c.config)
-	c.renderer.AddGlobalVar("AlertsEnabled", c.application.HasComponent(alerts.ComponentName))
 
 	c.renderer.AddFunc("staticURL", c.funcStaticURL)
 

@@ -137,7 +137,7 @@ $('body').popover({
 $(document).ready(function () {
     init_nprogess();
     
-    init_alerts();
+    // init_alerts();
     init_autosize();
     init_datatables();
     init_echarts();
@@ -172,6 +172,7 @@ function init_nprogess() {
     });
 }
 
+/*
 function init_alerts() {
     var e = $('#alerts');
     
@@ -226,6 +227,7 @@ function init_alerts() {
     alertUpdate();
     setInterval(alertUpdate, 1000 * 5);
 }
+*/
 
 function init_autosize() {
     if(typeof (autosize) === 'undefined'){
