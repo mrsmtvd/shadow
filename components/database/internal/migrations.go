@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"sort"
 	"time"
 
-	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/components/database"
+	"github.com/kihamo/shadow/components/database/storage"
 	"github.com/rubenv/sql-migrate"
 )
 
@@ -26,8 +27,8 @@ func formatId(source, id string) string {
 	return id
 }
 
-func (c *Component) GetMigration(id, source string) database.Migration {
-	for _, m := range c.GetAllMigrations() {
+func (c *Component) Migration(id, source string) database.Migration {
+	for _, m := range c.Migrations() {
 		if m.Id() == id && m.Source() == source {
 			return m
 		}
@@ -36,16 +37,17 @@ func (c *Component) GetMigration(id, source string) database.Migration {
 	return nil
 }
 
-func (c *Component) GetAllMigrations() database.Migrations {
+func (c *Component) Migrations() database.Migrations {
 	exists := c.getCollect()
 	if len(exists) == 0 {
 		return nil
 	}
 
 	migrations := make(database.Migrations, len(exists), len(exists))
-	storage := c.GetStorage()
+	s := c.Storage().(*storage.SQL)
+	executor := s.Master().(*storage.SQLExecutor)
 
-	records, err := migrate.GetMigrationRecords(storage.(*SqlStorage).executor.(*gorp.DbMap).Db, storage.GetDialect())
+	records, err := migrate.GetMigrationRecords(executor.DB(), s.Dialect())
 	if err == nil {
 		for i, m := range exists {
 			var appliedAt *time.Time
@@ -113,13 +115,18 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 }
 
 func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
-	storage := c.GetStorage()
-	dialect := storage.GetDialect()
+	if c.storage == nil {
+		return -1, errors.New("Storage isn't initialized")
+	}
 
-	if dialect == DialectMySQL {
+	s := c.storage.(*storage.SQL)
+	executor := s.Master().(*storage.SQLExecutor)
+	dialect := s.Dialect()
+
+	if dialect == storage.DialectMySQL {
 		lockName := c.config.GetString(database.ConfigMigrationsTable) + ".lock"
 
-		result, err := storage.SelectIntByQuery("SELECT GET_LOCK(?, ?)", lockName, lockTimeoutInSeconds)
+		result, err := executor.SelectIntByQuery("SELECT GET_LOCK(?, ?)", lockName, lockTimeoutInSeconds)
 		if err != nil {
 			return 0, err
 		}
@@ -130,11 +137,11 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 		}
 
 		defer func() {
-			storage.ExecByQuery("SELECT RELEASE_LOCK(?)", lockName)
+			executor.ExecByQuery("SELECT RELEASE_LOCK(?)", lockName)
 		}()
 	}
 
-	return migrate.Exec(storage.(*SqlStorage).executor.(*gorp.DbMap).Db, dialect, c, dir)
+	return migrate.Exec(executor.DB(), dialect, c, dir)
 }
 
 func (c *Component) UpMigrations() (int, error) {

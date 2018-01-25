@@ -3,8 +3,8 @@ package internal
 import (
 	"time"
 
-	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/components/database"
+	"github.com/kihamo/shadow/components/database/storage"
 	"github.com/kihamo/snitch"
 )
 
@@ -35,13 +35,13 @@ func (c *metricsCollector) Describe(ch chan<- *snitch.Description) {
 }
 
 func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
-	storage := c.component.GetStorage()
+	s := c.component.Storage()
 
-	if storage == nil {
+	if s == nil {
 		return
 	}
 
-	stats := storage.(*SqlStorage).executor.(*gorp.DbMap).Db.Stats()
+	stats := s.Master().(*storage.SQLExecutor).DB().Stats()
 
 	metricOpenConnectionsTotal.Set(float64(stats.OpenConnections))
 

@@ -14,7 +14,7 @@ type MigrationsHandler struct {
 }
 
 func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	migrations := h.Component.GetAllMigrations()
+	migrations := h.Component.Migrations()
 
 	sort.Sort(sort.Reverse(migrations))
 

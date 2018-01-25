@@ -1,13 +1,14 @@
 package internal
 
 import (
-	"sync"
+	"strings"
 
-	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/database"
+	"github.com/kihamo/shadow/components/database/balancer"
+	"github.com/kihamo/shadow/components/database/storage"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/rubenv/sql-migrate"
 )
@@ -15,11 +16,9 @@ import (
 type Component struct {
 	application shadow.Application
 	config      config.Component
-	storage     *SqlStorage
 	logger      logger.Logger
 	routes      []dashboard.Route
-
-	mutex sync.Mutex
+	storage     database.Storage
 }
 
 func (c *Component) GetName() string {
@@ -51,24 +50,36 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run() (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
-	c.storage, err = NewSQLStorage(
+
+	var slaves []string
+	if slavesFromConfig := c.config.GetString(database.ConfigDsnSlaves); slavesFromConfig != "" {
+		slaves = strings.Split(slavesFromConfig, ";")
+	}
+
+	s, err := storage.NewSQL(
 		c.config.GetString(database.ConfigDriver),
-		c.config.GetString(database.ConfigDsn),
+		c.config.GetString(database.ConfigDsnMaster),
+		slaves,
 		map[string]string{
-			DialectOptionEngine:   c.config.GetString(database.ConfigDialectEngine),
-			DialectOptionEncoding: c.config.GetString(database.ConfigDialectEncoding),
-			DialectOptionVersion:  c.config.GetString(database.ConfigDialectVersion),
+			storage.DialectOptionEngine:   c.config.GetString(database.ConfigDialectEngine),
+			storage.DialectOptionEncoding: c.config.GetString(database.ConfigDialectEncoding),
+			storage.DialectOptionVersion:  c.config.GetString(database.ConfigDialectVersion),
 		},
+		c.config.GetBool(database.ConfigAllowUseMasterAsSlave),
 	)
 
 	if err != nil {
 		return err
 	}
 
-	c.initConns(c.config.GetInt(database.ConfigMaxIdleConns), c.config.GetInt(database.ConfigMaxOpenConns))
-	c.initTrace(c.config.GetBool(config.ConfigDebug))
+	s.SetMaxOpenConns(c.config.GetInt(database.ConfigMaxOpenConns))
+	s.SetMaxIdleConns(c.config.GetInt(database.ConfigMaxIdleConns))
 
-	c.storage.SetTypeConverter(TypeConverter{})
+	s.SetTypeConverter(TypeConverter{})
+	c.storage = s
+
+	c.initTrace()
+	c.initBalancer()
 
 	migrate.SetSchema(c.config.GetString(database.ConfigMigrationsSchema))
 	migrate.SetTable(c.config.GetString(database.ConfigMigrationsTable))
@@ -83,26 +94,23 @@ func (c *Component) Run() (err error) {
 	return nil
 }
 
-func (c *Component) GetStorage() database.Storage {
-	return c.storage
-}
-
-func (c *Component) initConns(idle int, open int) {
-	dbMap := c.storage.executor.(*gorp.DbMap)
-
-	dbMap.Db.SetMaxIdleConns(idle)
-	dbMap.Db.SetMaxOpenConns(open)
-}
-
-func (c *Component) initTrace(enable bool) {
-	dbMap := c.storage.executor.(*gorp.DbMap)
-
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	if enable {
-		dbMap.TraceOn("", c.logger)
+func (c *Component) initTrace() {
+	if c.config.GetBool(config.ConfigDebug) {
+		c.storage.(*storage.SQL).TraceOn(c.logger)
 	} else {
-		dbMap.TraceOff()
+		c.storage.(*storage.SQL).TraceOff()
 	}
+}
+
+func (c *Component) initBalancer() {
+	switch c.config.GetString(database.ConfigBalancer) {
+	case database.BalancerRandom:
+		c.storage.SetBalancer(balancer.NewRandom())
+	default:
+		c.storage.SetBalancer(balancer.NewRoundRobin())
+	}
+}
+
+func (c *Component) Storage() database.Storage {
+	return c.storage
 }

@@ -7,7 +7,7 @@ import (
 type Component interface {
 	shadow.Component
 
-	GetStorage() Storage
-	GetMigration(id, source string) Migration
-	GetAllMigrations() Migrations
+	Storage() Storage
+	Migration(id, source string) Migration
+	Migrations() Migrations
 }
