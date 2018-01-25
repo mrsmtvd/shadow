@@ -4,6 +4,7 @@ import (
 	"errors"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/components/database"
@@ -140,18 +141,26 @@ func (s *SQL) SetBalancer(balancer database.Balancer) {
 }
 
 func (s *SQL) SetMaxIdleConns(n int) {
-	s.masterExecutor.executor.(*gorp.DbMap).Db.SetMaxIdleConns(n)
+	s.masterExecutor.DB().SetMaxIdleConns(n)
 
 	for _, executor := range s.slaveExecutors {
-		executor.executor.(*gorp.DbMap).Db.SetMaxIdleConns(n)
+		executor.DB().SetMaxIdleConns(n)
 	}
 }
 
 func (s *SQL) SetMaxOpenConns(n int) {
-	s.masterExecutor.executor.(*gorp.DbMap).Db.SetMaxOpenConns(n)
+	s.masterExecutor.DB().SetMaxOpenConns(n)
 
 	for _, executor := range s.slaveExecutors {
-		executor.executor.(*gorp.DbMap).Db.SetMaxOpenConns(n)
+		executor.DB().SetMaxOpenConns(n)
+	}
+}
+
+func (s *SQL) SetConnMaxLifetime(d time.Duration) {
+	s.masterExecutor.DB().SetConnMaxLifetime(d)
+
+	for _, executor := range s.slaveExecutors {
+		executor.DB().SetConnMaxLifetime(d)
 	}
 }
 

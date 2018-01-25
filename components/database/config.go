@@ -13,4 +13,5 @@ const (
 	ConfigMigrationsTable       = ComponentName + ".migrations.table"
 	ConfigMaxIdleConns          = ComponentName + ".max_idle_conns"
 	ConfigMaxOpenConns          = ComponentName + ".max_open_conns"
+	ConfigConnMaxLifetime       = ComponentName + ".conn_max_lifetime"
 )

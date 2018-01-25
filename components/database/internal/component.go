@@ -74,6 +74,7 @@ func (c *Component) Run() (err error) {
 
 	s.SetMaxOpenConns(c.config.GetInt(database.ConfigMaxOpenConns))
 	s.SetMaxIdleConns(c.config.GetInt(database.ConfigMaxIdleConns))
+	s.SetConnMaxLifetime(c.config.GetDuration(database.ConfigConnMaxLifetime))
 
 	s.SetTypeConverter(TypeConverter{})
 	c.storage = s

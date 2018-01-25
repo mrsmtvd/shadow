@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/database"
@@ -141,6 +142,14 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			nil,
 			nil),
+		config.NewVariable(
+			database.ConfigConnMaxLifetime,
+			config.ValueTypeDuration,
+			0,
+			"Database maximum amount of time a connection may be reused",
+			true,
+			nil,
+			nil),
 	}
 }
 
@@ -153,6 +162,7 @@ func (c *Component) GetConfigWatchers() []config.Watcher {
 		config.NewWatcher(database.ComponentName, []string{database.ConfigMigrationsTable}, c.watchMigrationsTable),
 		config.NewWatcher(database.ComponentName, []string{database.ConfigMaxIdleConns}, c.watchMaxIdleConns),
 		config.NewWatcher(database.ComponentName, []string{database.ConfigMaxOpenConns}, c.watchMaxOpenConns),
+		config.NewWatcher(database.ComponentName, []string{database.ConfigConnMaxLifetime}, c.watchConnMaxLifetime),
 	}
 }
 
@@ -186,4 +196,8 @@ func (c *Component) watchMaxIdleConns(_ string, newValue interface{}, _ interfac
 
 func (c *Component) watchMaxOpenConns(_ string, newValue interface{}, _ interface{}) {
 	c.storage.(*storage.SQL).SetMaxOpenConns(newValue.(int))
+}
+
+func (c *Component) watchConnMaxLifetime(_ string, newValue interface{}, _ interface{}) {
+	c.storage.(*storage.SQL).SetConnMaxLifetime(newValue.(time.Duration))
 }
