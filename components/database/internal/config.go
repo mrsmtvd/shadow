@@ -174,12 +174,12 @@ func (c *Component) watchAllowUseMasterAsSlave(_ string, newValue interface{}, _
 	}
 }
 
-func (c *Component) watchBalancer(_ string, _ interface{}, _ interface{}) {
-	c.initBalancer()
+func (c *Component) watchBalancer(_ string, newValue interface{}, _ interface{}) {
+	c.initBalancer(c.Storage(), newValue.(string))
 }
 
 func (c *Component) watchDebug(_ string, newValue interface{}, _ interface{}) {
-	c.initTrace()
+	c.initTrace(c.Storage(), newValue.(bool))
 }
 
 func (c *Component) watchMigrationsTable(_ string, newValue interface{}, _ interface{}) {

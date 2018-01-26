@@ -203,6 +203,8 @@ func (s *SQL) AddTableWithName(i interface{}, name string) {
 }
 
 func (s *SQL) CreateTablesIfNotExists() error {
+	defer UpdateStorageSQLMetric(OperationCreate, s.masterExecutor.ServerAddress(), time.Now())
+
 	return s.masterExecutor.executor.(*gorp.DbMap).CreateTablesIfNotExists()
 }
 

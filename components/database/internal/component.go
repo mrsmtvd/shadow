@@ -79,8 +79,8 @@ func (c *Component) Run() (err error) {
 	s.SetTypeConverter(TypeConverter{})
 	c.storage = s
 
-	c.initTrace()
-	c.initBalancer()
+	c.initTrace(s, c.config.GetBool(config.ConfigDebug))
+	c.initBalancer(s, c.config.GetString(database.ConfigBalancer))
 
 	migrate.SetSchema(c.config.GetString(database.ConfigMigrationsSchema))
 	migrate.SetTable(c.config.GetString(database.ConfigMigrationsTable))
@@ -95,20 +95,20 @@ func (c *Component) Run() (err error) {
 	return nil
 }
 
-func (c *Component) initTrace() {
-	if c.config.GetBool(config.ConfigDebug) {
-		c.storage.(*storage.SQL).TraceOn(c.logger)
+func (c *Component) initTrace(s database.Storage, d bool) {
+	if d {
+		s.(*storage.SQL).TraceOn(c.logger)
 	} else {
-		c.storage.(*storage.SQL).TraceOff()
+		s.(*storage.SQL).TraceOff()
 	}
 }
 
-func (c *Component) initBalancer() {
-	switch c.config.GetString(database.ConfigBalancer) {
+func (c *Component) initBalancer(s database.Storage, b string) {
+	switch b {
 	case database.BalancerRandom:
-		c.storage.SetBalancer(balancer.NewRandom())
+		s.SetBalancer(balancer.NewRandom())
 	default:
-		c.storage.SetBalancer(balancer.NewRoundRobin())
+		s.SetBalancer(balancer.NewRoundRobin())
 	}
 }
 

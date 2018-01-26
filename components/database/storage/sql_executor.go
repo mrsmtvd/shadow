@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/components/database"
@@ -36,9 +37,10 @@ var dsnPattern = regexp.MustCompile(
 		`(?:\?(?P<params>[^\?]*))?$`) // [?param1=value1&paramN=valueN]
 
 type SQLExecutor struct {
-	executor gorp.SqlExecutor
-	dialect  string
-	name     string
+	executor      gorp.SqlExecutor
+	dialect       string
+	name          string
+	serverAddress string
 }
 
 func NewSQLExecutor(driver string, dataSourceName string, options map[string]string) (*SQLExecutor, error) {
@@ -126,6 +128,7 @@ func NewSQLExecutor(driver string, dataSourceName string, options map[string]str
 			e.name += "@" + match
 		case "addr":
 			e.name += "(" + match + ")"
+			e.serverAddress = match
 		case "dbname":
 			e.name += "/" + match
 		}
@@ -136,6 +139,10 @@ func NewSQLExecutor(driver string, dataSourceName string, options map[string]str
 
 func (e *SQLExecutor) String() string {
 	return e.name
+}
+
+func (e *SQLExecutor) ServerAddress() string {
+	return e.serverAddress
 }
 
 func (e *SQLExecutor) DB() *sql.DB {
@@ -176,7 +183,7 @@ func (e *SQLExecutor) Rollback() error {
 }
 
 func (e *SQLExecutor) SelectByQuery(i interface{}, query string, args ...interface{}) ([]interface{}, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	data, err := e.executor.Select(i, query, args...)
 	if err != nil {
@@ -194,7 +201,7 @@ func (e *SQLExecutor) Select(i interface{}, builder *sq.SelectBuilder) ([]interf
 }
 
 func (e *SQLExecutor) SelectOneByQuery(holder interface{}, query string, args ...interface{}) error {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	err := e.executor.SelectOne(holder, query, args...)
 	if err != nil && err != sql.ErrNoRows {
@@ -212,7 +219,7 @@ func (e *SQLExecutor) SelectOne(holder interface{}, builder *sq.SelectBuilder) e
 }
 
 func (e *SQLExecutor) SelectIntByQuery(query string, args ...interface{}) (int64, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	result, err := e.executor.SelectInt(query, args...)
 
@@ -232,7 +239,7 @@ func (e *SQLExecutor) SelectInt(builder *sq.SelectBuilder) (int64, error) {
 }
 
 func (e *SQLExecutor) SelectNullIntByQuery(query string, args ...interface{}) (sql.NullInt64, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	result, err := e.executor.SelectNullInt(query, args...)
 
@@ -254,7 +261,7 @@ func (e *SQLExecutor) SelectNullInt(builder *sq.SelectBuilder) (sql.NullInt64, e
 }
 
 func (e *SQLExecutor) SelectFloatByQuery(query string, args ...interface{}) (float64, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	result, err := e.executor.SelectFloat(query, args...)
 
@@ -274,7 +281,7 @@ func (e *SQLExecutor) SelectFloat(builder *sq.SelectBuilder) (float64, error) {
 }
 
 func (e *SQLExecutor) SelectNullFloatByQuery(query string, args ...interface{}) (sql.NullFloat64, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	result, err := e.executor.SelectNullFloat(query, args...)
 
@@ -296,7 +303,7 @@ func (e *SQLExecutor) SelectNullFloat(builder *sq.SelectBuilder) (sql.NullFloat6
 }
 
 func (e *SQLExecutor) SelectStrByQuery(query string, args ...interface{}) (string, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	result, err := e.executor.SelectStr(query, args...)
 
@@ -316,7 +323,7 @@ func (e *SQLExecutor) SelectStr(builder *sq.SelectBuilder) (string, error) {
 }
 
 func (e *SQLExecutor) SelectNullStrByQuery(query string, args ...interface{}) (sql.NullString, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	result, err := e.executor.SelectNullStr(query, args...)
 
@@ -338,7 +345,7 @@ func (e *SQLExecutor) SelectNullStr(builder *sq.SelectBuilder) (sql.NullString, 
 }
 
 func (e *SQLExecutor) Get(i interface{}, keys ...interface{}) (interface{}, error) {
-	// defer updateMetric(OperationSelect, time.Now())
+	defer UpdateStorageSQLMetric(OperationSelect, e.serverAddress, time.Now())
 
 	entity, err := e.executor.Get(i, keys...)
 
@@ -350,7 +357,7 @@ func (e *SQLExecutor) Get(i interface{}, keys ...interface{}) (interface{}, erro
 }
 
 func (e *SQLExecutor) Insert(list ...interface{}) error {
-	// defer updateMetric(OperationInsert, time.Now())
+	defer UpdateStorageSQLMetric(OperationInsert, e.serverAddress, time.Now())
 
 	if err := e.executor.Insert(list...); err != nil {
 		return fmt.Errorf("Error inserting data into DB, error: '%e'", err.Error())
@@ -360,7 +367,7 @@ func (e *SQLExecutor) Insert(list ...interface{}) error {
 }
 
 func (e *SQLExecutor) Update(list ...interface{}) (int64, error) {
-	// defer updateMetric(OperationUpdate, time.Now())
+	defer UpdateStorageSQLMetric(OperationUpdate, e.serverAddress, time.Now())
 
 	count, err := e.executor.Update(list...)
 
@@ -372,7 +379,7 @@ func (e *SQLExecutor) Update(list ...interface{}) (int64, error) {
 }
 
 func (e *SQLExecutor) Delete(list ...interface{}) (int64, error) {
-	// defer updateMetric(OperationDelete, time.Now())
+	defer UpdateStorageSQLMetric(OperationDelete, e.serverAddress, time.Now())
 
 	count, err := e.executor.Delete(list...)
 
@@ -394,7 +401,7 @@ func (e *SQLExecutor) Prepare(query string) (*sql.Stmt, error) {
 }
 
 func (e *SQLExecutor) ExecByQuery(query string, args ...interface{}) (sql.Result, error) {
-	// defer updateMetric(OperationExec, time.Now())
+	defer UpdateStorageSQLMetric(OperationExec, e.serverAddress, time.Now())
 
 	result, err := e.executor.Exec(query, args...)
 	if err != nil {
