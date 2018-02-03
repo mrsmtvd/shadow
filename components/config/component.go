@@ -28,6 +28,7 @@ type Component interface {
 	Int64Default(key string, value interface{}) int64
 	Uint(key string) uint
 	UintDefault(key string, value interface{}) uint
+	Uint64(key string) uint64
 	Uint64Default(key string, value interface{}) uint64
 	Float64(key string) float64
 	Float64Default(key string, value interface{}) float64
