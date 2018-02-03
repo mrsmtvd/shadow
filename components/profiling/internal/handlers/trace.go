@@ -55,7 +55,7 @@ func (h *TraceHandler) actionStop(_ *dashboard.Response, r *dashboard.Request) e
 		return fmt.Errorf("Trace already stoped")
 	}
 
-	err := trace.StopProfiles(r.Config().GetString(profiling.ConfigDumpDirectory))
+	err := trace.StopProfiles(r.Config().String(profiling.ConfigDumpDirectory))
 	r.Logger().Info("Stop trace")
 
 	return err
@@ -117,7 +117,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 }
 
 func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	if !r.Config().GetBool(config.ConfigDebug) {
+	if !r.Config().Bool(config.ConfigDebug) {
 		h.NotFound(w, r)
 		return
 	}

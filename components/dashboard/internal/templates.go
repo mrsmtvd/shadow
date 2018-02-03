@@ -65,7 +65,7 @@ func (c *Component) funcStaticURL(file string, prefix bool) string {
 		ext := path.Ext(u.Path)
 		lowerExt := strings.ToLower(ext)
 
-		if c.config.GetBool(dashboard.ConfigFrontendMinifyEnabled) && (lowerExt == ".css" || lowerExt == ".js") {
+		if c.config.Bool(dashboard.ConfigFrontendMinifyEnabled) && (lowerExt == ".css" || lowerExt == ".js") {
 			u.Path = u.Path[0:len(u.Path)-len(ext)] + ".min" + ext
 		}
 	}

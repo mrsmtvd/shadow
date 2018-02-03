@@ -215,7 +215,7 @@ func NewManagerHandler(c config.Component, s *g.Server) *ManagerHandler {
 	}
 
 	ctx := context.Background()
-	addr := net.JoinHostPort(c.GetString(grpc.ConfigHost), c.GetString(grpc.ConfigPort))
+	addr := net.JoinHostPort(c.String(grpc.ConfigHost), c.String(grpc.ConfigPort))
 
 	var err error
 
@@ -270,8 +270,8 @@ func (h *ManagerHandler) getServicesViewData() ([]managerHandlerServiceViewData,
 					Name:         m.GetName(),
 					InputStream:  m.IsClientStreaming(),
 					OutputStream: m.IsServerStreaming(),
-					InputType:    getMessageViewDate(m.GetInputType(), 1, h.config.GetInt64(grpc.ConfigManagerMaxLevel)),
-					OutputType:   getMessageViewDate(m.GetOutputType(), 1, h.config.GetInt64(grpc.ConfigManagerMaxLevel)),
+					InputType:    getMessageViewDate(m.GetInputType(), 1, h.config.Int64(grpc.ConfigManagerMaxLevel)),
+					OutputType:   getMessageViewDate(m.GetOutputType(), 1, h.config.Int64(grpc.ConfigManagerMaxLevel)),
 				})
 			}
 
@@ -359,7 +359,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		services []managerHandlerServiceViewData
 	)
 
-	if r.Config().GetBool(grpc.ConfigReflectionEnabled) {
+	if r.Config().Bool(grpc.ConfigReflectionEnabled) {
 		services, err = h.getServicesViewData()
 	} else {
 		services, err = h.getServicesLightViewData()

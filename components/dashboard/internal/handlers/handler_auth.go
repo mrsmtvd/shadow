@@ -95,7 +95,7 @@ func (h *AuthHandler) getRedirectToLastURL(r *dashboard.Request) string {
 		return redirectURL
 	}
 
-	return h.Config.GetString(dashboard.ConfigStartURL)
+	return h.Config.String(dashboard.ConfigStartURL)
 }
 
 func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
@@ -152,7 +152,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 	}
 
 	if provider.Name() != "password" {
-		emailsConfig := h.Config.GetString(dashboard.ConfigOAuth2EmailsAllowed)
+		emailsConfig := h.Config.String(dashboard.ConfigOAuth2EmailsAllowed)
 		if emailsConfig != "" {
 			emails := strings.Split(emailsConfig, ",")
 
@@ -174,7 +174,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 			}
 		}
 
-		domainsConfig := h.Config.GetString(dashboard.ConfigOAuth2DomainsAllowed)
+		domainsConfig := h.Config.String(dashboard.ConfigOAuth2DomainsAllowed)
 		if domainsConfig != "" {
 			domains := strings.Split(domainsConfig, ",")
 

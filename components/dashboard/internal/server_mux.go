@@ -45,7 +45,7 @@ func (c *Component) getServeMux() (http.Handler, error) {
 		nil,
 		"/",
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, c.config.GetString(dashboard.ConfigStartURL), http.StatusMovedPermanently)
+			http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
 		}),
 		"",
 		false))

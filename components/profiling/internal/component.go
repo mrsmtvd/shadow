@@ -49,15 +49,15 @@ func (c *Component) Run() error {
 	c.initGCPercent()
 	c.initGoMaxProc()
 
-	trace.LoadDumps(c.config.GetString(profiling.ConfigDumpDirectory))
+	trace.LoadDumps(c.config.String(profiling.ConfigDumpDirectory))
 
 	return nil
 }
 
 func (c *Component) initGCPercent() {
-	debug.SetGCPercent(c.config.GetInt(profiling.ConfigGCPercent))
+	debug.SetGCPercent(c.config.Int(profiling.ConfigGCPercent))
 }
 
 func (c *Component) initGoMaxProc() {
-	runtime.GOMAXPROCS(c.config.GetInt(profiling.ConfigGoMaxProc))
+	runtime.GOMAXPROCS(c.config.Int(profiling.ConfigGoMaxProc))
 }

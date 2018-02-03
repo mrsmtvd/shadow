@@ -52,38 +52,38 @@ func (c *Component) Run() (err error) {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
 	var slaves []string
-	if slavesFromConfig := c.config.GetString(database.ConfigDsnSlaves); slavesFromConfig != "" {
+	if slavesFromConfig := c.config.String(database.ConfigDsnSlaves); slavesFromConfig != "" {
 		slaves = strings.Split(slavesFromConfig, ";")
 	}
 
 	s, err := storage.NewSQL(
-		c.config.GetString(database.ConfigDriver),
-		c.config.GetString(database.ConfigDsnMaster),
+		c.config.String(database.ConfigDriver),
+		c.config.String(database.ConfigDsnMaster),
 		slaves,
 		map[string]string{
-			storage.DialectOptionEngine:   c.config.GetString(database.ConfigDialectEngine),
-			storage.DialectOptionEncoding: c.config.GetString(database.ConfigDialectEncoding),
-			storage.DialectOptionVersion:  c.config.GetString(database.ConfigDialectVersion),
+			storage.DialectOptionEngine:   c.config.String(database.ConfigDialectEngine),
+			storage.DialectOptionEncoding: c.config.String(database.ConfigDialectEncoding),
+			storage.DialectOptionVersion:  c.config.String(database.ConfigDialectVersion),
 		},
-		c.config.GetBool(database.ConfigAllowUseMasterAsSlave),
+		c.config.Bool(database.ConfigAllowUseMasterAsSlave),
 	)
 
 	if err != nil {
 		return err
 	}
 
-	s.SetMaxOpenConns(c.config.GetInt(database.ConfigMaxOpenConns))
-	s.SetMaxIdleConns(c.config.GetInt(database.ConfigMaxIdleConns))
-	s.SetConnMaxLifetime(c.config.GetDuration(database.ConfigConnMaxLifetime))
+	s.SetMaxOpenConns(c.config.Int(database.ConfigMaxOpenConns))
+	s.SetMaxIdleConns(c.config.Int(database.ConfigMaxIdleConns))
+	s.SetConnMaxLifetime(c.config.Duration(database.ConfigConnMaxLifetime))
 
 	s.SetTypeConverter(TypeConverter{})
 	c.storage = s
 
-	c.initTrace(s, c.config.GetBool(config.ConfigDebug))
-	c.initBalancer(s, c.config.GetString(database.ConfigBalancer))
+	c.initTrace(s, c.config.Bool(config.ConfigDebug))
+	c.initBalancer(s, c.config.String(database.ConfigBalancer))
 
-	migrate.SetSchema(c.config.GetString(database.ConfigMigrationsSchema))
-	migrate.SetTable(c.config.GetString(database.ConfigMigrationsTable))
+	migrate.SetSchema(c.config.String(database.ConfigMigrationsSchema))
+	migrate.SetTable(c.config.String(database.ConfigMigrationsTable))
 
 	n, err := c.UpMigrations()
 	if err != nil {

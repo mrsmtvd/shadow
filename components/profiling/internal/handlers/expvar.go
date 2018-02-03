@@ -13,7 +13,7 @@ type ExpvarHandler struct {
 }
 
 func (h *ExpvarHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	if !r.Config().GetBool(config.ConfigDebug) {
+	if !r.Config().Bool(config.ConfigDebug) {
 		h.NotFound(w, r)
 		return
 	}

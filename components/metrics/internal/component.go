@@ -77,28 +77,28 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
-	url := c.config.GetString(metrics.ConfigUrl)
+	url := c.config.String(metrics.ConfigUrl)
 	if url == "" {
 		wg.Done()
 		return fmt.Errorf("%s is empty", metrics.ConfigUrl)
 	}
 
 	storage, err := storage.NewInflux(
-		c.config.GetString(metrics.ConfigUrl),
-		c.config.GetString(metrics.ConfigDatabase),
-		c.config.GetString(metrics.ConfigUsername),
-		c.config.GetString(metrics.ConfigPassword),
-		c.config.GetString(metrics.ConfigPrecision))
+		c.config.String(metrics.ConfigUrl),
+		c.config.String(metrics.ConfigDatabase),
+		c.config.String(metrics.ConfigUsername),
+		c.config.String(metrics.ConfigPassword),
+		c.config.String(metrics.ConfigPrecision))
 	if err != nil {
 		wg.Done()
 		return err
 	}
 
 	c.registry.AddStorages(storage)
-	c.registry.SendInterval(c.config.GetDuration(metrics.ConfigInterval))
+	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
 
 	c.storage = storage
-	c.initLabels(c.config.GetString(metrics.ConfigLabels))
+	c.initLabels(c.config.String(metrics.ConfigLabels))
 
 	// search metrics
 	components, err := c.application.GetComponents()

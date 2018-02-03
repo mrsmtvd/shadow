@@ -96,11 +96,11 @@ func (c *Component) watchForStorage(_ string, newValue interface{}, _ interface{
 	defer c.mutex.RUnlock()
 
 	c.storage.Reinitialization(
-		c.config.GetString(metrics.ConfigUrl),
-		c.config.GetString(metrics.ConfigDatabase),
-		c.config.GetString(metrics.ConfigUsername),
-		c.config.GetString(metrics.ConfigPassword),
-		c.config.GetString(metrics.ConfigPrecision))
+		c.config.String(metrics.ConfigUrl),
+		c.config.String(metrics.ConfigDatabase),
+		c.config.String(metrics.ConfigUsername),
+		c.config.String(metrics.ConfigPassword),
+		c.config.String(metrics.ConfigPrecision))
 }
 
 func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {

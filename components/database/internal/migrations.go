@@ -124,7 +124,7 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 	dialect := s.Dialect()
 
 	if dialect == storage.DialectMySQL {
-		lockName := c.config.GetString(database.ConfigMigrationsTable) + ".lock"
+		lockName := c.config.String(database.ConfigMigrationsTable) + ".lock"
 
 		result, err := executor.SelectIntByQuery("SELECT GET_LOCK(?, ?)", lockName, lockTimeoutInSeconds)
 		if err != nil {

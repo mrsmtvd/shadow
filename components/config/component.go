@@ -17,22 +17,22 @@ type Component interface {
 	IsEditable(key string) bool
 
 	Watch(watcher Watcher)
-	GetWatchers(key string) []Watcher
+	Watchers(key string) []Watcher
 
-	GetAllVariables() map[string]Variable
-	GetBool(key string) bool
-	GetBoolDefault(key string, value interface{}) bool
-	GetInt(key string) int
-	GetIntDefault(key string, value interface{}) int
-	GetInt64(key string) int64
-	GetInt64Default(key string, value interface{}) int64
-	GetUint(key string) uint
-	GetUintDefault(key string, value interface{}) uint
-	GetUint64Default(key string, value interface{}) uint64
-	GetFloat64(key string) float64
-	GetFloat64Default(key string, value interface{}) float64
-	GetString(key string) string
-	GetStringDefault(key string, value interface{}) string
-	GetDuration(key string) time.Duration
-	GetDurationDefault(key string, value interface{}) time.Duration
+	Variables() map[string]Variable
+	Bool(key string) bool
+	BoolDefault(key string, value interface{}) bool
+	Int(key string) int
+	IntDefault(key string, value interface{}) int
+	Int64(key string) int64
+	Int64Default(key string, value interface{}) int64
+	Uint(key string) uint
+	UintDefault(key string, value interface{}) uint
+	Uint64Default(key string, value interface{}) uint64
+	Float64(key string) float64
+	Float64Default(key string, value interface{}) float64
+	String(key string) string
+	StringDefault(key string, value interface{}) string
+	Duration(key string) time.Duration
+	DurationDefault(key string, value interface{}) time.Duration
 }

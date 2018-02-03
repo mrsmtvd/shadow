@@ -94,7 +94,7 @@ func (c *Component) Run() error {
 		fields["config.prefix"] = c.envPrefix
 	}
 
-	for _, v := range c.GetAllVariables() {
+	for _, v := range c.Variables() {
 		fields[v.Key()] = v.Value()
 	}
 
@@ -106,24 +106,24 @@ func (c *Component) Run() error {
 func (c *Component) LoadFromCLIArguments() error {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 
-	for _, v := range c.GetAllVariables() {
+	for _, v := range c.Variables() {
 		switch v.Type() {
 		case config.ValueTypeBool:
-			flagSet.Bool(v.Key(), c.GetBool(v.Key()), v.Usage())
+			flagSet.Bool(v.Key(), c.Bool(v.Key()), v.Usage())
 		case config.ValueTypeInt:
-			flagSet.Int(v.Key(), c.GetInt(v.Key()), v.Usage())
+			flagSet.Int(v.Key(), c.Int(v.Key()), v.Usage())
 		case config.ValueTypeInt64:
-			flagSet.Int64(v.Key(), c.GetInt64(v.Key()), v.Usage())
+			flagSet.Int64(v.Key(), c.Int64(v.Key()), v.Usage())
 		case config.ValueTypeUint:
-			flagSet.Uint(v.Key(), c.GetUint(v.Key()), v.Usage())
+			flagSet.Uint(v.Key(), c.Uint(v.Key()), v.Usage())
 		case config.ValueTypeUint64:
-			flagSet.Uint64(v.Key(), c.GetUint64(v.Key()), v.Usage())
+			flagSet.Uint64(v.Key(), c.Uint64(v.Key()), v.Usage())
 		case config.ValueTypeFloat64:
-			flagSet.Float64(v.Key(), c.GetFloat64(v.Key()), v.Usage())
+			flagSet.Float64(v.Key(), c.Float64(v.Key()), v.Usage())
 		case config.ValueTypeString:
-			flagSet.String(v.Key(), c.GetString(v.Key()), v.Usage())
+			flagSet.String(v.Key(), c.String(v.Key()), v.Usage())
 		case config.ValueTypeDuration:
-			flagSet.Duration(v.Key(), c.GetDuration(v.Key()), v.Usage())
+			flagSet.Duration(v.Key(), c.Duration(v.Key()), v.Usage())
 		}
 	}
 
@@ -141,7 +141,7 @@ func (c *Component) LoadFromCLIArguments() error {
 }
 
 func (c *Component) LoadFromEnv() error {
-	for _, v := range c.GetAllVariables() {
+	for _, v := range c.Variables() {
 		envKey := c.envPrefix + EnvKey(v.Key())
 		if value, ok := os.LookupEnv(envKey); ok {
 			if err := c.Set(v.Key(), value); err != nil {
@@ -157,7 +157,7 @@ func (c *Component) EnvPrefix() string {
 	return c.envPrefix
 }
 
-func (c *Component) GetWatchers(key string) []config.Watcher {
+func (c *Component) Watchers(key string) []config.Watcher {
 	watchers := []config.Watcher{}
 
 	if watchersForAll, ok := c.watchers[config.WatcherForAll]; ok {
@@ -214,21 +214,21 @@ func (c *Component) Get(key string) interface{} {
 	if ok && v.Value() != nil {
 		switch v.Type() {
 		case config.ValueTypeBool:
-			return c.GetBool(key)
+			return c.Bool(key)
 		case config.ValueTypeInt:
-			return c.GetInt(key)
+			return c.Int(key)
 		case config.ValueTypeInt64:
-			return c.GetInt64(key)
+			return c.Int64(key)
 		case config.ValueTypeUint:
-			return c.GetUint(key)
+			return c.Uint(key)
 		case config.ValueTypeUint64:
-			return c.GetUint64(key)
+			return c.Uint64(key)
 		case config.ValueTypeFloat64:
-			return c.GetFloat64(key)
+			return c.Float64(key)
 		case config.ValueTypeString:
-			return c.GetString(key)
+			return c.String(key)
 		case config.ValueTypeDuration:
-			return c.GetDuration(key)
+			return c.Duration(key)
 		}
 	}
 
@@ -272,7 +272,7 @@ func (c *Component) Set(key string, value interface{}) error {
 		return err
 	}
 
-	watchers := c.GetWatchers(key)
+	watchers := c.Watchers(key)
 
 	if len(watchers) > 0 {
 		go func() {
@@ -296,7 +296,7 @@ func (c *Component) IsEditable(key string) bool {
 	return false
 }
 
-func (c *Component) GetAllVariables() map[string]config.Variable {
+func (c *Component) Variables() map[string]config.Variable {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -309,11 +309,11 @@ func (c *Component) GetAllVariables() map[string]config.Variable {
 	return variables
 }
 
-func (c *Component) GetBool(key string) bool {
-	return c.GetBoolDefault(key, false)
+func (c *Component) Bool(key string) bool {
+	return c.BoolDefault(key, false)
 }
 
-func (c *Component) GetBoolDefault(key string, value interface{}) bool {
+func (c *Component) BoolDefault(key string, value interface{}) bool {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -324,11 +324,11 @@ func (c *Component) GetBoolDefault(key string, value interface{}) bool {
 	return gotypes.ToBool(value)
 }
 
-func (c *Component) GetInt(key string) int {
-	return c.GetIntDefault(key, -1)
+func (c *Component) Int(key string) int {
+	return c.IntDefault(key, -1)
 }
 
-func (c *Component) GetIntDefault(key string, value interface{}) int {
+func (c *Component) IntDefault(key string, value interface{}) int {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -339,11 +339,11 @@ func (c *Component) GetIntDefault(key string, value interface{}) int {
 	return gotypes.ToInt(value)
 }
 
-func (c *Component) GetInt64(key string) int64 {
-	return c.GetInt64Default(key, -1)
+func (c *Component) Int64(key string) int64 {
+	return c.Int64Default(key, -1)
 }
 
-func (c *Component) GetInt64Default(key string, value interface{}) int64 {
+func (c *Component) Int64Default(key string, value interface{}) int64 {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -354,11 +354,11 @@ func (c *Component) GetInt64Default(key string, value interface{}) int64 {
 	return gotypes.ToInt64(value)
 }
 
-func (c *Component) GetUint(key string) uint {
-	return c.GetUintDefault(key, 0)
+func (c *Component) Uint(key string) uint {
+	return c.UintDefault(key, 0)
 }
 
-func (c *Component) GetUintDefault(key string, value interface{}) uint {
+func (c *Component) UintDefault(key string, value interface{}) uint {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -369,11 +369,11 @@ func (c *Component) GetUintDefault(key string, value interface{}) uint {
 	return gotypes.ToUint(value)
 }
 
-func (c *Component) GetUint64(key string) uint64 {
-	return c.GetUint64Default(key, 0)
+func (c *Component) Uint64(key string) uint64 {
+	return c.Uint64Default(key, 0)
 }
 
-func (c *Component) GetUint64Default(key string, value interface{}) uint64 {
+func (c *Component) Uint64Default(key string, value interface{}) uint64 {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -384,11 +384,11 @@ func (c *Component) GetUint64Default(key string, value interface{}) uint64 {
 	return gotypes.ToUint64(value)
 }
 
-func (c *Component) GetFloat64(key string) float64 {
-	return c.GetFloat64Default(key, -1)
+func (c *Component) Float64(key string) float64 {
+	return c.Float64Default(key, -1)
 }
 
-func (c *Component) GetFloat64Default(key string, value interface{}) float64 {
+func (c *Component) Float64Default(key string, value interface{}) float64 {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -399,11 +399,11 @@ func (c *Component) GetFloat64Default(key string, value interface{}) float64 {
 	return gotypes.ToFloat64(value)
 }
 
-func (c *Component) GetString(key string) string {
-	return c.GetStringDefault(key, "")
+func (c *Component) String(key string) string {
+	return c.StringDefault(key, "")
 }
 
-func (c *Component) GetStringDefault(key string, value interface{}) string {
+func (c *Component) StringDefault(key string, value interface{}) string {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -414,11 +414,11 @@ func (c *Component) GetStringDefault(key string, value interface{}) string {
 	return gotypes.ToString(value)
 }
 
-func (c *Component) GetDuration(key string) time.Duration {
-	return c.GetDurationDefault(key, 0)
+func (c *Component) Duration(key string) time.Duration {
+	return c.DurationDefault(key, 0)
 }
 
-func (c *Component) GetDurationDefault(key string, value interface{}) time.Duration {
+func (c *Component) DurationDefault(key string, value interface{}) time.Duration {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 

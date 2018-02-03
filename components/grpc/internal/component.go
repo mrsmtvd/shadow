@@ -106,11 +106,11 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
 
-		if c.config.GetBool(grpc.ConfigReflectionEnabled) {
+		if c.config.Bool(grpc.ConfigReflectionEnabled) {
 			reflection.Register(c.server)
 		}
 
-		addr := net.JoinHostPort(c.config.GetString(grpc.ConfigHost), c.config.GetString(grpc.ConfigPort))
+		addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
 		lis, err := net.Listen("tcp", addr)
 		if err != nil {
 			c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())

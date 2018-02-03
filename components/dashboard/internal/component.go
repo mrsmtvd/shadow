@@ -84,7 +84,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	go func() {
 		defer wg.Done()
 
-		addr := net.JoinHostPort(c.config.GetString(dashboard.ConfigHost), c.config.GetString(dashboard.ConfigPort))
+		addr := net.JoinHostPort(c.config.String(dashboard.ConfigHost), c.config.String(dashboard.ConfigPort))
 		lis, err := net.Listen("tcp", addr)
 		if err != nil {
 			c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
@@ -108,7 +108,7 @@ func (c *Component) initAuth() (err error) {
 	providers := []goth.Provider{}
 
 	var baseURL *url.URL
-	baseURLFromConfig := c.config.GetString(dashboard.ConfigOAuth2BaseURL)
+	baseURLFromConfig := c.config.String(dashboard.ConfigOAuth2BaseURL)
 	if baseURLFromConfig != "" {
 		if baseURL, err = url.Parse(baseURLFromConfig); err != nil {
 			return err
@@ -122,7 +122,7 @@ func (c *Component) initAuth() (err error) {
 	baseURL.Path = strings.Trim(baseURL.Path, "/")
 	pathCallbackTpl := "%s/" + strings.Trim(dashboard.AuthPath, "/") + "/%s/callback"
 
-	if c.config.GetBool(dashboard.ConfigAuthEnabled) {
+	if c.config.Bool(dashboard.ConfigAuthEnabled) {
 		passwordRedirectURL := new(url.URL)
 		*passwordRedirectURL = *baseURL
 		passwordRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, passwordRedirectURL.Path, "github")
@@ -130,54 +130,54 @@ func (c *Component) initAuth() (err error) {
 		providers = append(providers, password.New(
 			passwordRedirectURL.String(),
 			map[string]string{
-				c.config.GetString(dashboard.ConfigAuthUser): c.config.GetString(dashboard.ConfigAuthPassword),
+				c.config.String(dashboard.ConfigAuthUser): c.config.String(dashboard.ConfigAuthPassword),
 			},
 		))
 	}
 
-	if c.config.GetBool(dashboard.ConfigOAuth2GithubEnabled) {
+	if c.config.Bool(dashboard.ConfigOAuth2GithubEnabled) {
 		githubRedirectURL := new(url.URL)
 		*githubRedirectURL = *baseURL
 		githubRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, githubRedirectURL.Path, "github")
 
 		providers = append(providers, github.NewCustomisedURL(
-			c.config.GetString(dashboard.ConfigOAuth2GithubID),
-			c.config.GetString(dashboard.ConfigOAuth2GithubSecret),
+			c.config.String(dashboard.ConfigOAuth2GithubID),
+			c.config.String(dashboard.ConfigOAuth2GithubSecret),
 			githubRedirectURL.String(),
 			github.AuthURL,
 			github.TokenURL,
 			github.ProfileURL,
 			github.EmailURL,
-			strings.Split(c.config.GetString(dashboard.ConfigOAuth2GithubScopes), ",")...,
+			strings.Split(c.config.String(dashboard.ConfigOAuth2GithubScopes), ",")...,
 		))
 	}
 
-	if c.config.GetBool(dashboard.ConfigOAuth2GitlabEnabled) {
+	if c.config.Bool(dashboard.ConfigOAuth2GitlabEnabled) {
 		gitlabRedirectURL := new(url.URL)
 		*gitlabRedirectURL = *baseURL
 		gitlabRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, gitlabRedirectURL.Path, "gitlab")
 
 		providers = append(providers, gitlab.NewCustomisedURL(
-			c.config.GetString(dashboard.ConfigOAuth2GitlabID),
-			c.config.GetString(dashboard.ConfigOAuth2GitlabSecret),
+			c.config.String(dashboard.ConfigOAuth2GitlabID),
+			c.config.String(dashboard.ConfigOAuth2GitlabSecret),
 			gitlabRedirectURL.String(),
-			c.config.GetString(dashboard.ConfigOAuth2GitlabAuthURL),
-			c.config.GetString(dashboard.ConfigOAuth2GitlabTokenURL),
-			c.config.GetString(dashboard.ConfigOAuth2GitlabProfileURL),
-			strings.Split(c.config.GetString(dashboard.ConfigOAuth2GitlabScopes), ",")...,
+			c.config.String(dashboard.ConfigOAuth2GitlabAuthURL),
+			c.config.String(dashboard.ConfigOAuth2GitlabTokenURL),
+			c.config.String(dashboard.ConfigOAuth2GitlabProfileURL),
+			strings.Split(c.config.String(dashboard.ConfigOAuth2GitlabScopes), ",")...,
 		))
 	}
 
-	if c.config.GetBool(dashboard.ConfigOAuth2GplusEnabled) {
+	if c.config.Bool(dashboard.ConfigOAuth2GplusEnabled) {
 		gplusRedirectURL := new(url.URL)
 		*gplusRedirectURL = *baseURL
 		gplusRedirectURL.Path = fmt.Sprintf(pathCallbackTpl, gplusRedirectURL.Path, "gplus")
 
 		providers = append(providers, gplus.New(
-			c.config.GetString(dashboard.ConfigOAuth2GplusID),
-			c.config.GetString(dashboard.ConfigOAuth2GplusSecret),
+			c.config.String(dashboard.ConfigOAuth2GplusID),
+			c.config.String(dashboard.ConfigOAuth2GplusSecret),
 			gplusRedirectURL.String(),
-			strings.Split(c.config.GetString(dashboard.ConfigOAuth2GplusScopes), ",")...,
+			strings.Split(c.config.String(dashboard.ConfigOAuth2GplusScopes), ",")...,
 		))
 	}
 
@@ -189,13 +189,13 @@ func (c *Component) initAuth() (err error) {
 func (c *Component) initSession() {
 	store := memstore.New(0)
 	c.session = scs.NewManager(store)
-	c.session.Name(c.config.GetString(dashboard.ConfigSessionCookieName))
+	c.session.Name(c.config.String(dashboard.ConfigSessionCookieName))
 
-	c.session.Domain(c.config.GetString(dashboard.ConfigSessionDomain))
-	c.session.HttpOnly(c.config.GetBool(dashboard.ConfigSessionHttpOnly))
-	c.session.IdleTimeout(c.config.GetDuration(dashboard.ConfigSessionIdleTimeout))
-	c.session.Lifetime(c.config.GetDuration(dashboard.ConfigSessionLifetime))
-	c.session.Path(c.config.GetString(dashboard.ConfigSessionPath))
-	c.session.Persist(c.config.GetBool(dashboard.ConfigSessionPersist))
-	c.session.Secure(c.config.GetBool(dashboard.ConfigSessionSecure))
+	c.session.Domain(c.config.String(dashboard.ConfigSessionDomain))
+	c.session.HttpOnly(c.config.Bool(dashboard.ConfigSessionHttpOnly))
+	c.session.IdleTimeout(c.config.Duration(dashboard.ConfigSessionIdleTimeout))
+	c.session.Lifetime(c.config.Duration(dashboard.ConfigSessionLifetime))
+	c.session.Path(c.config.String(dashboard.ConfigSessionPath))
+	c.session.Persist(c.config.Bool(dashboard.ConfigSessionPersist))
+	c.session.Secure(c.config.Bool(dashboard.ConfigSessionSecure))
 }

@@ -52,7 +52,7 @@ type ManagerHandler struct {
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	var err error
 
-	vars := h.Component.GetAllVariables()
+	vars := h.Component.Variables()
 
 	if r.IsPost() {
 		err = r.Original().ParseForm()
@@ -100,7 +100,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 		cmp[k] = variableView{
 			Variable: v,
-			Watchers: h.Component.GetWatchers(k),
+			Watchers: h.Component.Watchers(k),
 		}
 		variables[cmpName] = cmp
 	}

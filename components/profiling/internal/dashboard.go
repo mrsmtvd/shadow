@@ -24,7 +24,7 @@ func (c *Component) GetDashboardMenu() dashboard.Menu {
 	routes := c.GetDashboardRoutes()
 
 	show := func(r *dashboard.Request) bool {
-		return r.Config().GetBool(config.ConfigDebug)
+		return r.Config().Bool(config.ConfigDebug)
 	}
 
 	return dashboard.NewMenuWithUrl(

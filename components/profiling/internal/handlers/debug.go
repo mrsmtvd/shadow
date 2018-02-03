@@ -14,7 +14,7 @@ type DebugHandler struct {
 }
 
 func (h *DebugHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	if !r.Config().GetBool(config.ConfigDebug) {
+	if !r.Config().Bool(config.ConfigDebug) {
 		h.NotFound(w, r)
 		return
 	}

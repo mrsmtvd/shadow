@@ -128,23 +128,23 @@ func (c *Component) RemoveStorage(id string) {
 func (c *Component) initStorageGrafana() {
 	c.RemoveStorage(annotations.StorageGrafana)
 
-	if !c.config.GetBool(annotations.ConfigStorageGrafanaEnabled) {
+	if !c.config.Bool(annotations.ConfigStorageGrafanaEnabled) {
 		return
 	}
 
 	var dashboards []int64
 
-	for _, id := range strings.Split(c.config.GetString(annotations.ConfigStorageGrafanaDashboards), ",") {
+	for _, id := range strings.Split(c.config.String(annotations.ConfigStorageGrafanaDashboards), ",") {
 		if value, err := strconv.ParseInt(id, 10, 0); err == nil {
 			dashboards = append(dashboards, value)
 		}
 	}
 
 	s := storage.NewGrafana(
-		c.config.GetString(annotations.ConfigStorageGrafanaAddress),
-		c.config.GetString(annotations.ConfigStorageGrafanaApiKey),
-		c.config.GetString(annotations.ConfigStorageGrafanaUsername),
-		c.config.GetString(annotations.ConfigStorageGrafanaPassword),
+		c.config.String(annotations.ConfigStorageGrafanaAddress),
+		c.config.String(annotations.ConfigStorageGrafanaApiKey),
+		c.config.String(annotations.ConfigStorageGrafanaUsername),
+		c.config.String(annotations.ConfigStorageGrafanaPassword),
 		dashboards,
 		c.logger)
 
@@ -154,22 +154,22 @@ func (c *Component) initStorageGrafana() {
 func (c *Component) initStorageTelegram() {
 	c.RemoveStorage(annotations.StorageTelegram)
 
-	if !c.config.GetBool(annotations.ConfigStorageTelegramEnabled) {
+	if !c.config.Bool(annotations.ConfigStorageTelegramEnabled) {
 		return
 	}
 
 	var chats []int64
 
-	for _, id := range strings.Split(c.config.GetString(annotations.ConfigStorageTelegramChats), ",") {
+	for _, id := range strings.Split(c.config.String(annotations.ConfigStorageTelegramChats), ",") {
 		if value, err := strconv.ParseInt(id, 10, 0); err == nil {
 			chats = append(chats, value)
 		}
 	}
 
 	s, err := storage.NewTelegram(
-		c.config.GetString(annotations.ConfigStorageTelegramToken),
+		c.config.String(annotations.ConfigStorageTelegramToken),
 		chats,
-		c.config.GetBool(config.ConfigDebug))
+		c.config.Bool(config.ConfigDebug))
 
 	if err != nil {
 		c.logger.Errorf("Telegram storage failed: %s", err.Error())

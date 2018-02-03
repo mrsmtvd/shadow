@@ -75,10 +75,10 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.GetName(), c.application)
 
 	c.initDialer(
-		c.config.GetString(mail.ConfigSmtpHost),
-		c.config.GetInt(mail.ConfigSmtpPort),
-		c.config.GetString(mail.ConfigSmtpUsername),
-		c.config.GetString(mail.ConfigSmtpPassword),
+		c.config.String(mail.ConfigSmtpHost),
+		c.config.Int(mail.ConfigSmtpPort),
+		c.config.String(mail.ConfigSmtpUsername),
+		c.config.String(mail.ConfigSmtpPassword),
 	)
 
 	go func() {
@@ -149,7 +149,7 @@ func (c *Component) execute(task *mailTask) error {
 
 	if c.open {
 		if len(task.message.GetHeader("From")) == 0 {
-			task.message.SetAddressHeader("From", c.config.GetString(mail.ConfigFromAddress), c.config.GetString(mail.ConfigFromName))
+			task.message.SetAddressHeader("From", c.config.String(mail.ConfigFromAddress), c.config.String(mail.ConfigFromName))
 		}
 
 		if err = gomail.Send(c.closer, task.message); err != nil {

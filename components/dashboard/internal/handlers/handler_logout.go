@@ -18,5 +18,5 @@ func (h *LogoutHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	session.Remove(dashboard.SessionUser)
 	session.Remove(dashboard.AuthSessionName())
 
-	h.Redirect(h.Config.GetString(dashboard.ConfigStartURL), http.StatusFound, w, r)
+	h.Redirect(h.Config.String(dashboard.ConfigStartURL), http.StatusFound, w, r)
 }

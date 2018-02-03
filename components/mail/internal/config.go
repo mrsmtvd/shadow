@@ -77,9 +77,9 @@ func (c *Component) GetConfigWatchers() []config.Watcher {
 
 func (c *Component) watchForDialer(_ string, _ interface{}, _ interface{}) {
 	c.initDialer(
-		c.config.GetString(mail.ConfigSmtpHost),
-		c.config.GetInt(mail.ConfigSmtpPort),
-		c.config.GetString(mail.ConfigSmtpUsername),
-		c.config.GetString(mail.ConfigSmtpPassword),
+		c.config.String(mail.ConfigSmtpHost),
+		c.config.Int(mail.ConfigSmtpPort),
+		c.config.String(mail.ConfigSmtpUsername),
+		c.config.String(mail.ConfigSmtpPassword),
 	)
 }

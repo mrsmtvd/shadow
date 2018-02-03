@@ -81,7 +81,7 @@ func (c *Component) Get(key string) logger.Logger {
 }
 
 func (c *Component) getXLogLevel() xlog.Level {
-	switch c.config.GetIntDefault(logger.ConfigLevel, 5) {
+	switch c.config.IntDefault(logger.ConfigLevel, 5) {
 	case logger.LevelEmergency:
 		return xlog.LevelFatal
 	case logger.LevelAlert:
@@ -104,7 +104,7 @@ func (c *Component) getXLogLevel() xlog.Level {
 }
 
 func (c *Component) getFields() map[string]interface{} {
-	fields := c.parseFields(c.config.GetString(logger.ConfigFields))
+	fields := c.parseFields(c.config.String(logger.ConfigFields))
 
 	if _, ok := fields[fieldComponent]; ok {
 		delete(fields, fieldComponent)
