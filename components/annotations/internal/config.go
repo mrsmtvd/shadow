@@ -13,6 +13,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Enabled Grafana storage",
 			true,
+			"Grafana storage",
 			nil,
 			nil),
 		config.NewVariable(
@@ -21,6 +22,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Grafana address of HTTP API in format http://host:port",
 			true,
+			"Grafana storage",
 			nil,
 			nil),
 		config.NewVariable(
@@ -29,6 +31,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Grafana ApiToken. No need if username and password is set",
 			true,
+			"Grafana storage",
 			nil,
 			nil),
 		config.NewVariable(
@@ -37,6 +40,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Grafana username for basic authorization. No need if api key is set",
 			true,
+			"Grafana storage",
 			nil,
 			nil),
 		config.NewVariable(
@@ -45,6 +49,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Grafana password for basic authorization. No need if api key is set",
 			true,
+			"Grafana storage",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -53,6 +58,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Grafana dashboards id",
 			true,
+			"Grafana storage",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a id",
@@ -63,6 +69,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Enabled Telegram storage",
 			true,
+			"Telegram storage",
 			nil,
 			nil),
 		config.NewVariable(
@@ -71,6 +78,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Telegram bot token",
 			true,
+			"Telegram storage",
 			nil,
 			nil),
 		config.NewVariable(
@@ -79,6 +87,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Telegram chats id",
 			true,
+			"Telegram storage",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a id",

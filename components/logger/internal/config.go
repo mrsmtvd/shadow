@@ -13,6 +13,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			logger.LevelInformational,
 			"Log level in RFC5424",
 			true,
+			"",
 			[]string{config.ViewEnum},
 			map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
@@ -32,6 +33,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Fields list with format: field_name=field1_value,field2_name=field2_value",
 			true,
+			"",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a field",

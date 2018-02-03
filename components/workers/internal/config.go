@@ -15,6 +15,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			2,
 			"Default workers count",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -23,6 +24,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"1s",
 			"Duration for ticker in dispatcher of workers",
 			true,
+			"",
 			nil,
 			nil),
 	}

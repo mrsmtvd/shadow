@@ -18,6 +18,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Allow use master as slave",
 			true,
+			"",
 			nil,
 			nil,
 		),
@@ -27,6 +28,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			database.BalancerRoundRobin,
 			"Balancer for slaves",
 			true,
+			"",
 			[]string{
 				config.ViewEnum,
 			},
@@ -42,6 +44,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			storage.DialectMySQL,
 			"Database driver",
 			false,
+			"",
 			[]string{
 				config.ViewEnum,
 			},
@@ -61,6 +64,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"InnoDB",
 			fmt.Sprintf("Dialect engine (%s)", storage.DialectMySQL),
 			false,
+			"",
 			[]string{
 				config.ViewEnum,
 			},
@@ -76,6 +80,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"UTF8",
 			fmt.Sprintf("Dialect encoding (%s)", storage.DialectMySQL),
 			false,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -84,6 +89,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			fmt.Sprintf("Dialect version (%s)", storage.DialectMSSQL),
 			false,
+			"",
 			[]string{
 				config.ViewEnum,
 			},
@@ -98,6 +104,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Database DSN of Master",
 			false,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -106,6 +113,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Database DSN of Slaves",
 			false,
+			"",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a slave",
@@ -116,6 +124,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"",
 			"Database migrations schema name",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -124,6 +133,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"migrations",
 			"Database migrations table name",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -132,6 +142,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			0,
 			"Database maximum number of connections in the idle connection pool",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -140,6 +151,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			0,
 			"Database maximum number of connections in the idle connection pool",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -148,6 +160,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			0,
 			"Database maximum amount of time a connection may be reused",
 			true,
+			"",
 			nil,
 			nil),
 	}

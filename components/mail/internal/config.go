@@ -13,6 +13,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"SMTP username",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -21,6 +22,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"SMTP password",
 			true,
+			"",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -29,6 +31,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"SMTP host",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -37,6 +40,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			25,
 			"SMTP port",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -45,6 +49,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Mail from address",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -53,6 +58,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Mail from name",
 			true,
+			"",
 			nil,
 			nil),
 	}

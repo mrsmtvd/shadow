@@ -367,6 +367,8 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			}
 		case "status":
 			out.Status = string(in.String())
+		case "locked":
+			out.Locked = bool(in.Bool())
 		case "task":
 			if in.IsNull() {
 				in.Skip()
@@ -420,6 +422,16 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			out.RawString(prefix)
 		}
 		out.String(string(in.Status))
+	}
+	{
+		const prefix string = ",\"locked\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Locked))
 	}
 	{
 		const prefix string = ",\"task\":"
@@ -510,6 +522,8 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			}
 		case "status":
 			out.Status = string(in.String())
+		case "locked":
+			out.Locked = bool(in.Bool())
 		case "attempts":
 			out.Attempts = int64(in.Int64())
 		case "allow_start_at":
@@ -655,6 +669,16 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			out.RawString(prefix)
 		}
 		out.String(string(in.Status))
+	}
+	{
+		const prefix string = ",\"locked\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Locked))
 	}
 	{
 		const prefix string = ",\"attempts\":"

@@ -15,6 +15,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"InfluxDB url",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -23,6 +24,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"InfluxDB database name",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -31,6 +33,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"InfluxDB username",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -39,6 +42,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"InfluxDB password",
 			true,
+			"",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -47,6 +51,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"s",
 			"InfluxDB precision",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -55,6 +60,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"1m",
 			"Flush interval",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -63,6 +69,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Labels list with format: label1_name=label1_value",
 			true,
+			"",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a label",

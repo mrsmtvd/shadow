@@ -45,9 +45,9 @@
                                     <tr>
                                         <td>
                                             {{ if $config.Variable.Editable }}
-                                            <label class="control-label" for="{{ $varId }}">{{ $config.Variable.Key }}</label>
+                                            <label class="control-label" for="{{ $varId }}" data-group="{{ $config.Variable.Group }}">{{ $config.Variable.Key }}</label>
                                             {{ else }}
-                                            <label class="control-label">{{ $config.Variable.Key }}</label>
+                                            <label class="control-label" data-group="{{ $config.Variable.Group }}">{{ $config.Variable.Key }}</label>
                                             {{ end }}
                                         </td>
                                         <td>

@@ -31,6 +31,7 @@ type managerHandlerItemWorker struct {
 	Id      string                  `json:"id"`
 	Created time.Time               `json:"created"`
 	Status  string                  `json:"status"`
+	Locked  bool                    `json:"locked"`
 	Task    *managerHandlerItemTask `json:"task"`
 }
 
@@ -45,6 +46,7 @@ type managerHandlerItemTask struct {
 	CreatedAt      time.Time     `json:"created_at"`
 	StartedAt      *time.Time    `json:"started_at"`
 	Status         string        `json:"status"`
+	Locked         bool          `json:"locked"`
 	Attempts       int64         `json:"attempts"`
 	AllowStartAt   *time.Time    `json:"allow_start_at"`
 	FirstStartedAt *time.Time    `json:"first_started_at"`
@@ -129,6 +131,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 			if md := h.Component.GetWorkerMetadata(item.Id()); md != nil {
 				data.Status = md[ws.WorkerMetadataStatus].(ws.Status).String()
+				data.Locked = md[ws.WorkerMetadataLocked].(bool)
 
 				if task := md[ws.WorkerMetadataTask]; task != nil {
 					item := task.(ws.Task)
@@ -146,6 +149,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 					if taskMD := h.Component.GetTaskMetadata(item.Id()); taskMD != nil {
 						data.Task.Status = taskMD[ws.TaskMetadataStatus].(ws.Status).String()
+						data.Task.Locked = taskMD[ws.TaskMetadataLocked].(bool)
 						data.Task.Attempts = taskMD[ws.TaskMetadataAttempts].(int64)
 						data.Task.AllowStartAt = taskMD[ws.TaskMetadataAllowStartAt].(*time.Time)
 						data.Task.FirstStartedAt = taskMD[ws.TaskMetadataFirstStartedAt].(*time.Time)
@@ -177,6 +181,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 			if md := h.Component.GetTaskMetadata(item.Id()); md != nil {
 				data.Status = md[ws.TaskMetadataStatus].(ws.Status).String()
+				data.Locked = md[ws.TaskMetadataLocked].(bool)
 				data.Attempts = md[ws.TaskMetadataAttempts].(int64)
 				data.AllowStartAt = md[ws.TaskMetadataAllowStartAt].(*time.Time)
 				data.FirstStartedAt = md[ws.TaskMetadataFirstStartedAt].(*time.Time)

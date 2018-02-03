@@ -13,6 +13,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"localhost",
 			"gRPC host",
 			false,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -21,6 +22,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			50052,
 			"gRPC port number",
 			false,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -29,6 +31,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			"gRPC enabled register reflection",
 			false,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -37,6 +40,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			2,
 			"Max level of parsing types",
 			true,
+			"",
 			nil,
 			nil),
 	}

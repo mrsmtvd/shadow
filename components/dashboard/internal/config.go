@@ -15,6 +15,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"localhost",
 			"Frontend host",
 			false,
+			"Listen",
 			nil,
 			nil),
 		config.NewVariable(dashboard.ConfigPort,
@@ -22,6 +23,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			8080,
 			"Frontend port number",
 			false,
+			"Listen",
 			nil,
 			nil),
 		config.NewVariable(
@@ -30,6 +32,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Enabled standard auth",
 			true,
+			"Authorization basic",
 			nil,
 			nil),
 		config.NewVariable(
@@ -38,6 +41,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Standard auth user login",
 			true,
+			"Authorization basic",
 			nil,
 			nil),
 		config.NewVariable(
@@ -46,6 +50,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Standard auth password",
 			true,
+			"Authorization basic",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -54,6 +59,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"OAuth emails allowed",
 			true,
+			"Authorization OAuth",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a email",
@@ -64,6 +70,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"OAuth domains allowed",
 			true,
+			"Authorization OAuth",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a domain",
@@ -74,6 +81,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"http://localhost/",
 			"Base URL for redirect URL",
 			true,
+			"Authorization OAuth",
 			nil,
 			nil),
 		config.NewVariable(
@@ -82,6 +90,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Enabled Github provider",
 			true,
+			"Authorization OAuth Github provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -90,6 +99,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Github client id",
 			true,
+			"Authorization OAuth Github provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -98,6 +108,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Github client secret",
 			true,
+			"Authorization OAuth Github provider",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -106,6 +117,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Github scopes",
 			true,
+			"Authorization OAuth Github provider",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a scope",
@@ -116,6 +128,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Enabled Gitlab provider",
 			true,
+			"Authorization OAuth Gitlab provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -124,6 +137,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Gitlab client id",
 			true,
+			"Authorization OAuth Gitlab provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -132,6 +146,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Gitlab client secret",
 			true,
+			"Authorization OAuth Gitlab provider",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -140,6 +155,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"read_user",
 			"Gitlab scopes",
 			true,
+			"Authorization OAuth Gitlab provider",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a scope",
@@ -150,6 +166,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Gitlab endpoint auth URL",
 			true,
+			"Authorization OAuth Gitlab provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -158,6 +175,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Gitlab endpoint token URL",
 			true,
+			"Authorization OAuth Gitlab provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -166,6 +184,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Gitlab endpoint profile URL",
 			true,
+			"Authorization OAuth Gitlab provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -174,6 +193,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Enabled Google+ provider",
 			true,
+			"Authorization OAuth Google+ provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -182,6 +202,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Google+ client id",
 			true,
+			"Authorization OAuth Google+ provider",
 			nil,
 			nil),
 		config.NewVariable(
@@ -190,6 +211,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Google+ client secret",
 			true,
+			"Authorization OAuth Google+ provider",
 			[]string{config.ViewPassword},
 			nil),
 		config.NewVariable(
@@ -198,6 +220,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"profile,email,openid",
 			"Gplus scopes",
 			true,
+			"Authorization OAuth Google+ provider",
 			[]string{config.ViewTags},
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a scope",
@@ -208,6 +231,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"shadow.session",
 			"The name of the session cookie issued to clients. Note that cookie names should not contain whitespace, commas, semicolons, backslashes or control characters as per RFC6265n",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -216,6 +240,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			nil,
 			"Domain attribute on the session cookie",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -224,6 +249,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			"HttpOnly attribute on the session cookie",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -232,6 +258,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			0,
 			"Maximum length of time a session can be inactive before it expires",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -240,6 +267,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			24*time.Hour,
 			"Maximum length of time that a session is valid for before it expires",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -248,6 +276,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"/",
 			"Path attribute on the session cookie",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -256,6 +285,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Persist sets whether the session cookie should be persistent or not",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -264,6 +294,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Secure attribute on the session cookie",
 			true,
+			"User session",
 			nil,
 			nil),
 		config.NewVariable(
@@ -272,6 +303,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			true,
 			"Use minified static files",
 			true,
+			"Develop mode",
 			nil,
 			nil),
 		config.NewVariable(
@@ -280,6 +312,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"/"+c.GetName(),
 			"Start URL",
 			true,
+			"Others",
 			nil,
 			nil),
 	}

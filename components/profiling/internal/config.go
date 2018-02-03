@@ -16,6 +16,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			"./",
 			"Path to trace dumps directory",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -24,6 +25,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			100,
 			"Sets the garbage collection target percentage",
 			true,
+			"",
 			nil,
 			nil),
 		config.NewVariable(
@@ -32,6 +34,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			runtime.GOMAXPROCS(-1),
 			fmt.Sprintf("Sets the maximum number of CPUs that can be executing simultaneously. Attention number of cpu is %d", runtime.NumCPU()),
 			true,
+			"",
 			nil,
 			nil),
 	}

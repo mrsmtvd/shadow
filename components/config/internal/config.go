@@ -12,6 +12,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 			false,
 			"Debug mode",
 			true,
+			"",
 			nil,
 			nil),
 	}

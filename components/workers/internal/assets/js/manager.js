@@ -105,6 +105,12 @@ $(document).ready(function () {
                 },
                 { data: 'status' },
                 {
+                    data: 'locked',
+                    render: function (flag) {
+                        return flag ? 'Locked' : 'Free';
+                    }
+                },
+                {
                     data: null,
                     defaultContent: ''
                 },
@@ -213,6 +219,12 @@ $(document).ready(function () {
                     }
                 },
                 { data: 'status' },
+                {
+                    data: 'locked',
+                    render: function (flag) {
+                        return flag ? 'Locked' : 'Free';
+                    }
+                },
                 { data: 'attempts' },
                 {
                     data: 'allow_start_at',

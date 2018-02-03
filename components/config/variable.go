@@ -27,6 +27,7 @@ type Variable interface {
 	Type() string
 	Usage() string
 	Editable() bool
+	Group() string
 	View() []string
 	ViewOptions() map[string]interface{}
 	Change(value interface{}) error
@@ -47,17 +48,19 @@ type VariableItem struct {
 	value       atomic.Value
 	usage       string
 	editable    bool
+	group       string
 	view        []string
 	viewOptions map[string]interface{}
 }
 
-func NewVariable(key string, typ string, def interface{}, usage string, editable bool, view []string, viewOptions map[string]interface{}) Variable {
+func NewVariable(key string, typ string, def interface{}, usage string, editable bool, group string, view []string, viewOptions map[string]interface{}) Variable {
 	v := &VariableItem{
 		key:         key,
 		typ:         typ,
 		def:         def,
 		usage:       usage,
 		editable:    editable,
+		group:       group,
 		view:        view,
 		viewOptions: viewOptions,
 	}
@@ -116,6 +119,10 @@ func (v *VariableItem) Usage() string {
 
 func (v *VariableItem) Editable() bool {
 	return v.editable
+}
+
+func (v *VariableItem) Group() string {
+	return v.group
 }
 
 func (v *VariableItem) View() []string {

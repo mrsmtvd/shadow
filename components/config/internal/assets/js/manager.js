@@ -88,19 +88,16 @@ $(document).ready(function () {
                 rows = api.rows( {page:'current'} ).nodes(),
                 last = null;
 
-            api.column(0, {page:'current'} ).data().each( function (group, i) {
-                if (last !== group) {
-                    var parts = $(group).text().split('.'),
-                        name = parts.length > 2 ? parts[1] : parts[0];
+            api.column(0, {page:'current'} ).data().each( function (row, i) {
+                var name = $(row).data('group');
 
-                    if ( last !== name ) {
-                        $(rows).eq(i).before(
-                            '<tr class="group"><td colspan="5">' + name + '</td></tr>'
-                        );
-                    }
-
-                    last = name;
+                if (last !== name && name.length ) {
+                    $(rows).eq(i).before(
+                        '<tr class="group"><td colspan="5">' + name + '</td></tr>'
+                    );
                 }
+
+                last = name;
             });
         }
     });
