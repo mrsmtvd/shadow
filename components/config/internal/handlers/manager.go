@@ -105,7 +105,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		variables[cmpName] = cmp
 	}
 
-	h.Render(r.Context(), h.Component.GetName(), "manager", map[string]interface{}{
+	h.Render(r.Context(), h.Component.Name(), "manager", map[string]interface{}{
 		"variables": variables,
 		"error":     err,
 	})

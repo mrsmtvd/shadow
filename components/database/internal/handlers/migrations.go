@@ -18,7 +18,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 
 	sort.Sort(sort.Reverse(migrations))
 
-	h.Render(r.Context(), h.Component.GetName(), "migrations", map[string]interface{}{
+	h.Render(r.Context(), h.Component.Name(), "migrations", map[string]interface{}{
 		"migrations": migrations,
 	})
 }

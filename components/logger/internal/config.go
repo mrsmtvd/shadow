@@ -5,7 +5,7 @@ import (
 	"github.com/kihamo/shadow/components/logger"
 )
 
-func (c *Component) GetConfigVariables() []config.Variable {
+func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
 			logger.ConfigLevel,
@@ -41,7 +41,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() []config.Watcher {
+func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher(logger.ComponentName, []string{logger.ConfigLevel}, c.watchLoggerLevel),
 		config.NewWatcher(logger.ComponentName, []string{logger.ConfigFields}, c.watchLoggerFields),

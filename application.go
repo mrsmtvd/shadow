@@ -21,17 +21,17 @@ type Application interface {
 	GetComponents() ([]Component, error)
 	HasComponent(string) bool
 	RegisterComponent(Component) error
-	GetName() string
-	GetVersion() string
-	GetBuild() string
-	GetBuildDate() *time.Time
-	GetStartDate() *time.Time
-	GetUptime() time.Duration
+	Name() string
+	Version() string
+	Build() string
+	BuildDate() *time.Time
+	StartDate() *time.Time
+	Uptime() time.Duration
 }
 
 type Component interface {
-	GetName() string
-	GetVersion() string
+	Name() string
+	Version() string
 }
 
 type ComponentInit interface {
@@ -43,7 +43,7 @@ type ComponentRunner interface {
 }
 
 type ComponentDependency interface {
-	GetDependencies() []Dependency
+	Dependencies() []Dependency
 }
 
 type ComponentAsyncRunner interface {
@@ -158,36 +158,36 @@ func (a *App) HasComponent(n string) bool {
 }
 
 func (a *App) RegisterComponent(c Component) error {
-	if a.HasComponent(c.GetName()) {
-		return fmt.Errorf("Component \"%s\" already exists", c.GetName())
+	if a.HasComponent(c.Name()) {
+		return fmt.Errorf("Component \"%s\" already exists", c.Name())
 	}
 
-	a.components[c.GetName()] = c
+	a.components[c.Name()] = c
 	a.resolved = false
 	return nil
 }
 
-func (a *App) GetName() string {
+func (a *App) Name() string {
 	return a.name
 }
 
-func (a *App) GetVersion() string {
+func (a *App) Version() string {
 	return a.version
 }
 
-func (a *App) GetBuild() string {
+func (a *App) Build() string {
 	return a.build
 }
 
-func (a *App) GetBuildDate() *time.Time {
+func (a *App) BuildDate() *time.Time {
 	return buildDate
 }
 
-func (a *App) GetStartDate() *time.Time {
+func (a *App) StartDate() *time.Time {
 	return &startTime
 }
 
-func (a *App) GetUptime() time.Duration {
+func (a *App) Uptime() time.Duration {
 	return time.Now().UTC().Sub(startTime)
 }
 
@@ -199,10 +199,10 @@ func (a *App) resolveDependencies() error {
 		dependencySet := mapset.NewSet()
 
 		if cmpDependency, ok := cmp.(ComponentDependency); ok {
-			for _, dep := range cmpDependency.GetDependencies() {
+			for _, dep := range cmpDependency.Dependencies() {
 				if dep.Required {
 					if !a.HasComponent(dep.Name) {
-						return fmt.Errorf("Component \"%s\" has required dependency \"%s\"", cmp.GetName(), dep.Name)
+						return fmt.Errorf("Component \"%s\" has required dependency \"%s\"", cmp.Name(), dep.Name)
 					}
 				} else if !a.HasComponent(dep.Name) {
 					cmpDependencies[dep.Name] = mapset.NewSet()
@@ -212,7 +212,7 @@ func (a *App) resolveDependencies() error {
 			}
 		}
 
-		cmpDependencies[cmp.GetName()] = dependencySet
+		cmpDependencies[cmp.Name()] = dependencySet
 	}
 
 	var components []string

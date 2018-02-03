@@ -34,7 +34,7 @@ type Variable interface {
 }
 
 type HasVariables interface {
-	GetConfigVariables() []Variable
+	ConfigVariables() []Variable
 }
 
 type variableValue struct {

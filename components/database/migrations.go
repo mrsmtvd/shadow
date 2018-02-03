@@ -6,7 +6,7 @@ import (
 )
 
 type HasMigrations interface {
-	GetMigrations() Migrations
+	DatabaseMigrations() Migrations
 }
 
 type Migrations []Migration

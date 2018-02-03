@@ -11,7 +11,7 @@ type Watcher interface {
 }
 
 type HasWatchers interface {
-	GetConfigWatchers() []Watcher
+	ConfigWatchers() []Watcher
 }
 
 type WatcherItem struct {

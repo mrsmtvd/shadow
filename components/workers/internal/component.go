@@ -25,15 +25,15 @@ type Component struct {
 	lockedListenersIds []string
 }
 
-func (c *Component) GetName() string {
+func (c *Component) Name() string {
 	return workers.ComponentName
 }
 
-func (c *Component) GetVersion() string {
+func (c *Component) Version() string {
 	return workers.ComponentVersion
 }
 
-func (c *Component) GetDependencies() []shadow.Dependency {
+func (c *Component) Dependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
 			Name:     config.ComponentName,
@@ -61,12 +61,12 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(wg *sync.WaitGroup) (err error) {
-	c.logger = logger.NewOrNop(c.GetName(), c.application)
+	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	c.dispatcher.SetTickerExecuteTasksDuration(c.config.Duration(workers.ConfigTickerExecuteTasksDuration))
 
 	l := listener.NewFunctionListener(c.listenerLogging)
-	l.SetName(c.GetName() + ".logging")
+	l.SetName(c.Name() + ".logging")
 	c.AddLockedListener(l.Id())
 
 	c.AddListenerByEvents([]ws.EventId{

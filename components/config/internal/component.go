@@ -35,11 +35,11 @@ type Component struct {
 	routes      []dashboard.Route
 }
 
-func (c *Component) GetName() string {
+func (c *Component) Name() string {
 	return config.ComponentName
 }
 
-func (c *Component) GetVersion() string {
+func (c *Component) Version() string {
 	return config.ComponentVersion
 }
 
@@ -50,13 +50,13 @@ func (c *Component) Init(a shadow.Application) (err error) {
 	}
 
 	c.application = a
-	c.envPrefix = EnvKey(a.GetName()) + "_"
+	c.envPrefix = EnvKey(a.Name()) + "_"
 	c.variables = make(map[string]config.Variable)
 	c.watchers = make(map[string][]config.Watcher)
 
 	for _, component := range components {
 		if variables, ok := component.(config.HasVariables); ok {
-			for _, variable := range variables.GetConfigVariables() {
+			for _, variable := range variables.ConfigVariables() {
 				if variable.Key() == config.WatcherForAll {
 					return fmt.Errorf("Use key %s not allowed", config.WatcherForAll)
 				}
@@ -78,7 +78,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 
 	for _, component := range components {
 		if watchers, ok := component.(config.HasWatchers); ok {
-			for _, watcher := range watchers.GetConfigWatchers() {
+			for _, watcher := range watchers.ConfigWatchers() {
 				c.Watch(watcher)
 			}
 		}
@@ -192,7 +192,7 @@ func (c *Component) Watch(watcher config.Watcher) {
 
 func (c *Component) log() logger.Logger {
 	if c.logger == nil {
-		c.logger = logger.NewOrNop(c.GetName(), c.application)
+		c.logger = logger.NewOrNop(c.Name(), c.application)
 	}
 
 	return c.logger

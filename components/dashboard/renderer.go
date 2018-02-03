@@ -12,5 +12,5 @@ type Renderer interface {
 }
 
 type HasTemplates interface {
-	GetTemplates() *assetfs.AssetFS
+	DashboardTemplates() *assetfs.AssetFS
 }

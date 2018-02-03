@@ -5,7 +5,7 @@ import (
 	"github.com/kihamo/shadow/components/grpc"
 )
 
-func (c *Component) GetConfigVariables() []config.Variable {
+func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
 			grpc.ConfigHost,

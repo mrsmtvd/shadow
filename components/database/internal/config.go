@@ -10,7 +10,7 @@ import (
 	"github.com/rubenv/sql-migrate"
 )
 
-func (c *Component) GetConfigVariables() []config.Variable {
+func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
 			database.ConfigAllowUseMasterAsSlave,
@@ -166,7 +166,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() []config.Watcher {
+func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher(database.ComponentName, []string{database.ConfigAllowUseMasterAsSlave}, c.watchAllowUseMasterAsSlave),
 		config.NewWatcher(database.ComponentName, []string{database.ConfigBalancer}, c.watchBalancer),

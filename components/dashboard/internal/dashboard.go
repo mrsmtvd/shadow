@@ -8,7 +8,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
 )
 
-func (c *Component) GetTemplates() *assetfs.AssetFS {
+func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 	return &assetfs.AssetFS{
 		Asset:     Asset,
 		AssetDir:  AssetDir,
@@ -17,8 +17,8 @@ func (c *Component) GetTemplates() *assetfs.AssetFS {
 	}
 }
 
-func (c *Component) GetDashboardMenu() dashboard.Menu {
-	routes := c.GetDashboardRoutes()
+func (c *Component) DashboardMenu() dashboard.Menu {
+	routes := c.DashboardRoutes()
 
 	return dashboard.NewMenuWithRoute(
 		"Dashboard",
@@ -34,13 +34,13 @@ func (c *Component) GetDashboardMenu() dashboard.Menu {
 	)
 }
 
-func (c *Component) GetDashboardRoutes() []dashboard.Route {
+func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/assets/*filepath",
+				"/"+c.Name()+"/assets/*filepath",
 				&assetfs.AssetFS{
 					Asset:     Asset,
 					AssetDir:  AssetDir,
@@ -50,30 +50,30 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/bindata",
+				"/"+c.Name()+"/bindata",
 				&handlers.BindataHandler{
 					Application: c.application,
 				},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/environment",
+				"/"+c.Name()+"/environment",
 				&handlers.EnvironmentHandler{},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/routing",
+				"/"+c.Name()+"/routing",
 				&handlers.RoutingHandler{},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider/callback",
 				&handlers.AuthHandler{
@@ -83,7 +83,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider",
 				&handlers.AuthHandler{
@@ -92,7 +92,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				dashboard.AuthPath,
 				&handlers.AuthHandler{
@@ -101,9 +101,9 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/logout",
+				"/"+c.Name()+"/logout",
 				&handlers.LogoutHandler{
 					Config: c.config,
 				},
@@ -117,16 +117,16 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 
 		c.routes = append(c.routes, []dashboard.Route{
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/components",
+				"/"+c.Name()+"/components",
 				componentsHandler,
 				"",
 				true),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/",
+				"/"+c.Name()+"/",
 				componentsHandler,
 				"",
 				true),

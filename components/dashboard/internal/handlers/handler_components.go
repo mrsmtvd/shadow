@@ -21,8 +21,8 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 	components, _ := h.Application.GetComponents()
 	for _, cmp := range components {
 		row := map[string]interface{}{
-			"name":                    cmp.GetName(),
-			"version":                 cmp.GetVersion(),
+			"name":                    cmp.Name(),
+			"version":                 cmp.Version(),
 			"dependencies":            []string{},
 			"has_config_variables":    false,
 			"has_config_watchers":     false,
@@ -35,7 +35,7 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 		}
 
 		if deps, ok := cmp.(shadow.ComponentDependency); ok {
-			row["dependencies"] = deps.GetDependencies()
+			row["dependencies"] = deps.Dependencies()
 		}
 
 		if _, ok := cmp.(config.HasVariables); ok {
@@ -55,7 +55,7 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 		}
 
 		if tpl, ok := cmp.(dashboard.HasTemplates); ok {
-			templates := tpl.GetTemplates()
+			templates := tpl.DashboardTemplates()
 
 			if templates != nil {
 				row["has_dashboard_templates"] = templates.Prefix

@@ -11,7 +11,7 @@ import (
 	"github.com/kihamo/shadow/components/profiling/internal/handlers"
 )
 
-func (c *Component) GetTemplates() *assetfs.AssetFS {
+func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 	return &assetfs.AssetFS{
 		Asset:     Asset,
 		AssetDir:  AssetDir,
@@ -20,8 +20,8 @@ func (c *Component) GetTemplates() *assetfs.AssetFS {
 	}
 }
 
-func (c *Component) GetDashboardMenu() dashboard.Menu {
-	routes := c.GetDashboardRoutes()
+func (c *Component) DashboardMenu() dashboard.Menu {
+	routes := c.DashboardRoutes()
 
 	show := func(r *dashboard.Request) bool {
 		return r.Config().Bool(config.ConfigDebug)
@@ -40,13 +40,13 @@ func (c *Component) GetDashboardMenu() dashboard.Menu {
 	)
 }
 
-func (c *Component) GetDashboardRoutes() []dashboard.Route {
+func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/assets/*filepath",
+				"/"+c.Name()+"/assets/*filepath",
 				&assetfs.AssetFS{
 					Asset:     Asset,
 					AssetDir:  AssetDir,
@@ -56,21 +56,21 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
-				"/"+c.GetName()+"/trace/",
+				"/"+c.Name()+"/trace/",
 				&handlers.TraceHandler{},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/vars/",
 				&handlers.ExpvarHandler{},
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/cmdline",
 				&handlers.DebugHandler{
@@ -79,7 +79,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/profile",
 				&handlers.DebugHandler{
@@ -88,7 +88,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/symbol",
 				&handlers.DebugHandler{
@@ -97,7 +97,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/trace",
 				&handlers.DebugHandler{
@@ -106,7 +106,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/",
 				&handlers.DebugHandler{
@@ -118,7 +118,7 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 
 		for _, profile := range pprof.Profiles() {
 			c.routes = append(c.routes, dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/"+profile.Name(),
 				&handlers.DebugHandler{

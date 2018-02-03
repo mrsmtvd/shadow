@@ -28,7 +28,7 @@ func (h *ListHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 		}
 	}
 
-	h.Render(r.Context(), h.Component.GetName(), "list", map[string]interface{}{
+	h.Render(r.Context(), h.Component.Name(), "list", map[string]interface{}{
 		"measures": measures,
 		"error":    err,
 		"updated":  updated,

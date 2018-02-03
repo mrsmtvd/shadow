@@ -17,15 +17,15 @@ type Component struct {
 	routes []dashboard.Route
 }
 
-func (c *Component) GetName() string {
+func (c *Component) Name() string {
 	return profiling.ComponentName
 }
 
-func (c *Component) GetVersion() string {
+func (c *Component) Version() string {
 	return profiling.ComponentVersion
 }
 
-func (c *Component) GetDependencies() []shadow.Dependency {
+func (c *Component) Dependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
 			Name:     config.ComponentName,
@@ -40,7 +40,7 @@ func (c *Component) GetDependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
-	expvar.Publish(c.GetName()+".runtime", expvar.Func(expvarRuntime))
+	expvar.Publish(c.Name()+".runtime", expvar.Func(expvarRuntime))
 
 	return nil
 }

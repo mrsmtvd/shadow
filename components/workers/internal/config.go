@@ -7,7 +7,7 @@ import (
 	"github.com/kihamo/shadow/components/workers"
 )
 
-func (c *Component) GetConfigVariables() []config.Variable {
+func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
 			workers.ConfigWorkersCount,
@@ -30,7 +30,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() []config.Watcher {
+func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher(workers.ComponentName, []string{workers.ConfigWorkersCount}, c.watchCount),
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-func (c *Component) GetTemplates() *assetfs.AssetFS {
+func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 	return &assetfs.AssetFS{
 		Asset:     Asset,
 		AssetDir:  AssetDir,
@@ -17,19 +17,19 @@ func (c *Component) GetTemplates() *assetfs.AssetFS {
 	}
 }
 
-func (c *Component) GetDashboardMenu() dashboard.Menu {
-	routes := c.GetDashboardRoutes()
+func (c *Component) DashboardMenu() dashboard.Menu {
+	routes := c.DashboardRoutes()
 
 	return dashboard.NewMenuWithRoute("Configuration", routes[1], "cog", nil, nil)
 }
 
-func (c *Component) GetDashboardRoutes() []dashboard.Route {
+func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/assets/*filepath",
+				"/"+c.Name()+"/assets/*filepath",
 				&assetfs.AssetFS{
 					Asset:     Asset,
 					AssetDir:  AssetDir,
@@ -39,9 +39,9 @@ func (c *Component) GetDashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
-				"/"+c.GetName()+"/",
+				"/"+c.Name()+"/",
 				&handlers.ManagerHandler{
 					Application: c.application,
 					Component:   c,

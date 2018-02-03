@@ -8,14 +8,14 @@ import (
 
 func (s *Server) Version(ctx context.Context, in *proto.VersionRequest) (*proto.VersionResponse, error) {
 	response := &proto.VersionResponse{
-		Name:    s.Application.GetName(),
-		Version: s.Application.GetVersion(),
-		Build:   s.Application.GetBuild(),
-		Uptime:  ptypes.DurationProto(s.Application.GetUptime()),
+		Name:    s.Application.Name(),
+		Version: s.Application.Version(),
+		Build:   s.Application.Build(),
+		Uptime:  ptypes.DurationProto(s.Application.Uptime()),
 	}
 
-	if s.Application.GetBuildDate() != nil {
-		buildDatetime, err := ptypes.TimestampProto(*s.Application.GetBuildDate())
+	if s.Application.BuildDate() != nil {
+		buildDatetime, err := ptypes.TimestampProto(*s.Application.BuildDate())
 		if err != nil {
 			return response, err
 		}
@@ -23,8 +23,8 @@ func (s *Server) Version(ctx context.Context, in *proto.VersionRequest) (*proto.
 		response.BuildDatetime = buildDatetime
 	}
 
-	if s.Application.GetStartDate() != nil {
-		startDatetime, err := ptypes.TimestampProto(*s.Application.GetStartDate())
+	if s.Application.StartDate() != nil {
+		startDatetime, err := ptypes.TimestampProto(*s.Application.StartDate())
 		if err != nil {
 			return response, err
 		}

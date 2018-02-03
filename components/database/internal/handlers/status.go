@@ -37,7 +37,7 @@ func (h *StatusHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		statuses = append(statuses, []string{slave.String(), "Slave", h.status(slave, r.Context())})
 	}
 
-	h.Render(r.Context(), h.Component.GetName(), "status", map[string]interface{}{
+	h.Render(r.Context(), h.Component.Name(), "status", map[string]interface{}{
 		"statuses": statuses,
 	})
 }

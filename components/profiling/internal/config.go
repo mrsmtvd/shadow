@@ -8,7 +8,7 @@ import (
 	"github.com/kihamo/shadow/components/profiling"
 )
 
-func (c *Component) GetConfigVariables() []config.Variable {
+func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
 			profiling.ConfigDumpDirectory,
@@ -40,7 +40,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() []config.Watcher {
+func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher(profiling.ComponentName, []string{profiling.ConfigGCPercent}, c.watchGCPercent),
 		config.NewWatcher(profiling.ComponentName, []string{profiling.ConfigGoMaxProc}, c.watchGoMaxProc),

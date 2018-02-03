@@ -12,18 +12,18 @@ func (c *Component) loadTemplates() error {
 	c.renderer = NewRenderer()
 
 	c.renderer.AddGlobalVar("Application", map[string]interface{}{
-		"name":       c.application.GetName(),
-		"version":    c.application.GetVersion(),
-		"build":      c.application.GetBuild(),
-		"build_date": c.application.GetBuildDate(),
-		"start_date": c.application.GetStartDate(),
-		"uptime":     c.application.GetUptime(),
+		"name":       c.application.Name(),
+		"version":    c.application.Version(),
+		"build":      c.application.Build(),
+		"build_date": c.application.BuildDate(),
+		"start_date": c.application.StartDate(),
+		"uptime":     c.application.Uptime(),
 	})
 	c.renderer.AddGlobalVar("Config", c.config)
 
 	c.renderer.AddFunc("staticURL", c.funcStaticURL)
 
-	if err := c.renderer.AddBaseLayouts(c.GetTemplates()); err != nil {
+	if err := c.renderer.AddBaseLayouts(c.DashboardTemplates()); err != nil {
 		return err
 	}
 
@@ -34,7 +34,7 @@ func (c *Component) loadTemplates() error {
 
 	for _, component := range components {
 		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
-			err := c.renderer.AddComponents(component.GetName(), componentTemplate.GetTemplates())
+			err := c.renderer.AddComponents(component.Name(), componentTemplate.DashboardTemplates())
 			if err != nil {
 				return err
 			}
@@ -54,9 +54,9 @@ func (c *Component) funcStaticURL(file string, prefix bool) string {
 		return file
 	}
 
-	if c.application.GetBuild() != "" {
+	if c.application.Build() != "" {
 		values := u.Query()
-		values.Add("v", c.application.GetBuild())
+		values.Add("v", c.application.Build())
 
 		u.RawQuery = values.Encode()
 	}

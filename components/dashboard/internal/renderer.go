@@ -120,7 +120,7 @@ func (r *Renderer) Render(ctx context.Context, c, v string, d map[string]interfa
 func (r *Renderer) RenderLayout(ctx context.Context, c, v, l string, d map[string]interface{}) error {
 	component, ok := r.views[c]
 	if !ok {
-		return fmt.Errorf("Templates for component \"%s\" not found", c)
+		return fmt.Errorf("DashboardTemplates for component \"%s\" not found", c)
 	}
 
 	view, ok := component[v+TemplatePostfix]

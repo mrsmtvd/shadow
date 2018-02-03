@@ -46,24 +46,24 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 	}
 
 	modTime := time.Now()
-	if h.Application.GetBuildDate() != nil {
-		modTime = *h.Application.GetBuildDate()
+	if h.Application.BuildDate() != nil {
+		modTime = *h.Application.BuildDate()
 	}
 
 	for _, component := range components {
 		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
-			fs := componentTemplate.GetTemplates()
+			fs := componentTemplate.DashboardTemplates()
 			if fs == nil {
 				continue
 			}
 
 			files = append(files, bindataList{
 				IsDir:   true,
-				Name:    component.GetName(),
+				Name:    component.Name(),
 				Size:    0,
 				Mode:    os.FileMode(0644) | os.ModeDir,
 				ModTime: modTime,
-				Path:    filepath.Join("/", component.GetName()),
+				Path:    filepath.Join("/", component.Name()),
 			})
 		}
 	}
@@ -81,7 +81,7 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 		return nil, fmt.Errorf("Component %s haven't templates", name)
 	}
 
-	fs := componentTemplate.GetTemplates()
+	fs := componentTemplate.DashboardTemplates()
 	if fs.Prefix != "" {
 		fs.Prefix = ""
 	}
@@ -142,8 +142,8 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 		}
 
 		if statSub.IsDir() {
-			if h.Application.GetBuildDate() != nil {
-				infoSub.ModTime = *h.Application.GetBuildDate()
+			if h.Application.BuildDate() != nil {
+				infoSub.ModTime = *h.Application.BuildDate()
 			}
 
 			// TODO: directory size

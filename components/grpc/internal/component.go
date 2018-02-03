@@ -25,15 +25,15 @@ type Component struct {
 	routes      []dashboard.Route
 }
 
-func (c *Component) GetName() string {
+func (c *Component) Name() string {
 	return grpc.ComponentName
 }
 
-func (c *Component) GetVersion() string {
+func (c *Component) Version() string {
 	return grpc.ComponentVersion + "/" + g.Version
 }
 
-func (c *Component) GetDependencies() []shadow.Dependency {
+func (c *Component) Dependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
 			Name:     config.ComponentName,
@@ -56,7 +56,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(wg *sync.WaitGroup) error {
-	c.logger = logger.NewOrNop(c.GetName(), c.application)
+	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	var serverOptions []g.ServerOption
 

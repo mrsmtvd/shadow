@@ -7,7 +7,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-func (c *Component) GetConfigVariables() []config.Variable {
+func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(
 			dashboard.ConfigHost,
@@ -309,7 +309,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 		config.NewVariable(
 			dashboard.ConfigStartURL,
 			config.ValueTypeString,
-			"/"+c.GetName(),
+			"/"+c.Name(),
 			"Start URL",
 			true,
 			"Others",
@@ -318,7 +318,7 @@ func (c *Component) GetConfigVariables() []config.Variable {
 	}
 }
 
-func (c *Component) GetConfigWatchers() []config.Watcher {
+func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher(dashboard.ComponentName, []string{
 			dashboard.ConfigAuthEnabled,

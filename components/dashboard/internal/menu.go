@@ -29,7 +29,7 @@ func (c *Component) loadMenu() error {
 
 	for _, component := range components {
 		if componentMenu, ok := component.(dashboard.HasMenu); ok {
-			menu := componentMenu.GetDashboardMenu()
+			menu := componentMenu.DashboardMenu()
 			if menu != nil {
 				if component == c {
 					menus = append([]dashboard.Menu{menu}, menus...)

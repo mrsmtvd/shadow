@@ -27,15 +27,15 @@ type Component struct {
 	mutex       sync.RWMutex
 }
 
-func (c *Component) GetName() string {
+func (c *Component) Name() string {
 	return logger.ComponentName
 }
 
-func (c *Component) GetVersion() string {
+func (c *Component) Version() string {
 	return logger.ComponentVersion
 }
 
-func (c *Component) GetDependencies() []shadow.Dependency {
+func (c *Component) Dependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
 			Name:     config.ComponentName,
@@ -53,7 +53,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	log.SetOutput(c.Get(c.GetName()))
+	log.SetOutput(c.Get(c.Name()))
 
 	return nil
 }
@@ -110,9 +110,9 @@ func (c *Component) getFields() map[string]interface{} {
 		delete(fields, fieldComponent)
 	}
 
-	fields[fieldAppName] = c.application.GetName()
-	fields[fieldAppVersion] = c.application.GetVersion()
-	fields[fieldAppBuild] = c.application.GetBuild()
+	fields[fieldAppName] = c.application.Name()
+	fields[fieldAppVersion] = c.application.Version()
+	fields[fieldAppBuild] = c.application.Build()
 
 	if hostname, err := os.Hostname(); err == nil {
 		fields[fieldHostname] = hostname

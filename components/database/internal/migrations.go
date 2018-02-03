@@ -80,7 +80,7 @@ func (c *Component) getCollect() database.Migrations {
 
 	for _, s := range components {
 		if service, ok := s.(database.HasMigrations); ok {
-			for _, migration := range service.GetMigrations() {
+			for _, migration := range service.DatabaseMigrations() {
 				if !nameRegexp.MatchString(migration.Id()) {
 					c.logger.Warnf("Skip migration with wrong id %s", migration.Id())
 					continue

@@ -79,7 +79,7 @@ func (c *Component) Metrics() snitch.Collector {
 	}
 
 	l := listener.NewFunctionListener(collector.listener)
-	l.SetName(c.GetName() + ".metrics")
+	l.SetName(c.Name() + ".metrics")
 
 	c.AddLockedListener(l.Id())
 	c.AddListenerByEvents([]ws.EventId{

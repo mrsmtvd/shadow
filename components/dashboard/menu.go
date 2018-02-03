@@ -10,7 +10,7 @@ type Menu interface {
 }
 
 type HasMenu interface {
-	GetDashboardMenu() Menu
+	DashboardMenu() Menu
 }
 
 type MenuItem struct {

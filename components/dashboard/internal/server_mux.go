@@ -34,7 +34,7 @@ func (c *Component) getServeMux() (http.Handler, error) {
 
 	for _, component := range components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
-			for _, route := range componentRoute.GetDashboardRoutes() {
+			for _, route := range componentRoute.DashboardRoutes() {
 				router.AddRoute(route)
 			}
 		}

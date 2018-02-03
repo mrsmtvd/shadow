@@ -36,15 +36,15 @@ type Component struct {
 	storage  *storage.Influx
 }
 
-func (c *Component) GetName() string {
+func (c *Component) Name() string {
 	return metrics.ComponentName
 }
 
-func (c *Component) GetVersion() string {
+func (c *Component) Version() string {
 	return metrics.ComponentVersion
 }
 
-func (c *Component) GetDependencies() []shadow.Dependency {
+func (c *Component) Dependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
 			Name:     config.ComponentName,
@@ -75,7 +75,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(wg *sync.WaitGroup) error {
-	c.logger = logger.NewOrNop(c.GetName(), c.application)
+	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	url := c.config.String(metrics.ConfigUrl)
 	if url == "" {
@@ -125,9 +125,9 @@ func (c *Component) Register(cs ...snitch.Collector) {
 
 func (c *Component) initLabels(labels string) {
 	l := snitch.Labels{
-		&snitch.Label{Key: TagAppName, Value: c.application.GetName()},
-		&snitch.Label{Key: TagAppVersion, Value: c.application.GetVersion()},
-		&snitch.Label{Key: TagAppBuild, Value: c.application.GetBuild()},
+		&snitch.Label{Key: TagAppName, Value: c.application.Name()},
+		&snitch.Label{Key: TagAppVersion, Value: c.application.Version()},
+		&snitch.Label{Key: TagAppBuild, Value: c.application.Build()},
 	}
 
 	if hostname, err := os.Hostname(); err == nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/kihamo/shadow/components/metrics/internal/handlers"
 )
 
-func (c *Component) GetTemplates() *assetfs.AssetFS {
+func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 	return &assetfs.AssetFS{
 		Asset:     Asset,
 		AssetDir:  AssetDir,
@@ -17,19 +17,19 @@ func (c *Component) GetTemplates() *assetfs.AssetFS {
 	}
 }
 
-func (c *Component) GetDashboardMenu() dashboard.Menu {
-	routes := c.GetDashboardRoutes()
+func (c *Component) DashboardMenu() dashboard.Menu {
+	routes := c.DashboardRoutes()
 
 	return dashboard.NewMenuWithRoute("Metrics", routes[0], "thermometer-empty", nil, nil)
 }
 
-func (c *Component) GetDashboardRoutes() []dashboard.Route {
+func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.GetName(),
+				c.Name(),
 				[]string{http.MethodGet},
-				"/"+c.GetName()+"/list/",
+				"/"+c.Name()+"/list/",
 				&handlers.ListHandler{
 					Component: c,
 				},

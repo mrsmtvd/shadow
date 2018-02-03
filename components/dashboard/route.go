@@ -27,7 +27,7 @@ type Route interface {
 }
 
 type HasRoutes interface {
-	GetDashboardRoutes() []Route
+	DashboardRoutes() []Route
 }
 
 type RouteItem struct {
