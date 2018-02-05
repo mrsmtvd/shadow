@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"io"
 	"net/url"
 	"strconv"
 
@@ -24,13 +25,40 @@ func New(token string, debug bool) (platform *Telegram, err error) {
 	return platform, nil
 }
 
-func (p *Telegram) SendMessage(to, message string) error {
+func (p *Telegram) chatId(to string) (int64, error) {
 	chatId, err := strconv.Atoi(to)
+	if err != nil {
+		return -1, err
+	}
+
+	return int64(chatId), err
+}
+
+func (p *Telegram) SendMessage(to, message string) error {
+	chatId, err := p.chatId(to)
 	if err != nil {
 		return err
 	}
 
-	msg := tgbotapi.NewMessage(int64(chatId), message)
+	msg := tgbotapi.NewMessage(chatId, message)
+	_, err = p.bot.Send(msg)
+
+	return err
+}
+
+func (p *Telegram) SendPhoto(to, name string, file io.Reader) error {
+	chatId, err := p.chatId(to)
+	if err != nil {
+		return err
+	}
+
+	msg := tgbotapi.NewPhotoUpload(chatId, tgbotapi.FileReader{
+		Name:   name,
+		Reader: file,
+		Size:   -1,
+	})
+	msg.Caption = name
+
 	_, err = p.bot.Send(msg)
 
 	return err

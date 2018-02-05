@@ -3,9 +3,9 @@ package internal
 import (
 	"fmt"
 	"net/url"
-	"sync"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/annotations"
