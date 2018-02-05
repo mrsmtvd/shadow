@@ -55,7 +55,6 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	c.initStorageGrafana()
-	c.initStorageTelegram()
 
 	return nil
 }
@@ -116,12 +115,14 @@ func (c *Component) AddStorage(id string, s annotations.Storage) error {
 	}
 
 	c.storages[id] = s
+	c.logger.Debugf("Added annotations storage %s", id)
 	return nil
 }
 
 func (c *Component) RemoveStorage(id string) {
 	c.mutex.Lock()
 	delete(c.storages, id)
+	c.logger.Debugf("Removed annotations storage %s", id)
 	c.mutex.Unlock()
 }
 
@@ -149,32 +150,4 @@ func (c *Component) initStorageGrafana() {
 		c.logger)
 
 	c.AddStorage(annotations.StorageGrafana, s)
-}
-
-func (c *Component) initStorageTelegram() {
-	c.RemoveStorage(annotations.StorageTelegram)
-
-	if !c.config.Bool(annotations.ConfigStorageTelegramEnabled) {
-		return
-	}
-
-	var chats []int64
-
-	for _, id := range strings.Split(c.config.String(annotations.ConfigStorageTelegramChats), ",") {
-		if value, err := strconv.ParseInt(id, 10, 0); err == nil {
-			chats = append(chats, value)
-		}
-	}
-
-	s, err := storage.NewTelegram(
-		c.config.String(annotations.ConfigStorageTelegramToken),
-		chats,
-		c.config.Bool(config.ConfigDebug))
-
-	if err != nil {
-		c.logger.Errorf("Telegram storage failed: %s", err.Error())
-		return
-	}
-
-	c.AddStorage(annotations.StorageTelegram, s)
 }

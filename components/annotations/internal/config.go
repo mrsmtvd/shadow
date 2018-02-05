@@ -63,35 +63,6 @@ func (c *Component) ConfigVariables() []config.Variable {
 			map[string]interface{}{
 				config.ViewOptionTagsDefaultText: "add a id",
 			}),
-		config.NewVariable(
-			annotations.ConfigStorageTelegramEnabled,
-			config.ValueTypeBool,
-			false,
-			"Enabled Telegram storage",
-			true,
-			"Telegram storage",
-			nil,
-			nil),
-		config.NewVariable(
-			annotations.ConfigStorageTelegramToken,
-			config.ValueTypeString,
-			nil,
-			"Telegram bot token",
-			true,
-			"Telegram storage",
-			nil,
-			nil),
-		config.NewVariable(
-			annotations.ConfigStorageTelegramChats,
-			config.ValueTypeString,
-			nil,
-			"Telegram chats id",
-			true,
-			"Telegram storage",
-			[]string{config.ViewTags},
-			map[string]interface{}{
-				config.ViewOptionTagsDefaultText: "add a id",
-			}),
 	}
 }
 
@@ -104,18 +75,9 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 			annotations.ConfigStorageGrafanaUsername,
 			annotations.ConfigStorageGrafanaPassword,
 		}, c.watchStorageGrafana),
-		config.NewWatcher(annotations.ComponentName, []string{
-			annotations.ConfigStorageTelegramEnabled,
-			annotations.ConfigStorageTelegramToken,
-			annotations.ConfigStorageTelegramChats,
-		}, c.watchStorageTelegram),
 	}
 }
 
 func (c *Component) watchStorageGrafana(_ string, _ interface{}, _ interface{}) {
 	c.initStorageGrafana()
-}
-
-func (c *Component) watchStorageTelegram(_ string, _ interface{}, _ interface{}) {
-	c.initStorageTelegram()
 }

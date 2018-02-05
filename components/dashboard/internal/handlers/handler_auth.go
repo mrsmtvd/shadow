@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/markbates/goth"
@@ -30,7 +29,6 @@ type AuthHandler struct {
 	dashboard.Handler
 
 	IsCallback bool
-	Config     config.Component
 }
 
 func (h *AuthHandler) buildProvidersView(r *dashboard.Request) ProvidersView {
@@ -95,7 +93,7 @@ func (h *AuthHandler) getRedirectToLastURL(r *dashboard.Request) string {
 		return redirectURL
 	}
 
-	return h.Config.String(dashboard.ConfigStartURL)
+	return r.Config().String(dashboard.ConfigStartURL)
 }
 
 func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
@@ -152,7 +150,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 	}
 
 	if provider.Name() != "password" {
-		emailsConfig := h.Config.String(dashboard.ConfigOAuth2EmailsAllowed)
+		emailsConfig := r.Config().String(dashboard.ConfigOAuth2EmailsAllowed)
 		if emailsConfig != "" {
 			emails := strings.Split(emailsConfig, ",")
 
@@ -174,7 +172,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 			}
 		}
 
-		domainsConfig := h.Config.String(dashboard.ConfigOAuth2DomainsAllowed)
+		domainsConfig := r.Config().String(dashboard.ConfigOAuth2DomainsAllowed)
 		if domainsConfig != "" {
 			domains := strings.Split(domainsConfig, ",")
 

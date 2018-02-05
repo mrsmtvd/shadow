@@ -1,30 +1,24 @@
-package storage
+package annotations
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/kihamo/shadow/components/annotations"
+	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
 	"gopkg.in/telegram-bot-api.v4"
 )
 
 type Telegram struct {
-	bot   *tgbotapi.BotAPI
-	chats []int64
+	messenger *telegram.Telegram
+	chats     []int64
 }
 
-func NewTelegram(token string, chats []int64, debug bool) (*Telegram, error) {
-	bot, err := tgbotapi.NewBotAPI(token)
-	if err != nil {
-		return nil, err
-	}
-
-	bot.Debug = debug
-
+func NewTelegram(messenger *telegram.Telegram, chats []int64) *Telegram {
 	return &Telegram{
-		bot:   bot,
-		chats: chats,
-	}, nil
+		messenger: messenger,
+		chats:     chats,
+	}
 }
 
 func (s *Telegram) Create(annotation annotations.Annotation) (err error) {
@@ -34,7 +28,7 @@ func (s *Telegram) Create(annotation annotations.Annotation) (err error) {
 	for _, chatId := range s.chats {
 		msg.ChatID = chatId
 
-		if _, err := s.bot.Send(msg); err != nil {
+		if _, err := s.messenger.SendMessageRaw(msg); err != nil {
 			break
 		}
 	}

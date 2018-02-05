@@ -78,7 +78,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				dashboard.AuthPath+"/:provider/callback",
 				&handlers.AuthHandler{
 					IsCallback: true,
-					Config:     c.config,
 				},
 				"",
 				false),
@@ -86,27 +85,21 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider",
-				&handlers.AuthHandler{
-					Config: c.config,
-				},
+				&handlers.AuthHandler{},
 				"",
 				false),
 			dashboard.NewRoute(
 				c.Name(),
 				[]string{http.MethodGet},
 				dashboard.AuthPath,
-				&handlers.AuthHandler{
-					Config: c.config,
-				},
+				&handlers.AuthHandler{},
 				"",
 				false),
 			dashboard.NewRoute(
 				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/logout",
-				&handlers.LogoutHandler{
-					Config: c.config,
-				},
+				&handlers.LogoutHandler{},
 				"",
 				true),
 		}
