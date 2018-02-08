@@ -25,7 +25,7 @@ import:
 - package: github.com/kihamo/go-grafana-api
   version: b9af836f6e9ddb24b1bb5d3d498459d93816ed64
 - package: github.com/kihamo/go-workers
-  version: c165adff05a79326dff02f60c17d6b03f76308f0
+  version: 52cbdc38bf46a8884b250365d21fc7b794526db3
 - package: github.com/kihamo/gotypes
   version: c1b2b85a41fe44ea31cb3f713b175448cfb08b84
 - package: github.com/kihamo/snitch
