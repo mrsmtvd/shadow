@@ -9,4 +9,5 @@ type Component interface {
 	shadow.Component
 
 	Registry() snitch.Registerer
+	Register(...snitch.Collector)
 }
