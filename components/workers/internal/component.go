@@ -69,19 +69,7 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	l.SetName(c.Name() + ".logging")
 	c.AddLockedListener(l.Id())
 
-	c.AddListenerByEvents([]ws.EventId{
-		ws.EventIdListenerAdd,
-		ws.EventIdListenerRemove,
-		ws.EventIdWorkerAdd,
-		ws.EventIdWorkerRemove,
-		ws.EventIdTaskAdd,
-		ws.EventIdTaskRemove,
-		ws.EventIdTaskExecuteStart,
-		ws.EventIdTaskExecuteStop,
-		ws.EventIdDispatcherStatusChanged,
-		ws.EventIdWorkerStatusChanged,
-		ws.EventIdTaskStatusChanged,
-	}, l)
+	c.AddListenerByEvents([]ws.EventId{ws.EventIdAll}, l)
 
 	for i := 1; i <= c.config.Int(workers.ConfigWorkersCount); i++ {
 		c.AddSimpleWorker()

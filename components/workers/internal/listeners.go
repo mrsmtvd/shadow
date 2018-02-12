@@ -109,5 +109,10 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"task.status.current": args[2].(workers.Status).String(),
 			"task.status.prev":    args[3].(workers.Status).String(),
 		})
+
+	default:
+		c.logger.Debugf("Fire unknown event %s", eventId, map[string]interface{}{
+			"args": args,
+		})
 	}
 }
