@@ -11,7 +11,7 @@ const (
 )
 
 var (
-	metricOpenConnectionsTotal snitch.Gauge
+	metricOpenConnectionsTotal = snitch.NewGauge(MetricOpenConnectionsTotal, "Number of open connections to the database")
 )
 
 type metricsCollector struct {
@@ -43,8 +43,6 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 }
 
 func (c *Component) Metrics() snitch.Collector {
-	metricOpenConnectionsTotal = snitch.NewGauge(MetricOpenConnectionsTotal, "Number of open connections to the database")
-
 	return &metricsCollector{
 		component: c,
 	}

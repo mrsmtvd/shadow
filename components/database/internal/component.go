@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/database/balancer"
 	"github.com/kihamo/shadow/components/database/storage"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/metrics"
 	"github.com/rubenv/sql-migrate"
 )
 
@@ -37,6 +38,9 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		},
 		{
 			Name: logger.ComponentName,
+		},
+		{
+			Name: metrics.ComponentName,
 		},
 	}
 }

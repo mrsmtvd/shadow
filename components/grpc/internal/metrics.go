@@ -10,11 +10,9 @@ const (
 )
 
 var (
-	metricExecuteTime snitch.Timer
+	metricExecuteTime = snitch.NewTimer(MetricExecuteTime, "Total request duration")
 )
 
 func (c *Component) Metrics() snitch.Collector {
-	metricExecuteTime = snitch.NewTimer(MetricExecuteTime, "Total request duration")
-
 	return metricExecuteTime
 }

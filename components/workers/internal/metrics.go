@@ -21,12 +21,12 @@ const (
 )
 
 var (
-	metricListenersTotal       snitch.Gauge
-	metricListenersEventsTotal snitch.Gauge
-	metricWorkersTotal         snitch.Gauge
-	metricWorkersLockedTotal   snitch.Gauge
-	metricTasksTotal           snitch.Gauge
-	metricTasksLockedTotal     snitch.Gauge
+	metricListenersTotal       = snitch.NewGauge(MetricListenersTotal, "Number of listeners")
+	metricListenersEventsTotal = snitch.NewGauge(MetricListenersEventsTotal, "Number of events of listeners")
+	metricWorkersTotal         = snitch.NewGauge(MetricWorkersTotal, "Number of workers")
+	metricWorkersLockedTotal   = snitch.NewGauge(MetricWorkersLockedTotal, "Number of locked workers")
+	metricTasksTotal           = snitch.NewGauge(MetricTasksTotal, "Number of tasks")
+	metricTasksLockedTotal     = snitch.NewGauge(MetricTasksLockedTotal, "Number of locked tasks")
 )
 
 type metricsCollector struct {
@@ -101,13 +101,6 @@ func (c *metricsCollector) listener(_ context.Context, eventId ws.EventId, _ tim
 }
 
 func (c *Component) Metrics() snitch.Collector {
-	metricListenersTotal = snitch.NewGauge(MetricListenersTotal, "Number of listeners")
-	metricListenersEventsTotal = snitch.NewGauge(MetricListenersEventsTotal, "Number of events of listeners")
-	metricWorkersTotal = snitch.NewGauge(MetricWorkersTotal, "Number of workers")
-	metricWorkersLockedTotal = snitch.NewGauge(MetricWorkersLockedTotal, "Number of locked workers")
-	metricTasksTotal = snitch.NewGauge(MetricTasksTotal, "Number of tasks")
-	metricTasksLockedTotal = snitch.NewGauge(MetricTasksLockedTotal, "Number of locked tasks")
-
 	collector := &metricsCollector{
 		component: c,
 	}

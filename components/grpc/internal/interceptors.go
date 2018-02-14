@@ -106,10 +106,8 @@ func NewLoggerStreamServerInterceptor(l logger.Logger) grpc.StreamServerIntercep
 }
 
 func doMetrics(method string, startTime time.Time) {
-	if metricExecuteTime != nil {
-		metricExecuteTime.UpdateSince(startTime)
-		metricExecuteTime.With("method", method).UpdateSince(startTime)
-	}
+	metricExecuteTime.UpdateSince(startTime)
+	metricExecuteTime.With("method", method).UpdateSince(startTime)
 }
 
 func NewMetricsUnaryServerInterceptor() grpc.UnaryServerInterceptor {

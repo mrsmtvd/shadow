@@ -10,11 +10,9 @@ const (
 )
 
 var (
-	metricMailTotal snitch.Counter
+	metricMailTotal = snitch.NewCounter(MetricTotal, "Number of mail")
 )
 
 func (c *Component) Metrics() snitch.Collector {
-	metricMailTotal = snitch.NewCounter(MetricTotal, "Number of mail")
-
 	return metricMailTotal
 }

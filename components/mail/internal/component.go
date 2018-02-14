@@ -29,11 +29,12 @@ type Component struct {
 	logger      logger.Logger
 	routes      []dashboard.Route
 
-	mutex  sync.RWMutex
-	open   bool
-	dialer *gomail.Dialer
-	closer gomail.SendCloser
-	queue  chan *mailTask
+	mutex          sync.RWMutex
+	open           bool
+	dialer         *gomail.Dialer
+	closer         gomail.SendCloser
+	queue          chan *mailTask
+	metricsEnabled bool
 }
 
 func (c *Component) Name() string {
@@ -67,6 +68,7 @@ func (c *Component) Init(a shadow.Application) error {
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.open = false
 	c.queue = make(chan *mailTask)
+	c.metricsEnabled = a.HasComponent(metrics.ComponentName)
 
 	return nil
 }
@@ -92,7 +94,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 				}
 
 				err := c.execute(task)
-				if metricMailTotal != nil {
+				if c.metricsEnabled {
 					metricMailTotal.Inc()
 
 					if err != nil {
