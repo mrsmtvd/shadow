@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
@@ -50,12 +51,18 @@ func NewConfigStreamServerInterceptor(c config.Component) grpc.StreamServerInter
 	}
 }
 
-func doLogger(l logger.Logger, method string, err error) {
+func doLogger(l logger.Logger, method string, req interface{}, err error) {
 	code := grpc_logging.DefaultErrorToCode(err)
 
 	fields := map[string]interface{}{
 		"method": method,
 		"code":   code.String(),
+	}
+
+	if req != nil {
+		if s, ok := req.(fmt.Stringer); ok {
+			fields["request"] = s
+		}
 	}
 
 	if err != nil {
@@ -78,7 +85,7 @@ func NewLoggerUnaryServerInterceptor(l logger.Logger) grpc.UnaryServerIntercepto
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		resp, err = handler(context.WithValue(ctx, LoggerContextKey, l), req)
 
-		doLogger(l, info.FullMethod, err)
+		doLogger(l, info.FullMethod, req, err)
 
 		return resp, err
 	}
@@ -92,7 +99,7 @@ func NewLoggerStreamServerInterceptor(l logger.Logger) grpc.StreamServerIntercep
 
 		err := handler(srv, wrapped)
 
-		doLogger(l, info.FullMethod, err)
+		doLogger(l, info.FullMethod, nil, err)
 
 		return err
 	}
