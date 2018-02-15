@@ -81,6 +81,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 
 		if args[5] != nil {
 			fields["task.err"] = args[5].(error).Error()
+			c.logger.Error("Task ended with an error", fields)
 		}
 
 		c.logger.Debugf("%s execute stopped", task, fields)
