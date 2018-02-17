@@ -22,10 +22,10 @@ type Component interface {
 	GetTaskMetadata(string) ws.Metadata
 	GetTasks() []ws.Task
 
-	AddListenerByEvent(ws.EventId, ws.Listener)
-	AddListenerByEvents([]ws.EventId, ws.Listener)
-	RemoveListenerByEvent(ws.EventId, ws.Listener)
-	RemoveListenerByEvents([]ws.EventId, ws.Listener)
+	AddListenerByEvent(ws.Event, ws.Listener)
+	AddListenerByEvents([]ws.Event, ws.Listener)
+	RemoveListenerByEvent(ws.Event, ws.Listener)
+	RemoveListenerByEvents([]ws.Event, ws.Listener)
 	RemoveListener(ws.Listener)
 	GetListenerMetadata(string) ws.Metadata
 	GetListeners() []ws.Listener

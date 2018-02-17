@@ -7,23 +7,23 @@ import (
 	"github.com/kihamo/go-workers"
 )
 
-func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, _ time.Time, args ...interface{}) {
-	switch eventId {
-	case workers.EventIdWorkerAdd:
+func (c *Component) listenerLogging(_ context.Context, event workers.Event, _ time.Time, args ...interface{}) {
+	switch event {
+	case workers.EventWorkerAdd:
 		worker := args[0].(workers.Worker)
 
 		c.logger.Debugf("%s added", worker, map[string]interface{}{
 			"worker.id": worker.Id(),
 		})
 
-	case workers.EventIdWorkerRemove:
+	case workers.EventWorkerRemove:
 		worker := args[0].(workers.Worker)
 
 		c.logger.Debugf("%s removed", worker, map[string]interface{}{
 			"worker.id": worker.Id(),
 		})
 
-	case workers.EventIdTaskAdd:
+	case workers.EventTaskAdd:
 		task := args[0].(workers.Task)
 
 		c.logger.Debugf("%s added", task, map[string]interface{}{
@@ -31,7 +31,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"task.name": task.Name(),
 		})
 
-	case workers.EventIdTaskRemove:
+	case workers.EventTaskRemove:
 		task := args[0].(workers.Task)
 
 		c.logger.Debugf("%s removed", task, map[string]interface{}{
@@ -39,8 +39,8 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"task.name": task.Name(),
 		})
 
-	case workers.EventIdListenerAdd:
-		event := args[0].(workers.EventId)
+	case workers.EventListenerAdd:
+		event := args[0].(workers.Event)
 		listener := args[1].(workers.Listener)
 
 		c.logger.Debugf("%s added for %s", listener, event, map[string]interface{}{
@@ -49,8 +49,8 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"listener.name": listener.Name(),
 		})
 
-	case workers.EventIdListenerRemove:
-		event := args[0].(workers.EventId)
+	case workers.EventListenerRemove:
+		event := args[0].(workers.Event)
 		listener := args[1].(workers.Listener)
 
 		c.logger.Debugf("%s removed for %s", listener, event, map[string]interface{}{
@@ -59,7 +59,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"listener.name": listener.Name(),
 		})
 
-	case workers.EventIdTaskExecuteStart:
+	case workers.EventTaskExecuteStart:
 		task := args[0].(workers.Task)
 
 		c.logger.Debugf("%s execute started", task, map[string]interface{}{
@@ -68,7 +68,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"worker.id": args[2].(workers.Worker).Id(),
 		})
 
-	case workers.EventIdTaskExecuteStop:
+	case workers.EventTaskExecuteStop:
 		task := args[0].(workers.Task)
 
 		fields := map[string]interface{}{
@@ -86,13 +86,13 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 
 		c.logger.Debugf("%s execute stopped", task, fields)
 
-	case workers.EventIdDispatcherStatusChanged:
+	case workers.EventDispatcherStatusChanged:
 		c.logger.Debug("Dispatcher status changed", map[string]interface{}{
 			"dispatcher.status.current": args[1].(workers.Status).String(),
 			"dispatcher.status.prev":    args[2].(workers.Status).String(),
 		})
 
-	case workers.EventIdWorkerStatusChanged:
+	case workers.EventWorkerStatusChanged:
 		worker := args[0].(workers.Worker)
 
 		c.logger.Debugf("%s status changed", worker, map[string]interface{}{
@@ -101,7 +101,7 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 			"worker.status.prev":    args[3].(workers.Status).String(),
 		})
 
-	case workers.EventIdTaskStatusChanged:
+	case workers.EventTaskStatusChanged:
 		task := args[0].(workers.Task)
 
 		c.logger.Debugf("%s status changed", task, map[string]interface{}{
@@ -112,8 +112,10 @@ func (c *Component) listenerLogging(_ context.Context, eventId workers.EventId, 
 		})
 
 	default:
-		c.logger.Debugf("Fire unknown event %s", eventId, map[string]interface{}{
-			"args": args,
+		c.logger.Debug("Fire unknown event", map[string]interface{}{
+			"event.id":   event.Id(),
+			"event.name": event.Name(),
+			"args":       args,
 		})
 	}
 }

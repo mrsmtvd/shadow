@@ -789,15 +789,15 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 			} else {
 				in.Delim('{')
 				if !in.IsDelim('}') {
-					out.Events = make(map[string]int64)
+					out.Events = make(map[string]string)
 				} else {
 					out.Events = nil
 				}
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
-					var v10 int64
-					v10 = int64(in.Int64())
+					var v10 string
+					v10 = string(in.String())
 					(out.Events)[key] = v10
 					in.WantComma()
 				}
@@ -894,7 +894,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 				}
 				out.String(string(v11Name))
 				out.RawByte(':')
-				out.Int64(int64(v11Value))
+				out.String(string(v11Value))
 			}
 			out.RawByte('}')
 		}

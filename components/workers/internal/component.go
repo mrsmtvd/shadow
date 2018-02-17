@@ -69,7 +69,7 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	l.SetName(c.Name() + ".logging")
 	c.AddLockedListener(l.Id())
 
-	c.AddListenerByEvents([]ws.EventId{ws.EventIdAll}, l)
+	c.AddListenerByEvents([]ws.Event{ws.EventAll}, l)
 
 	for i := 1; i <= c.config.Int(workers.ConfigWorkersCount); i++ {
 		c.AddSimpleWorker()

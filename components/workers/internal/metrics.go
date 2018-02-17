@@ -76,7 +76,7 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 
 	for _, l := range listeners {
 		if md := c.component.GetListenerMetadata(l.Id()); md != nil {
-			events += len(md[ws.ListenerMetadataEventIds].([]ws.EventId))
+			events += len(md[ws.ListenerMetadataEvents].([]ws.Event))
 		}
 	}
 
@@ -91,11 +91,11 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 	metricTasksLockedTotal.Collect(ch)
 }
 
-func (c *metricsCollector) listener(_ context.Context, eventId ws.EventId, _ time.Time, args ...interface{}) {
-	switch eventId {
-	case ws.EventIdWorkerStatusChanged:
+func (c *metricsCollector) listener(_ context.Context, event ws.Event, _ time.Time, args ...interface{}) {
+	switch event {
+	case ws.EventWorkerStatusChanged:
 		metricWorkersTotal.With("status", strings.ToLower(args[2].(ws.Status).String())).Inc()
-	case ws.EventIdTaskStatusChanged:
+	case ws.EventTaskStatusChanged:
 		metricTasksTotal.With("status", strings.ToLower(args[2].(ws.Status).String())).Inc()
 	}
 }
@@ -109,9 +109,9 @@ func (c *Component) Metrics() snitch.Collector {
 	l.SetName(c.Name() + ".metrics")
 
 	c.AddLockedListener(l.Id())
-	c.AddListenerByEvents([]ws.EventId{
-		ws.EventIdWorkerStatusChanged,
-		ws.EventIdTaskStatusChanged,
+	c.AddListenerByEvents([]ws.Event{
+		ws.EventWorkerStatusChanged,
+		ws.EventTaskStatusChanged,
 	}, l)
 
 	return collector

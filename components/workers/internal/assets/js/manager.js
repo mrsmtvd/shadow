@@ -35,17 +35,13 @@ $(document).ready(function () {
                 {
                     data: 'events',
                     render: function (data, type, row) {
-                        var
-                            content = '',
-                            keys = Object.keys(data);
+                        var content = '';
 
-                        keys.sort();
-
-                        for (var i = 0; i < keys.length; i++) {
+                        for (var eventId in data) {
                             if (!row.locked) {
-                                content += '<a href="#" title="Removing listener" class="label label-info" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener #' + row.id + ' for event ' + keys[i] + '" data-modal-callback="listenersRemove(\'' + row.id + '\', \'' + data[keys[i]] + '\');">' + keys[i] + ' x</a> '
+                                content += '<a href="#" title="Removing listener" class="label label-info" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener #' + row.id + ' for event ' + data[eventId] + '" data-modal-callback="listenersRemove(\'' + row.id + '\', \'' + eventId + '\');">' + data[eventId] + ' x</a> '
                             } else {
-                                content += '<span class="label label-info">' + keys[i] + '</span> ';
+                                content += '<span class="label label-info">' + data[eventId] + '</span> ';
                             }
                         }
 

@@ -55,13 +55,13 @@ type managerHandlerItemTask struct {
 
 // easyjson:json
 type managerHandlerItemListener struct {
-	Id           string           `json:"id"`
-	Name         string           `json:"name"`
-	Locked       bool             `json:"locked"`
-	Events       map[string]int64 `json:"events"`
-	Fires        int64            `json:"fires"`
-	FirstFiredAt *time.Time       `json:"first_fired_at"`
-	LastFiredAt  *time.Time       `json:"last_fired_at"`
+	Id           string            `json:"id"`
+	Name         string            `json:"name"`
+	Locked       bool              `json:"locked"`
+	Events       map[string]string `json:"events"`
+	Fires        int64             `json:"fires"`
+	FirstFiredAt *time.Time        `json:"first_fired_at"`
+	LastFiredAt  *time.Time        `json:"last_fired_at"`
 }
 
 type ManagerHandler struct {
@@ -102,16 +102,19 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 				Locked: h.isLocked(item.Id()),
 			}
 
-			if md := h.Component.GetListenerMetadata(item.Id()); md != nil {
-				listener.Fires = md[ws.ListenerMetadataFires].(int64)
-				listener.FirstFiredAt = md[ws.ListenerMetadataFirstFiredAt].(*time.Time)
-				listener.LastFiredAt = md[ws.ListenerMetadataLastFireAt].(*time.Time)
+			md := h.Component.GetListenerMetadata(item.Id())
+			if md == nil {
+				continue
+			}
 
-				events := md[ws.ListenerMetadataEventIds].([]ws.EventId)
-				listener.Events = make(map[string]int64, len(events))
-				for _, eventId := range events {
-					listener.Events[eventId.String()] = eventId.Int64()
-				}
+			listener.Fires = md[ws.ListenerMetadataFires].(int64)
+			listener.FirstFiredAt = md[ws.ListenerMetadataFirstFiredAt].(*time.Time)
+			listener.LastFiredAt = md[ws.ListenerMetadataLastFireAt].(*time.Time)
+
+			events := md[ws.ListenerMetadataEvents].([]ws.Event)
+			listener.Events = make(map[string]string, len(events))
+			for _, event := range events {
+				listener.Events[event.Id()] = event.Name()
 			}
 
 			list = append(list, listener)
@@ -213,10 +216,24 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 				checkEvents := r.Original().PostForm["events[]"]
 
 				if len(checkEvents) != 0 {
+					md := h.Component.GetListenerMetadata(listener.Id())
+					if md == nil {
+						continue
+					}
+
+					mdEvents := md[ws.ListenerMetadataEvents].([]ws.Event)
+					events := make(map[string]ws.Event, len(mdEvents))
+					for _, event := range mdEvents {
+						events[event.Id()] = event
+					}
+
 					for _, eventId := range checkEvents {
-						if i, err := strconv.ParseInt(eventId, 10, 64); err == nil {
-							h.Component.RemoveListenerByEvent(ws.EventId(i), listener)
+						event, ok := events[eventId]
+						if !ok {
+							continue
 						}
+
+						h.Component.RemoveListenerByEvent(event, listener)
 					}
 				} else {
 					h.Component.RemoveListener(listener)

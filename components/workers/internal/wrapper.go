@@ -41,23 +41,23 @@ func (c *Component) GetTasks() []ws.Task {
 	return c.dispatcher.GetTasks()
 }
 
-func (c *Component) AddListenerByEvent(event ws.EventId, listener ws.Listener) {
+func (c *Component) AddListenerByEvent(event ws.Event, listener ws.Listener) {
 	c.dispatcher.AddListener(event, listener)
 }
 
-func (c *Component) AddListenerByEvents(events []ws.EventId, listener ws.Listener) {
-	for _, eventId := range events {
-		c.AddListenerByEvent(eventId, listener)
+func (c *Component) AddListenerByEvents(events []ws.Event, listener ws.Listener) {
+	for _, event := range events {
+		c.AddListenerByEvent(event, listener)
 	}
 }
 
-func (c *Component) RemoveListenerByEvent(event ws.EventId, listener ws.Listener) {
+func (c *Component) RemoveListenerByEvent(event ws.Event, listener ws.Listener) {
 	c.dispatcher.RemoveListener(event, listener)
 }
 
-func (c *Component) RemoveListenerByEvents(events []ws.EventId, listener ws.Listener) {
-	for _, eventId := range events {
-		c.RemoveListenerByEvent(eventId, listener)
+func (c *Component) RemoveListenerByEvents(events []ws.Event, listener ws.Listener) {
+	for _, event := range events {
+		c.RemoveListenerByEvent(event, listener)
 	}
 }
 
@@ -68,18 +68,18 @@ func (c *Component) RemoveListener(listener ws.Listener) {
 		return
 	}
 
-	mdValue, ok := md[ws.ListenerMetadataEventIds]
+	mdValue, ok := md[ws.ListenerMetadataEvents]
 	if !ok {
 		return
 	}
 
-	events, ok := mdValue.([]ws.EventId)
+	events, ok := mdValue.([]ws.Event)
 	if !ok {
 		return
 	}
 
-	for _, eventId := range events {
-		c.RemoveListenerByEvent(eventId, listener)
+	for _, event := range events {
+		c.RemoveListenerByEvent(event, listener)
 	}
 }
 
