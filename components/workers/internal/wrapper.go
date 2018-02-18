@@ -3,6 +3,7 @@ package internal
 import (
 	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/go-workers/worker"
+	"github.com/kihamo/shadow/components/workers"
 )
 
 func (c *Component) AddSimpleWorker() {
@@ -39,6 +40,10 @@ func (c *Component) GetTaskMetadata(id string) ws.Metadata {
 
 func (c *Component) GetTasks() []ws.Task {
 	return c.dispatcher.GetTasks()
+}
+
+func (c *Component) AddListener(listener workers.ListenerWithEvents) {
+	c.AddListenerByEvents(listener.Events(), listener)
 }
 
 func (c *Component) AddListenerByEvent(event ws.Event, listener ws.Listener) {
