@@ -1,8 +1,9 @@
 package grpc
 
 import (
-	ptypes_struct "github.com/golang/protobuf/ptypes/struct"
 	"reflect"
+
+	ptypes_struct "github.com/golang/protobuf/ptypes/struct"
 )
 
 func ConvertMapStringInterfaceToStructProto(m map[string]interface{}) *ptypes_struct.Struct {
@@ -130,61 +131,61 @@ func ConvertInterfaceToStructValueProto(v interface{}) *ptypes_struct.Value {
 		// case complex128:
 
 	default:
-			value := reflect.ValueOf(v)
+		value := reflect.ValueOf(v)
 
-			switch value.Kind() {
-			case reflect.Array, reflect.Slice:
-				items := make([]*ptypes_struct.Value, 0, value.Len())
+		switch value.Kind() {
+		case reflect.Array, reflect.Slice:
+			items := make([]*ptypes_struct.Value, 0, value.Len())
 
-				for i := 0; i < value.Len(); i++ {
-					items = append(items, ConvertInterfaceToStructValueProto(value.Index(i).Interface()))
-				}
+			for i := 0; i < value.Len(); i++ {
+				items = append(items, ConvertInterfaceToStructValueProto(value.Index(i).Interface()))
+			}
 
-				return &ptypes_struct.Value{
-					Kind: &ptypes_struct.Value_ListValue{
-						ListValue: &ptypes_struct.ListValue{
-							Values: items,
-						},
+			return &ptypes_struct.Value{
+				Kind: &ptypes_struct.Value_ListValue{
+					ListValue: &ptypes_struct.ListValue{
+						Values: items,
 					},
-				}
+				},
+			}
 
-			case reflect.Map:
-				items := make(map[string]*ptypes_struct.Value, value.Len())
+		case reflect.Map:
+			items := make(map[string]*ptypes_struct.Value, value.Len())
 
-				for _, n := range value.MapKeys() {
-					items[n.String()] = ConvertInterfaceToStructValueProto(value.MapIndex(n).Interface())
-				}
+			for _, n := range value.MapKeys() {
+				items[n.String()] = ConvertInterfaceToStructValueProto(value.MapIndex(n).Interface())
+			}
 
-				return &ptypes_struct.Value{
-					Kind: &ptypes_struct.Value_StructValue{
-						StructValue: &ptypes_struct.Struct{
-							Fields: items,
-						},
+			return &ptypes_struct.Value{
+				Kind: &ptypes_struct.Value_StructValue{
+					StructValue: &ptypes_struct.Struct{
+						Fields: items,
 					},
-				}
+				},
+			}
 
-			case reflect.Struct:
-				items := make(map[string]*ptypes_struct.Value, value.NumField())
+		case reflect.Struct:
+			items := make(map[string]*ptypes_struct.Value, value.NumField())
 
-				for i := 0; i < value.NumField(); i++ {
-					field := value.Type().Field(i)
-					items[field.Name] = ConvertInterfaceToStructValueProto(value.FieldByName(field.Name).Interface())
-				}
+			for i := 0; i < value.NumField(); i++ {
+				field := value.Type().Field(i)
+				items[field.Name] = ConvertInterfaceToStructValueProto(value.FieldByName(field.Name).Interface())
+			}
 
-				return &ptypes_struct.Value{
-					Kind: &ptypes_struct.Value_StructValue{
-						StructValue: &ptypes_struct.Struct{
-							Fields: items,
-						},
+			return &ptypes_struct.Value{
+				Kind: &ptypes_struct.Value_StructValue{
+					StructValue: &ptypes_struct.Struct{
+						Fields: items,
 					},
-				}
+				},
+			}
 
-			case reflect.Ptr:
-				return ConvertInterfaceToStructValueProto(reflect.Indirect(reflect.ValueOf(v)).Interface())
+		case reflect.Ptr:
+			return ConvertInterfaceToStructValueProto(reflect.Indirect(reflect.ValueOf(v)).Interface())
 
 			//case reflect.Uintptr, reflect.UnsafePointer, reflect.Chan, reflect.Func, reflect.Interface, reflect.Invalid:
 			//	return ConvertInterfaceToStructValueProto(value.String())
-			}
+		}
 	}
 
 	return nil
