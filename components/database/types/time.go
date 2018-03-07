@@ -27,6 +27,7 @@ func (t Time) Value() (driver.Value, error) {
 
 func (t *Time) Scan(value interface{}) (err error) {
 	if value == nil {
+		t.Time = time.Time{}
 		return nil
 	}
 
