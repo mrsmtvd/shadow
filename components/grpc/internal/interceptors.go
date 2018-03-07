@@ -105,9 +105,13 @@ func NewLoggerStreamServerInterceptor(l logger.Logger) grpc.StreamServerIntercep
 	}
 }
 
-func doMetrics(method string, startTime time.Time) {
-	metricExecuteTime.UpdateSince(startTime)
-	metricExecuteTime.With("method", method).UpdateSince(startTime)
+func doMetrics(method string, err error, startTime time.Time) {
+	metricRequestDuration.UpdateSince(startTime)
+	metricRequestDuration.With("method", method).UpdateSince(startTime)
+
+	code := grpc_logging.DefaultErrorToCode(err)
+	metricRequests.Inc()
+	metricRequests.With("method", method, "code", code.String()).Inc()
 }
 
 func NewMetricsUnaryServerInterceptor() grpc.UnaryServerInterceptor {
@@ -116,7 +120,7 @@ func NewMetricsUnaryServerInterceptor() grpc.UnaryServerInterceptor {
 
 		resp, err = handler(ctx, req)
 
-		doMetrics(info.FullMethod, startTime)
+		doMetrics(info.FullMethod, err, startTime)
 
 		return resp, err
 	}
@@ -128,7 +132,7 @@ func NewMetricsStreamServerInterceptor() grpc.StreamServerInterceptor {
 
 		err := handler(srv, ss)
 
-		doMetrics(info.FullMethod, startTime)
+		doMetrics(info.FullMethod, err, startTime)
 
 		return err
 	}
