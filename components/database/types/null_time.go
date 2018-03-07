@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/go-gorp/gorp"
-	"github.com/golang/protobuf/ptypes"
 	pb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
@@ -15,6 +14,7 @@ func (t *NullTime) Proto() *pb.Timestamp {
 		return nil
 	}
 
-	p, _ := ptypes.TimestampProto(t.Time)
-	return p
+	return Time{
+		Time: t.Time,
+	}.Proto()
 }
