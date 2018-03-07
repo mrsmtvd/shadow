@@ -8,10 +8,10 @@ type NullFloat64 struct {
 	sql.NullFloat64
 }
 
-func (n *NullFloat64) Proto() float64 {
-	if !n.Valid {
+func (t *NullFloat64) Proto() float64 {
+	if !t.Valid {
 		return 0
 	}
 
-	return n.Float64
+	return t.Float64
 }

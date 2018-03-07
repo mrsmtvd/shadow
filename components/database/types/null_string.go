@@ -8,10 +8,10 @@ type NullString struct {
 	sql.NullString
 }
 
-func (n *NullString) Proto() string {
-	if !n.Valid {
+func (t *NullString) Proto() string {
+	if !t.Valid {
 		return ""
 	}
 
-	return n.String
+	return t.String
 }

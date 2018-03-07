@@ -8,10 +8,10 @@ type NullBool struct {
 	sql.NullBool
 }
 
-func (n *NullBool) Proto() bool {
-	if !n.Valid {
+func (t *NullBool) Proto() bool {
+	if !t.Valid {
 		return false
 	}
 
-	return n.Bool
+	return t.Bool
 }
