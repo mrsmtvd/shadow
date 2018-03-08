@@ -17,7 +17,7 @@ func (t Struct) ToMap() map[string]interface{} {
 }
 
 func (t Struct) Value() (driver.Value, error) {
-	b, err := json.Marshal(t)
+	b, err := json.Marshal(t.ToMap())
 	if err != nil {
 		return "", err
 	}
@@ -28,11 +28,23 @@ func (t Struct) Value() (driver.Value, error) {
 func (t *Struct) Scan(value interface{}) error {
 	input := map[string]interface{}{}
 
+	if value == nil {
+		*t = input
+	}
+
 	switch v := value.(type) {
 	case string:
 		if err := json.Unmarshal([]byte(v), &input); err != nil {
 			return err
 		}
+
+	case []byte:
+		if err := json.Unmarshal(v, &input); err != nil {
+			return err
+		}
+
+	case map[string]interface{}:
+		input = v
 
 	default:
 		converter := gotypes.NewConverter(value, &input)
