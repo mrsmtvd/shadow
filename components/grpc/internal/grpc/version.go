@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"github.com/golang/protobuf/ptypes"
-	proto "github.com/kihamo/shadow/components/grpc/grpc"
+	"github.com/kihamo/shadow/components/grpc/proto"
 	"golang.org/x/net/context"
 )
 

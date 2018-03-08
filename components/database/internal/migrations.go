@@ -115,11 +115,11 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 }
 
 func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
-	if c.storage == nil {
+	if c.Storage() == nil {
 		return -1, errors.New("Storage isn't initialized")
 	}
 
-	s := c.storage.(*storage.SQL)
+	s := c.Storage().(*storage.SQL)
 	executor := s.Master().(*storage.SQLExecutor)
 	dialect := s.Dialect()
 

@@ -1,8 +1,8 @@
 package internal
 
 import (
-	proto "github.com/kihamo/shadow/components/grpc/grpc"
 	handlers "github.com/kihamo/shadow/components/grpc/internal/grpc"
+	"github.com/kihamo/shadow/components/grpc/proto"
 	"google.golang.org/grpc"
 )
 

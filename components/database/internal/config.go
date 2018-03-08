@@ -181,9 +181,9 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 
 func (c *Component) watchAllowUseMasterAsSlave(_ string, newValue interface{}, _ interface{}) {
 	if newValue.(bool) {
-		c.storage.AllowUseMasterAsSlave()
+		c.Storage().AllowUseMasterAsSlave()
 	} else {
-		c.storage.DisallowUseMasterAsSlave()
+		c.Storage().DisallowUseMasterAsSlave()
 	}
 }
 
@@ -204,13 +204,13 @@ func (c *Component) watchMigrationsSchema(_ string, newValue interface{}, _ inte
 }
 
 func (c *Component) watchMaxIdleConns(_ string, newValue interface{}, _ interface{}) {
-	c.storage.(*storage.SQL).SetMaxIdleConns(newValue.(int))
+	c.Storage().(*storage.SQL).SetMaxIdleConns(newValue.(int))
 }
 
 func (c *Component) watchMaxOpenConns(_ string, newValue interface{}, _ interface{}) {
-	c.storage.(*storage.SQL).SetMaxOpenConns(newValue.(int))
+	c.Storage().(*storage.SQL).SetMaxOpenConns(newValue.(int))
 }
 
 func (c *Component) watchConnMaxLifetime(_ string, newValue interface{}, _ interface{}) {
-	c.storage.(*storage.SQL).SetConnMaxLifetime(newValue.(time.Duration))
+	c.Storage().(*storage.SQL).SetConnMaxLifetime(newValue.(time.Duration))
 }

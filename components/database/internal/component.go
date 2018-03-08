@@ -2,6 +2,7 @@ package internal
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -15,6 +16,8 @@ import (
 )
 
 type Component struct {
+	mutex sync.RWMutex
+
 	application shadow.Application
 	config      config.Component
 	logger      logger.Logger
@@ -81,7 +84,10 @@ func (c *Component) Run() (err error) {
 	s.SetConnMaxLifetime(c.config.Duration(database.ConfigConnMaxLifetime))
 
 	s.SetTypeConverter(TypeConverter{})
+
+	c.mutex.Lock()
 	c.storage = s
+	c.mutex.Unlock()
 
 	c.initTrace(s, c.config.Bool(config.ConfigDebug))
 	c.initBalancer(s, c.config.String(database.ConfigBalancer))
@@ -117,5 +123,8 @@ func (c *Component) initBalancer(s database.Storage, b string) {
 }
 
 func (c *Component) Storage() database.Storage {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
 	return c.storage
 }
