@@ -30,6 +30,7 @@ func (t *Struct) Scan(value interface{}) error {
 
 	if value == nil {
 		*t = input
+		return nil
 	}
 
 	switch v := value.(type) {
