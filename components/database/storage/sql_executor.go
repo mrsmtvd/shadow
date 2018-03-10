@@ -187,7 +187,7 @@ func (e *SQLExecutor) SelectByQuery(i interface{}, query string, args ...interfa
 
 	data, err := e.executor.Select(i, query, args...)
 	if err != nil {
-		return data, fmt.Errorf("Error getting collection from DB, query: '%e', error: '%e'", query, err.Error())
+		return data, fmt.Errorf("Error getting collection from DB, query: '%s', error: '%s'", query, err.Error())
 	}
 	return data, nil
 }
@@ -205,7 +205,7 @@ func (e *SQLExecutor) SelectOneByQuery(holder interface{}, query string, args ..
 
 	err := e.executor.SelectOne(holder, query, args...)
 	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("Error getting value from DB, query: '%e', error: '%e'", query, err.Error())
+		return fmt.Errorf("Error getting value from DB, query: '%s', error: '%s'", query, err.Error())
 	}
 	return err
 }
@@ -213,7 +213,7 @@ func (e *SQLExecutor) SelectOneByQuery(holder interface{}, query string, args ..
 func (e *SQLExecutor) SelectOne(holder interface{}, builder *sq.SelectBuilder) error {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectOneByQuery(holder, query, args...)
 }
@@ -224,7 +224,7 @@ func (e *SQLExecutor) SelectIntByQuery(query string, args ...interface{}) (int64
 	result, err := e.executor.SelectInt(query, args...)
 
 	if err != nil {
-		err = fmt.Errorf("Error selecting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
 	}
 
 	return result, err
@@ -233,7 +233,7 @@ func (e *SQLExecutor) SelectIntByQuery(query string, args ...interface{}) (int64
 func (e *SQLExecutor) SelectInt(builder *sq.SelectBuilder) (int64, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return -1, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return -1, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectIntByQuery(query, args...)
 }
@@ -244,7 +244,7 @@ func (e *SQLExecutor) SelectNullIntByQuery(query string, args ...interface{}) (s
 	result, err := e.executor.SelectNullInt(query, args...)
 
 	if err != nil {
-		err = fmt.Errorf("Error selecting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
 	}
 
 	return result, err
@@ -255,7 +255,7 @@ func (e *SQLExecutor) SelectNullInt(builder *sq.SelectBuilder) (sql.NullInt64, e
 	if err != nil {
 		var h sql.NullInt64
 
-		return h, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return h, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectNullIntByQuery(query, args...)
 }
@@ -266,7 +266,7 @@ func (e *SQLExecutor) SelectFloatByQuery(query string, args ...interface{}) (flo
 	result, err := e.executor.SelectFloat(query, args...)
 
 	if err != nil {
-		err = fmt.Errorf("Error selecting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
 	}
 
 	return result, err
@@ -275,7 +275,7 @@ func (e *SQLExecutor) SelectFloatByQuery(query string, args ...interface{}) (flo
 func (e *SQLExecutor) SelectFloat(builder *sq.SelectBuilder) (float64, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return -1, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return -1, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectFloatByQuery(query, args...)
 }
@@ -286,7 +286,7 @@ func (e *SQLExecutor) SelectNullFloatByQuery(query string, args ...interface{}) 
 	result, err := e.executor.SelectNullFloat(query, args...)
 
 	if err != nil {
-		err = fmt.Errorf("Error selecting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
 	}
 
 	return result, err
@@ -297,7 +297,7 @@ func (e *SQLExecutor) SelectNullFloat(builder *sq.SelectBuilder) (sql.NullFloat6
 	if err != nil {
 		var h sql.NullFloat64
 
-		return h, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return h, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectNullFloatByQuery(query, args...)
 }
@@ -308,7 +308,7 @@ func (e *SQLExecutor) SelectStrByQuery(query string, args ...interface{}) (strin
 	result, err := e.executor.SelectStr(query, args...)
 
 	if err != nil {
-		err = fmt.Errorf("Error selecting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
 	}
 
 	return result, err
@@ -317,7 +317,7 @@ func (e *SQLExecutor) SelectStrByQuery(query string, args ...interface{}) (strin
 func (e *SQLExecutor) SelectStr(builder *sq.SelectBuilder) (string, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return "", fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return "", fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectStrByQuery(query, args...)
 }
@@ -328,7 +328,7 @@ func (e *SQLExecutor) SelectNullStrByQuery(query string, args ...interface{}) (s
 	result, err := e.executor.SelectNullStr(query, args...)
 
 	if err != nil {
-		err = fmt.Errorf("Error selecting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error selecting data in DB, error: '%s'", err.Error())
 	}
 
 	return result, err
@@ -339,7 +339,7 @@ func (e *SQLExecutor) SelectNullStr(builder *sq.SelectBuilder) (sql.NullString, 
 	if err != nil {
 		var h sql.NullString
 
-		return h, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return h, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.SelectNullStrByQuery(query, args...)
 }
@@ -350,7 +350,7 @@ func (e *SQLExecutor) Get(i interface{}, keys ...interface{}) (interface{}, erro
 	entity, err := e.executor.Get(i, keys...)
 
 	if err != nil {
-		err = fmt.Errorf("Error get data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error get data in DB, error: '%s'", err.Error())
 	}
 
 	return entity, err
@@ -360,7 +360,7 @@ func (e *SQLExecutor) Insert(list ...interface{}) error {
 	defer UpdateStorageSQLMetric(OperationInsert, e.serverAddress, time.Now())
 
 	if err := e.executor.Insert(list...); err != nil {
-		return fmt.Errorf("Error inserting data into DB, error: '%e'", err.Error())
+		return fmt.Errorf("Error inserting data into DB, error: '%s'", err.Error())
 	}
 
 	return nil
@@ -372,7 +372,7 @@ func (e *SQLExecutor) Update(list ...interface{}) (int64, error) {
 	count, err := e.executor.Update(list...)
 
 	if err != nil {
-		err = fmt.Errorf("Error updating data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error updating data in DB, error: '%s'", err.Error())
 	}
 
 	return count, err
@@ -384,7 +384,7 @@ func (e *SQLExecutor) Delete(list ...interface{}) (int64, error) {
 	count, err := e.executor.Delete(list...)
 
 	if err != nil {
-		err = fmt.Errorf("Error deleting data in DB, error: '%e'", err.Error())
+		err = fmt.Errorf("Error deleting data in DB, error: '%s'", err.Error())
 	}
 
 	return count, err
@@ -405,7 +405,7 @@ func (e *SQLExecutor) ExecByQuery(query string, args ...interface{}) (sql.Result
 
 	result, err := e.executor.Exec(query, args...)
 	if err != nil {
-		return result, fmt.Errorf("Error executing DB query, query: '%e', error: '%e'", query, err.Error())
+		return result, fmt.Errorf("Error executing DB query, query: '%s', error: '%s'", query, err.Error())
 	}
 	return result, nil
 }
@@ -437,7 +437,7 @@ func (e *SQLExecutor) Exec(query interface{}, args ...interface{}) (sql.Result, 
 func (e *SQLExecutor) ExecSelect(builder *sq.SelectBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.ExecByQuery(query, args...)
 }
@@ -445,7 +445,7 @@ func (e *SQLExecutor) ExecSelect(builder *sq.SelectBuilder) (sql.Result, error) 
 func (e *SQLExecutor) ExecInsert(builder *sq.InsertBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.ExecByQuery(query, args...)
 }
@@ -453,7 +453,7 @@ func (e *SQLExecutor) ExecInsert(builder *sq.InsertBuilder) (sql.Result, error) 
 func (e *SQLExecutor) ExecUpdate(builder *sq.UpdateBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.ExecByQuery(query, args...)
 }
@@ -461,7 +461,7 @@ func (e *SQLExecutor) ExecUpdate(builder *sq.UpdateBuilder) (sql.Result, error) 
 func (e *SQLExecutor) ExecDelete(builder *sq.DeleteBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.ExecByQuery(query, args...)
 }
@@ -469,7 +469,7 @@ func (e *SQLExecutor) ExecDelete(builder *sq.DeleteBuilder) (sql.Result, error) 
 func (e *SQLExecutor) ExecCase(builder *sq.CaseBuilder) (sql.Result, error) {
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare SQL query, error: '%e'", err.Error())
+		return nil, fmt.Errorf("could not prepare SQL query, error: '%s'", err.Error())
 	}
 	return e.ExecByQuery(query, args...)
 }
