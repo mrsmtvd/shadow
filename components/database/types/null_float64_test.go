@@ -327,7 +327,7 @@ func TestNullFloat64_NewInstanceAndUnmarshalJSONNil_ValueIsZero(t *testing.T) {
 	var typ NullFloat64
 	e := json.Unmarshal([]byte(`null`), &typ)
 
-	a.Equal(typ.Proto(), float64(0))
+	a.Equal(typ.Float64, float64(0))
 	a.Nil(e)
 }
 

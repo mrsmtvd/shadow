@@ -253,7 +253,7 @@ func TestNullString_NewInstanceAndUnmarshalJSONNil_ValueIsEmptyString(t *testing
 	var typ NullString
 	e := json.Unmarshal([]byte(`null`), &typ)
 
-	a.Equal(typ.Proto(), "")
+	a.Equal(typ.String, "")
 	a.Nil(e)
 }
 
