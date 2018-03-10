@@ -62,3 +62,11 @@ func (t *Struct) Scan(value interface{}) error {
 func (t *Struct) Proto() *pb.Struct {
 	return grpc.ConvertMapStringInterfaceToStructProto(t.ToMap())
 }
+
+func (t *Struct) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.ToMap())
+}
+
+func (t *Struct) UnmarshalJSON(data []byte) error {
+	return t.Scan(data)
+}

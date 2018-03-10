@@ -2,6 +2,7 @@ package types
 
 import (
 	"database/sql"
+	"encoding/json"
 )
 
 type NullBool struct {
@@ -14,4 +15,25 @@ func (t *NullBool) Proto() bool {
 	}
 
 	return t.Bool
+}
+
+func (t *NullBool) MarshalJSON() ([]byte, error) {
+	if t.Valid {
+		return json.Marshal(t.Bool)
+	}
+
+	return json.Marshal(nil)
+}
+
+func (t *NullBool) UnmarshalJSON(data []byte) error {
+	var j *bool
+
+	err := json.Unmarshal(data, &j)
+	if err == nil && j != nil {
+		t.Bool, t.Valid = *j, true
+	} else {
+		t.Bool, t.Valid = false, false
+	}
+
+	return err
 }

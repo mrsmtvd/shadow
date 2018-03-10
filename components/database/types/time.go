@@ -2,6 +2,7 @@ package types
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -48,6 +49,14 @@ func (t *Time) Scan(value interface{}) (err error) {
 func (t *Time) Proto() *pb.Timestamp {
 	p, _ := ptypes.TimestampProto(t.Time)
 	return p
+}
+
+func (t *Time) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.Time)
+}
+
+func (t *Time) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &t.Time)
 }
 
 func parseDateTime(str string, loc *time.Location) (t time.Time, err error) {

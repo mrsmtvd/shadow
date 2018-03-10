@@ -3,6 +3,8 @@ package types
 import (
 	"time"
 
+	"encoding/json"
+
 	"github.com/go-gorp/gorp"
 	"github.com/golang/protobuf/ptypes"
 	pb "github.com/golang/protobuf/ptypes/timestamp"
@@ -14,7 +16,7 @@ type NullTime struct {
 
 func (t *NullTime) Scan(value interface{}) error {
 	if value == nil {
-		t.Valid, t.Time = false, time.Time{}
+		t.Time, t.Valid = time.Time{}, false
 		return nil
 	}
 
@@ -28,4 +30,25 @@ func (t *NullTime) Proto() *pb.Timestamp {
 
 	p, _ := ptypes.TimestampProto(t.Time)
 	return p
+}
+
+func (t *NullTime) MarshalJSON() ([]byte, error) {
+	if t.Valid {
+		return json.Marshal(t.Time)
+	}
+
+	return json.Marshal(nil)
+}
+
+func (t *NullTime) UnmarshalJSON(data []byte) error {
+	var j *time.Time
+
+	err := json.Unmarshal(data, &j)
+	if err == nil && j != nil {
+		t.Time, t.Valid = *j, true
+	} else {
+		t.Time, t.Valid = time.Time{}, false
+	}
+
+	return err
 }

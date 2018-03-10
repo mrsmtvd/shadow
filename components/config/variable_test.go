@@ -22,6 +22,7 @@ func (s *VariableSuite) Test_NewInstance_ValueReturnsNil() {
 		nil,
 		"Test",
 		true,
+		"group",
 		nil,
 		nil)
 
@@ -35,6 +36,7 @@ func (s *VariableSuite) Test_NewInstance_ValueReturnsDefaultValue() {
 		"12345",
 		"Test",
 		true,
+		"group",
 		nil,
 		nil)
 
@@ -48,6 +50,7 @@ func (s *VariableSuite) Test_NewInstanceAndSetNilValue_ValueReturnsNil() {
 		"12345",
 		"Test",
 		true,
+		"group",
 		nil,
 		nil)
 
@@ -63,6 +66,7 @@ func (s *VariableSuite) Test_NewInstanceAndSetStringValue_ValueReturnsString() {
 		"12345",
 		"Test",
 		true,
+		"group",
 		nil,
 		nil)
 
@@ -78,6 +82,7 @@ func BenchmarkVariableChange(b *testing.B) {
 		"22",
 		"Test",
 		true,
+		"group",
 		nil,
 		nil)
 
