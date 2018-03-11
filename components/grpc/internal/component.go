@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -75,8 +74,8 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		streamInterceptors = append(streamInterceptors, NewMetricsStreamServerInterceptor())
 	}
 
-	unaryInterceptors = append(unaryInterceptors, grpc_recovery.UnaryServerInterceptor())
-	streamInterceptors = append(streamInterceptors, grpc_recovery.StreamServerInterceptor())
+	unaryInterceptors = append(unaryInterceptors, NewRecoverUnaryServerInterceptor(c.logger))
+	streamInterceptors = append(streamInterceptors, NewRecoverStreamServerInterceptor(c.logger))
 
 	serverOptions = append(serverOptions, grpc_middleware.WithUnaryServerChain(unaryInterceptors...))
 	serverOptions = append(serverOptions, grpc_middleware.WithStreamServerChain(streamInterceptors...))
