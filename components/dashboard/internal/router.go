@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+	"runtime/debug"
 	"sync"
 
 	"github.com/julienschmidt/httprouter"
@@ -57,14 +58,12 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 	panicHandler := FromRouteHandler(h)
 
 	r.PanicHandler = func(pw http.ResponseWriter, pr *http.Request, pe interface{}) {
-		stack := make([]byte, 4096)
-		stack = stack[:runtime.Stack(stack, false)]
 		_, file, line, _ := runtime.Caller(6)
 
 		r.chain.Then(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
 			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, &dashboard.PanicError{
 				Error: pe,
-				Stack: string(stack),
+				Stack: string(debug.Stack()),
 				File:  file,
 				Line:  line,
 			})
