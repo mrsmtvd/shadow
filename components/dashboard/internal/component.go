@@ -30,6 +30,7 @@ type Component struct {
 	renderer    *Renderer
 	session     *scs.Manager
 	routes      []dashboard.Route
+	router      *Router
 }
 
 func (c *Component) Name() string {
@@ -59,7 +60,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 	return nil
 }
 
-func (c *Component) Run(wg *sync.WaitGroup) error {
+func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	if err := c.loadTemplates(); err != nil {
@@ -76,8 +77,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		return err
 	}
 
-	mux, err := c.getServeMux()
-	if err != nil {
+	if c.router, err = c.getServeMux(); err != nil {
 		return err
 	}
 
@@ -95,7 +95,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 			"pid":  os.Getpid(),
 		})
 
-		if err := http.Serve(lis, mux); err != nil {
+		if err := http.Serve(lis, c.router); err != nil {
 			c.logger.Fatalf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		}
 	}()

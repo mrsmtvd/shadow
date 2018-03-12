@@ -315,6 +315,15 @@ func (c *Component) ConfigVariables() []config.Variable {
 			"Others",
 			nil,
 			nil),
+		config.NewVariable(
+			dashboard.ConfigPanicHandlerCallerSkip,
+			config.ValueTypeInt64,
+			DefaultCallerSkip,
+			"Skip for caller in panic handler",
+			true,
+			"Others",
+			nil,
+			nil),
 	}
 }
 
@@ -348,6 +357,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionPath}, c.watchSessionPath),
 		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionPersist}, c.watchSessionPersist),
 		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionSecure}, c.watchSessionSecure),
+		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigPanicHandlerCallerSkip}, c.watchPanicHandlerCallerSkip),
 	}
 }
 
@@ -385,4 +395,8 @@ func (c *Component) watchSessionPersist(_ string, v interface{}, _ interface{}) 
 
 func (c *Component) watchSessionSecure(_ string, v interface{}, _ interface{}) {
 	c.session.Secure(v.(bool))
+}
+
+func (c *Component) watchPanicHandlerCallerSkip(_ string, v interface{}, _ interface{}) {
+	c.router.SetPanicHandlerCallerSkip(int(v.(int64))	)
 }

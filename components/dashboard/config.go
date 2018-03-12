@@ -34,4 +34,5 @@ const (
 	ConfigSessionSecure          = ComponentName + ".session.secure"
 	ConfigFrontendMinifyEnabled  = ComponentName + ".frontend.minify-enabled"
 	ConfigStartURL               = ComponentName + ".start-url"
+	ConfigPanicHandlerCallerSkip = ComponentName + ".panic-handler.caller-skip"
 )

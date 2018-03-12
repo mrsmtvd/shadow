@@ -14,13 +14,18 @@ import (
 	"github.com/kihamo/shadow/components/logger"
 )
 
+const (
+	DefaultCallerSkip = 4
+)
+
 type Router struct {
 	httprouter.Router
 
-	mutex  sync.RWMutex
-	chain  alice.Chain
-	logger logger.Logger
-	routes []dashboard.Route
+	mutex      sync.RWMutex
+	chain      alice.Chain
+	logger     logger.Logger
+	routes     []dashboard.Route
+	callerSkip int
 }
 
 type RouterHandler interface {
@@ -41,31 +46,50 @@ func FromRouteHandler(h RouterHandler) http.Handler {
 	})
 }
 
-func NewRouter(c *Component) *Router {
-	r := &Router{}
+func NewRouter(l logger.Logger, skip int) *Router {
+	r := &Router{
+		chain:      alice.New(),
+		logger:     l,
+		callerSkip: skip,
+	}
 	r.RedirectTrailingSlash = true
 	r.RedirectFixedPath = true
 	r.HandleMethodNotAllowed = true
 
-	// chains
-	r.chain = alice.New()
-	r.logger = c.logger
-
 	return r
+}
+
+func (r *Router) SetPanicHandlerCallerSkip(skip int) {
+	r.mutex.Lock()
+	r.callerSkip = skip
+	r.mutex.Unlock()
 }
 
 func (r *Router) SetPanicHandler(h RouterHandler) {
 	panicHandler := FromRouteHandler(h)
 
 	r.PanicHandler = func(pw http.ResponseWriter, pr *http.Request, pe interface{}) {
-		_, file, line, _ := runtime.Caller(6)
+		r.mutex.RLock()
+		skip := r.callerSkip
+		r.mutex.RUnlock()
+
+		_, file, line, _ := runtime.Caller(skip)
 
 		r.chain.Then(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
-			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, &dashboard.PanicError{
+			panicError := &dashboard.PanicError{
 				Error: pe,
 				Stack: string(debug.Stack()),
 				File:  file,
 				Line:  line,
+			}
+
+			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, panicError)
+
+			r.logger.Error("Recovery panic", map[string]interface{}{
+				"panic.file":  panicError.File,
+				"panic.line":  panicError.Line,
+				"panic.stack": panicError.Stack,
+				"panic.error": fmt.Sprintf("%s", panicError.Error),
 			})
 
 			panicHandler.ServeHTTP(hw, hr.WithContext(ctx))

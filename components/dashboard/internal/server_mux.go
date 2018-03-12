@@ -8,14 +8,14 @@ import (
 	"github.com/kihamo/shadow/components/metrics"
 )
 
-func (c *Component) getServeMux() (http.Handler, error) {
+func (c *Component) getServeMux() (*Router, error) {
 	// init routes
 	components, err := c.application.GetComponents()
 	if err != nil {
 		return nil, err
 	}
 
-	router := NewRouter(c)
+	router := NewRouter(c.logger, c.config.Int(dashboard.ConfigPanicHandlerCallerSkip))
 
 	// Special pages
 	router.SetPanicHandler(&handlers.PanicHandler{})
