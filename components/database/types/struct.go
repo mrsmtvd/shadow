@@ -13,6 +13,10 @@ import (
 type Struct map[string]interface{}
 
 func (t Struct) ToMap() map[string]interface{} {
+	if t == nil {
+		return map[string]interface{}{}
+	}
+
 	return t
 }
 
