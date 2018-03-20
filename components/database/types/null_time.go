@@ -23,6 +23,14 @@ func (t *NullTime) Scan(value interface{}) error {
 	return t.NullTime.Scan(value)
 }
 
+func (t *NullTime) ToTime() *time.Time {
+	if !t.Valid {
+		return nil
+	}
+
+	return &t.Time
+}
+
 func (t *NullTime) Proto() *pb.Timestamp {
 	if !t.Valid {
 		return nil

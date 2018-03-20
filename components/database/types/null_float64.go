@@ -9,6 +9,14 @@ type NullFloat64 struct {
 	sql.NullFloat64
 }
 
+func (t *NullFloat64) ToFloat64() *float64 {
+	if !t.Valid {
+		return nil
+	}
+
+	return &t.Float64
+}
+
 func (t *NullFloat64) Proto() float64 {
 	if !t.Valid {
 		return 0

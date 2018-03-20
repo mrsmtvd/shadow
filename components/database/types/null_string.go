@@ -9,6 +9,14 @@ type NullString struct {
 	sql.NullString
 }
 
+func (t *NullString) ToString() *string {
+	if !t.Valid {
+		return nil
+	}
+
+	return &t.String
+}
+
 func (t *NullString) Proto() string {
 	if !t.Valid {
 		return ""

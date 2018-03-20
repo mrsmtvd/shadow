@@ -9,6 +9,14 @@ type NullInt64 struct {
 	sql.NullInt64
 }
 
+func (t *NullInt64) ToInt64() *int64 {
+	if !t.Valid {
+		return nil
+	}
+
+	return &t.Int64
+}
+
 func (t *NullInt64) Proto() int64 {
 	if !t.Valid {
 		return 0

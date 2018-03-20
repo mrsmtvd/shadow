@@ -9,6 +9,14 @@ type NullBool struct {
 	sql.NullBool
 }
 
+func (t *NullBool) ToBool() *bool {
+	if !t.Valid {
+		return nil
+	}
+
+	return &t.Bool
+}
+
 func (t *NullBool) Proto() bool {
 	if !t.Valid {
 		return false
