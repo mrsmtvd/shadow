@@ -67,6 +67,9 @@ func ConvertStructValueProtoToInterface(value *ptypes_struct.Value) interface{} 
 func ConvertInterfaceToStructValueProto(v interface{}) *ptypes_struct.Value {
 	switch cast := v.(type) {
 	case nil:
+		return &ptypes_struct.Value{
+			Kind: &ptypes_struct.Value_NullValue{},
+		}
 		break
 
 	case bool:
