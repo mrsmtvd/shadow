@@ -16,6 +16,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/kihamo/shadow/components/dashboard/auth/providers/password"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
@@ -50,10 +51,13 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		{
 			Name: logger.ComponentName,
 		},
+		{
+			Name: i18n.ComponentName,
+		},
 	}
 }
 
-func (c *Component) Init(a shadow.Application) (err error) {
+func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 

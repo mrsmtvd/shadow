@@ -14,3 +14,7 @@ type Renderer interface {
 type HasTemplates interface {
 	DashboardTemplates() *assetfs.AssetFS
 }
+
+type HasTemplateFunctions interface {
+	DashboardTemplateFunctions() map[string]interface{}
+}

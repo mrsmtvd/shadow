@@ -354,14 +354,22 @@ gulp.task('frontend', ['compress-components'], function() {
 gulp.task('backend', [], function() {
     runSequence(
         'golang',
-        ['bindata', 'protobuf'],
+        ['i18n', 'bindata', 'protobuf'],
         'easyjson'
     );
 });
 
 gulp.task('golang', function() {
-    return gulp.src([__dirname + '/**/*.go', '!' + __dirname + '/vendor/**', '!/**/bindata_assetfs.go'])
+    return gulp.src([__dirname + '/**/**/*.go', '!' + __dirname + '/vendor/**', '!/**/bindata_assetfs.go'])
         .pipe(exec('goimports -w <%= file.path %>'))
+        .pipe(exec.reporter(execOptions));
+});
+
+gulp.task('i18n', function() {
+    return gulp.src([__dirname + '/**/*.po', '!' + __dirname + '/vendor/**'])
+        .pipe(exec('msgfmt <%= file.path %> -o <%= options.path.dirname(file.path) %>/<%= options.path.basename(file.path, ".po") %>.mo', {
+            path: path
+        }))
         .pipe(exec.reporter(execOptions));
 });
 
@@ -374,12 +382,14 @@ gulp.task('bindata', function() {
     if (process.env.NODE_ENV !== DEV_ENV) {
         ignores.push('.*?(([^n]|^)|([^i]|^)n|([^m]|^)in|([^.]|^|^[.])min)[.][jJ][sS]');
         ignores.push('.*?(([^n]|^)|([^i]|^)n|([^m]|^)in|([^.]|^|^[.])min)[.][cC][sS][sS]');
+        ignores.push('.*?[.]po$');
     }
     
     return gulp.src([
         COMPONENTS + '/**/templates',
         COMPONENTS + '/**/assets',
-        COMPONENTS + '/**/migrations'
+        COMPONENTS + '/**/migrations',
+        COMPONENTS + '/**/locales'
     ])
         .pipe(groupAggregate({
             group: function (file){

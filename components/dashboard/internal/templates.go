@@ -1,10 +1,6 @@
 package internal
 
 import (
-	"net/url"
-	"path"
-	"strings"
-
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -19,9 +15,6 @@ func (c *Component) loadTemplates() error {
 		"start_date": c.application.StartDate(),
 		"uptime":     c.application.Uptime(),
 	})
-	c.renderer.AddGlobalVar("Config", c.config)
-
-	c.renderer.AddFunc("staticURL", c.funcStaticURL)
 
 	if err := c.renderer.AddBaseLayouts(c.DashboardTemplates()); err != nil {
 		return err
@@ -30,6 +23,14 @@ func (c *Component) loadTemplates() error {
 	components, err := c.application.GetComponents()
 	if err != nil {
 		return err
+	}
+
+	for _, component := range components {
+		if componentTemplateFuncs, ok := component.(dashboard.HasTemplateFunctions); ok {
+			for name, fn := range componentTemplateFuncs.DashboardTemplateFunctions() {
+				c.renderer.AddFunc(name, fn)
+			}
+		}
 	}
 
 	for _, component := range components {
@@ -42,33 +43,4 @@ func (c *Component) loadTemplates() error {
 	}
 
 	return nil
-}
-
-func (c *Component) funcStaticURL(file string, prefix bool) string {
-	if file == "" {
-		return file
-	}
-
-	u, err := url.Parse(file)
-	if err != nil {
-		return file
-	}
-
-	if c.application.Build() != "" {
-		values := u.Query()
-		values.Add("v", c.application.Build())
-
-		u.RawQuery = values.Encode()
-	}
-
-	if prefix {
-		ext := path.Ext(u.Path)
-		lowerExt := strings.ToLower(ext)
-
-		if c.config.Bool(dashboard.ConfigFrontendMinifyEnabled) && (lowerExt == ".css" || lowerExt == ".js") {
-			u.Path = u.Path[0:len(u.Path)-len(ext)] + ".min" + ext
-		}
-	}
-
-	return u.String()
 }

@@ -35,7 +35,7 @@
         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
-                    <a href="{{ .Config.String "dashboard.start-url" }}" class="site_title"><span>{{ .Application.name }}</span></a>
+                    <a href="{{ config "dashboard.start-url" }}" class="site_title"><span>{{ .Application.name }}</span></a>
                 </div>
 
                 <div class="clearfix"></div>
@@ -46,8 +46,8 @@
                     </div>
 
                     <div class="profile_info">
-                        <span>Welcome,</span>
-                        <h2>{{ if .User.Name }}{{ .User.Name }}{{ else }}Anonymous{{ end }}</h2>
+                        <span>{{ i18n "Welcome," . "" "dashboard" }}</span>
+                        <h2>{{ if .User.Name }}{{ .User.Name }}{{ else }}{{ i18n "Anonymous" . "" "dashboard" }}{{ end }}</h2>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -88,6 +88,14 @@
                 </div>
                 <!-- /sidebar menu -->
 
+                {{ if (config "config.debug" false) }}
+                    <ul>
+                        <li>Component: {{ .ComponentName }}</li>
+                        <li>View: {{ .ViewName }}</li>
+                        <li>Layout: {{ .LayoutName }}</li>
+                    </ul>
+                {{ end }}
+
                 <div class="sidebar-footer hidden-small">
                     <!--
                     <a data-toggle="tooltip" data-placement="top" title="Alerts" href="/alerts">
@@ -118,7 +126,7 @@
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <img src="{{ if .User.AvatarURL }}{{ .User.AvatarURL }}{{ else }}/dashboard/assets/images/anonymous.png{{ end }}" alt="{{ .User.Name }}" style="background: #fff">
-                                {{ if .User.Name }}{{ .User.Name }}{{ else }}Anonymous{{ end }}
+                                {{ if .User.Name }}{{ .User.Name }}{{ else }}{{ i18n "Anonymous" . "" "dashboard" }}{{ end }}
                                 {{ if .User.IsAuthorized }}<span class=" fa fa-angle-down"></span>{{ end }}
                             </a>
                             {{ if .User.IsAuthorized }}

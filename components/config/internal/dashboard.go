@@ -53,3 +53,23 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 
 	return c.routes
 }
+
+func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
+	return map[string]interface{}{
+		"config": c.templateFunctionConfig,
+	}
+}
+
+func (c *Component) templateFunctionConfig(key string, def ...interface{}) interface{} {
+	var defValue interface{}
+
+	if len(def) > 0 {
+		defValue = def[0]
+	}
+
+	if c.Has(key) {
+		return c.Get(key)
+	}
+
+	return defValue
+}

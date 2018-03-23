@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"net/url"
-	"path"
 	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -32,15 +29,7 @@ func NewRenderer() *Renderer {
 		baseLayouts: map[string]string{},
 		globals:     map[string]interface{}{},
 		views:       map[string]map[string]*template.Template{},
-	}
-
-	r.funcs = template.FuncMap{
-		"raw":        r.funcRaw,
-		"add":        r.funcAdd,
-		"mod":        r.funcMod,
-		"replace":    r.funcReplace,
-		"staticHTML": r.funcStaticHTML,
-		"date_since": shadow.DateSinceAsMessage,
+		funcs:       dashboard.DefaultTemplateFunctions.FuncMap(),
 	}
 
 	return r
@@ -50,8 +39,8 @@ func (r *Renderer) AddFunc(name string, f interface{}) {
 	r.funcs[name] = f
 }
 
-func (r *Renderer) AddBaseLayouts(f *assetfs.AssetFS) error {
-	files, err := r.getTemplateFiles(TemplateLayoutsDir, f)
+func (r *Renderer) AddBaseLayouts(fs *assetfs.AssetFS) error {
+	files, err := r.getTemplateFiles(TemplateLayoutsDir, fs)
 	if err != nil {
 		return err
 	}
@@ -63,11 +52,11 @@ func (r *Renderer) AddBaseLayouts(f *assetfs.AssetFS) error {
 	return nil
 }
 
-func (r *Renderer) AddGlobalVar(n string, v interface{}) {
-	r.globals[n] = v
+func (r *Renderer) AddGlobalVar(key string, value interface{}) {
+	r.globals[key] = value
 }
 
-func (r *Renderer) AddComponents(c string, f *assetfs.AssetFS) error {
+func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) error {
 	baseComponent := template.New("_component").Funcs(r.funcs)
 
 	// layouts
@@ -75,7 +64,7 @@ func (r *Renderer) AddComponents(c string, f *assetfs.AssetFS) error {
 		baseComponent.New(name).Parse(content)
 	}
 
-	if files, err := r.getTemplateFiles(TemplateLayoutsDir, f); err == nil {
+	if files, err := r.getTemplateFiles(TemplateLayoutsDir, fs); err == nil {
 		for name, content := range files {
 			tplName := strings.TrimSuffix(name, TemplatePostfix)
 
@@ -89,7 +78,7 @@ func (r *Renderer) AddComponents(c string, f *assetfs.AssetFS) error {
 	}
 
 	// views
-	files, err := r.getTemplateFiles(TemplateViewsDir, f)
+	files, err := r.getTemplateFiles(TemplateViewsDir, fs)
 	if err != nil {
 		return nil
 	}
@@ -108,39 +97,42 @@ func (r *Renderer) AddComponents(c string, f *assetfs.AssetFS) error {
 		views[name] = view
 	}
 
-	r.views[c] = views
+	r.views[componentName] = views
 
 	return nil
 }
 
-func (r *Renderer) Render(ctx context.Context, c, v string, d map[string]interface{}) error {
-	return r.RenderLayout(ctx, c, v, TemplateDefaultLayout, d)
+func (r *Renderer) Render(ctx context.Context, componentName, viewName string, data map[string]interface{}) error {
+	return r.RenderLayout(ctx, componentName, viewName, TemplateDefaultLayout, data)
 }
 
-func (r *Renderer) RenderLayout(ctx context.Context, c, v, l string, d map[string]interface{}) error {
-	component, ok := r.views[c]
+func (r *Renderer) RenderLayout(ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) error {
+	component, ok := r.views[componentName]
 	if !ok {
-		return fmt.Errorf("DashboardTemplates for component \"%s\" not found", c)
+		return fmt.Errorf("DashboardTemplates for component \"%s\" not found", componentName)
 	}
 
-	view, ok := component[v+TemplatePostfix]
+	view, ok := component[viewName+TemplatePostfix]
 	if !ok {
-		return fmt.Errorf("Template \"%s\" for component \"%s\" not found", v, c)
+		return fmt.Errorf("Template \"%s\" for component \"%s\" not found", viewName, componentName)
 	}
 
-	data := r.getContextVariables(ctx)
+	executeData := r.getContextVariables(ctx)
+	executeData["ComponentName"] = componentName
+	executeData["ViewName"] = viewName
+	executeData["LayoutName"] = layoutName
 
 	for i := range r.globals {
-		data[i] = r.globals[i]
+		executeData[i] = r.globals[i]
 	}
 
-	if d != nil {
-		for i := range d {
-			data[i] = d[i]
+	if data != nil {
+		for i := range data {
+			executeData[i] = data[i]
 		}
 	}
 
-	return view.ExecuteTemplate(dashboard.ResponseFromContext(ctx), l, data)
+	return view.ExecuteTemplate(dashboard.ResponseFromContext(ctx), layoutName, executeData)
 }
 
 func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface{} {
@@ -152,8 +144,8 @@ func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface
 	}
 }
 
-func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]string, error) {
-	files, err := f.AssetDir(d)
+func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[string]string, error) {
+	files, err := f.AssetDir(directory)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +157,7 @@ func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]st
 			continue
 		}
 
-		content, err := f.Asset(d + "/" + file)
+		content, err := f.Asset(directory + "/" + file)
 		if err != nil {
 			continue
 		}
@@ -174,42 +166,4 @@ func (r *Renderer) getTemplateFiles(d string, f *assetfs.AssetFS) (map[string]st
 	}
 
 	return templates, nil
-}
-
-func (r *Renderer) funcRaw(x string) template.HTML {
-	return template.HTML(x)
-}
-
-func (r *Renderer) funcAdd(x, y int) (interface{}, error) {
-	return x + y, nil
-}
-
-func (r *Renderer) funcMod(x, y int) (bool, error) {
-	return x%y == 0, nil
-}
-
-func (r *Renderer) funcReplace(input, from, to string) string {
-	return strings.Replace(input, from, to, -1)
-}
-
-func (r *Renderer) funcStaticHTML(file string) template.HTML {
-	if file == "" {
-		return template.HTML(file)
-	}
-
-	u, err := url.Parse(file)
-	if err != nil {
-		return template.HTML(file)
-	}
-
-	ext := path.Ext(u.Path)
-
-	switch strings.ToLower(ext) {
-	case ".css":
-		return template.HTML("<link href=\"" + file + "\" rel=\"stylesheet\">")
-	case ".js":
-		return template.HTML("<script src=\"" + file + "\"></script>")
-	}
-
-	return template.HTML(file)
 }

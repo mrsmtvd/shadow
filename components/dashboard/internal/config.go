@@ -398,5 +398,5 @@ func (c *Component) watchSessionSecure(_ string, v interface{}, _ interface{}) {
 }
 
 func (c *Component) watchPanicHandlerCallerSkip(_ string, v interface{}, _ interface{}) {
-	c.router.SetPanicHandlerCallerSkip(int(v.(int64))	)
+	c.router.SetPanicHandlerCallerSkip(int(v.(int64)))
 }
