@@ -2,7 +2,7 @@
 <div class="row">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Configuration</h2>
+            <h2>{{ i18n "Configuration" . }}</h2>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -32,11 +32,11 @@
                                 <table class="table table-hover">
                                     <thead>
                                     <tr>
-                                        <th width="20%">Name</th>
-                                        <th width="25%">Value</th>
-                                        <th width="15%">Default</th>
-                                        <th width="10%">Watchers</th>
-                                        <th>Description</th>
+                                        <th width="20%">{{ i18n "Name" $ }}</th>
+                                        <th width="25%">{{ i18n "Value" $ }}</th>
+                                        <th width="15%">{{ i18n "Default" $ }}</th>
+                                        <th width="10%">{{ i18n "Watchers" $ }}</th>
+                                        <th>{{ i18n "Description" $ }}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -45,9 +45,9 @@
                                     <tr>
                                         <td>
                                             {{ if $config.Variable.Editable }}
-                                            <label class="control-label" for="{{ $varId }}" data-group="{{ $config.Variable.Group }}">{{ $config.Variable.Key }}</label>
+                                            <label class="control-label" for="{{ $varId }}" data-group="{{ i18n $config.Variable.Group $ "config" $name }}">{{ $config.Variable.Key }}</label>
                                             {{ else }}
-                                            <label class="control-label" data-group="{{ $config.Variable.Group }}">{{ $config.Variable.Key }}</label>
+                                            <label class="control-label" data-group="{{ i18n $config.Variable.Group $ "config" $name }}">{{ $config.Variable.Key }}</label>
                                             {{ end }}
                                         </td>
                                         <td>
@@ -74,7 +74,7 @@
                                                 {{ else if $config.HasView "tags" }}
                                                 {{ $defaultText := $config.GetViewOption "default-text" }}
                                                 <input type="text" class="form-control tags" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}"
-                                                    {{ if $defaultText }}data-default-text="{{ $defaultText }}"{{ end }}/>
+                                                    {{ if $defaultText }}data-default-text="{{ i18n $defaultText $ "config" $name }}"{{ end }}/>
                                                 {{ else }}
                                                 <input type="text" class="form-control" name="{{ $config.Variable.Key }}" value="{{ $config.Variable.Value }}" id="{{ $varId }}"/>
                                                 {{ end }}
@@ -110,9 +110,9 @@
                                             {{ end }}
                                         </td>
                                         <td>
-                                            <span>{{ $config.Variable.Usage }}
+                                            <span>{{ i18n $config.Variable.Usage $ "config" $name }}
                                             {{ if and (ne $config.Variable.Editable true) ($config.HasView "enum") }}
-                                                <br />Allowed values:
+                                                <br />{{ i18n "Allowed values:" $ }}
                                                 <ul>
                                                 {{ range $o, $option := ($config.GetViewOption "options") }}
                                                     {{ if eq (index $option 0) (index $option 1) }}
@@ -138,8 +138,8 @@
                 <div class="ln_solid"></div>
                 <div class="form-group">
                     <div class="col-md-6 col-md-offset-3">
-                        <button type="reset" class="btn btn-info" value="reset">Reset</button>
-                        <button type="submit" class="btn btn-success" value="save" disabled="disabled">Save</button>
+                        <button type="reset" class="btn btn-info" value="reset">{{ i18n "Reset" . }}</button>
+                        <button type="submit" class="btn btn-success" value="save" disabled="disabled">{{ i18n "Save" . }}</button>
                     </div>
                 </div>
             </form>
@@ -152,12 +152,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="modalConfigLabel">Confirm save configuration</h4>
+                <h4 class="modal-title" id="modalConfigLabel">{{ i18n "Confirm save configuration" . }}</h4>
             </div>
-            <div class="modal-body">Are you sure?</div>
+            <div class="modal-body">{{ i18n "Are you sure?" . }}</div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-danger" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ i18n "Close" . }}</button>
+                <button type="submit" class="btn btn-danger" data-dismiss="modal">{{ i18n "Save" . }}</button>
             </div>
         </div>
     </div>

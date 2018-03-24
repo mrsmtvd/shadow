@@ -1,0 +1,163 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgctxt "config"
+msgid "Listen"
+msgstr "Сервер"
+
+msgctxt "config"
+msgid "Authorization basic"
+msgstr "Базовая авторизация"
+
+msgctxt "config"
+msgid "Host"
+msgstr "Хост"
+
+msgctxt "config"
+msgid "Port number"
+msgstr "Номер порта"
+
+msgctxt "config"
+msgid "Authorization OAuth"
+msgstr "OAuth авторизация"
+
+msgctxt "config"
+msgid "Emails allowed"
+msgstr "Разрешенные адреса электронной почты"
+
+msgctxt "config"
+msgid "add a email"
+msgstr "добавить адрес"
+
+msgctxt "config"
+msgid "Domains of emails allowed"
+msgstr "Разрешенные домены для адресов электронной почты"
+
+msgctxt "config"
+msgid "add a domain"
+msgstr "добавить домен"
+
+msgctxt "config"
+msgid "Base URL for redirect"
+msgstr "Базовый URL для редиректа"
+
+msgctxt "config"
+msgid "Authorization OAuth Github provider"
+msgstr "OAuth авторизация Github провайдер"
+
+msgctxt "config"
+msgid "Enabled"
+msgstr "Включена"
+
+msgctxt "config"
+msgid "User login"
+msgstr "Логин пользователя"
+
+msgctxt "config"
+msgid "User password"
+msgstr "Пароль пользователя"
+
+msgctxt "config"
+msgid "Authorization OAuth Gitlab provider"
+msgstr "OAuth авторизация Gitlab провайдер"
+
+msgctxt "config"
+msgid "Client ID"
+msgstr "ID клиента"
+
+msgctxt "config"
+msgid "Client secret"
+msgstr "Секрет клиента"
+
+msgctxt "config"
+msgid "Scopes"
+msgstr "Области применения"
+
+msgctxt "config"
+msgid "add a scope"
+msgstr "добавить область"
+
+msgctxt "config"
+msgid "Endpoint URL"
+msgstr "Endpoint URL"
+
+msgctxt "config"
+msgid "Endpoint auth URL"
+msgstr "Endpoint URL для авторизации"
+
+msgctxt "config"
+msgid "Endpoint token URL"
+msgstr "Endpoint URL для получения токена"
+
+msgctxt "config"
+msgid "Endpoint profile URL"
+msgstr "Endpoint URL для получения профайла"
+
+msgctxt "config"
+msgid "Authorization OAuth Google+ provider"
+msgstr "OAuth авторизация Google+ провайдер"
+
+msgctxt "config"
+msgid "User session"
+msgstr "Пользовательская сессия"
+
+msgctxt "config"
+msgid "The name of the session cookie issued to clients. Note that cookie names should not contain whitespace, commas, semicolons, backslashes or control characters as per RFC6265n"
+msgstr "Имя сессионной куки, устанавливаемой клиенту. Обратите внимание, что имена кук не должны содержать пробелы, запятые, точки с запятой, обратные косые черты или контрольные символы согласно RFC6265n"
+
+msgctxt "config"
+msgid "Domain attribute on the session cookie"
+msgstr "Значение аттрибута domain в сессионной куке"
+
+msgctxt "config"
+msgid "HttpOnly attribute on the session cookie"
+msgstr "Включить аттрибут httpOnly в сессионной куке"
+
+msgctxt "config"
+msgid "Maximum length of time a session can be inactive before it expires"
+msgstr "Maximum length of time a session can be inactive before it expires"
+
+msgctxt "config"
+msgid "Maximum length of time that a session is valid for before it expires"
+msgstr "Maximum length of time that a session is valid for before it expires"
+
+msgctxt "config"
+msgid "Path attribute on the session cookie"
+msgstr "Значение аттрибута path в сессионной куке"
+
+msgctxt "config"
+msgid "Persist sets whether the session cookie should be persistent or not"
+msgstr "Должна ли кука сесиии быть постоянной или нет"
+
+msgctxt "config"
+msgid "Secure attribute on the session cookie"
+msgstr "Включить аттрибут secure в сессионной куке"
+
+msgctxt "config"
+msgid "Develop mode"
+msgstr "Режим разработки"
+
+msgctxt "config"
+msgid "Use minified static files"
+msgstr "Использовать минифицированые файлы статики"
+
+msgctxt "config"
+msgid "Skip number of callers in panic handler"
+msgstr "Игнорировать количество вызовов в хендлере паник"
+
+msgctxt "config"
+msgid "Others"
+msgstr "Другое"
+
+msgctxt "config"
+msgid "Start URL"
+msgstr "Стартовая страница"

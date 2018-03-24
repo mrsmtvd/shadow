@@ -12,3 +12,11 @@ msgstr ""
 
 msgid "Configuration"
 msgstr "Конфигурация"
+
+msgctxt "config"
+msgid "Develop mode"
+msgstr "Режим разработки"
+
+msgctxt "config"
+msgid "Debug mode"
+msgstr "Режим отладки"
