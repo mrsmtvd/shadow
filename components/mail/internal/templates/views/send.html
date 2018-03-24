@@ -3,7 +3,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Mail</h2>
+                <h2>{{ i18n "Mail" . }}</h2>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
@@ -24,7 +24,7 @@
                 <form class="form-horizontal form-label-left" role="form" method="post" id="send-mail" action="/mail/send/" novalidate>
                     <div class="item form-group">
                         <label for="to" class="control-label col-md-3 col-sm-3 col-xs-12">
-                            TO <span class="required">*</span>
+                            {{ i18n "TO" . }} <span class="required">*</span>
                         </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <input type="text" class="form-control" id="to" name="to" placeholder="example1@domain.com, example2@domain.com" value="" required="required">
@@ -32,7 +32,7 @@
                     </div>
                     <div class="item form-group">
                         <label for="subject" class="control-label col-md-3 col-sm-3 col-xs-12">
-                            Subject
+                            {{ i18n "Subject" . }}
                         </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <input type="text" class="form-control" id="subject" name="subject" value="">
@@ -40,18 +40,18 @@
                     </div>
                     <div class="item form-group">
                         <label for="type" class="control-label col-md-3 col-sm-3 col-xs-12">
-                            Content type
+                            {{ i18n "Content type" . }}
                         </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="form-control select2" rows="4" name="type" id="type">
-                                <option value="plain">Plain text</option>
-                                <option value="html">HTML</option>
+                                <option value="plain">{{ i18n "Plain text" . }}</option>
+                                <option value="html">{{ i18n "HTML" . }}</option>
                             </select>
                         </div>
                     </div>
                     <div class="item form-group">
                         <label for="message" class="control-label col-md-3 col-sm-3 col-xs-12">
-                            Message
+                            {{ i18n "Message" . }}
                         </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <textarea class="form-control resizable_textarea" rows="4" name="message" id="message"></textarea>
@@ -60,7 +60,7 @@
                     <div class="ln_solid"></div>
                     <div class="form-group">
                         <div class="col-md-6 col-md-offset-3">
-                            <button id="send" type="submit" class="btn btn-success">Send</button>
+                            <button id="send" type="submit" class="btn btn-success">{{ i18n "Send" . }}</button>
                         </div>
                     </div>
                 </form>

@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/mail"
 	"gopkg.in/gomail.v2"
 )
@@ -9,10 +11,12 @@ import (
 type SendHandler struct {
 	dashboard.Handler
 
-	Component mail.Component
+	Application shadow.Application
+	Component   mail.Component
 }
 
 func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
+	locale := i18n.NewOrNopFromRequest(r, h.Application)
 	vars := map[string]interface{}{}
 
 	if r.IsPost() {
@@ -29,7 +33,7 @@ func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 		if err := h.Component.SendAndReturn(message); err != nil {
 			vars["error"] = err.Error()
 		} else {
-			vars["message"] = "Message send success"
+			vars["message"] = locale.Translate(mail.ComponentName, "Message send success", "")
 		}
 	}
 
