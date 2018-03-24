@@ -2,6 +2,7 @@ package internationalization
 
 import (
 	"errors"
+	"fmt"
 )
 
 const (
@@ -88,11 +89,11 @@ func (d *Domain) Merge(domain *Domain) (*Domain, error) {
 	return NewDomain(d.Name(), append(d.Messages(), domain.Messages()...), d.PluralRule()), nil
 }
 
-func (d *Domain) Translate(ID string, context string) string {
-	return d.TranslatePlural(ID, "", 1, context)
+func (d *Domain) Translate(ID string, context string, format ...interface{}) string {
+	return d.TranslatePlural(ID, "", 1, context, format...)
 }
 
-func (d *Domain) TranslatePlural(singleID string, pluralID string, number int, context string) string {
+func (d *Domain) TranslatePlural(singleID string, pluralID string, number int, context string, format ...interface{}) string {
 	var message *Message
 
 	if messageByCtx, ok := d.messagesByKeys[domainMessageKeyWIthContext(singleID, context)]; ok { // by context
@@ -107,6 +108,10 @@ func (d *Domain) TranslatePlural(singleID string, pluralID string, number int, c
 		translates := message.Translated()
 
 		if index < len(translates) {
+			if len(format) > 0 {
+				return fmt.Sprintf(translates[index], format...)
+			}
+
 			return translates[index]
 		}
 	}

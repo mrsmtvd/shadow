@@ -81,9 +81,12 @@ $(document).ready(function () {
         });
 
     var table = $('#configs table').DataTable({
-        'bPaginate': false,
-        'bInfo': false,
-        'drawCallback': function () {
+        language: {
+            url: '/dashboard/datatables/i18n.json'
+        },
+        bPaginate: false,
+        bInfo: false,
+        drawCallback: function () {
             var api = this.api(),
                 rows = api.rows( {page:'current'} ).nodes(),
                 last = null;

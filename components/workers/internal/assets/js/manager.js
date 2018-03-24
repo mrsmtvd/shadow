@@ -25,6 +25,9 @@ $(document).ready(function () {
             }
         })
         .DataTable({
+            language: {
+                url: '/dashboard/datatables/i18n.json'
+            },
             ajax: {
                 url: '/workers/?action=stats&entity=listeners',
                 dataSrc: 'data'
@@ -87,6 +90,9 @@ $(document).ready(function () {
             }
         })
         .DataTable({
+            language: {
+                url: '/dashboard/datatables/i18n.json'
+            },
             ajax: {
                 url: '/workers/?action=stats&entity=workers',
                 dataSrc: 'data'
@@ -177,6 +183,9 @@ $(document).ready(function () {
             }
         })
         .DataTable({
+            language: {
+                url: '/dashboard/datatables/i18n.json'
+            },
             ajax: {
                 url: '/workers/?action=stats&entity=tasks',
                 dataSrc: 'data'

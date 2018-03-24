@@ -46,8 +46,8 @@
                     </div>
 
                     <div class="profile_info">
-                        <span>{{ i18n "Welcome," . "" "dashboard" }}</span>
-                        <h2>{{ if .User.Name }}{{ .User.Name }}{{ else }}{{ i18n "Anonymous" . "" "dashboard" }}{{ end }}</h2>
+                        <span>{{ i18n "Welcome," . nil "dashboard" }}</span>
+                        <h2>{{ if .User.Name }}{{ .User.Name }}{{ else }}{{ i18n "Anonymous" . nil "dashboard" }}{{ end }}</h2>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -102,11 +102,11 @@
                         <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                     </a>
                     -->
-                    <a data-toggle="tooltip" data-placement="top" title="Configuration" href="/config">
+                    <a data-toggle="tooltip" data-placement="top" title="{{ i18n "Configuration" . nil "dashboard" }}" href="/config">
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                     </a>
                     {{ if .User.IsAuthorized }}
-                    <a data-toggle="tooltip" data-placement="top" title="Logout" href="/dashboard/logout">
+                    <a data-toggle="tooltip" data-placement="top" title="{{ i18n "Logout" . nil "dashboard" }}" href="/dashboard/logout">
                         <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                     </a>
                     {{ end }}
@@ -180,7 +180,7 @@
                 with uptime <strong>{{ date_since .Application.start_date }}</strong>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pull-right">
-                Power by <a href="https://github.com/kihamo/shadow">Shadow framework</a><br />
+                {{ raw (i18n "Power by <a href=\"%s\">Shadow framework</a>" . nil "dashboard" nil "https://github.com/kihamo/shadow") }}<br />
                 Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
             </div>
             <div class="clearfix"></div>

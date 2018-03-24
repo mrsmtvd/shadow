@@ -244,7 +244,10 @@ function init_datatables() {
 
     $('.datatable').DataTable({
         paging: false,
-        fixedHeader: true
+        fixedHeader: true,
+        language: {
+            url: '/dashboard/datatables/i18n.json'
+        }
     });
 }
 

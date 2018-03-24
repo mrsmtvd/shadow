@@ -10,6 +10,7 @@ import (
 	"github.com/chai2010/gettext-go/gettext/mo"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/i18n/internationalization"
 	"github.com/kihamo/shadow/components/logger"
@@ -117,6 +118,17 @@ func (c *Component) Manager() *internationalization.Manager {
 	return c.manager
 }
 
+func (c *Component) LocaleFromRequest(request *dashboard.Request) (*internationalization.Locale, error) {
+	// in session
+	localeSession, err := c.LocaleFromSession(request.Session())
+	if err == nil {
+		return localeSession, err
+	}
+
+	// in request
+	return c.LocaleFromAcceptLanguage(request.Original().Header.Get("Accept-Language"))
+}
+
 func (c *Component) LocaleFromAcceptLanguage(acceptLanguage string) (*internationalization.Locale, error) {
 	tags, _, err := language.ParseAcceptLanguage(acceptLanguage)
 	if err != nil {
@@ -131,4 +143,22 @@ func (c *Component) LocaleFromAcceptLanguage(acceptLanguage string) (*internatio
 	}
 
 	return nil, errors.New("Locale not found")
+}
+
+func (c *Component) LocaleFromSession(session dashboard.Session) (*internationalization.Locale, error) {
+	localeName, err := session.GetString(i18n.SessionLocale)
+	if err != nil {
+		return nil, err
+	}
+
+	locale, ok := c.Manager().Locale(localeName)
+	if ok {
+		return locale, nil
+	}
+
+	return nil, errors.New("Locale not found")
+}
+
+func (c *Component) SessionSave(session dashboard.Session, locale *internationalization.Locale) error {
+	return session.PutString(i18n.SessionLocale, locale.Locale())
 }

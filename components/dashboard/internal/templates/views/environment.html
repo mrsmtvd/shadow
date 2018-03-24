@@ -1,17 +1,17 @@
 {{ define "content" }}
 <div class="x_panel">
     <div class="x_title">
-        <h2>Environment</h2>
+        <h2>{{ i18n "Environment" . }}</h2>
         <div class="clearfix"></div>
     </div>
     <div class="x_content">
         <div role="tabpanel">
             <ul class="nav nav-tabs bar_tabs" role="tablist">
                 <li role="presentation" class="active" aria-expanded="true">
-                    <a href="#go" aria-controls="go" role="tab" data-toggle="tab" aria-expanded="true">Go</a>
+                    <a href="#go" aria-controls="go" role="tab" data-toggle="tab" aria-expanded="true">{{ i18n "Go" . }}</a>
                 </li>
                 <li role="presentation" aria-expanded="false">
-                    <a href="#variables" aria-controls="variables" role="tab" data-toggle="tab" aria-expanded="false">Variables</a>
+                    <a href="#variables" aria-controls="variables" role="tab" data-toggle="tab" aria-expanded="false">{{ i18n "Variables" . }}</a>
                 </li>
             </ul>
 
@@ -21,42 +21,42 @@
                         <table class="table table-hover table-striped">
                             <thead>
                             <tr>
-                                <th width="30%">Name</th>
-                                <th width="70%">Value</th>
+                                <th width="30%">{{ i18n "Name" . }}</th>
+                                <th width="70%">{{ i18n "Value" . }}</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <td>Go version</td>
+                                <td>{{ i18n "Go version" . }}</td>
                                 <td>{{ .goVersion }}</td>
                             </tr>
                             <tr>
-                                <td>Go OS</td>
+                                <td>{{ i18n "OS" . }}</td>
                                 <td>{{ .goOS }}</td>
                             </tr>
                             <tr>
-                                <td>Go arch</td>
+                                <td>{{ i18n "Architecture" . }}</td>
                                 <td>{{ .goArch }}</td>
                             </tr>
                             <tr>
-                                <td>Go root</td>
+                                <td>{{ i18n "Root directory" . }}</td>
                                 <td>{{ .goRoot }}</td>
                             </tr>
                             <tr>
-                                <td>Go num CPU</td>
+                                <td>{{ i18n "Number CPU" . }}</td>
                                 <td>{{ .goNumCPU }}</td>
                             </tr>
                             <tr>
-                                <td>Go num goroutine</td>
+                                <td>{{ i18n "Number goroutine" . }}</td>
                                 <td>{{ .goNumGoroutine }}</td>
                             </tr>
                             <tr>
-                                <td>Go num CGO call</td>
+                                <td>{{ i18n "Number CGO call" . }}</td>
                                 <td>{{ .goNumCgoCall }}</td>
                             </tr>
                             <tr>
-                                <td>Go race detector enabled</td>
-                                <td>{{ if .goRace }}Yes{{ else }}No{{ end }}</td>
+                                <td>{{ i18n "Go race detector enabled" . }}</td>
+                                <td>{{ if .goRace }}{{ i18n "Yes" . }}{{ else }}{{ i18n "No" . }}{{ end }}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -68,8 +68,8 @@
                         <table class="table table-hover table-striped">
                             <thead>
                             <tr>
-                                <th width="30%">Name</th>
-                                <th width="70%">Value</th>
+                                <th width="30%">{{ i18n "Name" . }}</th>
+                                <th width="70%">{{ i18n "Value" . }}</th>
                             </tr>
                             </thead>
                             <tbody>
