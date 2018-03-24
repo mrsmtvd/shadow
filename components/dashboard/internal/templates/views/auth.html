@@ -24,7 +24,7 @@
         <div class="form login_form">
             <section class="login_content">
                 <div class="login_form">
-                    <h1>Login Form</h1>
+                    <h1>{{ i18n "Login Form" . }}</h1>
 
                     {{ if .error }}
                     <div class="alert alert-danger alert-dismissable">
@@ -37,15 +37,15 @@
                         {{ if ne $provider.NeedRedirect true }}
                         <form action="{{ $provider.CallbackURL }}" method="post">
                             <div>
-                                <input type="text" class="form-control" placeholder="Username" required="required" name="username" autofocus />
+                                <input type="text" class="form-control" placeholder="{{ i18n "Username" . }}" required="required" name="username" autofocus />
                             </div>
 
                             <div>
-                                <input type="password" class="form-control" placeholder="Password" required="required" name="password" />
+                                <input type="password" class="form-control" placeholder="{{ i18n "Password" . }}" required="required" name="password" />
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-default submit">Log in</button>
-                                <button type="reset" class="btn btn-default">Reset</button>
+                                <button type="submit" class="btn btn-default submit">{{ i18n "Log in" . }}</button>
+                                <button type="reset" class="btn btn-default">{{ i18n "Reset" . }}</button>
                             </div>
                         </form>
                         {{ end }}

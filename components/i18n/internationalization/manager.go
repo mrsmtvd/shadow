@@ -39,11 +39,11 @@ func (m *Manager) Locale(locale string) (*Locale, bool) {
 	return l, ok
 }
 
-func (m *Manager) Translate(locale, domain, ID string, context string, format ...interface{}) string {
+func (m *Manager) Translate(locale, domain, ID, context string, format ...interface{}) string {
 	return m.TranslatePlural(locale, domain, ID, "", 1, context, format...)
 }
 
-func (m *Manager) TranslatePlural(locale, domain, singleID string, pluralID string, number int, context string, format ...interface{}) string {
+func (m *Manager) TranslatePlural(locale, domain, singleID, pluralID string, number int, context string, format ...interface{}) string {
 	if locale == "" {
 		locale = m.DefaultLocale()
 	}

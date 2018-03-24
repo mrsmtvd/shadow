@@ -5,5 +5,5 @@ import (
 )
 
 type HasI18n interface {
-	I18n() map[string]io.ReadSeeker
+	I18n() map[string][]io.ReadSeeker
 }

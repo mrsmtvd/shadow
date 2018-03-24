@@ -13,7 +13,7 @@ const (
 	MessagesDirName  = "LC_MESSAGES"
 )
 
-func FromAssetFS(fs *assetfs.AssetFS) map[string]io.ReadSeeker {
+func FromAssetFS(fs *assetfs.AssetFS) map[string][]io.ReadSeeker {
 	root, err := fs.Open("")
 	if err != nil {
 		return nil
@@ -24,7 +24,7 @@ func FromAssetFS(fs *assetfs.AssetFS) map[string]io.ReadSeeker {
 		return nil
 	}
 
-	locales := make(map[string]io.ReadSeeker, len(dirs))
+	locales := make(map[string][]io.ReadSeeker, len(dirs))
 
 	for _, d := range dirs {
 		localeDir, err := fs.Open(filepath.Join(d.Name(), MessagesDirName))
@@ -47,8 +47,11 @@ func FromAssetFS(fs *assetfs.AssetFS) map[string]io.ReadSeeker {
 				continue
 			}
 
-			locales[d.Name()] = bytes.NewReader(content)
-			break
+			if _, ok := locales[d.Name()]; !ok {
+				locales[d.Name()] = make([]io.ReadSeeker, 0, len(localeFiles))
+			}
+
+			locales[d.Name()] = append(locales[d.Name()], bytes.NewReader(content))
 		}
 	}
 

@@ -4,7 +4,7 @@
         <div class="text-center text-center">
             <h1 class="error-number">500</h1>
             <h2>{{ .panic.error }}</h2>
-            <p>Error in {{ .panic.file }} at {{ .panic.line }} line</p>
+            <p>{{ i18n "Error in %s at %d line" . nil nil nil .panic.file .panic.line }}</p>
             <pre class="text-left">{{ .panic.stack }}</pre>
         </div>
     </div>

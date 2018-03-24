@@ -3,6 +3,7 @@ package dashboard
 type Menu interface {
 	Title() string
 	Url() string
+	ComponentName() string
 	Route() Route
 	Icon() string
 	Childs() []Menu
@@ -14,31 +15,33 @@ type HasMenu interface {
 }
 
 type MenuItem struct {
-	title  string
-	url    string
-	route  Route
-	icon   string
-	childs []Menu
-	show   func(*Request) bool
+	title         string
+	url           string
+	componentName string
+	route         Route
+	icon          string
+	childs        []Menu
+	show          func(*Request) bool
 }
 
-func newMenu(title string, url string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
+func newMenu(title, url, componentName, icon string, route Route, childs []Menu, show func(*Request) bool) Menu {
 	return MenuItem{
-		title:  title,
-		url:    url,
-		route:  route,
-		icon:   icon,
-		childs: childs,
-		show:   show,
+		title:         title,
+		url:           url,
+		componentName: componentName,
+		icon:          icon,
+		route:         route,
+		childs:        childs,
+		show:          show,
 	}
 }
 
-func NewMenuWithUrl(title string, url string, icon string, childs []Menu, show func(*Request) bool) Menu {
-	return newMenu(title, url, nil, icon, childs, show)
+func NewMenuWithUrl(title, url, componentName, icon string, childs []Menu, show func(*Request) bool) Menu {
+	return newMenu(title, url, componentName, icon, nil, childs, show)
 }
 
 func NewMenuWithRoute(title string, route Route, icon string, childs []Menu, show func(*Request) bool) Menu {
-	return newMenu(title, "", route, icon, childs, show)
+	return newMenu(title, "", route.ComponentName(), icon, route, childs, show)
 }
 
 func (m MenuItem) Title() string {
@@ -47,6 +50,10 @@ func (m MenuItem) Title() string {
 
 func (m MenuItem) Url() string {
 	return m.url
+}
+
+func (m MenuItem) ComponentName() string {
+	return m.componentName
 }
 
 func (m MenuItem) Route() Route {

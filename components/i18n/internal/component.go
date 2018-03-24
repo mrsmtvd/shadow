@@ -67,26 +67,8 @@ func (c *Component) Run() error {
 				continue
 			}
 
-			for localeName, reader := range locales {
-				b, err := ioutil.ReadAll(reader)
-				if err != nil {
-					c.logger.Warn("Failed read from file", map[string]interface{}{
-						"component": cmp.Name(),
-						"locale":    localeName,
-						"error":     err.Error(),
-					})
-					continue
-				}
-
-				file, err := mo.LoadData(b)
-				if err != nil {
-					c.logger.Warn("Failed parse MO file", map[string]interface{}{
-						"component": cmp.Name(),
-						"locale":    localeName,
-						"error":     err.Error(),
-					})
-					continue
-				}
+			for localeName, readers := range locales {
+				var domain *internationalization.Domain
 
 				locale, ok := c.manager.Locale(localeName)
 				if !ok {
@@ -94,19 +76,60 @@ func (c *Component) Run() error {
 					c.manager.AddLocale(locale)
 				}
 
-				pluralRule := internationalization.NewPluralRule(file.MimeHeader.PluralForms)
+				for _, reader := range readers {
+					b, err := ioutil.ReadAll(reader)
+					if err != nil {
+						c.logger.Warn("Failed read from file", map[string]interface{}{
+							"locale": localeName,
+							"error":  err.Error(),
+							"domain": cmp.Name(),
+						})
+						continue
+					}
 
-				messages := make([]*internationalization.Message, 0, len(file.Messages))
-				for _, m := range file.Messages {
-					messages = append(messages, internationalization.NewMessage(m.MsgId, m.MsgStr, m.MsgIdPlural, m.MsgStrPlural, m.MsgContext))
+					file, err := mo.LoadData(b)
+					if err != nil {
+						c.logger.Warn("Failed parse MO file", map[string]interface{}{
+							"locale": localeName,
+							"error":  err.Error(),
+							"domain": cmp.Name(),
+						})
+						continue
+					}
+
+					pluralRule := internationalization.NewPluralRule(file.MimeHeader.PluralForms)
+
+					messages := make([]*internationalization.Message, 0, len(file.Messages))
+					for _, m := range file.Messages {
+						messages = append(messages, internationalization.NewMessage(m.MsgId, m.MsgStr, m.MsgIdPlural, m.MsgStrPlural, m.MsgContext))
+					}
+
+					domainTmp := internationalization.NewDomain(cmp.Name(), messages, pluralRule)
+
+					if domain == nil {
+						domain = domainTmp
+					} else {
+						mergeDomain, err := domain.Merge(domainTmp)
+						if err != nil {
+							c.logger.Warn("Failed merge domains", map[string]interface{}{
+								"locale": localeName,
+								"domain": cmp.Name(),
+								"error":  err.Error(),
+							})
+						} else {
+							domain = mergeDomain
+						}
+					}
 				}
 
-				locale.AddDomain(internationalization.NewDomain(cmp.Name(), messages, pluralRule))
+				if domain != nil {
+					locale.AddDomain(domain)
 
-				c.logger.Debugf("Load %d translations", len(file.Messages), map[string]interface{}{
-					"component": cmp.Name(),
-					"locale":    localeName,
-				})
+					c.logger.Debugf("Load %d translations", len(domain.Messages()), map[string]interface{}{
+						"locale": localeName,
+						"domain": cmp.Name(),
+					})
+				}
 			}
 		}
 	}

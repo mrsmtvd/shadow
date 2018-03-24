@@ -8,6 +8,7 @@ import (
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/shadow/components/profiling/internal/handlers"
 )
 
@@ -30,6 +31,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenuWithUrl(
 		"Profiling",
 		"",
+		profiling.ComponentName,
 		"terminal",
 		[]dashboard.Menu{
 			dashboard.NewMenuWithRoute("Traces", routes[1], "", nil, show),

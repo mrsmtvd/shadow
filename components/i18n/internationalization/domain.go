@@ -29,29 +29,18 @@ func NewDomain(name string, messages []*Message, pluralRule *PluralRule) *Domain
 	}
 
 	for _, m := range messages {
-		for _, key := range domainMessageKeys(m) {
-			d.messagesByKeys[key] = m
+		if m.SingleID() == "" {
+			continue
+		}
+
+		if ctx := m.Context(); ctx != "" {
+			d.messagesByKeys[domainMessageKeyWIthContext(m.SingleID(), ctx)] = m
+		} else {
+			d.messagesByKeys[m.SingleID()] = m
 		}
 	}
 
 	return d
-}
-
-func domainMessageKeys(message *Message) []string {
-	id := message.SingleID()
-	if id == "" {
-		return nil
-	}
-
-	keys := []string{
-		message.SingleID(),
-	}
-
-	if ctx := message.Context(); ctx != "" {
-		keys = append(keys, domainMessageKeyWIthContext(id, ctx))
-	}
-
-	return keys
 }
 
 func domainMessageKeyWIthContext(ID, ctx string) string {
@@ -75,7 +64,7 @@ func (d *Domain) PluralRule() *PluralRule {
 }
 
 func (d *Domain) Messages() []*Message {
-	list := make([]*Message, 0, len(d.messages))
+	list := make([]*Message, len(d.messages), len(d.messages))
 	copy(list, d.messages)
 
 	return list
@@ -89,17 +78,25 @@ func (d *Domain) Merge(domain *Domain) (*Domain, error) {
 	return NewDomain(d.Name(), append(d.Messages(), domain.Messages()...), d.PluralRule()), nil
 }
 
-func (d *Domain) Translate(ID string, context string, format ...interface{}) string {
+func (d *Domain) Translate(ID, context string, format ...interface{}) string {
 	return d.TranslatePlural(ID, "", 1, context, format...)
 }
 
-func (d *Domain) TranslatePlural(singleID string, pluralID string, number int, context string, format ...interface{}) string {
+func (d *Domain) TranslatePlural(singleID, pluralID string, number int, context string, format ...interface{}) string {
 	var message *Message
 
-	if messageByCtx, ok := d.messagesByKeys[domainMessageKeyWIthContext(singleID, context)]; ok { // by context
-		message = messageByCtx
-	} else if messageByID, ok := d.messagesByKeys[singleID]; ok { // by ID
-		message = messageByID
+	// by context
+	if context != "" {
+		if messageByCtx, ok := d.messagesByKeys[domainMessageKeyWIthContext(singleID, context)]; ok {
+			message = messageByCtx
+		}
+	}
+
+	// by ID
+	if message == nil {
+		if messageByID, ok := d.messagesByKeys[singleID]; ok {
+			message = messageByID
+		}
 	}
 
 	// check plural
