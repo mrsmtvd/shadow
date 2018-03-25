@@ -34,7 +34,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		profiling.ComponentName,
 		"terminal",
 		[]dashboard.Menu{
-			dashboard.NewMenuWithRoute("Traces", routes[1], "", nil, show),
+			dashboard.NewMenuWithRoute("Trace", routes[1], "", nil, show),
 			dashboard.NewMenuWithRoute("Pprof", routes[7], "", nil, show),
 			dashboard.NewMenuWithRoute("Expvar", routes[2], "", nil, show),
 		},

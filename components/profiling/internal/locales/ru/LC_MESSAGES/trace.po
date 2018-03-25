@@ -1,0 +1,101 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgid "Go trace"
+msgstr "Go трасировка"
+
+msgid "stack traces that led to blocking on synchronization primitives"
+msgstr "трассировки стека, которые привели к блокировке на примитивах синхронизации"
+
+msgid "CPU profiling for the current process"
+msgstr "CPU профайлинг для текущего процесса"
+
+msgid "stack traces of all current goroutines"
+msgstr "трассировки стека всех текущих гоурутин"
+
+msgid "a sampling of all heap allocations"
+msgstr "выборка всех алокаций кучи"
+
+msgid "stack traces of holders of contended mutexes"
+msgstr "трассировки стека держателей утвержденных мьютексов"
+
+msgid "stack traces that led to the creation of new OS threads"
+msgstr "трассировки стека, которые привели к созданию новых тредов ОС"
+
+msgid "tracing for the current program"
+msgstr "трасировка для текущей программы"
+
+msgid "Select all"
+msgstr "Выбрать все"
+
+msgid "Unselect all"
+msgstr "Снять выделение"
+
+msgid "Run profiling"
+msgstr "Запустить профайлинг"
+
+msgid "Finish profiling"
+msgstr "Остановить профайлинг"
+
+msgid "Profiles"
+msgstr "Профайлы"
+
+msgid "Dumps"
+msgstr "Дампы"
+
+msgid "Confirm remove all dump"
+msgstr "Подтверждение удаления всех дампов"
+
+msgid "Will be remove all dumps. Are you sure?"
+msgstr "Будут удалены все дампы. Вы уверены?"
+
+msgid "Remove all"
+msgstr "Удалить все"
+
+msgid "Started at"
+msgstr "Запущен в"
+
+msgid "Stopped at"
+msgstr "Остановлен в"
+
+msgid "Size in bytes"
+msgstr "Размер в байтах"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Generation"
+msgstr "Генерация"
+
+msgid "Download"
+msgstr "Скачать"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "years"
+msgstr "лет"
+
+msgid "months"
+msgstr "месяцев"
+
+msgid "days"
+msgstr "дней"
+
+msgid "hours"
+msgstr "часов"
+
+msgid "minutes"
+msgstr "минут"
+
+msgid "seconds"
+msgstr "секунд"

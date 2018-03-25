@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"runtime"
 
 	"github.com/kihamo/shadow/components/config"
@@ -16,7 +15,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 			"./",
 			"Path to trace dumps directory",
 			true,
-			"",
+			"Others",
 			nil,
 			nil),
 		config.NewVariable(
@@ -25,16 +24,16 @@ func (c *Component) ConfigVariables() []config.Variable {
 			100,
 			"Sets the garbage collection target percentage",
 			true,
-			"",
+			"Others",
 			nil,
 			nil),
 		config.NewVariable(
 			profiling.ConfigGoMaxProc,
 			config.ValueTypeInt,
 			runtime.GOMAXPROCS(-1),
-			fmt.Sprintf("Sets the maximum number of CPUs that can be executing simultaneously. Attention number of cpu is %d", runtime.NumCPU()),
+			"Sets the maximum number of CPUs that can be executing simultaneously",
 			true,
-			"",
+			"Others",
 			nil,
 			nil),
 	}

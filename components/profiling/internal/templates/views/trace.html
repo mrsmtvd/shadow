@@ -7,7 +7,7 @@
 {{ define "content" }}
 <div class="page-title">
     <div class="title_left">
-        <h3>Go trace</h3>
+        <h3>{{ i18n "Go trace" . }}</h3>
     </div>
 </div>
 
@@ -22,7 +22,7 @@
 
 <div class="x_panel">
     <div class="x_title">
-        <h2><i class="fa fa-file-o"></i> Run profiling</h2>
+        <h2><i class="fa fa-file-o"></i> {{ i18n "Run profiling" . }}</h2>
         <ul class="nav navbar-right panel_toolbox">
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
             <li class="dropdown">
@@ -30,7 +30,7 @@
                 <ul class="dropdown-menu" role="menu">
                     <li>
                         <a href="javascript:void(0)" id="select-all">
-                            <i class="glyphicon glyphicon-check"></i> Select all
+                            <i class="glyphicon glyphicon-check"></i> {{ i18n "Select all" . }}
                         </a>
                     </li>
                 </ul>
@@ -49,7 +49,7 @@
                 {{ range $id, $profile := .profiles }}
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" class="flat" id="{{ $profile.GetId }}" name="profile_{{ $profile.GetId }}" value="{{ $profile.GetId }}" {{ if $profile.GetStarted }}checked{{ end }}> {{ $profile.GetDescription }}
+                        <input type="checkbox" class="flat" id="{{ $profile.GetId }}" name="profile_{{ $profile.GetId }}" value="{{ $profile.GetId }}" {{ if $profile.GetStarted }}checked{{ end }}> {{ i18n $profile.GetDescription $ }}
                     </label>
                 </div>
                 {{ end }}
@@ -59,9 +59,9 @@
             <div class="ln_solid"></div>
             <div class="form-group">
                 {{ if .started }}
-                <button type="submit" class="btn btn-danger" value="stop">Finish profiling</button>
+                    <button type="submit" class="btn btn-danger" value="stop">{{ i18n "Finish profiling" . }}</button>
                 {{ else }}
-                <button type="submit" class="btn btn-success" value="start" disabled>Run profiling</button>
+                    <button type="submit" class="btn btn-success" value="start" disabled>{{ i18n "Run profiling" . }}</button>
                 {{ end }}
             </div>
         </form>
@@ -70,7 +70,7 @@
 
 <div class="x_panel">
     <div class="x_title">
-        <h2><i class="fa fa-files-o"></i> Dumps</h2>
+        <h2><i class="fa fa-files-o"></i> {{ i18n "Dumps" . }}</h2>
         <ul class="nav navbar-right panel_toolbox">
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
             {{ if .remove_all }}
@@ -78,8 +78,8 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
                 <ul class="dropdown-menu" role="menu">
                     <li>
-                        <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all dump" data-modal-body="Will be remove all dumps. Are you sure?" data-modal-callback="dumpsRemove();">
-                            <i class="glyphicon glyphicon-trash"></i> Remove all
+                        <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove all dump" . }}" data-modal-body="{{ i18n "Will be remove all dumps. Are you sure?" . }}" data-modal-callback="dumpsRemove();">
+                            <i class="glyphicon glyphicon-trash"></i> {{ i18n "Remove all" . }}
                         </a>
                     </li>
                 </ul>
@@ -93,11 +93,11 @@
             <table class="table table-hover table-striped" id="dumps">
                 <thead>
                 <tr>
-                    <th>Profiles</th>
-                    <th>Started</th>
-                    <th>Stopped</th>
-                    <th>Size</th>
-                    <th class="text-right">Actions</th>
+                    <th>{{ i18n "Profiles" . }}</th>
+                    <th>{{ i18n "Started at" . }}</th>
+                    <th>{{ i18n "Stopped at" . }}</th>
+                    <th>{{ i18n "Size in bytes" . }}</th>
+                    <th class="text-right">{{ i18n "Actions" . }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -111,7 +111,7 @@
                     {{ else }}
                     <div class="progress" style="width:100%;margin-bottom:0;float:right">
                         <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                            <span class="sr-only">Generation</span>
+                            <span class="sr-only">{{ i18n "Generation" $ }}</span>
                         </div>
                     </div>
                     {{ end }}
@@ -122,13 +122,13 @@
                 <td class="text-right">
                     {{ if and (ne $dump.GetStatus 0) (ne $dump.GetStatus 2) }}
                     <form method="post" action="?action=delete&id={{ $dump.GetId }}" class="btn-group btn-group-xs">
-                        <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download" title="Download"></i></a>
-                        <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash" title="Delete"></i></button>
+                        <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download" title="{{ i18n "Download" $ }}"></i></a>
+                        <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash" title="{{ i18n "Delete" $ }}"></i></button>
                     </form>
                     {{ else }}
                     <div class="progress" style="width:67px;margin-bottom:0;float:right">
                         <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                            <span class="sr-only">Generation</span>
+                            <span class="sr-only">{{ i18n "Generation" $ }}</span>
                         </div>
                     </div>
                     {{ end }}
@@ -153,8 +153,18 @@
     $(document).ready(function () {
 
         {{ if .started }}
+            FlipClock.Lang['locale'] = {
+                'years'   : '{{ i18n "years" . }}',
+                'months'  : '{{ i18n "months" . }}',
+                'days'    : '{{ i18n "days" . }}',
+                'hours'   : '{{ i18n "hours" . }}',
+                'minutes' : '{{ i18n "minutes" . }}',
+                'seconds' : '{{ i18n "seconds" . }}'
+            };
+
             $('.clock').FlipClock({{ .duration.Seconds }}, {
-                clockFace: 'MinuteCounter'
+                clockFace: 'MinuteCounter',
+                language: 'locale'
             });
         {{ else }}
             var p = $('#profiles').find(':checkbox');
@@ -164,7 +174,7 @@
             s.click(function() {
                 var next = !$(this).data('selected');
                 p.iCheck(next ? 'check' : 'uncheck');
-                $(this).html(next ? '<i class="glyphicon glyphicon-unchecked"></i> Unselect all' : '<i class="glyphicon glyphicon-check"></i> Select all')
+                $(this).html(next ? '<i class="glyphicon glyphicon-unchecked"></i> {{ i18n "Unselect all" $ }}' : '<i class="glyphicon glyphicon-check"></i> {{ i18n "Select all" $ }}')
                         .data('selected', next);
             });
 
@@ -177,7 +187,7 @@
                     b.removeAttr('disabled');
                 } else {
                     b.attr('disabled', '');
-                    s.html('<i class="glyphicon glyphicon-check"></i> Select all').data('selected', false)
+                    s.html('<i class="glyphicon glyphicon-check"></i> {{ i18n "Select all" $ }}').data('selected', false)
                 }
             });
         {{ end }}
