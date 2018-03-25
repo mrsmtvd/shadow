@@ -24,6 +24,7 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 			"name":                    cmp.Name(),
 			"version":                 cmp.Version(),
 			"dependencies":            []string{},
+			"has_assetfs":             false,
 			"has_config_variables":    false,
 			"has_config_watchers":     false,
 			"has_dashboard_menu":      false,
@@ -36,6 +37,10 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 
 		if deps, ok := cmp.(shadow.ComponentDependency); ok {
 			row["dependencies"] = deps.Dependencies()
+		}
+
+		if _, ok := cmp.(dashboard.HasAssetFS); ok {
+			row["has_assetfs"] = true
 		}
 
 		if _, ok := cmp.(config.HasVariables); ok {

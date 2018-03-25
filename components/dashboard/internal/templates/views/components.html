@@ -33,6 +33,10 @@
                             {{ end }}
                         </td>
                         <td>
+                            {{ if $component.has_assetfs }}
+                                <span class="label label-success">{{ i18n "asset filesystem" $ }}</span>
+                            {{ end }}
+
                             {{ if $component.has_config_variables }}
                                 {{ if $component.has_config_watchers }}
                                 <a href="/config/" class="label label-success">{{ i18n "config with watchers" $ }}</a>

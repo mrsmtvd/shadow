@@ -38,12 +38,12 @@ type bindataBreadcrumb struct {
 }
 
 func (h *BindataHandler) getRoot() ([]bindataList, error) {
-	files := []bindataList{}
-
 	components, err := h.Application.GetComponents()
 	if err != nil {
 		return nil, err
 	}
+
+	files := make([]bindataList, 0, len(components))
 
 	modTime := time.Now()
 	if h.Application.BuildDate() != nil {
@@ -51,8 +51,8 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 	}
 
 	for _, component := range components {
-		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
-			fs := componentTemplate.DashboardTemplates()
+		if componentTemplate, ok := component.(dashboard.HasAssetFS); ok {
+			fs := componentTemplate.AssetFS()
 			if fs == nil {
 				continue
 			}
@@ -76,12 +76,12 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 		return nil, fmt.Errorf("Component %s not found", name)
 	}
 
-	componentTemplate, ok := h.Application.GetComponent(name).(dashboard.HasTemplates)
+	componentTemplate, ok := h.Application.GetComponent(name).(dashboard.HasAssetFS)
 	if !ok {
 		return nil, fmt.Errorf("Component %s haven't templates", name)
 	}
 
-	fs := componentTemplate.DashboardTemplates()
+	fs := componentTemplate.AssetFS()
 	if fs.Prefix != "" {
 		fs.Prefix = ""
 	}

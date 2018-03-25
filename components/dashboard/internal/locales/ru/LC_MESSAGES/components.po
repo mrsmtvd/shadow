@@ -25,6 +25,9 @@ msgstr "Зависимости"
 msgid "Functions"
 msgstr "Функции"
 
+msgid "asset filesystem"
+msgstr "файловая система asset"
+
 msgid "config"
 msgstr "конфигурация"
 
