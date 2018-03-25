@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/metrics"
 	g "google.golang.org/grpc"
@@ -37,6 +38,9 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		{
 			Name:     config.ComponentName,
 			Required: true,
+		},
+		{
+			Name: i18n.ComponentName,
 		},
 		{
 			Name: logger.ComponentName,
