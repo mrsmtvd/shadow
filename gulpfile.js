@@ -353,8 +353,8 @@ gulp.task('frontend', ['compress-components'], function() {
  */
 gulp.task('backend', [], function() {
     runSequence(
-        'golang',
-        ['i18n', 'bindata', 'protobuf'],
+        'golang', 'i18n',
+        ['bindata', 'protobuf'],
         'easyjson'
     );
 });

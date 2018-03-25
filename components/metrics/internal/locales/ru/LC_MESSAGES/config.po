@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgctxt "config"
+msgid "InfluxDB"
+msgstr "InfluxDB"
+
+msgctxt "config"
+msgid "URL"
+msgstr "URL"
+
+msgctxt "config"
+msgid "Database name"
+msgstr "Имя базы данных"
+
+msgctxt "config"
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgctxt "config"
+msgid "Password"
+msgstr "Пароль"
+
+msgctxt "config"
+msgid "Precision"
+msgstr "Точность"
+
+msgctxt "config"
+msgid "rfc3339"
+msgstr "rfc3339"
+
+msgctxt "config"
+msgid "Hour"
+msgstr "Час"
+
+msgctxt "config"
+msgid "Minute"
+msgstr "Минута"
+
+msgctxt "config"
+msgid "Second"
+msgstr "Секунда"
+
+msgctxt "config"
+msgid "Millisecond"
+msgstr "Миллисекунда"
+
+msgctxt "config"
+msgid "Microsecond"
+msgstr "Микросекунда"
+
+msgctxt "config"
+msgid "Nanosecond"
+msgstr "Наносекунда"
+
+msgctxt "config"
+msgid "Others"
+msgstr "Другое"
+
+msgctxt "config"
+msgid "Flush interval"
+msgstr "Интервал отправки"
+
+msgctxt "config"
+msgid "Labels in format label1_name=label1_value"
+msgstr "Метки в формате label1_name=label1_value"
+
+msgctxt "config"
+msgid "add a label"
+msgstr "добавить метку"

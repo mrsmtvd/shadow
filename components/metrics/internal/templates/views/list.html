@@ -10,22 +10,26 @@
 <div class="row">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Metrics</h2>
+            <h2>{{ i18n "Metrics" . }}</h2>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
             <p class="text-muted font-13 m-b-30">
-                Shows {{ len .measures }} measures{{ if .updated }} last updated at <script type="application/javascript">document.write(dateToString('{{ .updated.Format "2006-01-02T15:04:05Z07:00" }}'))</script>{{ end }}
+                {{ if .updated }}
+                    {{ raw (i18nPlural "Shows %d measure. Last updated at %s" "Shows %d measures. Last updated at %s" (len .measures) $ nil nil nil (len .measures) (print "<script type=\"application/javascript\">document.write(dateToString('" (.updated.Format "2006-01-02T15:04:05Z07:00") "'))</script>")) }}
+                {{ else }}
+                    {{ i18nPlural "Shows %d measure" "Shows %d measures" (len .measures) $ nil nil nil (len .measures) }}
+                {{ end }}
             </p>
 
             <table class="table table-striped datatable">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Help</th>
-                        <th class="md-col-1">Type</th>
-                        <th>Labels</th>
-                        <th>Value</th>
+                        <th>{{ i18n "Name" . }}</th>
+                        <th>{{ i18n "Description" . }}</th>
+                        <th class="md-col-1">{{ i18n "Type" . }}</th>
+                        <th>{{ i18n "Labels" . }}</th>
+                        <th>{{ i18n "Value" . }}</th>
                     </tr>
                 </thead>
                 <tbody>

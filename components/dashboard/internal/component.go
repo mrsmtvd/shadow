@@ -49,10 +49,10 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Required: true,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: i18n.ComponentName,
 		},
 		{
-			Name: i18n.ComponentName,
+			Name: logger.ComponentName,
 		},
 	}
 }

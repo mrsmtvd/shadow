@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgid "Metrics"
+msgstr "Метрики"
+
+msgid "Shows %d measure. Last updated at %s"
+msgid_plural "Shows %d measures. Last updated at %s"
+msgstr[0] "Показано %d измерение. Последнее обновление в %s"
+msgstr[1] "Показано %d измерения. Последнее обновление в %s"
+msgstr[2] "Показано %d измерений. Последнее обновление в %s"
+
+msgid "Shows %d measure"
+msgid_plural "Shows %d measures"
+msgstr[0] "Показано %d измерение"
+msgstr[1] "Показано %d измерения"
+msgstr[2] "Показано %d измерений"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Labels"
+msgstr "Метки"
+
+msgid "Value"
+msgstr "Значение"

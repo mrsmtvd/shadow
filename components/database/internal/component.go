@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/database"
 	"github.com/kihamo/shadow/components/database/balancer"
 	"github.com/kihamo/shadow/components/database/storage"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/metrics"
 	"github.com/rubenv/sql-migrate"
@@ -38,6 +39,9 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		{
 			Name:     config.ComponentName,
 			Required: true,
+		},
+		{
+			Name: i18n.ComponentName,
 		},
 		{
 			Name: logger.ComponentName,
