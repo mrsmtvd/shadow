@@ -19,7 +19,7 @@ type Component interface {
 	Watch(watcher Watcher)
 	Watchers(key string) []Watcher
 
-	Variables() map[string]Variable
+	Variables() []Variable
 	Bool(key string) bool
 	BoolDefault(key string, value interface{}) bool
 	Int(key string) int

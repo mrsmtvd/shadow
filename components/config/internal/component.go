@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -25,14 +26,20 @@ func EnvKey(name string) string {
 	return name
 }
 
+type variableSort struct {
+	variable config.Variable
+	order    int
+}
+
 type Component struct {
-	mutex       sync.RWMutex
-	application shadow.Application
-	logger      logger.Logger
-	envPrefix   string
-	variables   map[string]config.Variable
-	watchers    map[string][]config.Watcher
-	routes      []dashboard.Route
+	mutex         sync.RWMutex
+	application   shadow.Application
+	logger        logger.Logger
+	envPrefix     string
+	variables     map[string]config.Variable
+	variablesSort []*variableSort
+	watchers      map[string][]config.Watcher
+	routes        []dashboard.Route
 }
 
 func (c *Component) Name() string {
@@ -52,21 +59,35 @@ func (c *Component) Init(a shadow.Application) (err error) {
 	c.application = a
 	c.envPrefix = EnvKey(a.Name()) + "_"
 	c.variables = make(map[string]config.Variable)
+	c.variablesSort = make([]*variableSort, 0)
 	c.watchers = make(map[string][]config.Watcher)
 
 	for _, component := range components {
-		if variables, ok := component.(config.HasVariables); ok {
-			for _, variable := range variables.ConfigVariables() {
+		if cmpVariables, ok := component.(config.HasVariables); ok {
+			for _, variable := range cmpVariables.ConfigVariables() {
 				if variable.Key() == config.WatcherForAll {
 					return fmt.Errorf("Use key %s not allowed", config.WatcherForAll)
 				}
 
+				variablesForSort := &variableSort{
+					variable: variable,
+				}
+
 				c.mutex.Lock()
 				c.variables[variable.Key()] = variable
+
+				variablesForSort.order = len(c.variables)
+				c.variablesSort = append(c.variablesSort, variablesForSort)
 				c.mutex.Unlock()
 			}
 		}
 	}
+
+	c.mutex.Lock()
+	sort.SliceStable(c.variablesSort, func(i, j int) bool {
+		return c.variablesSort[i].order < c.variablesSort[j].order
+	})
+	c.mutex.Unlock()
 
 	if err := c.LoadFromEnv(); err != nil {
 		return err
@@ -296,14 +317,14 @@ func (c *Component) IsEditable(key string) bool {
 	return false
 }
 
-func (c *Component) Variables() map[string]config.Variable {
+func (c *Component) Variables() []config.Variable {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	variables := make(map[string]config.Variable, len(c.variables))
+	variables := make([]config.Variable, 0, len(c.variablesSort))
 
-	for k, v := range c.variables {
-		variables[k] = v
+	for _, v := range c.variablesSort {
+		variables = append(variables, v.variable)
 	}
 
 	return variables

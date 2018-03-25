@@ -86,6 +86,7 @@ $(document).ready(function () {
         },
         bPaginate: false,
         bInfo: false,
+        aaSorting: [],
         drawCallback: function () {
             var api = this.api(),
                 rows = api.rows( {page:'current'} ).nodes(),
@@ -105,6 +106,7 @@ $(document).ready(function () {
         }
     });
 
+    /*
     $('#configs tbody').on('click', 'tr.group', function () {
         var currentOrder = table.order()[0];
         if (currentOrder[0] === 0 && currentOrder[1] === 'asc') {
@@ -113,4 +115,5 @@ $(document).ready(function () {
             table.order( [0, 'asc' ] ).draw();
         }
     });
+    */
 });

@@ -52,8 +52,6 @@ type ManagerHandler struct {
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	var err error
 
-	vars := h.Component.Variables()
-
 	if r.IsPost() {
 		err = r.Original().ParseForm()
 		if err == nil {
@@ -83,9 +81,9 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		}
 	}
 
-	variables := map[string]map[string]variableView{}
-	for k, v := range vars {
-		parts := strings.SplitN(k, ".", 2)
+	variables := map[string][]variableView{}
+	for _, v := range h.Component.Variables() {
+		parts := strings.SplitN(v.Key(), ".", 2)
 
 		cmpName := parts[0]
 		if !h.Application.HasComponent(cmpName) {
@@ -94,14 +92,14 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 		cmp, ok := variables[cmpName]
 		if !ok {
-			variables[cmpName] = map[string]variableView{}
+			variables[cmpName] = make([]variableView, 0)
 			cmp = variables[cmpName]
 		}
 
-		cmp[k] = variableView{
+		cmp = append(cmp, variableView{
 			Variable: v,
-			Watchers: h.Component.Watchers(k),
-		}
+			Watchers: h.Component.Watchers(v.Key()),
+		})
 		variables[cmpName] = cmp
 	}
 
