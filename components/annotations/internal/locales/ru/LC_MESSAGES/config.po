@@ -1,0 +1,43 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgctxt "config"
+msgid "Grafana storage"
+msgstr "Хранилище Grafana"
+
+msgctxt "config"
+msgid "Enabled"
+msgstr "Включено"
+
+msgctxt "config"
+msgid "Grafana address of HTTP API in format http://host:port"
+msgstr "Адрес Grafana HTTP API в формате http://host:port"
+
+msgctxt "config"
+msgid "API key. No need if username and password is set"
+msgstr "Ключ API. Не нужен если указаны пользователь и пароль"
+
+msgctxt "config"
+msgid "Username for basic authorization. No need if API key is set"
+msgstr "Пользователь для базовой авторизации. Не нужен если указан ключ API"
+
+msgctxt "config"
+msgid "Password for basic authorization. No need if API key is set"
+msgstr "Пароль для базовой авторизации. Не нужен если указан ключ API"
+
+msgctxt "config"
+msgid "Dashboards ID"
+msgstr "ID панелей"
+
+msgctxt "config"
+msgid "add a ID"
+msgstr "добавить ID"
