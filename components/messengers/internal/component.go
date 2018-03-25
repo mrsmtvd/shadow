@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/annotations"
 	"github.com/kihamo/shadow/components/config"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/messengers"
 	storages "github.com/kihamo/shadow/components/messengers/internal/annotations"
@@ -38,10 +39,15 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	return []shadow.Dependency{
 		{
 			Name: annotations.ComponentName,
-		}, {
+		},
+		{
 			Name:     config.ComponentName,
 			Required: true,
-		}, {
+		},
+		{
+			Name: i18n.ComponentName,
+		},
+		{
 			Name: logger.ComponentName,
 		},
 	}

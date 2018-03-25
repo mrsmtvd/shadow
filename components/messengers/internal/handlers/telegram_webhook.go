@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/messengers"
 )
@@ -16,6 +14,4 @@ func (h *TelegramWebHookHandler) ServeHTTP(w *dashboard.Response, r *dashboard.R
 		h.NotFound(w, r)
 		return
 	}
-
-	fmt.Println("Callme")
 }
