@@ -1,0 +1,128 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgid "Autorefresh"
+msgstr "Автообновление"
+
+msgctxt "stats"
+msgid "Listeners"
+msgstr "Слушателей"
+
+msgctxt "stats"
+msgid "Tasks"
+msgstr "Задач"
+
+msgctxt "stats"
+msgid "Workers"
+msgstr "Обработчиков"
+
+msgid "Listeners"
+msgstr "Слушатели"
+
+msgid "Tasks"
+msgstr "Задачи"
+
+msgid "Confirm remove all listeners"
+msgstr "Подтверждение удаления всех слушателей"
+
+msgid "Will be remove all listeners except default listener. Are you sure?"
+msgstr "Будут удалены все слушатели за исключением слушателей по-умолчанию. Вы уверены?"
+
+msgid "Remove all"
+msgstr "Удалить все"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Events"
+msgstr "События"
+
+msgid "Fires"
+msgstr "Вызовы"
+
+msgid "First fired"
+msgstr "Первый вызов"
+
+msgid "Last fired"
+msgstr "Последний вызов"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Show all tasks"
+msgstr "Показать все задачи"
+
+msgid "Hide all tasks"
+msgstr "Скрыть все задачи"
+
+msgid "Confirm remove all workers"
+msgstr "Подтверждение удаления всех обработчиков"
+
+msgid "Add worker"
+msgstr "Добавить обработчик"
+
+msgid "Created"
+msgstr "Создано"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Locked"
+msgstr "Заблокировано"
+
+msgid "Task"
+msgstr "Задача"
+
+msgid "Confirm remove all tasks"
+msgstr "Подтверждение удаления всех задач"
+
+msgid "Priority"
+msgstr "Приоритет"
+
+msgid "Repeats"
+msgstr "Повторы"
+
+msgid "Repeat interval"
+msgstr "Интервал повтора"
+
+msgid "Timeout"
+msgstr "Таймаут"
+
+msgid "Started"
+msgstr "Запущена"
+
+msgid "Attempts"
+msgstr "Попытки"
+
+msgid "Allow start"
+msgstr "Ближайший запуск"
+
+msgid "First started"
+msgstr "Первый запуск"
+
+msgid "Last started"
+msgstr "Последний запуск"
+
+msgid "Add workers"
+msgstr "Добавить обработчиков"
+
+msgid "Number new workers:"
+msgstr "Количество новых обработчиков"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Add"
+msgstr "Добавить"

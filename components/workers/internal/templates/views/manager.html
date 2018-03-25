@@ -1,14 +1,14 @@
 {{ define "content" }}
 <div class="page-title">
     <div class="title_left">
-        <h3>Workers</h3>
+        <h3>{{ i18n "Workers" . }}</h3>
     </div>
 
     <div class="title_right">
         <div class="form-group pull-right">
             <div class="input-group">
                 <label>
-                    <input type="checkbox" class="js-switch" id="autorefresh" /> Autorefresh
+                    <input type="checkbox" class="js-switch" id="autorefresh" /> {{ i18n "Autorefresh" . }}
                 </label>
             </div>
         </div>
@@ -22,21 +22,21 @@
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-deaf fa-5x"></i></div>
             <div class="count" id="listeners-count">0</div>
-            <h3>Listeners</h3>
+            <h3>{{ i18n "Listeners" . "stats" }}</h3>
         </div>
     </div>
     <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-users fa-5x"></i></div>
             <div class="count" id="workers-count">0</div>
-            <h3>Workers</h3>
+            <h3>{{ i18n "Workers" . "stats" }}</h3>
         </div>
     </div>
     <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-tasks fa-5x"></i></div>
             <div class="count" id="tasks-count">0</div>
-            <h3>Tasks</h3>
+            <h3>{{ i18n "Tasks" . "stats" }}</h3>
         </div>
     </div>
 </div>
@@ -44,15 +44,15 @@
 <div id="listeners">
     <div class="x_panel">
         <div class="x_title">
-            <h2><i class="fa fa-deaf"></i> Listeners</h2>
+            <h2><i class="fa fa-deaf"></i> {{ i18n "Listeners" . }}</h2>
             <ul class="nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all listeners" data-modal-body="Will be remove all listeners except default listener. Are you sure?" data-modal-callback="listenersRemove();">
-                                <i class="glyphicon glyphicon-trash"></i> Remove all
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove all listeners" . }}" data-modal-body="{{ i18n "Will be remove all listeners except default listener. Are you sure?" . }}" data-modal-callback="listenersRemove();">
+                                <i class="glyphicon glyphicon-trash"></i> {{ i18n "Remove all" . }}
                             </a>
                         </li>
                     </ul>
@@ -65,13 +65,13 @@
                 <table class="table table-hover table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Events</th>
-                        <th>Fires</th>
-                        <th>First fired</th>
-                        <th>Last fired</th>
-                        <th>Actions</th>
+                        <th>{{ i18n "ID" . }}</th>
+                        <th>{{ i18n "Name" . }}</th>
+                        <th>{{ i18n "Events" . }}</th>
+                        <th>{{ i18n "Fires" . }}</th>
+                        <th>{{ i18n "First fired" . }}</th>
+                        <th>{{ i18n "Last fired" . }}</th>
+                        <th>{{ i18n "Actions" . }}</th>
                     </tr>
                     </thead>
                 </table>
@@ -83,7 +83,7 @@
 <div id="workers">
     <div class="x_panel">
         <div class="x_title">
-            <h2><i class="fa fa-users"></i> Workers</h2>
+            <h2><i class="fa fa-users"></i> {{ i18n "Workers" . }}</h2>
             <ul class="nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                 <li class="dropdown">
@@ -91,24 +91,24 @@
                     <ul class="dropdown-menu" role="menu">
                         <li>
                             <a href="javascript:void(0)" id="workers-show">
-                                <i class="glyphicon glyphicon-eye-open"></i> Show all tasks
+                                <i class="glyphicon glyphicon-eye-open"></i> {{ i18n "Show all tasks" . }}
                             </a>
                         </li>
                         <li>
                             <a href="javascript:void(0)" id="workers-hide">
-                                <i class="glyphicon glyphicon-eye-close"></i> Hide all tasks
+                                <i class="glyphicon glyphicon-eye-close"></i> {{ i18n "Hide all tasks" . }}
                             </a>
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all workers" data-modal-callback="workersRemove();">
-                                <i class="glyphicon glyphicon-trash"></i> Remove all
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove all workers" . }}" data-modal-callback="workersRemove();">
+                                <i class="glyphicon glyphicon-trash"></i> {{ i18n "Remove all" . }}
                             </a>
                         </li>
                         <li class="divider"></li>
                         <li>
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#workers-add">
-                                <i class="glyphicon glyphicon-plus"></i> Add worker
+                                <i class="glyphicon glyphicon-plus"></i> {{ i18n "Add worker" . }}
                             </a>
                         </li>
                     </ul>
@@ -121,12 +121,12 @@
                 <table class="table table-hover table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Created</th>
-                        <th>Status</th>
-                        <th>Locked</th>
-                        <th>Task</th>
-                        <th>Actions</th>
+                        <th>{{ i18n "ID" . }}</th>
+                        <th>{{ i18n "Created" . }}</th>
+                        <th>{{ i18n "Status" . }}</th>
+                        <th>{{ i18n "Locked" . }}</th>
+                        <th>{{ i18n "Task" . }}</th>
+                        <th>{{ i18n "Actions" . }}</th>
                     </tr>
                     </thead>
                 </table>
@@ -138,15 +138,15 @@
 <div id="tasks">
     <div class="x_panel">
         <div class="x_title">
-            <h2><i class="fa fa-tasks"></i> Tasks</h2>
+            <h2><i class="fa fa-tasks"></i> {{ i18n "Tasks" . }}</h2>
             <ul class="nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove all tasks" data-modal-callback="tasksRemove();">
-                                <i class="glyphicon glyphicon-trash"></i> Remove all
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove all tasks" . }}" data-modal-callback="tasksRemove();">
+                                <i class="glyphicon glyphicon-trash"></i> {{ i18n "Remove all" . }}
                             </a>
                         </li>
                     </ul>
@@ -159,21 +159,21 @@
                 <table class="table table-hover table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Priority</th>
-                        <th>Repeats</th>
-                        <th>Repeat Interval</th>
-                        <th>Timeout</th>
-                        <th>Created</th>
-                        <th>Started</th>
-                        <th>Status</th>
-                        <th>Locked</th>
-                        <th>Attempts</th>
-                        <th>Allow start</th>
-                        <th>First started</th>
-                        <th>Last started</th>
-                        <th>Actions</th>
+                        <th>{{ i18n "ID" . }}</th>
+                        <th>{{ i18n "Name" . }}</th>
+                        <th>{{ i18n "Priority" . }}</th>
+                        <th>{{ i18n "Repeats" . }}</th>
+                        <th>{{ i18n "Repeat interval" . }}</th>
+                        <th>{{ i18n "Timeout" . }}</th>
+                        <th>{{ i18n "Created" . }}</th>
+                        <th>{{ i18n "Started" . }}</th>
+                        <th>{{ i18n "Status" . }}</th>
+                        <th>{{ i18n "Locked" . }}</th>
+                        <th>{{ i18n "Attempts" . }}</th>
+                        <th>{{ i18n "Allow start" . }}</th>
+                        <th>{{ i18n "First started" . }}</th>
+                        <th>{{ i18n "Last started" . }}</th>
+                        <th>{{ i18n "Actions" . }}</th>
                     </tr>
                     </thead>
                 </table>
@@ -187,19 +187,19 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add workers</h4>
+                <h4 class="modal-title">{{ i18n "Add workers" . }}</h4>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="workers-add-count" class="control-label">Number new workers:</label>
+                        <label for="workers-add-count" class="control-label">{{ i18n "Number new workers:" . }}</label>
                         <input type="number" min="1" class="form-control" id="workers-add-count" value="1">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-success" data-dismiss="modal">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ i18n "Close" . }}</button>
+                <button type="submit" class="btn btn-success" data-dismiss="modal">{{ i18n "Add" . }}</button>
             </div>
         </div>
     </div>

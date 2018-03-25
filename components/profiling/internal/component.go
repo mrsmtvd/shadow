@@ -8,6 +8,7 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/shadow/components/profiling/trace"
 )
@@ -33,6 +34,9 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		},
 		{
 			Name: dashboard.ComponentName,
+		},
+		{
+			Name: i18n.ComponentName,
 		},
 	}
 }
