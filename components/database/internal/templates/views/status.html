@@ -2,7 +2,7 @@
 <div class="row">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Servers status</h2>
+            <h2>{{ i18n "Servers status" . }}</h2>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -10,16 +10,16 @@
                 <table class="table table-hover" id="migrations">
                     <thead>
                     <tr>
-                        <th>Executor</th>
-                        <th class="col-md-1">Role</th>
-                        <th class="col-md-1">Status</th>
+                        <th>{{ i18n "Executor" . }}</th>
+                        <th class="col-md-1">{{ i18n "Role" . }}</th>
+                        <th class="col-md-1">{{ i18n "Status" . }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {{ range $i, $server := .statuses }}
                     <tr>
                         <td>{{ index $server 0 }}</td>
-                        <td>{{ index $server 1 }}</td>
+                        <td>{{ i18n (index $server 1) $ }}</td>
                         <td>{{ index $server 2 }}</td>
                     </tr>
                     {{ end }}

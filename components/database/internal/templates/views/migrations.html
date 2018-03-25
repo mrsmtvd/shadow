@@ -2,7 +2,7 @@
 <div class="row">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Migrations</h2>
+            <h2>{{ i18n "Migrations" . }}</h2>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -10,11 +10,11 @@
                 <table class="table table-hover" id="migrations">
                     <thead>
                     <tr>
-                        <th class="col-md-1">Id</th>
-                        <th class="col-md-2">Source</th>
-                        <th class="col-md-1">Modified at</th>
-                        <th class="col-md-1">Applied at</th>
-                        <th class="col-md-1 actions">Actions</th>
+                        <th class="col-md-1">{{ i18n "ID" . }}</th>
+                        <th class="col-md-2">{{ i18n "Source" . }}</th>
+                        <th class="col-md-1">{{ i18n "Modified at" . }}</th>
+                        <th class="col-md-1">{{ i18n "Applied at" . }}</th>
+                        <th class="col-md-1 actions">{{ i18n "Actions" . }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -33,8 +33,8 @@
                         <td>
                             <div class="btn-group btn-group-xs">
                                 <button class="btn btn-success btn-icon"><i class="glyphicon glyphicon glyphicon-eye-open" title="Show"></i></button>
-                                <a href="/dashboard/bindata/?path=/{{ $migration.Source }}/migrations/{{ $migration.Id }}&mode=raw" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-file" title="Raw"></i></a>
-                                <a href="/dashboard/bindata/?path=/{{ $migration.Source }}/migrations/{{ $migration.Id }}&mode=file" class="btn btn-warning btn-icon"><i class="glyphicon glyphicon-save-file" title="Download"></i></a>
+                                <a href="/dashboard/bindata/?path=/{{ $migration.Source }}/migrations/{{ $migration.Id }}&mode=raw" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-file" title="{{ i18n "Raw" $ }}"></i></a>
+                                <a href="/dashboard/bindata/?path=/{{ $migration.Source }}/migrations/{{ $migration.Id }}&mode=file" class="btn btn-warning btn-icon"><i class="glyphicon glyphicon-save-file" title="{{ i18n "Download" $ }}"></i></a>
                             </div>
                         </td>
                     </tr>

@@ -56,7 +56,7 @@
                                                 {{ if $config.HasView "enum" }}
                                                 <select class="form-control select2" name="{{ $config.Variable.Key }}" id="{{ $varId }}">
                                                     {{ range $o, $option := ($config.GetViewOption "options") }}
-                                                    <option value="{{ index $option 0 }}"{{ if eq (index $option 0) $config.Variable.Value }} selected="selected"{{ end }}>{{ index $option 1 }}</option>
+                                                    <option value="{{ index $option 0 }}"{{ if eq (index $option 0) $config.Variable.Value }} selected="selected"{{ end }}>{{ i18n (index $option 1) $ "config" $name }}</option>
                                                     {{ end }}
                                                 </select>
                                                 {{ else if eq $config.Variable.Type "bool" }}
@@ -118,7 +118,7 @@
                                                     {{ if eq (index $option 0) (index $option 1) }}
                                                     <li>{{ index $option 0 }}</li>
                                                     {{ else }}
-                                                    <li>{{ index $option 0 }} &mdash; {{ index $option 1 }}</li>
+                                                    <li>{{ index $option 0 }} &mdash; {{ i18n (index $option 1) $ "config" $name }}</li>
                                                     {{ end }}
                                                 {{ end }}
                                                 </ul>
