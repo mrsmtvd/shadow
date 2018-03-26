@@ -43,7 +43,8 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				[]string{http.MethodGet, http.MethodPost},
 				"/"+c.Name()+"/",
 				&handlers.ManagerHandler{
-					Component: c,
+					Application: c.application,
+					Component:   c,
 				},
 				"",
 				true),

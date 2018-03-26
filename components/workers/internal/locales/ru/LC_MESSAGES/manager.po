@@ -80,7 +80,7 @@ msgid "Status"
 msgstr "Статус"
 
 msgid "Locked"
-msgstr "Заблокировано"
+msgstr "Блокировка"
 
 msgid "Task"
 msgstr "Задача"
@@ -126,3 +126,47 @@ msgstr "Закрыть"
 
 msgid "Add"
 msgstr "Добавить"
+
+msgctxt "worker"
+msgid "Undefined"
+msgstr "Не определенный"
+
+msgctxt "worker"
+msgid "Wait"
+msgstr "Ожидает"
+
+msgctxt "worker"
+msgid "Process"
+msgstr "Выполняется"
+
+msgctxt "worker"
+msgid "Cancel"
+msgstr "Закрывается"
+
+msgctxt "task"
+msgid "Undefined"
+msgstr "Не определенный"
+
+msgctxt "task"
+msgid "Wait"
+msgstr "Ожидает"
+
+msgctxt "task"
+msgid "Process"
+msgstr "Выполняется"
+
+msgctxt "task"
+msgid "Success"
+msgstr "Успешно"
+
+msgctxt "task"
+msgid "Fail"
+msgstr "Неудача"
+
+msgctxt "task"
+msgid "RepeatWait"
+msgstr "Ожидает повторения"
+
+msgctxt "task"
+msgid "Cancel"
+msgstr "Закрывается"

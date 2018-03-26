@@ -5,7 +5,9 @@ import (
 	"time"
 
 	ws "github.com/kihamo/go-workers"
+	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/workers"
 )
 
@@ -67,7 +69,8 @@ type managerHandlerItemListener struct {
 type ManagerHandler struct {
 	dashboard.Handler
 
-	Component workers.Component
+	Application shadow.Application
+	Component   workers.Component
 }
 
 func (h *ManagerHandler) isLocked(id string) bool {
@@ -125,6 +128,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	case "workers":
 		list := make([]managerHandlerItemWorker, 0, 0)
+		locale := i18n.NewOrNopFromRequest(r, h.Application)
 
 		for _, item := range h.Component.GetWorkers() {
 			data := managerHandlerItemWorker{
@@ -133,7 +137,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 			}
 
 			if md := h.Component.GetWorkerMetadata(item.Id()); md != nil {
-				data.Status = md[ws.WorkerMetadataStatus].(ws.Status).String()
+				data.Status = locale.Translate(workers.ComponentName, md[ws.WorkerMetadataStatus].(ws.Status).String(), "worker")
 				data.Locked = md[ws.WorkerMetadataLocked].(bool)
 
 				if task := md[ws.WorkerMetadataTask]; task != nil {
@@ -169,6 +173,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	case "tasks":
 		list := make([]managerHandlerItemTask, 0, 0)
+		locale := i18n.NewOrNopFromRequest(r, h.Application)
 
 		for _, item := range h.Component.GetTasks() {
 			data := managerHandlerItemTask{
@@ -183,7 +188,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 			}
 
 			if md := h.Component.GetTaskMetadata(item.Id()); md != nil {
-				data.Status = md[ws.TaskMetadataStatus].(ws.Status).String()
+				data.Status = locale.Translate(workers.ComponentName, md[ws.TaskMetadataStatus].(ws.Status).String(), "task")
 				data.Locked = md[ws.TaskMetadataLocked].(bool)
 				data.Attempts = md[ws.TaskMetadataAttempts].(int64)
 				data.AllowStartAt = md[ws.TaskMetadataAllowStartAt].(*time.Time)
