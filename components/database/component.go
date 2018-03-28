@@ -9,5 +9,5 @@ type Component interface {
 
 	Storage() Storage
 	Migration(id, source string) Migration
-	Migrations() Migrations
+	Migrations() []Migration
 }

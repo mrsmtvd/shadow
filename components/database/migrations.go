@@ -1,18 +1,14 @@
 package database
 
 import (
-	"strings"
 	"time"
 )
 
 type HasMigrations interface {
-	DatabaseMigrations() Migrations
+	DatabaseMigrations() []Migration
 }
 
-type Migrations []Migration
-
 type Migration interface {
-	Source() string
 	Id() string
 	Up() []string
 	Down() []string
@@ -20,20 +16,7 @@ type Migration interface {
 	AppliedAt() *time.Time
 }
 
-func (m Migrations) Len() int {
-	return len(m)
-}
-
-func (m Migrations) Less(i, j int) bool {
-	return strings.Compare(m[i].Id(), m[j].Id()) < 0
-}
-
-func (m Migrations) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-
-type MigrationItem struct {
-	source    string
+type MigrationSimple struct {
 	id        string
 	up        []string
 	down      []string
@@ -41,9 +24,8 @@ type MigrationItem struct {
 	appliedAt *time.Time
 }
 
-func NewMigration(source, id string, up, down []string, modAt time.Time, appliedAt *time.Time) Migration {
-	return &MigrationItem{
-		source:    source,
+func NewMigration(id string, up, down []string, modAt time.Time, appliedAt *time.Time) *MigrationSimple {
+	return &MigrationSimple{
 		id:        id,
 		up:        up,
 		down:      down,
@@ -52,26 +34,22 @@ func NewMigration(source, id string, up, down []string, modAt time.Time, applied
 	}
 }
 
-func (m *MigrationItem) Source() string {
-	return m.source
-}
-
-func (m *MigrationItem) Id() string {
+func (m *MigrationSimple) Id() string {
 	return m.id
 }
 
-func (m *MigrationItem) Up() []string {
+func (m *MigrationSimple) Up() []string {
 	return m.up
 }
 
-func (m *MigrationItem) Down() []string {
+func (m *MigrationSimple) Down() []string {
 	return m.down
 }
 
-func (m *MigrationItem) ModAt() time.Time {
+func (m *MigrationSimple) ModAt() time.Time {
 	return m.modAt
 }
 
-func (m *MigrationItem) AppliedAt() *time.Time {
+func (m *MigrationSimple) AppliedAt() *time.Time {
 	return m.appliedAt
 }
