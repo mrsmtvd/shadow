@@ -31,6 +31,8 @@ func (c *Component) loadMenu() error {
 		if componentMenu, ok := component.(dashboard.HasMenu); ok {
 			menu := componentMenu.DashboardMenu()
 			if menu != nil {
+				menu = NewMenuItem(menu, component.Name())
+
 				if component == c {
 					menus = append([]dashboard.Menu{menu}, menus...)
 				} else {

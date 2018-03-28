@@ -73,7 +73,7 @@ func MetricsMiddleware() alice.Constructor {
 			route := dashboard.RouteFromContext(r.Context())
 			if route != nil {
 				metricHandlerExecuteTime.With(
-					"component", route.ComponentName(),
+					"source", route.(*RouteItem).Source(),
 					"handler", route.HandlerName(),
 				).UpdateSince(now)
 			}

@@ -14,6 +14,10 @@ type MigrationItem struct {
 }
 
 func NewMigrationItem(migration database.Migration, source string) *MigrationItem {
+	if source == "" {
+		source = "unknown"
+	}
+
 	return &MigrationItem{
 		migration: migration,
 		source:    source,

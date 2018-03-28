@@ -202,10 +202,6 @@ func (c *Component) Watch(watcher config.Watcher, source string) {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	if source == "" {
-		source = "unknown"
-	}
-
 	item := NewWatcherItem(watcher, source)
 
 	for _, key := range watcher.Keys() {

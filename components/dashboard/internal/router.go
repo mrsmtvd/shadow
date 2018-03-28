@@ -24,7 +24,7 @@ type Router struct {
 	mutex      sync.RWMutex
 	chain      alice.Chain
 	logger     logger.Logger
-	routes     []dashboard.Route
+	routes     []*RouteItem
 	callerSkip int
 }
 
@@ -129,40 +129,41 @@ func (r *Router) AddMiddleware(m alice.Constructor) {
 	r.chain = r.chain.Append(m)
 }
 
-func (r *Router) AddRoute(route dashboard.Route) {
+func (r *Router) AddRoute(route dashboard.Route, source string) {
 	var handler http.Handler
+	routeItem := NewRouteItem(route, source)
 
-	if h0, ok := route.Handler().(RouterHandler); ok {
+	if h0, ok := routeItem.Handler().(RouterHandler); ok {
 		handler = FromRouteHandler(h0)
-	} else if h1, ok := route.Handler().(http.Handler); ok {
+	} else if h1, ok := routeItem.Handler().(http.Handler); ok {
 		handler = h1
-	} else if h2, ok := route.Handler().(http.HandlerFunc); ok {
+	} else if h2, ok := routeItem.Handler().(http.HandlerFunc); ok {
 		handler = h2
-	} else if h3, ok := route.Handler().(http.FileSystem); ok {
-		r.Router.ServeFiles(route.Path(), h3)
+	} else if h3, ok := routeItem.Handler().(http.FileSystem); ok {
+		r.Router.ServeFiles(routeItem.Path(), h3)
 
 		r.mutex.Lock()
-		r.routes = append(r.routes, route)
+		r.routes = append(r.routes, routeItem)
 		r.mutex.Unlock()
 
 		// TODO: set auth, metrics
 		return
 	} else {
-		panic(fmt.Sprintf("Unknown handler type %s.%s for path %s", route.ComponentName(), route.HandlerName(), route.Path()))
+		panic(fmt.Sprintf("Unknown handler type %s.%s for path %s", source, routeItem.HandlerName(), routeItem.Path()))
 	}
 
-	for i, method := range route.Methods() {
+	for i, method := range routeItem.Methods() {
 		r.logger.Debug("Add handler", map[string]interface{}{
-			"component": route.ComponentName,
-			"handler":   route.HandlerName,
-			"method":    method,
-			"path":      route.Path,
-			"auth":      route.Auth,
+			"source":  routeItem.Source(),
+			"handler": routeItem.HandlerName(),
+			"method":  method,
+			"path":    routeItem.Path(),
+			"auth":    routeItem.Auth(),
 		})
 
 		localChan := alice.New(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				ctx := context.WithValue(r.Context(), dashboard.RouteContextKey, route)
+				ctx := context.WithValue(r.Context(), dashboard.RouteContextKey, routeItem)
 				next.ServeHTTP(w, r.WithContext(ctx))
 			})
 		})
@@ -179,7 +180,7 @@ func (r *Router) AddRoute(route dashboard.Route) {
 
 		if i == 0 {
 			r.mutex.Lock()
-			r.routes = append(r.routes, route)
+			r.routes = append(r.routes, routeItem)
 			r.mutex.Unlock()
 		}
 	}

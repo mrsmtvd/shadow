@@ -43,7 +43,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/assets/*filepath",
 				&assetfs.AssetFS{
@@ -55,7 +54,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/bindata",
 				&handlers.BindataHandler{
@@ -64,7 +62,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				true),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/datatables/i18n.json",
 				&handlers.DataTablesHandler{
@@ -73,21 +70,18 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/environment",
 				&handlers.EnvironmentHandler{},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/routing",
 				&handlers.RoutingHandler{},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider/callback",
 				&handlers.AuthHandler{
@@ -96,21 +90,18 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				dashboard.AuthPath+"/:provider",
 				&handlers.AuthHandler{},
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				dashboard.AuthPath,
 				&handlers.AuthHandler{},
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/logout",
 				&handlers.LogoutHandler{},
@@ -124,14 +115,12 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 
 		c.routes = append(c.routes, []dashboard.Route{
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/components",
 				componentsHandler,
 				"",
 				true),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/",
 				componentsHandler,

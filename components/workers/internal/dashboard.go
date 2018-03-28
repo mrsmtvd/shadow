@@ -27,7 +27,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/assets/*filepath",
 				&assetfs.AssetFS{
@@ -39,7 +38,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				"/"+c.Name()+"/",
 				&handlers.ManagerHandler{

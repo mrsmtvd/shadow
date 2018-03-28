@@ -8,7 +8,6 @@ import (
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/shadow/components/profiling/internal/handlers"
 )
 
@@ -31,7 +30,6 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenuWithUrl(
 		"Profiling",
 		"",
-		profiling.ComponentName,
 		"terminal",
 		[]dashboard.Menu{
 			dashboard.NewMenuWithRoute("Trace", routes[1], "", nil, show),
@@ -46,7 +44,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/assets/*filepath",
 				&assetfs.AssetFS{
@@ -58,21 +55,18 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet, http.MethodPost},
 				"/"+c.Name()+"/trace/",
 				&handlers.TraceHandler{},
 				"",
 				true),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/vars/",
 				&handlers.ExpvarHandler{},
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/cmdline",
 				&handlers.DebugHandler{
@@ -81,7 +75,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/profile",
 				&handlers.DebugHandler{
@@ -90,7 +83,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/symbol",
 				&handlers.DebugHandler{
@@ -99,7 +91,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/trace",
 				&handlers.DebugHandler{
@@ -108,7 +99,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				"",
 				false),
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/",
 				&handlers.DebugHandler{
@@ -120,7 +110,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 
 		for _, profile := range pprof.Profiles() {
 			c.routes = append(c.routes, dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/debug/pprof/"+profile.Name(),
 				&handlers.DebugHandler{

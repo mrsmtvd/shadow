@@ -10,7 +10,6 @@ import (
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	return []dashboard.Route{
 		dashboard.NewRoute(
-			c.Name(),
 			[]string{http.MethodGet},
 			"/"+c.Name()+"/telegram/webhook",
 			&handlers.TelegramWebHookHandler{},

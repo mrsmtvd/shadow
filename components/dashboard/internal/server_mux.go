@@ -35,20 +35,19 @@ func (c *Component) getServeMux() (*Router, error) {
 	for _, component := range components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
 			for _, route := range componentRoute.DashboardRoutes() {
-				router.AddRoute(route)
+				router.AddRoute(route, component.Name())
 			}
 		}
 	}
 
 	router.AddRoute(dashboard.NewRoute(
-		dashboard.ComponentName,
 		nil,
 		"/",
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
 		}),
 		"",
-		false))
+		false), c.Name())
 
 	return router, nil
 }

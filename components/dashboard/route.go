@@ -18,7 +18,6 @@ var httpMethods = []string{
 }
 
 type Route interface {
-	ComponentName() string
 	HandlerName() string
 	Handler() interface{}
 	Methods() []string
@@ -30,31 +29,25 @@ type HasRoutes interface {
 	DashboardRoutes() []Route
 }
 
-type RouteItem struct {
-	componentName string
-	handlerName   string
-	handler       interface{}
-	methods       []string
-	path          string
-	auth          bool
+type RouteSimple struct {
+	handlerName string
+	handler     interface{}
+	methods     []string
+	path        string
+	auth        bool
 }
 
-func NewRoute(componentName string, methods []string, path string, handler interface{}, handlerName string, auth bool) Route {
-	return RouteItem{
-		componentName: componentName,
-		handlerName:   handlerName,
-		handler:       handler,
-		methods:       methods,
-		path:          path,
-		auth:          auth,
+func NewRoute(methods []string, path string, handler interface{}, handlerName string, auth bool) *RouteSimple {
+	return &RouteSimple{
+		handlerName: handlerName,
+		handler:     handler,
+		methods:     methods,
+		path:        path,
+		auth:        auth,
 	}
 }
 
-func (r RouteItem) ComponentName() string {
-	return r.componentName
-}
-
-func (r RouteItem) HandlerName() string {
+func (r RouteSimple) HandlerName() string {
 	if r.handlerName == "" {
 		t := reflect.TypeOf(r.handler)
 
@@ -68,11 +61,11 @@ func (r RouteItem) HandlerName() string {
 	return r.handlerName
 }
 
-func (r RouteItem) Handler() interface{} {
+func (r RouteSimple) Handler() interface{} {
 	return r.handler
 }
 
-func (r RouteItem) Methods() []string {
+func (r RouteSimple) Methods() []string {
 	if len(r.methods) == 0 {
 		return httpMethods
 	}
@@ -80,10 +73,10 @@ func (r RouteItem) Methods() []string {
 	return r.methods
 }
 
-func (r RouteItem) Path() string {
+func (r RouteSimple) Path() string {
 	return r.path
 }
 
-func (r RouteItem) Auth() bool {
+func (r RouteSimple) Auth() bool {
 	return r.auth
 }

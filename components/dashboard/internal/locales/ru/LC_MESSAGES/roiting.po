@@ -19,8 +19,8 @@ msgstr "Методы"
 msgid "Path"
 msgstr "Путь"
 
-msgid "Component"
-msgstr "Компонент"
+msgid "Source"
+msgstr "Источник"
 
 msgid "Handler"
 msgstr "Хэндлер"

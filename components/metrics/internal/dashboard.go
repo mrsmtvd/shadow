@@ -27,7 +27,6 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.NewRoute(
-				c.Name(),
 				[]string{http.MethodGet},
 				"/"+c.Name()+"/list/",
 				&handlers.ListHandler{
