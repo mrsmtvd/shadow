@@ -66,7 +66,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(mail.ComponentName, []string{
+		config.NewWatcher([]string{
 			mail.ConfigSmtpHost,
 			mail.ConfigSmtpPort,
 			mail.ConfigSmtpUsername,

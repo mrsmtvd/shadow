@@ -80,16 +80,16 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(messengers.ComponentName, []string{
+		config.NewWatcher([]string{
 			config.ConfigDebug,
 			messengers.ConfigTelegramEnabled,
 			messengers.ConfigTelegramToken,
 		}, c.watchTelegramWebEnabled),
-		config.NewWatcher(messengers.ComponentName, []string{
+		config.NewWatcher([]string{
 			messengers.ConfigTelegramAnnotationsStorageEnabled,
 			messengers.ConfigTelegramAnnotationsStorageChats,
 		}, c.watchTelegramAnnotationsStorage),
-		config.NewWatcher(messengers.ComponentName, []string{
+		config.NewWatcher([]string{
 			messengers.ConfigTelegramWebHookEnabled,
 		}, c.watchTelegramWebHookEnabled),
 	}

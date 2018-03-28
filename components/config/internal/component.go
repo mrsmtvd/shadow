@@ -38,7 +38,7 @@ type Component struct {
 	envPrefix     string
 	variables     map[string]config.Variable
 	variablesSort []*variableSort
-	watchers      map[string][]config.Watcher
+	watchers      map[string][]*WatcherItem
 	routes        []dashboard.Route
 }
 
@@ -60,7 +60,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 	c.envPrefix = EnvKey(a.Name()) + "_"
 	c.variables = make(map[string]config.Variable)
 	c.variablesSort = make([]*variableSort, 0)
-	c.watchers = make(map[string][]config.Watcher)
+	c.watchers = make(map[string][]*WatcherItem)
 
 	for _, component := range components {
 		if cmpVariables, ok := component.(config.HasVariables); ok {
@@ -100,7 +100,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 	for _, component := range components {
 		if watchers, ok := component.(config.HasWatchers); ok {
 			for _, watcher := range watchers.ConfigWatchers() {
-				c.Watch(watcher)
+				c.Watch(watcher, component.Name())
 			}
 		}
 	}
@@ -198,15 +198,21 @@ func (c *Component) Watchers(key string) []config.Watcher {
 	return watchers
 }
 
-func (c *Component) Watch(watcher config.Watcher) {
+func (c *Component) Watch(watcher config.Watcher, source string) {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
+	if source == "" {
+		source = "unknown"
+	}
+
+	item := NewWatcherItem(watcher, source)
+
 	for _, key := range watcher.Keys() {
 		if watchers, ok := c.watchers[key]; ok {
-			c.watchers[key] = append(watchers, watcher)
+			c.watchers[key] = append(watchers, item)
 		} else {
-			c.watchers[key] = []config.Watcher{watcher}
+			c.watchers[key] = []*WatcherItem{item}
 		}
 	}
 }

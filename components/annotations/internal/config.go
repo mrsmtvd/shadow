@@ -68,7 +68,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(annotations.ComponentName, []string{
+		config.NewWatcher([]string{
 			annotations.ConfigStorageGrafanaEnabled,
 			annotations.ConfigStorageGrafanaAddress,
 			annotations.ConfigStorageGrafanaApiKey,

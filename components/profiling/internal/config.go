@@ -41,8 +41,8 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(profiling.ComponentName, []string{profiling.ConfigGCPercent}, c.watchGCPercent),
-		config.NewWatcher(profiling.ComponentName, []string{profiling.ConfigGoMaxProc}, c.watchGoMaxProc),
+		config.NewWatcher([]string{profiling.ConfigGCPercent}, c.watchGCPercent),
+		config.NewWatcher([]string{profiling.ConfigGoMaxProc}, c.watchGoMaxProc),
 	}
 }
 

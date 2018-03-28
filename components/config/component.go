@@ -16,7 +16,7 @@ type Component interface {
 	Set(key string, value interface{}) error
 	IsEditable(key string) bool
 
-	Watch(watcher Watcher)
+	Watch(watcher Watcher, source string)
 	Watchers(key string) []Watcher
 
 	Variables() []Variable

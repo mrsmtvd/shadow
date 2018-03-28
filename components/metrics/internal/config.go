@@ -91,15 +91,15 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(metrics.ComponentName, []string{
+		config.NewWatcher([]string{
 			metrics.ConfigUrl,
 			metrics.ConfigDatabase,
 			metrics.ConfigUsername,
 			metrics.ConfigPassword,
 			metrics.ConfigPrecision,
 		}, c.watchForStorage),
-		config.NewWatcher(metrics.ComponentName, []string{metrics.ConfigInterval}, c.watchInterval),
-		config.NewWatcher(metrics.ComponentName, []string{metrics.ConfigLabels}, c.watchLabels),
+		config.NewWatcher([]string{metrics.ConfigInterval}, c.watchInterval),
+		config.NewWatcher([]string{metrics.ConfigLabels}, c.watchLabels),
 	}
 }
 

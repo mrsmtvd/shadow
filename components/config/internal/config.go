@@ -20,7 +20,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(config.ComponentName, []string{config.WatcherForAll}, c.watchChanges),
+		config.NewWatcher([]string{config.WatcherForAll}, c.watchChanges),
 	}
 }
 

@@ -168,14 +168,14 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(database.ComponentName, []string{database.ConfigAllowUseMasterAsSlave}, c.watchAllowUseMasterAsSlave),
-		config.NewWatcher(database.ComponentName, []string{database.ConfigBalancer}, c.watchBalancer),
-		config.NewWatcher(database.ComponentName, []string{config.ConfigDebug}, c.watchDebug),
-		config.NewWatcher(database.ComponentName, []string{database.ConfigMigrationsSchema}, c.watchMigrationsSchema),
-		config.NewWatcher(database.ComponentName, []string{database.ConfigMigrationsTable}, c.watchMigrationsTable),
-		config.NewWatcher(database.ComponentName, []string{database.ConfigMaxIdleConns}, c.watchMaxIdleConns),
-		config.NewWatcher(database.ComponentName, []string{database.ConfigMaxOpenConns}, c.watchMaxOpenConns),
-		config.NewWatcher(database.ComponentName, []string{database.ConfigConnMaxLifetime}, c.watchConnMaxLifetime),
+		config.NewWatcher([]string{database.ConfigAllowUseMasterAsSlave}, c.watchAllowUseMasterAsSlave),
+		config.NewWatcher([]string{database.ConfigBalancer}, c.watchBalancer),
+		config.NewWatcher([]string{config.ConfigDebug}, c.watchDebug),
+		config.NewWatcher([]string{database.ConfigMigrationsSchema}, c.watchMigrationsSchema),
+		config.NewWatcher([]string{database.ConfigMigrationsTable}, c.watchMigrationsTable),
+		config.NewWatcher([]string{database.ConfigMaxIdleConns}, c.watchMaxIdleConns),
+		config.NewWatcher([]string{database.ConfigMaxOpenConns}, c.watchMaxOpenConns),
+		config.NewWatcher([]string{database.ConfigConnMaxLifetime}, c.watchConnMaxLifetime),
 	}
 }
 

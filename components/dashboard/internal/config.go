@@ -329,7 +329,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(dashboard.ComponentName, []string{
+		config.NewWatcher([]string{
 			dashboard.ConfigAuthEnabled,
 			dashboard.ConfigAuthUser,
 			dashboard.ConfigAuthPassword,
@@ -349,15 +349,15 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 			dashboard.ConfigOAuth2GplusSecret,
 			dashboard.ConfigOAuth2GplusScopes,
 		}, c.watchAuth),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionCookieName}, c.watchSessionCookieName),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionDomain}, c.watchSessionDomain),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionHttpOnly}, c.watchSessionHttpOnly),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionIdleTimeout}, c.watchSessionIdleTimeout),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionLifetime}, c.watchSessionLifetime),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionPath}, c.watchSessionPath),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionPersist}, c.watchSessionPersist),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigSessionSecure}, c.watchSessionSecure),
-		config.NewWatcher(dashboard.ComponentName, []string{dashboard.ConfigPanicHandlerCallerSkip}, c.watchPanicHandlerCallerSkip),
+		config.NewWatcher([]string{dashboard.ConfigSessionCookieName}, c.watchSessionCookieName),
+		config.NewWatcher([]string{dashboard.ConfigSessionDomain}, c.watchSessionDomain),
+		config.NewWatcher([]string{dashboard.ConfigSessionHttpOnly}, c.watchSessionHttpOnly),
+		config.NewWatcher([]string{dashboard.ConfigSessionIdleTimeout}, c.watchSessionIdleTimeout),
+		config.NewWatcher([]string{dashboard.ConfigSessionLifetime}, c.watchSessionLifetime),
+		config.NewWatcher([]string{dashboard.ConfigSessionPath}, c.watchSessionPath),
+		config.NewWatcher([]string{dashboard.ConfigSessionPersist}, c.watchSessionPersist),
+		config.NewWatcher([]string{dashboard.ConfigSessionSecure}, c.watchSessionSecure),
+		config.NewWatcher([]string{dashboard.ConfigPanicHandlerCallerSkip}, c.watchPanicHandlerCallerSkip),
 	}
 }
 

@@ -5,7 +5,6 @@ const (
 )
 
 type Watcher interface {
-	Source() string
 	Keys() []string
 	Callback(key string, new interface{}, old interface{})
 }
@@ -14,28 +13,22 @@ type HasWatchers interface {
 	ConfigWatchers() []Watcher
 }
 
-type WatcherItem struct {
-	source   string
+type WatcherSimple struct {
 	keys     []string
 	callback func(string, interface{}, interface{})
 }
 
-func NewWatcher(source string, keys []string, callback func(string, interface{}, interface{})) Watcher {
-	return &WatcherItem{
-		source:   source,
+func NewWatcher(keys []string, callback func(string, interface{}, interface{})) *WatcherSimple {
+	return &WatcherSimple{
 		keys:     keys,
 		callback: callback,
 	}
 }
 
-func (w *WatcherItem) Source() string {
-	return w.source
-}
-
-func (w *WatcherItem) Keys() []string {
+func (w *WatcherSimple) Keys() []string {
 	return w.keys
 }
 
-func (w *WatcherItem) Callback(key string, new interface{}, old interface{}) {
+func (w *WatcherSimple) Callback(key string, new interface{}, old interface{}) {
 	w.callback(key, new, old)
 }

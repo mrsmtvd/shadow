@@ -43,8 +43,8 @@ func (c *Component) ConfigVariables() []config.Variable {
 
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
-		config.NewWatcher(logger.ComponentName, []string{logger.ConfigLevel}, c.watchLoggerLevel),
-		config.NewWatcher(logger.ComponentName, []string{logger.ConfigFields}, c.watchLoggerFields),
+		config.NewWatcher([]string{logger.ConfigLevel}, c.watchLoggerLevel),
+		config.NewWatcher([]string{logger.ConfigFields}, c.watchLoggerFields),
 	}
 }
 
