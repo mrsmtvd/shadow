@@ -14,12 +14,7 @@ import (
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {
-	return &assetfs.AssetFS{
-		Asset:     Asset,
-		AssetDir:  AssetDir,
-		AssetInfo: AssetInfo,
-		Prefix:    "templates",
-	}
+	return dashboard.TemplatesFromAssetFS(c)
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
@@ -37,71 +32,33 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/assets/*filepath",
-				&assetfs.AssetFS{
-					Asset:     Asset,
-					AssetDir:  AssetDir,
-					AssetInfo: AssetInfo,
-					Prefix:    "assets",
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/bindata",
-				&handlers.BindataHandler{
-					Application: c.application,
-				},
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/datatables/i18n.json",
-				&handlers.DataTablesHandler{
-					Application: c.application,
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/environment",
-				&handlers.EnvironmentHandler{},
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/routing",
-				&handlers.RoutingHandler{},
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet, http.MethodPost},
-				dashboard.AuthPath+"/:provider/callback",
-				&handlers.AuthHandler{
-					IsCallback: true,
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet, http.MethodPost},
-				dashboard.AuthPath+"/:provider",
-				&handlers.AuthHandler{},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				dashboard.AuthPath,
-				&handlers.AuthHandler{},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/logout",
-				&handlers.LogoutHandler{},
-				"",
-				true),
+			dashboard.RouteFromAssetFS(c),
+			dashboard.NewRoute("/"+c.Name()+"/bindata", &handlers.BindataHandler{
+				Application: c.application,
+			}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
+			dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{
+				Application: c.application,
+			}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/"+c.Name()+"/environment", &handlers.EnvironmentHandler{}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
+			dashboard.NewRoute("/"+c.Name()+"/routing", &handlers.RoutingHandler{}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
+			dashboard.NewRoute(dashboard.AuthPath+"/:provider/callback", &handlers.AuthHandler{
+				IsCallback: true,
+			}).
+				WithMethods([]string{http.MethodGet, http.MethodPost}),
+			dashboard.NewRoute(dashboard.AuthPath+"/:provider", &handlers.AuthHandler{}).
+				WithMethods([]string{http.MethodGet, http.MethodPost}),
+			dashboard.NewRoute(dashboard.AuthPath, &handlers.AuthHandler{}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/"+c.Name()+"/logout", &handlers.LogoutHandler{}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
 		}
 
 		componentsHandler := &handlers.ComponentsHandler{
@@ -109,18 +66,12 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 		}
 
 		c.routes = append(c.routes, []dashboard.Route{
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/components",
-				componentsHandler,
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/",
-				componentsHandler,
-				"",
-				true),
+			dashboard.NewRoute("/"+c.Name()+"/components", componentsHandler).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
+			dashboard.NewRoute("/"+c.Name()+"/", componentsHandler).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
 		}...)
 	}
 

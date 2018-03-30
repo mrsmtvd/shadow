@@ -110,7 +110,7 @@ func assetsJsTraceMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/trace.min.js", size: 102, mode: os.FileMode(420), modTime: time.Unix(1522000093, 0)}
+	info := bindataFileInfo{name: "assets/js/trace.min.js", size: 102, mode: os.FileMode(420), modTime: time.Unix(1522441472, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -130,7 +130,7 @@ func assetsVendorsFlipclockCssFlipclockMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/flipclock/css/flipclock.min.css", size: 7618, mode: os.FileMode(420), modTime: time.Unix(1522000089, 0)}
+	info := bindataFileInfo{name: "assets/vendors/flipclock/css/flipclock.min.css", size: 7618, mode: os.FileMode(420), modTime: time.Unix(1522441462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -150,7 +150,7 @@ func assetsVendorsFlipclockJsFlipclockMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/flipclock/js/flipclock.min.js", size: 20851, mode: os.FileMode(420), modTime: time.Unix(1522000089, 0)}
+	info := bindataFileInfo{name: "assets/vendors/flipclock/js/flipclock.min.js", size: 20851, mode: os.FileMode(420), modTime: time.Unix(1522441462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -170,7 +170,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1003, mode: os.FileMode(420), modTime: time.Unix(1522000099, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1003, mode: os.FileMode(420), modTime: time.Unix(1522441488, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -190,7 +190,7 @@ func localesRuLc_messagesProfilingMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/profiling.mo", size: 512, mode: os.FileMode(420), modTime: time.Unix(1522000099, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/profiling.mo", size: 512, mode: os.FileMode(420), modTime: time.Unix(1522441488, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -210,7 +210,7 @@ func localesRuLc_messagesTraceMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/trace.mo", size: 2775, mode: os.FileMode(420), modTime: time.Unix(1522000099, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/trace.mo", size: 2775, mode: os.FileMode(420), modTime: time.Unix(1522441488, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

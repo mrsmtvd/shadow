@@ -9,12 +9,7 @@ import (
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {
-	return &assetfs.AssetFS{
-		Asset:     Asset,
-		AssetDir:  AssetDir,
-		AssetInfo: AssetInfo,
-		Prefix:    "templates",
-	}
+	return dashboard.TemplatesFromAssetFS(c)
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
@@ -30,41 +25,22 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/assets/*filepath",
-				&assetfs.AssetFS{
-					Asset:     Asset,
-					AssetDir:  AssetDir,
-					AssetInfo: AssetInfo,
-					Prefix:    "assets",
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name(),
-				&handlers.StatusHandler{
-					Component: c,
-				},
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/migrations/",
-				&handlers.MigrationsHandler{
-					Component: c,
-				},
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/status/",
-				&handlers.StatusHandler{
-					Component: c,
-				},
-				"",
-				true),
+			dashboard.RouteFromAssetFS(c),
+			dashboard.NewRoute("/"+c.Name(), &handlers.StatusHandler{
+				Component: c,
+			}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
+			dashboard.NewRoute("/"+c.Name()+"/migrations/", &handlers.MigrationsHandler{
+				Component: c,
+			}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
+			dashboard.NewRoute("/"+c.Name()+"/status/", &handlers.StatusHandler{
+				Component: c,
+			}).
+				WithMethods([]string{http.MethodGet}).
+				WithAuth(true),
 		}
 	}
 

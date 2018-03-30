@@ -12,12 +12,7 @@ import (
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {
-	return &assetfs.AssetFS{
-		Asset:     Asset,
-		AssetDir:  AssetDir,
-		AssetInfo: AssetInfo,
-		Prefix:    "templates",
-	}
+	return dashboard.TemplatesFromAssetFS(c)
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
@@ -38,80 +33,39 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/"+c.Name()+"/assets/*filepath",
-				&assetfs.AssetFS{
-					Asset:     Asset,
-					AssetDir:  AssetDir,
-					AssetInfo: AssetInfo,
-					Prefix:    "assets",
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet, http.MethodPost},
-				"/"+c.Name()+"/trace/",
-				&handlers.TraceHandler{},
-				"",
-				true),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/vars/",
-				&handlers.ExpvarHandler{},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/pprof/cmdline",
-				&handlers.DebugHandler{
-					HandlerFunc: pprofHandlers.Cmdline,
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/pprof/profile",
-				&handlers.DebugHandler{
-					HandlerFunc: pprofHandlers.Profile,
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/pprof/symbol",
-				&handlers.DebugHandler{
-					HandlerFunc: pprofHandlers.Symbol,
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/pprof/trace",
-				&handlers.DebugHandler{
-					HandlerFunc: pprofHandlers.Trace,
-				},
-				"",
-				false),
-			dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/pprof/",
-				&handlers.DebugHandler{
-					HandlerFunc: pprofHandlers.Index,
-				},
-				"",
-				false),
+			dashboard.RouteFromAssetFS(c),
+			dashboard.NewRoute("/"+c.Name()+"/trace/", &handlers.TraceHandler{}).
+				WithMethods([]string{http.MethodGet, http.MethodPost}).
+				WithAuth(true),
+			dashboard.NewRoute("/debug/vars/", &handlers.ExpvarHandler{}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/debug/pprof/cmdline", &handlers.DebugHandler{
+				HandlerFunc: pprofHandlers.Cmdline,
+			}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/debug/pprof/profile", &handlers.DebugHandler{
+				HandlerFunc: pprofHandlers.Profile,
+			}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/debug/pprof/symbol", &handlers.DebugHandler{
+				HandlerFunc: pprofHandlers.Symbol,
+			}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/debug/pprof/trace", &handlers.DebugHandler{
+				HandlerFunc: pprofHandlers.Trace,
+			}).
+				WithMethods([]string{http.MethodGet}),
+			dashboard.NewRoute("/debug/pprof/", &handlers.DebugHandler{
+				HandlerFunc: pprofHandlers.Index,
+			}).
+				WithMethods([]string{http.MethodGet}),
 		}
 
 		for _, profile := range pprof.Profiles() {
-			c.routes = append(c.routes, dashboard.NewRoute(
-				[]string{http.MethodGet},
-				"/debug/pprof/"+profile.Name(),
-				&handlers.DebugHandler{
-					HandlerFunc: pprofHandlers.Index,
-				},
-				"",
-				false))
+			c.routes = append(c.routes, dashboard.NewRoute("/debug/pprof/"+profile.Name(), &handlers.DebugHandler{
+				HandlerFunc: pprofHandlers.Index,
+			}).
+				WithMethods([]string{http.MethodGet}))
 		}
 	}
 

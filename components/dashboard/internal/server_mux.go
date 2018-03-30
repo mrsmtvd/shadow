@@ -40,14 +40,9 @@ func (c *Component) getServeMux() (*Router, error) {
 		}
 	}
 
-	router.AddRoute(dashboard.NewRoute(
-		nil,
-		"/",
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
-		}),
-		"",
-		false), c.Name())
+	router.AddRoute(dashboard.NewRoute("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
+	})), c.Name())
 
 	return router, nil
 }

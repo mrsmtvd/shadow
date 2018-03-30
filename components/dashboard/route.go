@@ -37,17 +37,15 @@ type RouteSimple struct {
 	auth        bool
 }
 
-func NewRoute(methods []string, path string, handler interface{}, handlerName string, auth bool) *RouteSimple {
+func NewRoute(path string, handler interface{}) *RouteSimple {
 	return &RouteSimple{
-		handlerName: handlerName,
-		handler:     handler,
-		methods:     methods,
-		path:        path,
-		auth:        auth,
+		handler: handler,
+		methods: httpMethods,
+		path:    path,
 	}
 }
 
-func (r RouteSimple) HandlerName() string {
+func (r *RouteSimple) HandlerName() string {
 	if r.handlerName == "" {
 		t := reflect.TypeOf(r.handler)
 
@@ -61,11 +59,21 @@ func (r RouteSimple) HandlerName() string {
 	return r.handlerName
 }
 
-func (r RouteSimple) Handler() interface{} {
+func (r *RouteSimple) WithHandlerName(handlerName string) *RouteSimple {
+	r.handlerName = handlerName
+	return r
+}
+
+func (r *RouteSimple) Handler() interface{} {
 	return r.handler
 }
 
-func (r RouteSimple) Methods() []string {
+func (r *RouteSimple) WithHandler(handler interface{}) *RouteSimple {
+	r.handler = handler
+	return r
+}
+
+func (r *RouteSimple) Methods() []string {
 	if len(r.methods) == 0 {
 		return httpMethods
 	}
@@ -73,10 +81,25 @@ func (r RouteSimple) Methods() []string {
 	return r.methods
 }
 
-func (r RouteSimple) Path() string {
+func (r *RouteSimple) WithMethods(methods []string) *RouteSimple {
+	r.methods = methods
+	return r
+}
+
+func (r *RouteSimple) Path() string {
 	return r.path
 }
 
-func (r RouteSimple) Auth() bool {
+func (r *RouteSimple) WithPath(path string) *RouteSimple {
+	r.path = path
+	return r
+}
+
+func (r *RouteSimple) Auth() bool {
 	return r.auth
+}
+
+func (r *RouteSimple) WithAuth(auth bool) *RouteSimple {
+	r.auth = auth
+	return r
 }
