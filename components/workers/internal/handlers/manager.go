@@ -125,7 +125,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	case "workers":
 		list := make([]managerHandlerItemWorker, 0, 0)
-		locale := i18n.NewOrNopFromRequest(r, r.Application())
+		locale := i18n.NewOrNopFromRequest(r)
 
 		for _, item := range component.GetWorkers() {
 			data := managerHandlerItemWorker{
@@ -170,7 +170,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	case "tasks":
 		list := make([]managerHandlerItemTask, 0, 0)
-		locale := i18n.NewOrNopFromRequest(r, r.Application())
+		locale := i18n.NewOrNopFromRequest(r)
 
 		for _, item := range component.GetTasks() {
 			data := managerHandlerItemTask{

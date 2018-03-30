@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n/internationalization"
 )
@@ -23,8 +22,8 @@ func templateFunctionTranslatePlural(singleID, pluralID string, number int, _ ..
 	return pluralID
 }
 
-func NewOrNopFromRequest(request *dashboard.Request, application shadow.Application) *internationalization.Locale {
-	if cmp := application.GetComponent(ComponentName); cmp != nil {
+func NewOrNopFromRequest(request *dashboard.Request) *internationalization.Locale {
+	if cmp := request.Application().GetComponent(ComponentName); cmp != nil {
 		locale, err := cmp.(Component).LocaleFromRequest(request)
 		if err == nil {
 			return locale

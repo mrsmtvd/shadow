@@ -12,7 +12,7 @@ type SendHandler struct {
 }
 
 func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
-	locale := i18n.NewOrNopFromRequest(r, r.Application())
+	locale := i18n.NewOrNopFromRequest(r)
 	vars := map[string]interface{}{}
 
 	if r.IsPost() {
