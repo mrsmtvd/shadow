@@ -10,8 +10,6 @@ import (
 
 type StatusHandler struct {
 	dashboard.Handler
-
-	Component database.Component
 }
 
 func (h *StatusHandler) status(e database.Executor, ctx context.Context) string {
@@ -25,7 +23,7 @@ func (h *StatusHandler) status(e database.Executor, ctx context.Context) string 
 }
 
 func (h *StatusHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	s := h.Component.Storage()
+	s := r.Component().(database.Component).Storage()
 
 	master := s.Master()
 	slaves := s.Slaves()
@@ -37,7 +35,7 @@ func (h *StatusHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		statuses = append(statuses, []string{slave.String(), "Slave", h.status(slave, r.Context())})
 	}
 
-	h.Render(r.Context(), h.Component.Name(), "status", map[string]interface{}{
+	h.Render(r.Context(), "status", map[string]interface{}{
 		"statuses": statuses,
 	})
 }

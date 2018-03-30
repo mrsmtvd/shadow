@@ -1,29 +1,26 @@
 package internal
 
 import (
+	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
 type RouteItem struct {
 	dashboard.Route
 
-	source string
-	route  dashboard.Route
+	component shadow.Component
+	route     dashboard.Route
 }
 
-func NewRouteItem(route dashboard.Route, source string) *RouteItem {
-	if source == "" {
-		source = "unknown"
-	}
-
+func NewRouteItem(route dashboard.Route, component shadow.Component) *RouteItem {
 	return &RouteItem{
-		route:  route,
-		source: source,
+		route:     route,
+		component: component,
 	}
 }
 
-func (r *RouteItem) Source() string {
-	return r.source
+func (r *RouteItem) Component() shadow.Component {
+	return r.component
 }
 
 func (r *RouteItem) HandlerName() string {

@@ -20,7 +20,7 @@ func (h *EnvironmentHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reque
 		vars[pair[0]] = pair[1]
 	}
 
-	h.Render(r.Context(), dashboard.ComponentName, "environment", map[string]interface{}{
+	h.Render(r.Context(), "environment", map[string]interface{}{
 		"goVersion":      runtime.Version(),
 		"goOS":           runtime.GOOS,
 		"goArch":         runtime.GOARCH,

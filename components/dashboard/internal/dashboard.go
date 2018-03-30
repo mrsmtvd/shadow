@@ -33,14 +33,10 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name()+"/bindata", &handlers.BindataHandler{
-				Application: c.application,
-			}).
+			dashboard.NewRoute("/"+c.Name()+"/bindata", &handlers.BindataHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{
-				Application: c.application,
-			}).
+			dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{}).
 				WithMethods([]string{http.MethodGet}),
 			dashboard.NewRoute("/"+c.Name()+"/environment", &handlers.EnvironmentHandler{}).
 				WithMethods([]string{http.MethodGet}).
@@ -61,9 +57,7 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				WithAuth(true),
 		}
 
-		componentsHandler := &handlers.ComponentsHandler{
-			Application: c.application,
-		}
+		componentsHandler := &handlers.ComponentsHandler{}
 
 		c.routes = append(c.routes, []dashboard.Route{
 			dashboard.NewRoute("/"+c.Name()+"/components", componentsHandler).

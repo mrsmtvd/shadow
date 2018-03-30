@@ -23,26 +23,30 @@ func (c *Component) getServeMux() (*Router, error) {
 	router.SetNotAllowedHandler(&handlers.MethodNotAllowedHandler{})
 
 	// Middleware
-	router.AddMiddleware(ContextMiddleware(router, c.config, c.logger, c.renderer, c.session))
+	router.addMiddleware(ContextMiddleware(c.application, router, c.config, c.logger, c.renderer, c.session))
 
 	if c.application.HasComponent(metrics.ComponentName) {
-		router.AddMiddleware(MetricsMiddleware())
+		router.addMiddleware(MetricsMiddleware())
 	}
 
-	router.AddMiddleware(LoggerMiddleware())
-	router.AddMiddleware(AuthorizationMiddleware())
+	router.addMiddleware(LoggerMiddleware())
+	router.addMiddleware(AuthorizationMiddleware())
+
+	// TODO: middleware from components
 
 	for _, component := range components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
 			for _, route := range componentRoute.DashboardRoutes() {
-				router.AddRoute(route, component.Name())
+				router.addRoute(NewRouteItem(route, component))
 			}
 		}
 	}
 
-	router.AddRoute(dashboard.NewRoute("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	startUrlRoute := NewRouteItem(dashboard.NewRoute("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
-	})), c.Name())
+	})), c)
+
+	router.addRoute(startUrlRoute)
 
 	return router, nil
 }

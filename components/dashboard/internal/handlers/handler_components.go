@@ -11,14 +11,12 @@ import (
 
 type ComponentsHandler struct {
 	dashboard.Handler
-
-	Application shadow.Application
 }
 
 func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	contextComponents := []map[string]interface{}{}
 
-	components, _ := h.Application.GetComponents()
+	components, _ := r.Application().GetComponents()
 	for _, cmp := range components {
 		row := map[string]interface{}{
 			"name":                    cmp.Name(),
@@ -67,19 +65,19 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 			}
 		}
 
-		if h.Application.HasComponent(database.ComponentName) {
+		if r.Application().HasComponent(database.ComponentName) {
 			if _, ok := cmp.(database.HasMigrations); ok {
 				row["has_database_migrations"] = true
 			}
 		}
 
-		if h.Application.HasComponent(grpc.ComponentName) {
+		if r.Application().HasComponent(grpc.ComponentName) {
 			if _, ok := cmp.(grpc.HasGrpcServer); ok {
 				row["has_grpc_server"] = true
 			}
 		}
 
-		if h.Application.HasComponent(metrics.ComponentName) {
+		if r.Application().HasComponent(metrics.ComponentName) {
 			if _, ok := cmp.(metrics.HasMetrics); ok {
 				row["has_metrics"] = true
 			}
@@ -88,7 +86,7 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 		contextComponents = append(contextComponents, row)
 	}
 
-	h.Render(r.Context(), dashboard.ComponentName, "components", map[string]interface{}{
+	h.Render(r.Context(), "components", map[string]interface{}{
 		"components": contextComponents,
 	})
 }

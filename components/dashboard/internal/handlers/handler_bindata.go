@@ -17,8 +17,6 @@ import (
 
 type BindataHandler struct {
 	dashboard.Handler
-
-	Application shadow.Application
 }
 
 type bindataList struct {
@@ -37,8 +35,8 @@ type bindataBreadcrumb struct {
 	Active bool
 }
 
-func (h *BindataHandler) getRoot() ([]bindataList, error) {
-	components, err := h.Application.GetComponents()
+func (h *BindataHandler) getRoot(application shadow.Application) ([]bindataList, error) {
+	components, err := application.GetComponents()
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +44,8 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 	files := make([]bindataList, 0, len(components))
 
 	modTime := time.Now()
-	if h.Application.BuildDate() != nil {
-		modTime = *h.Application.BuildDate()
+	if application.BuildDate() != nil {
+		modTime = *application.BuildDate()
 	}
 
 	for _, component := range components {
@@ -71,12 +69,12 @@ func (h *BindataHandler) getRoot() ([]bindataList, error) {
 	return files, nil
 }
 
-func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, error) {
-	if !h.Application.HasComponent(name) {
+func (h *BindataHandler) getComponentByPath(name, path string, application shadow.Application) ([]bindataList, error) {
+	if !application.HasComponent(name) {
 		return nil, fmt.Errorf("Component %s not found", name)
 	}
 
-	componentTemplate, ok := h.Application.GetComponent(name).(dashboard.HasAssetFS)
+	componentTemplate, ok := application.GetComponent(name).(dashboard.HasAssetFS)
 	if !ok {
 		return nil, fmt.Errorf("Component %s haven't templates", name)
 	}
@@ -142,8 +140,8 @@ func (h *BindataHandler) getComponentByPath(name, path string) ([]bindataList, e
 		}
 
 		if statSub.IsDir() {
-			if h.Application.BuildDate() != nil {
-				infoSub.ModTime = *h.Application.BuildDate()
+			if application.BuildDate() != nil {
+				infoSub.ModTime = *application.BuildDate()
 			}
 
 			// TODO: directory size
@@ -171,15 +169,15 @@ func (h *BindataHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	}
 
 	if path == sep {
-		files, err = h.getRoot()
+		files, err = h.getRoot(r.Application())
 	} else {
 		dir, file := filepath.Split(path)
 		if dir == "" {
-			files, err = h.getComponentByPath(file, sep)
+			files, err = h.getComponentByPath(file, sep, r.Application())
 		} else {
 			parts := strings.Split(dir, sep)
 			if len(parts) > 1 {
-				files, err = h.getComponentByPath(parts[0], filepath.Join(filepath.Join(parts[1:]...), file))
+				files, err = h.getComponentByPath(parts[0], filepath.Join(filepath.Join(parts[1:]...), file), r.Application())
 			}
 		}
 	}
@@ -233,7 +231,7 @@ func (h *BindataHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 	breadcrumb[len(breadcrumb)-1].Active = true
 
-	h.Render(r.Context(), dashboard.ComponentName, "bindata", map[string]interface{}{
+	h.Render(r.Context(), "bindata", map[string]interface{}{
 		"breadcrumb": breadcrumb,
 		"files":      files,
 		"error":      err,

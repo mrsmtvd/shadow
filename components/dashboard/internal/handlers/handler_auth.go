@@ -84,7 +84,7 @@ func (h *AuthHandler) renderForm(r *dashboard.Request, err error) {
 		last = p.NeedRedirect
 	}
 
-	h.RenderLayout(r.Context(), dashboard.ComponentName, "auth", "blank", data)
+	h.RenderLayout(r.Context(), "auth", "blank", data)
 }
 
 func (h *AuthHandler) getRedirectToLastURL(r *dashboard.Request) string {

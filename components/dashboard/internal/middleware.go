@@ -7,26 +7,35 @@ import (
 
 	"github.com/alexedwards/scs"
 	"github.com/justinas/alice"
+	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/kihamo/shadow/components/logger"
 )
 
-func ContextMiddleware(router *Router, config config.Component, logger logger.Logger, renderer *Renderer, sessionManager *scs.Manager) alice.Constructor {
+func ContextMiddleware(application shadow.Application, router *Router, config config.Component, logger logger.Logger, renderer *Renderer, sessionManager *scs.Manager) alice.Constructor {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := dashboard.NewResponse(w)
 			request := dashboard.NewRequest(r)
 			session := NewSession(sessionManager.Load(r), w)
+			route := dashboard.RouteFromContext(r.Context())
 
-			ctx := context.WithValue(r.Context(), dashboard.ConfigContextKey, config)
+			ctx := context.WithValue(r.Context(), dashboard.ApplicationContextKey, application)
+			ctx = context.WithValue(ctx, dashboard.ConfigContextKey, config)
 			ctx = context.WithValue(ctx, dashboard.LoggerContextKey, logger)
 			ctx = context.WithValue(ctx, dashboard.RenderContextKey, renderer)
 			ctx = context.WithValue(ctx, dashboard.ResponseContextKey, writer)
 			ctx = context.WithValue(ctx, dashboard.RouterContextKey, router)
 			ctx = context.WithValue(ctx, dashboard.SessionContextKey, session)
 			ctx = context.WithValue(ctx, dashboard.RequestContextKey, request)
+
+			if route != nil {
+				if routeItem, ok := route.(*RouteItem); ok {
+					ctx = context.WithValue(ctx, dashboard.ComponentContextKey, routeItem.Component())
+				}
+			}
 
 			request = request.WithContext(ctx)
 			next.ServeHTTP(writer, request.Original())
@@ -73,7 +82,7 @@ func MetricsMiddleware() alice.Constructor {
 			route := dashboard.RouteFromContext(r.Context())
 			if route != nil {
 				metricHandlerExecuteTime.With(
-					"source", route.(*RouteItem).Source(),
+					"component", route.(*RouteItem).Component().Name(),
 					"handler", route.HandlerName(),
 				).UpdateSince(now)
 			}

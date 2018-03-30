@@ -5,7 +5,6 @@ import (
 	"time"
 
 	ws "github.com/kihamo/go-workers"
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/workers"
@@ -68,13 +67,10 @@ type managerHandlerItemListener struct {
 
 type ManagerHandler struct {
 	dashboard.Handler
-
-	Application shadow.Application
-	Component   workers.Component
 }
 
-func (h *ManagerHandler) isLocked(id string) bool {
-	for _, listenerId := range h.Component.GetLockedListeners() {
+func (h *ManagerHandler) isLocked(id string, component workers.Component) bool {
+	for _, listenerId := range component.GetLockedListeners() {
 		if id == listenerId {
 			return true
 		}
@@ -93,19 +89,20 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 	}{}
 
 	stats.Draw = 1
+	component := r.Component().(workers.Component)
 
 	switch r.URL().Query().Get("entity") {
 	case "listeners":
 		list := make([]managerHandlerItemListener, 0, 0)
 
-		for _, item := range h.Component.GetListeners() {
+		for _, item := range component.GetListeners() {
 			listener := managerHandlerItemListener{
 				Id:     item.Id(),
 				Name:   item.Name(),
-				Locked: h.isLocked(item.Id()),
+				Locked: h.isLocked(item.Id(), component),
 			}
 
-			md := h.Component.GetListenerMetadata(item.Id())
+			md := component.GetListenerMetadata(item.Id())
 			if md == nil {
 				continue
 			}
@@ -128,15 +125,15 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	case "workers":
 		list := make([]managerHandlerItemWorker, 0, 0)
-		locale := i18n.NewOrNopFromRequest(r, h.Application)
+		locale := i18n.NewOrNopFromRequest(r, r.Application())
 
-		for _, item := range h.Component.GetWorkers() {
+		for _, item := range component.GetWorkers() {
 			data := managerHandlerItemWorker{
 				Id:      item.Id(),
 				Created: item.CreatedAt(),
 			}
 
-			if md := h.Component.GetWorkerMetadata(item.Id()); md != nil {
+			if md := component.GetWorkerMetadata(item.Id()); md != nil {
 				data.Status = locale.Translate(workers.ComponentName, md[ws.WorkerMetadataStatus].(ws.Status).String(), "worker")
 				data.Locked = md[ws.WorkerMetadataLocked].(bool)
 
@@ -154,7 +151,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 						StartedAt:      item.StartedAt(),
 					}
 
-					if taskMD := h.Component.GetTaskMetadata(item.Id()); taskMD != nil {
+					if taskMD := component.GetTaskMetadata(item.Id()); taskMD != nil {
 						data.Task.Status = taskMD[ws.TaskMetadataStatus].(ws.Status).String()
 						data.Task.Locked = taskMD[ws.TaskMetadataLocked].(bool)
 						data.Task.Attempts = taskMD[ws.TaskMetadataAttempts].(int64)
@@ -173,9 +170,9 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	case "tasks":
 		list := make([]managerHandlerItemTask, 0, 0)
-		locale := i18n.NewOrNopFromRequest(r, h.Application)
+		locale := i18n.NewOrNopFromRequest(r, r.Application())
 
-		for _, item := range h.Component.GetTasks() {
+		for _, item := range component.GetTasks() {
 			data := managerHandlerItemTask{
 				Id:             item.Id(),
 				Name:           item.Name(),
@@ -187,7 +184,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 				StartedAt:      item.StartedAt(),
 			}
 
-			if md := h.Component.GetTaskMetadata(item.Id()); md != nil {
+			if md := component.GetTaskMetadata(item.Id()); md != nil {
 				data.Status = locale.Translate(workers.ComponentName, md[ws.TaskMetadataStatus].(ws.Status).String(), "task")
 				data.Locked = md[ws.TaskMetadataLocked].(bool)
 				data.Attempts = md[ws.TaskMetadataAttempts].(int64)
@@ -214,14 +211,15 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboard.Request) {
 	checkId := r.Original().PostFormValue("id")
+	component := r.Component().(workers.Component)
 
-	if checkId != "" && !h.isLocked(checkId) {
-		for _, listener := range h.Component.GetListeners() {
+	if checkId != "" && !h.isLocked(checkId, component) {
+		for _, listener := range component.GetListeners() {
 			if listener.Id() == checkId {
 				checkEvents := r.Original().PostForm["events[]"]
 
 				if len(checkEvents) != 0 {
-					md := h.Component.GetListenerMetadata(listener.Id())
+					md := component.GetListenerMetadata(listener.Id())
 					if md == nil {
 						continue
 					}
@@ -238,10 +236,10 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 							continue
 						}
 
-						h.Component.RemoveListenerByEvent(event, listener)
+						component.RemoveListenerByEvent(event, listener)
 					}
 				} else {
-					h.Component.RemoveListener(listener)
+					component.RemoveListener(listener)
 				}
 
 				break
@@ -256,10 +254,11 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 
 func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.Request) {
 	checkId := r.Original().FormValue("id")
+	component := r.Component().(workers.Component)
 
-	for _, task := range h.Component.GetTasks() {
+	for _, task := range component.GetTasks() {
 		if checkId == "" || task.Id() == checkId {
-			h.Component.RemoveTask(task)
+			component.RemoveTask(task)
 
 			if checkId != "" {
 				break
@@ -274,10 +273,11 @@ func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.R
 
 func (h *ManagerHandler) actionWorkerRemove(w *dashboard.Response, r *dashboard.Request) {
 	checkId := r.Original().FormValue("id")
+	component := r.Component().(workers.Component)
 
-	for _, worker := range h.Component.GetWorkers() {
+	for _, worker := range component.GetWorkers() {
 		if checkId == "" || worker.Id() == checkId {
-			h.Component.RemoveWorker(worker)
+			component.RemoveWorker(worker)
 
 			if checkId != "" {
 				break
@@ -294,8 +294,10 @@ func (h *ManagerHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Re
 	count := r.Original().FormValue("count")
 	if count != "" {
 		if c, err := strconv.Atoi(count); err == nil {
+			component := r.Component().(workers.Component)
+
 			for i := 0; i < c; i++ {
-				h.Component.AddSimpleWorker()
+				component.AddSimpleWorker()
 			}
 		}
 	}
@@ -307,7 +309,7 @@ func (h *ManagerHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Re
 
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	if !r.IsAjax() {
-		h.Render(r.Context(), h.Component.Name(), "manager", map[string]interface{}{})
+		h.Render(r.Context(), "manager", nil)
 		return
 	}
 

@@ -11,7 +11,7 @@ type RoutingHandler struct {
 func (h *RoutingHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	router := dashboard.RouterFromContext(r.Context())
 
-	h.Render(r.Context(), dashboard.ComponentName, "routing", map[string]interface{}{
+	h.Render(r.Context(), "routing", map[string]interface{}{
 		"routes": router.GetRoutes(),
 	})
 }

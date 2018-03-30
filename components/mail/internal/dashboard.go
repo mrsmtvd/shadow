@@ -21,10 +21,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRoute("/"+c.Name()+"/send/", &handlers.SendHandler{
-				Application: c.application,
-				Component:   c,
-			}).
+			dashboard.NewRoute("/"+c.Name()+"/send/", &handlers.SendHandler{}).
 				WithMethods([]string{http.MethodGet, http.MethodPost}).
 				WithAuth(true),
 		}

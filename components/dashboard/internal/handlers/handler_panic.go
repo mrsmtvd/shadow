@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -21,7 +22,11 @@ func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	}
 
 	w.WriteHeader(http.StatusInternalServerError)
-	h.RenderLayout(r.Context(), dashboard.ComponentName, "500", "simple", map[string]interface{}{
+
+	// FIXME: refactoring
+	ctx := context.WithValue(r.Context(), dashboard.ComponentContextKey, r.Application().GetComponent(dashboard.ComponentName))
+
+	h.RenderLayout(ctx, "500", "simple", map[string]interface{}{
 		"panic": fields,
 	})
 

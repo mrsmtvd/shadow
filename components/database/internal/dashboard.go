@@ -26,19 +26,13 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name(), &handlers.StatusHandler{
-				Component: c,
-			}).
+			dashboard.NewRoute("/"+c.Name(), &handlers.StatusHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/migrations/", &handlers.MigrationsHandler{
-				Component: c,
-			}).
+			dashboard.NewRoute("/"+c.Name()+"/migrations/", &handlers.MigrationsHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/status/", &handlers.StatusHandler{
-				Component: c,
-			}).
+			dashboard.NewRoute("/"+c.Name()+"/status/", &handlers.StatusHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
 		}

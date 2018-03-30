@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
 )
@@ -12,12 +11,10 @@ const (
 
 type DataTablesHandler struct {
 	dashboard.Handler
-
-	Application shadow.Application
 }
 
 func (h *DataTablesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	locale := i18n.NewOrNopFromRequest(r, h.Application)
+	locale := i18n.NewOrNopFromRequest(r, r.Application())
 
 	translate := map[string]interface{}{
 		"processing":     locale.Translate(dashboard.ComponentName, "Processing...", DataTablesMessageCtx),

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 )
@@ -44,9 +43,6 @@ func (v variableView) GetViewOption(o string) interface{} {
 
 type ManagerHandler struct {
 	dashboard.Handler
-
-	Application shadow.Application
-	Component   config.Component
 }
 
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -82,11 +78,11 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	}
 
 	variables := map[string][]variableView{}
-	for _, v := range h.Component.Variables() {
+	for _, v := range r.Config().Variables() {
 		parts := strings.SplitN(v.Key(), ".", 2)
 
 		cmpName := parts[0]
-		if !h.Application.HasComponent(cmpName) {
+		if !r.Application().HasComponent(cmpName) {
 			cmpName = defaultComponentName
 		}
 
@@ -98,12 +94,12 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 		cmp = append(cmp, variableView{
 			Variable: v,
-			Watchers: h.Component.Watchers(v.Key()),
+			Watchers: r.Config().Watchers(v.Key()),
 		})
 		variables[cmpName] = cmp
 	}
 
-	h.Render(r.Context(), h.Component.Name(), "manager", map[string]interface{}{
+	h.Render(r.Context(), "manager", map[string]interface{}{
 		"variables": variables,
 		"error":     err,
 	})

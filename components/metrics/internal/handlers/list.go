@@ -10,14 +10,12 @@ import (
 
 type ListHandler struct {
 	dashboard.Handler
-
-	Component metrics.Component
 }
 
 func (h *ListHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	var updated time.Time
 
-	measures, err := h.Component.Registry().Gather()
+	measures, err := r.Component().(metrics.Component).Registry().Gather()
 	if err == nil {
 		sort.Sort(measures)
 
@@ -28,7 +26,7 @@ func (h *ListHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 		}
 	}
 
-	h.Render(r.Context(), h.Component.Name(), "list", map[string]interface{}{
+	h.Render(r.Context(), "list", map[string]interface{}{
 		"measures": measures,
 		"error":    err,
 		"updated":  updated,

@@ -365,7 +365,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		services, err = h.getServicesLightViewData()
 	}
 
-	h.Render(r.Context(), grpc.ComponentName, "manager", map[string]interface{}{
+	h.Render(r.Context(), "manager", map[string]interface{}{
 		"error":    err,
 		"services": services,
 	})
