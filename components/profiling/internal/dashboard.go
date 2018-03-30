@@ -27,17 +27,12 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		return r.Config().Bool(config.ConfigDebug)
 	}
 
-	return dashboard.NewMenuWithUrl(
-		"Profiling",
-		"",
-		"terminal",
-		[]dashboard.Menu{
-			dashboard.NewMenuWithRoute("Trace", routes[1], "", nil, show),
-			dashboard.NewMenuWithRoute("Pprof", routes[7], "", nil, show),
-			dashboard.NewMenuWithRoute("Expvar", routes[2], "", nil, show),
-		},
-		show,
-	)
+	return dashboard.NewMenu("Profiling").
+		WithIcon("terminal").
+		WithShow(show).
+		WithChild(dashboard.NewMenu("Trace").WithRoute(routes[1])).
+		WithChild(dashboard.NewMenu("Pprof").WithRoute(routes[7])).
+		WithChild(dashboard.NewMenu("Expvar").WithRoute(routes[2]))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

@@ -25,18 +25,13 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 func (c *Component) DashboardMenu() dashboard.Menu {
 	routes := c.DashboardRoutes()
 
-	return dashboard.NewMenuWithRoute(
-		"Dashboard",
-		routes[9],
-		"dashboard",
-		[]dashboard.Menu{
-			dashboard.NewMenuWithRoute("Components", routes[9], "", nil, nil),
-			dashboard.NewMenuWithRoute("Environment", routes[3], "", nil, nil),
-			dashboard.NewMenuWithRoute("Bindata", routes[1], "", nil, nil),
-			dashboard.NewMenuWithRoute("Routing", routes[4], "", nil, nil),
-		},
-		nil,
-	)
+	return dashboard.NewMenu("Dashboard").
+		WithRoute(routes[9]).
+		WithIcon("dashboard").
+		WithChild(dashboard.NewMenu("Components").WithRoute(routes[9])).
+		WithChild(dashboard.NewMenu("Environment").WithRoute(routes[3])).
+		WithChild(dashboard.NewMenu("Bindata").WithRoute(routes[1])).
+		WithChild(dashboard.NewMenu("Routing").WithRoute(routes[4]))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

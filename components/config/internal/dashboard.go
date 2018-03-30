@@ -20,7 +20,7 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 func (c *Component) DashboardMenu() dashboard.Menu {
 	routes := c.DashboardRoutes()
 
-	return dashboard.NewMenuWithRoute("Configuration", routes[1], "cog", nil, nil)
+	return dashboard.NewMenu("Configuration").WithRoute(routes[1]).WithIcon("cog")
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

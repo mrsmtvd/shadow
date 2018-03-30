@@ -59,12 +59,8 @@
                     <div class="menu_section">
                         <ul class="nav side-menu">
                             {{ range .Menu }}
-                                {{ if .Show $.Request }}
-                                    {{ if .Route }}
-                                        <li{{ if eq $.Request.URL.Path .Route.Path }} class="active"{{ end }}>
-                                    {{ else }}
-                                        <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}>
-                                    {{ end }}
+                                {{ if .IsShow $.Request }}
+                                    <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}>
 
                                     {{ if gt (len .Childs) 0 }}
                                         <a><i class="fa{{ if .Icon }} fa-{{ .Icon }}{{ end }}"></i> {{ i18n .Title $ "menu" .Source }} <span class="fa fa-chevron-down"></span></a>

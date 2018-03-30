@@ -54,6 +54,6 @@ func (m *MenuItem) Childs() []dashboard.Menu {
 	return m.childs
 }
 
-func (m *MenuItem) Show(request *dashboard.Request) bool {
-	return m.menu.Show(request)
+func (m *MenuItem) IsShow(request *dashboard.Request) bool {
+	return m.menu.IsShow(request)
 }
