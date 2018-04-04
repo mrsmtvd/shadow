@@ -39,7 +39,7 @@ import:
 - package: github.com/rubenv/sql-migrate
   version: 6edbfbd6a369ee82463312ec67b2c92f97a1d4dc
 - package: google.golang.org/grpc
-  version: ~1.9
+  version: ~1.11
 - package: gopkg.in/Masterminds/squirrel.v1
   version: a6b93000bd219143c56c16e6cb1c4b91da3f224b
 - package: gopkg.in/gomail.v2
