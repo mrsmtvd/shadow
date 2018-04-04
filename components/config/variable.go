@@ -41,7 +41,7 @@ type variableValue struct {
 	original interface{}
 }
 
-type VariableItem struct {
+type VariableSimple struct {
 	key         string
 	typ         string
 	def         interface{}
@@ -53,8 +53,8 @@ type VariableItem struct {
 	viewOptions map[string]interface{}
 }
 
-func NewVariable(key string, typ string, def interface{}, usage string, editable bool, group string, view []string, viewOptions map[string]interface{}) Variable {
-	v := &VariableItem{
+func NewVariable(key string, typ string, def interface{}, usage string, editable bool, group string, view []string, viewOptions map[string]interface{}) *VariableSimple {
+	v := &VariableSimple{
 		key:         key,
 		typ:         typ,
 		def:         def,
@@ -69,11 +69,11 @@ func NewVariable(key string, typ string, def interface{}, usage string, editable
 	return v
 }
 
-func (v *VariableItem) Key() string {
+func (v *VariableSimple) Key() string {
 	return v.key
 }
 
-func (v *VariableItem) Type() string {
+func (v *VariableSimple) Type() string {
 	// autodetect type of value
 	if v.typ == "" && (v.Default() != nil || v.Value() != nil) {
 		switch v.Value().(type) {
@@ -99,11 +99,11 @@ func (v *VariableItem) Type() string {
 	return v.typ
 }
 
-func (v *VariableItem) Default() interface{} {
+func (v *VariableSimple) Default() interface{} {
 	return v.def
 }
 
-func (v *VariableItem) Value() interface{} {
+func (v *VariableSimple) Value() interface{} {
 	var value interface{}
 
 	if l := v.value.Load(); l != nil {
@@ -113,32 +113,32 @@ func (v *VariableItem) Value() interface{} {
 	return value
 }
 
-func (v *VariableItem) Usage() string {
+func (v *VariableSimple) Usage() string {
 	return v.usage
 }
 
-func (v *VariableItem) Editable() bool {
+func (v *VariableSimple) Editable() bool {
 	return v.editable
 }
 
-func (v *VariableItem) Group() string {
+func (v *VariableSimple) Group() string {
 	return v.group
 }
 
-func (v *VariableItem) View() []string {
+func (v *VariableSimple) View() []string {
 	return v.view
 }
 
-func (v *VariableItem) ViewOptions() map[string]interface{} {
+func (v *VariableSimple) ViewOptions() map[string]interface{} {
 	return v.viewOptions
 }
 
-func (v *VariableItem) Change(value interface{}) error {
+func (v *VariableSimple) Change(value interface{}) error {
 	v.value.Store(&variableValue{value})
 	return nil
 }
 
-func (v *VariableItem) String() string {
+func (v *VariableSimple) String() string {
 	value := v.Value()
 	viewOptions := v.ViewOptions()
 
@@ -167,6 +167,6 @@ func (v *VariableItem) String() string {
 	return fmt.Sprintf("%s", value)
 }
 
-func (v *VariableItem) GoString() string {
+func (v *VariableSimple) GoString() string {
 	return v.String()
 }

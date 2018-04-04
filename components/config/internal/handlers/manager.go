@@ -2,19 +2,18 @@ package handlers
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-const (
-	defaultComponentName = "main"
-)
-
 type variableView struct {
 	Variable config.Variable
 	Watchers []config.Watcher
+}
+
+type hasSource interface {
+	Source() string
 }
 
 func (v variableView) HasView(n string) bool {
@@ -79,24 +78,19 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 	variables := map[string][]variableView{}
 	for _, v := range r.Config().Variables() {
-		parts := strings.SplitN(v.Key(), ".", 2)
+		source := v.(hasSource).Source()
 
-		cmpName := parts[0]
-		if !r.Application().HasComponent(cmpName) {
-			cmpName = defaultComponentName
-		}
-
-		cmp, ok := variables[cmpName]
+		cmp, ok := variables[source]
 		if !ok {
-			variables[cmpName] = make([]variableView, 0)
-			cmp = variables[cmpName]
+			variables[source] = make([]variableView, 0)
+			cmp = variables[source]
 		}
 
 		cmp = append(cmp, variableView{
 			Variable: v,
 			Watchers: r.Config().Watchers(v.Key()),
 		})
-		variables[cmpName] = cmp
+		variables[source] = cmp
 	}
 
 	h.Render(r.Context(), "manager", map[string]interface{}{

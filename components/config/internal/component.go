@@ -69,12 +69,14 @@ func (c *Component) Init(a shadow.Application) (err error) {
 					return fmt.Errorf("Use key %s not allowed", config.WatcherForAll)
 				}
 
+				item := NewVariableItem(variable, component.Name())
+
 				variablesForSort := &variableSort{
-					variable: variable,
+					variable: item,
 				}
 
 				c.mutex.Lock()
-				c.variables[variable.Key()] = variable
+				c.variables[variable.Key()] = item
 
 				variablesForSort.order = len(c.variables)
 				c.variablesSort = append(c.variablesSort, variablesForSort)
