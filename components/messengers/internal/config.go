@@ -10,71 +10,35 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			messengers.ConfigTelegramEnabled,
-			config.ValueTypeBool,
-			false,
-			"Enabled",
-			true,
-			"Telegram",
-			nil,
-			nil),
-		config.NewVariable(
-			messengers.ConfigTelegramToken,
-			config.ValueTypeString,
-			nil,
-			"Token",
-			true,
-			"Telegram",
-			nil,
-			nil),
-		config.NewVariable(
-			messengers.ConfigTelegramUpdatesEnabled,
-			config.ValueTypeBool,
-			false,
-			"Enabled updates",
-			true,
-			"Telegram",
-			nil,
-			nil),
-		config.NewVariable(
-			messengers.ConfigTelegramWebHookEnabled,
-			config.ValueTypeBool,
-			false,
-			"Enabled web hooks",
-			true,
-			"Telegram",
-			nil,
-			nil),
-		config.NewVariable(
-			messengers.ConfigTelegramAnnotationsStorageEnabled,
-			config.ValueTypeBool,
-			false,
-			"Enabled",
-			true,
-			"Telegram annotations storage",
-			nil,
-			nil),
-		config.NewVariable(
-			messengers.ConfigTelegramAnnotationsStorageChats,
-			config.ValueTypeString,
-			nil,
-			"Chats ID",
-			true,
-			"Telegram annotations storage",
-			[]string{config.ViewTags},
-			map[string]interface{}{
-				config.ViewOptionTagsDefaultText: "add a ID",
-			}),
-		config.NewVariable(
-			messengers.ConfigBaseURL,
-			config.ValueTypeString,
-			nil,
-			"Base URL for web hooks",
-			true,
-			"Others",
-			nil,
-			nil),
+		config.NewVariable(messengers.ConfigTelegramEnabled, config.ValueTypeBool).
+			WithUsage("Enabled").
+			WithGroup("Telegram").
+			WithEditable(true),
+		config.NewVariable(messengers.ConfigTelegramToken, config.ValueTypeString).
+			WithUsage("Token").
+			WithGroup("Telegram").
+			WithEditable(true),
+		config.NewVariable(messengers.ConfigTelegramUpdatesEnabled, config.ValueTypeBool).
+			WithUsage("Enabled updates").
+			WithGroup("Telegram").
+			WithEditable(true),
+		config.NewVariable(messengers.ConfigTelegramWebHookEnabled, config.ValueTypeBool).
+			WithUsage("Enabled web hooks").
+			WithGroup("Telegram").
+			WithEditable(true),
+		config.NewVariable(messengers.ConfigTelegramAnnotationsStorageEnabled, config.ValueTypeBool).
+			WithUsage("Enabled").
+			WithGroup("Telegram annotations storage").
+			WithEditable(true),
+		config.NewVariable(messengers.ConfigTelegramAnnotationsStorageChats, config.ValueTypeString).
+			WithUsage("Chats ID").
+			WithGroup("Telegram annotations storage").
+			WithEditable(true).
+			WithView([]string{config.ViewTags}).
+			WithViewOptions(map[string]interface{}{config.ViewOptionTagsDefaultText: "add a ID"}),
+		config.NewVariable(messengers.ConfigBaseURL, config.ValueTypeString).
+			WithUsage("Base URL for web hooks").
+			WithEditable(true),
 	}
 }
 

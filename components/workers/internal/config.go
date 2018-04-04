@@ -9,24 +9,14 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			workers.ConfigWorkersCount,
-			config.ValueTypeInt,
-			2,
-			"Default workers count",
-			true,
-			"Others",
-			nil,
-			nil),
-		config.NewVariable(
-			workers.ConfigTickerExecuteTasksDuration,
-			config.ValueTypeDuration,
-			"1s",
-			"Duration for ticker in dispatcher of workers",
-			true,
-			"Others",
-			nil,
-			nil),
+		config.NewVariable(workers.ConfigWorkersCount, config.ValueTypeInt).
+			WithUsage("Default workers count").
+			WithEditable(true).
+			WithDefault(2),
+		config.NewVariable(workers.ConfigTickerExecuteTasksDuration, config.ValueTypeDuration).
+			WithUsage("Duration for ticker in dispatcher of workers").
+			WithEditable(true).
+			WithDefault("1s"),
 	}
 }
 

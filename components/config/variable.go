@@ -44,7 +44,7 @@ type variableValue struct {
 type VariableSimple struct {
 	key         string
 	typ         string
-	def         interface{}
+	def         atomic.Value
 	value       atomic.Value
 	usage       string
 	editable    bool
@@ -53,24 +53,22 @@ type VariableSimple struct {
 	viewOptions map[string]interface{}
 }
 
-func NewVariable(key string, typ string, def interface{}, usage string, editable bool, group string, view []string, viewOptions map[string]interface{}) *VariableSimple {
-	v := &VariableSimple{
+func NewVariable(key string, typ string) *VariableSimple {
+	return &VariableSimple{
 		key:         key,
 		typ:         typ,
-		def:         def,
-		usage:       usage,
-		editable:    editable,
-		group:       group,
-		view:        view,
-		viewOptions: viewOptions,
+		group:       "Others",
+		view:        make([]string, 0, 0),
+		viewOptions: make(map[string]interface{}, 0),
 	}
-	v.Change(def)
-
-	return v
 }
 
 func (v *VariableSimple) Key() string {
 	return v.key
+}
+func (v *VariableSimple) WithKey(key string) *VariableSimple {
+	v.key = key
+	return v
 }
 
 func (v *VariableSimple) Type() string {
@@ -99,38 +97,91 @@ func (v *VariableSimple) Type() string {
 	return v.typ
 }
 
+func (v *VariableSimple) WithType(typ string) *VariableSimple {
+	switch v.Type() {
+	case ValueTypeInt, ValueTypeInt64, ValueTypeUint, ValueTypeUint64, ValueTypeFloat64, ValueTypeBool, ValueTypeString, ValueTypeDuration:
+		v.typ = typ
+	default:
+		panic("Unknown type " + typ)
+	}
+
+	return v
+}
+
 func (v *VariableSimple) Default() interface{} {
-	return v.def
+	if l := v.def.Load(); l != nil {
+		return l.(*variableValue).original
+	}
+
+	return nil
+}
+
+func (v *VariableSimple) WithDefault(value interface{}) *VariableSimple {
+	v.def.Store(&variableValue{value})
+
+	if l := v.value.Load(); l == nil {
+		v.Change(value)
+	}
+
+	return v
 }
 
 func (v *VariableSimple) Value() interface{} {
-	var value interface{}
-
 	if l := v.value.Load(); l != nil {
-		value = l.(*variableValue).original
+		return l.(*variableValue).original
 	}
 
-	return value
+	return nil
+}
+
+func (v *VariableSimple) WithValue(value interface{}) *VariableSimple {
+	v.Change(value)
+	return v
 }
 
 func (v *VariableSimple) Usage() string {
 	return v.usage
 }
 
+func (v *VariableSimple) WithUsage(usage string) *VariableSimple {
+	v.usage = usage
+	return v
+}
+
 func (v *VariableSimple) Editable() bool {
 	return v.editable
+}
+
+func (v *VariableSimple) WithEditable(editable bool) *VariableSimple {
+	v.editable = editable
+	return v
 }
 
 func (v *VariableSimple) Group() string {
 	return v.group
 }
 
+func (v *VariableSimple) WithGroup(group string) *VariableSimple {
+	v.group = group
+	return v
+}
+
 func (v *VariableSimple) View() []string {
 	return v.view
 }
 
+func (v *VariableSimple) WithView(view []string) *VariableSimple {
+	v.view = view
+	return v
+}
+
 func (v *VariableSimple) ViewOptions() map[string]interface{} {
 	return v.viewOptions
+}
+
+func (v *VariableSimple) WithViewOptions(viewOptions map[string]interface{}) *VariableSimple {
+	v.viewOptions = viewOptions
+	return v
 }
 
 func (v *VariableSimple) Change(value interface{}) error {

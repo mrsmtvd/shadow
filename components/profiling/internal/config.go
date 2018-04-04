@@ -9,33 +9,18 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			profiling.ConfigDumpDirectory,
-			config.ValueTypeString,
-			"./",
-			"Path to trace dumps directory",
-			true,
-			"Others",
-			nil,
-			nil),
-		config.NewVariable(
-			profiling.ConfigGCPercent,
-			config.ValueTypeInt,
-			100,
-			"Sets the garbage collection target percentage",
-			true,
-			"Others",
-			nil,
-			nil),
-		config.NewVariable(
-			profiling.ConfigGoMaxProc,
-			config.ValueTypeInt,
-			runtime.GOMAXPROCS(-1),
-			"Sets the maximum number of CPUs that can be executing simultaneously",
-			true,
-			"Others",
-			nil,
-			nil),
+		config.NewVariable(profiling.ConfigDumpDirectory, config.ValueTypeString).
+			WithUsage("Path to trace dumps directory").
+			WithEditable(true).
+			WithDefault("./"),
+		config.NewVariable(profiling.ConfigGCPercent, config.ValueTypeInt).
+			WithUsage("Sets the garbage collection target percentage").
+			WithEditable(true).
+			WithDefault(100),
+		config.NewVariable(profiling.ConfigGoMaxProc, config.ValueTypeInt).
+			WithUsage("Sets the maximum number of CPUs that can be executing simultaneously").
+			WithEditable(true).
+			WithDefault(runtime.GOMAXPROCS(-1)),
 	}
 }
 

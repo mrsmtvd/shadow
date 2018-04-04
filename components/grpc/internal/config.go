@@ -7,41 +7,20 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			grpc.ConfigHost,
-			config.ValueTypeString,
-			"localhost",
-			"Host",
-			false,
-			"Lister",
-			nil,
-			nil),
-		config.NewVariable(
-			grpc.ConfigPort,
-			config.ValueTypeInt,
-			50052,
-			"Port number",
-			false,
-			"Lister",
-			nil,
-			nil),
-		config.NewVariable(
-			grpc.ConfigReflectionEnabled,
-			config.ValueTypeInt,
-			true,
-			"Enabled register reflection",
-			false,
-			"Others",
-			nil,
-			nil),
-		config.NewVariable(
-			grpc.ConfigManagerMaxLevel,
-			config.ValueTypeInt,
-			2,
-			"Max level of parsing types",
-			true,
-			"Others",
-			nil,
-			nil),
+		config.NewVariable(grpc.ConfigHost, config.ValueTypeString).
+			WithUsage("Host").
+			WithGroup("Lister").
+			WithDefault("localhost"),
+		config.NewVariable(grpc.ConfigPort, config.ValueTypeString).
+			WithUsage("Port number").
+			WithGroup("Lister").
+			WithDefault(50052),
+		config.NewVariable(grpc.ConfigReflectionEnabled, config.ValueTypeBool).
+			WithUsage("Enabled register reflection").
+			WithEditable(true),
+		config.NewVariable(grpc.ConfigManagerMaxLevel, config.ValueTypeInt).
+			WithUsage("Max level of parsing types").
+			WithEditable(true).
+			WithDefault(2),
 	}
 }

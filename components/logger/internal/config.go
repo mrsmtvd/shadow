@@ -7,15 +7,12 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			logger.ConfigLevel,
-			config.ValueTypeInt,
-			logger.LevelInformational,
-			"Log level in format RFC5424",
-			true,
-			"",
-			[]string{config.ViewEnum},
-			map[string]interface{}{
+		config.NewVariable(logger.ConfigLevel, config.ValueTypeInt).
+			WithUsage("Log level in format RFC5424").
+			WithEditable(true).
+			WithDefault(logger.LevelInformational).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
 					{logger.LevelEmergency, "Emergency"},
 					{logger.LevelAlert, "Alert"},
@@ -27,17 +24,11 @@ func (c *Component) ConfigVariables() []config.Variable {
 					{logger.LevelDebug, "Debug"},
 				},
 			}),
-		config.NewVariable(
-			logger.ConfigFields,
-			config.ValueTypeString,
-			nil,
-			"Fields in format field_name=field1_value,field2_name=field2_value",
-			true,
-			"",
-			[]string{config.ViewTags},
-			map[string]interface{}{
-				config.ViewOptionTagsDefaultText: "add a field",
-			}),
+		config.NewVariable(logger.ConfigFields, config.ValueTypeString).
+			WithUsage("Fields in format field_name=field1_value,field2_name=field2_value").
+			WithEditable(true).
+			WithView([]string{config.ViewTags}).
+			WithViewOptions(map[string]interface{}{config.ViewOptionTagsDefaultText: "add a field"}),
 	}
 }
 

@@ -6,15 +6,10 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			config.ConfigDebug,
-			config.ValueTypeBool,
-			false,
-			"Debug mode",
-			true,
-			"Develop mode",
-			nil,
-			nil),
+		config.NewVariable(config.ConfigDebug, config.ValueTypeBool).
+			WithUsage("Debug mode").
+			WithGroup("Develop mode").
+			WithEditable(true),
 	}
 }
 

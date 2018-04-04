@@ -12,17 +12,12 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(
-			database.ConfigDriver,
-			config.ValueTypeString,
-			storage.DialectMySQL,
-			"Driver",
-			false,
-			"Driver",
-			[]string{
-				config.ViewEnum,
-			},
-			map[string]interface{}{
+		config.NewVariable(database.ConfigDriver, config.ValueTypeString).
+			WithUsage("Driver").
+			WithGroup("Driver").
+			WithDefault(storage.DialectMySQL).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
 					{storage.DialectMSSQL, "MSSQL"},
 					{storage.DialectMySQL, "MySQL"},
@@ -32,137 +27,76 @@ func (c *Component) ConfigVariables() []config.Variable {
 					{storage.DialectSQLite3, "SQLite3"},
 				},
 			}),
-		config.NewVariable(
-			database.ConfigDialectEngine,
-			config.ValueTypeString,
-			"InnoDB",
-			fmt.Sprintf("Dialect engine for %s driver", storage.DialectMySQL),
-			false,
-			"Driver",
-			[]string{
-				config.ViewEnum,
-			},
-			map[string]interface{}{
+		config.NewVariable(database.ConfigDialectEngine, config.ValueTypeString).
+			WithUsage(fmt.Sprintf("Dialect engine for %s driver", storage.DialectMySQL)).
+			WithGroup("Driver").
+			WithDefault(storage.EngineInnoDB).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
 					{storage.EngineInnoDB, storage.EngineInnoDB},
 					{storage.EngineMyISAM, storage.EngineMyISAM},
 				},
 			}),
-		config.NewVariable(
-			database.ConfigDialectEncoding,
-			config.ValueTypeString,
-			"UTF8",
-			fmt.Sprintf("Dialect encoding for %s driver", storage.DialectMySQL),
-			false,
-			"Driver",
-			nil,
-			nil),
-		config.NewVariable(
-			database.ConfigDialectVersion,
-			config.ValueTypeString,
-			nil,
-			fmt.Sprintf("Dialect version for %s driver", storage.DialectMSSQL),
-			false,
-			"Driver",
-			[]string{
-				config.ViewEnum,
-			},
-			map[string]interface{}{
+		config.NewVariable(database.ConfigDialectEncoding, config.ValueTypeString).
+			WithUsage(fmt.Sprintf("Dialect encoding for %s driver", storage.DialectMySQL)).
+			WithGroup("Driver").
+			WithDefault("UTF8"),
+		config.NewVariable(database.ConfigDialectVersion, config.ValueTypeString).
+			WithUsage(fmt.Sprintf("Dialect version for %s driver", storage.DialectMSSQL)).
+			WithGroup("Driver").
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
 					{storage.Version2005, "Legacy datatypes will be used"},
 				},
 			}),
-		config.NewVariable(
-			database.ConfigDsnMaster,
-			config.ValueTypeString,
-			nil,
-			"DSN of master",
-			false,
-			"Master-Slave",
-			nil,
-			nil),
-		config.NewVariable(
-			database.ConfigDsnSlaves,
-			config.ValueTypeString,
-			nil,
-			"DSN of slaves",
-			false,
-			"Master-Slave",
-			[]string{config.ViewTags},
-			map[string]interface{}{
-				config.ViewOptionTagsDefaultText: "add a slave",
-			}),
-		config.NewVariable(
-			database.ConfigAllowUseMasterAsSlave,
-			config.ValueTypeBool,
-			false,
-			"Allow use master as slave",
-			true,
-			"",
-			nil,
-			nil,
-		),
-		config.NewVariable(
-			database.ConfigBalancer,
-			config.ValueTypeString,
-			database.BalancerRoundRobin,
-			"Balancer for slaves",
-			true,
-			"",
-			[]string{
-				config.ViewEnum,
-			},
-			map[string]interface{}{
+		config.NewVariable(database.ConfigDsnMaster, config.ValueTypeString).
+			WithUsage("DSN of master").
+			WithGroup("Master-Slave"),
+		config.NewVariable(database.ConfigDsnSlaves, config.ValueTypeString).
+			WithUsage("DSN of slaves").
+			WithGroup("Master-Slave"),
+		config.NewVariable(database.ConfigAllowUseMasterAsSlave, config.ValueTypeBool).
+			WithUsage("Allow use master as slave").
+			WithGroup("Master-Slave").
+			WithEditable(true),
+		config.NewVariable(database.ConfigBalancer, config.ValueTypeString).
+			WithUsage("Balancer for slaves").
+			WithGroup("Master-Slave").
+			WithEditable(true).
+			WithDefault(database.BalancerRoundRobin).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
 					{database.BalancerRoundRobin, "Round robin"},
 					{database.BalancerRandom, "Random"},
 				},
 			}),
-		config.NewVariable(
-			database.ConfigMigrationsSchema,
-			config.ValueTypeString,
-			"",
-			"Migrations schema name",
-			true,
-			"Migrations",
-			nil,
-			nil),
-		config.NewVariable(
-			database.ConfigMigrationsTable,
-			config.ValueTypeString,
-			"migrations",
-			"Migrations table name",
-			true,
-			"Migrations",
-			nil,
-			nil),
-		config.NewVariable(
-			database.ConfigMaxIdleConns,
-			config.ValueTypeInt,
-			0,
-			"Maximum number of connections in the idle connection pool",
-			true,
-			"Connections",
-			nil,
-			nil),
-		config.NewVariable(
-			database.ConfigMaxOpenConns,
-			config.ValueTypeInt,
-			0,
-			"Maximum number of connections in the open connection pool",
-			true,
-			"Connections",
-			nil,
-			nil),
-		config.NewVariable(
-			database.ConfigConnMaxLifetime,
-			config.ValueTypeDuration,
-			0,
-			"Maximum amount of time a connection may be reused",
-			true,
-			"Connections",
-			nil,
-			nil),
+		config.NewVariable(database.ConfigMigrationsSchema, config.ValueTypeString).
+			WithUsage("Migrations schema name").
+			WithGroup("Migrations").
+			WithEditable(true),
+		config.NewVariable(database.ConfigMigrationsTable, config.ValueTypeString).
+			WithUsage("Migrations table name").
+			WithGroup("Migrations").
+			WithEditable(true).
+			WithDefault("migrations"),
+		config.NewVariable(database.ConfigMaxIdleConns, config.ValueTypeInt).
+			WithUsage("Maximum number of connections in the idle connection pool").
+			WithGroup("Connections").
+			WithEditable(true).
+			WithDefault(0),
+		config.NewVariable(database.ConfigMaxOpenConns, config.ValueTypeInt).
+			WithUsage("Maximum number of connections in the open connection pool").
+			WithGroup("Connections").
+			WithEditable(true).
+			WithDefault(0),
+		config.NewVariable(database.ConfigConnMaxLifetime, config.ValueTypeDuration).
+			WithUsage("Maximum amount of time a connection may be reused").
+			WithGroup("Connections").
+			WithEditable(true).
+			WithDefault(0),
 	}
 }
 
