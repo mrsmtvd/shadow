@@ -5,6 +5,7 @@ package internal
 import (
 	"errors"
 	"io/ioutil"
+	"net/http"
 	"strings"
 
 	"github.com/chai2010/gettext-go/gettext/mo"
@@ -47,7 +48,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
-	c.manager = internationalization.NewManager()
+	c.manager = internationalization.NewManager("en")
 
 	return nil
 }
@@ -148,7 +149,13 @@ func (c *Component) LocaleFromRequest(request *dashboard.Request) (*internationa
 		return localeSession, err
 	}
 
-	// in request
+	// in cookies
+	localeCookie, err := c.LocaleFromCookie(request.Original().Cookies())
+	if err == nil {
+		return localeCookie, err
+	}
+
+	// in headers
 	return c.LocaleFromAcceptLanguage(request.Original().Header.Get("Accept-Language"))
 }
 
@@ -169,19 +176,64 @@ func (c *Component) LocaleFromAcceptLanguage(acceptLanguage string) (*internatio
 }
 
 func (c *Component) LocaleFromSession(session dashboard.Session) (*internationalization.Locale, error) {
-	localeName, err := session.GetString(i18n.SessionLocale)
+	sessionKey := c.config.String(i18n.ConfigLocaleSessionKey)
+	if sessionKey == "" {
+		return nil, errors.New("Locale not found")
+	}
+
+	localeName, err := session.GetString(sessionKey)
 	if err != nil {
 		return nil, err
 	}
 
-	locale, ok := c.Manager().Locale(localeName)
-	if ok {
+	if locale, ok := c.Manager().Locale(localeName); ok {
 		return locale, nil
 	}
 
 	return nil, errors.New("Locale not found")
 }
 
-func (c *Component) SessionSave(session dashboard.Session, locale *internationalization.Locale) error {
-	return session.PutString(i18n.SessionLocale, locale.Locale())
+func (c *Component) LocaleFromCookie(cookies []*http.Cookie) (*internationalization.Locale, error) {
+	cookieName := c.config.String(i18n.ConfigLocaleCookieName)
+	if cookieName == "" {
+		return nil, errors.New("Locale not found")
+	}
+
+	for _, cookie := range cookies {
+		if cookie.Name == cookieName {
+			if locale, ok := c.Manager().Locale(cookie.Value); ok {
+				return locale, nil
+			}
+
+			break
+		}
+	}
+
+	return nil, errors.New("Locale not found")
+}
+
+func (c *Component) SaveToSession(session dashboard.Session, locale *internationalization.Locale) error {
+	key := c.config.String(i18n.ConfigLocaleSessionKey)
+	if key == "" {
+		return nil
+	}
+
+	return session.PutString(key, locale.Locale())
+}
+
+func (c *Component) SaveToCookie(response *dashboard.Response, locale *internationalization.Locale) error {
+	name := c.config.String(i18n.ConfigLocaleCookieName)
+	if name == "" {
+		return nil
+	}
+
+	http.SetCookie(response, &http.Cookie{
+		Name:     name,
+		Value:    locale.Locale(),
+		Path:     c.config.String(dashboard.ConfigSessionPath),
+		Domain:   c.config.String(dashboard.ConfigSessionDomain),
+		HttpOnly: c.config.Bool(dashboard.ConfigSessionHttpOnly),
+	})
+
+	return nil
 }

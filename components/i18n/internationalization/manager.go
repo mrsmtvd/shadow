@@ -4,6 +4,10 @@ import (
 	"sync"
 )
 
+const (
+	DefaultLocale = "en"
+)
+
 type Manager struct {
 	mutex sync.RWMutex
 
@@ -11,10 +15,18 @@ type Manager struct {
 	defaultLocale string
 }
 
-func NewManager() *Manager {
-	return &Manager{
-		locales: make(map[string]*Locale),
+func NewManager(defaultLocale string) *Manager {
+	if defaultLocale == "" {
+		defaultLocale = DefaultLocale
 	}
+
+	m := &Manager{
+		locales:       make(map[string]*Locale),
+		defaultLocale: defaultLocale,
+	}
+	m.AddLocale(NewLocale(defaultLocale))
+
+	return m
 }
 
 func (m *Manager) DefaultLocale() string {
@@ -28,15 +40,23 @@ func (m *Manager) AddLocale(locale *Locale) {
 }
 
 func (m *Manager) Locale(locale string) (*Locale, bool) {
-	if locale == "" {
-		locale = m.DefaultLocale()
-	}
-
 	m.mutex.RLock()
 	l, ok := m.locales[locale]
 	m.mutex.RUnlock()
 
 	return l, ok
+}
+
+func (m *Manager) Locales() []*Locale {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	locales := make([]*Locale, 0, len(m.locales))
+	for _, locale := range m.locales {
+		locales = append(locales, locale)
+	}
+
+	return locales
 }
 
 func (m *Manager) Translate(locale, domain, ID, context string, format ...interface{}) string {

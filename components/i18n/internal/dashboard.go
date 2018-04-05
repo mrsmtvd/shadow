@@ -1,11 +1,21 @@
 package internal
 
 import (
+	"net/http"
 	"reflect"
 	"strconv"
 
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/i18n/internal/handlers"
 )
+
+func (c *Component) DashboardRoutes() []dashboard.Route {
+	return []dashboard.Route{
+		dashboard.NewRoute("/"+c.Name()+"/change/", &handlers.ChangeHandler{}).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+	}
+}
 
 func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 	return map[string]interface{}{
