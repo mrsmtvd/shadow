@@ -23,7 +23,7 @@ msgid "Modified at"
 msgstr "Изменена в"
 
 msgid "Applied at"
-msgstr "Применина в"
+msgstr "Применена в"
 
 msgid "Actions"
 msgstr "Действия"
