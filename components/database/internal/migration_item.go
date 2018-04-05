@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"sync"
 	"time"
 
 	"github.com/kihamo/shadow/components/database"
@@ -9,8 +10,10 @@ import (
 type MigrationItem struct {
 	database.Migration
 
+	mutex     sync.RWMutex
 	source    string
 	migration database.Migration
+	appliedAt *time.Time
 }
 
 func NewMigrationItem(migration database.Migration, source string) *MigrationItem {
@@ -45,5 +48,14 @@ func (m *MigrationItem) ModAt() time.Time {
 }
 
 func (m *MigrationItem) AppliedAt() *time.Time {
-	return m.migration.AppliedAt()
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	return m.appliedAt
+}
+
+func (m *MigrationItem) SetAppliedAt(appliedAt *time.Time) {
+	m.mutex.Lock()
+	m.appliedAt = appliedAt
+	m.mutex.Unlock()
 }

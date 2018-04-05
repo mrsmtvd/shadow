@@ -39,7 +39,7 @@ func MigrationsFromAsset(fs *assetfs.AssetFS) []Migration {
 			return nil
 		}
 
-		migrations = append(migrations, NewMigration(migration.Id, migration.Up, migration.Down, f.ModTime(), nil))
+		migrations = append(migrations, NewMigration(migration.Id, migration.Up, migration.Down, f.ModTime()))
 	}
 
 	return migrations

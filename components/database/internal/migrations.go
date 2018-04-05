@@ -59,11 +59,12 @@ func (c *Component) Migrations() []database.Migration {
 				}
 			}
 
-			migrations[i] = database.NewMigration(m.Id(), m.Up(), m.Down(), m.ModAt(), appliedAt)
+			m.SetAppliedAt(appliedAt)
+			migrations[i] = m
 		}
 	} else {
 		for i, m := range collection {
-			migrations[i] = database.NewMigration(m.Id(), m.Up(), m.Down(), m.ModAt(), nil)
+			migrations[i] = m
 		}
 	}
 
