@@ -52,10 +52,10 @@ func (l *Locale) TranslatePlural(domain, singleID, pluralID string, number int, 
 	d, ok := l.Domain(domain)
 	if !ok {
 		if number > 1 {
-			return pluralID
+			return Format(pluralID, format...)
 		}
 
-		return singleID
+		return Format(singleID, format...)
 	}
 
 	return d.TranslatePlural(singleID, pluralID, number, context, format...)

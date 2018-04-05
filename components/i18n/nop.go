@@ -10,16 +10,16 @@ func init() {
 	dashboard.DefaultTemplateFunctions.AddFunction("i18nPlural", templateFunctionTranslatePlural)
 }
 
-func templateFunctionTranslate(ID string, opts ...interface{}) string {
-	return templateFunctionTranslatePlural(ID, "", 1, opts...)
+func templateFunctionTranslate(ID string, format ...interface{}) string {
+	return templateFunctionTranslatePlural(ID, "", 1, format...)
 }
 
-func templateFunctionTranslatePlural(singleID, pluralID string, number int, _ ...interface{}) string {
+func templateFunctionTranslatePlural(singleID, pluralID string, number int, format ...interface{}) string {
 	if number == 1 {
-		return singleID
+		return internationalization.Format(singleID, format...)
 	}
 
-	return pluralID
+	return internationalization.Format(pluralID, format...)
 }
 
 func NewOrNopFromRequest(request *dashboard.Request) *internationalization.Locale {

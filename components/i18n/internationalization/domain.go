@@ -2,7 +2,6 @@ package internationalization
 
 import (
 	"errors"
-	"fmt"
 )
 
 const (
@@ -105,18 +104,14 @@ func (d *Domain) TranslatePlural(singleID, pluralID string, number int, context 
 		translates := message.Translated()
 
 		if index < len(translates) {
-			if len(format) > 0 {
-				return fmt.Sprintf(translates[index], format...)
-			}
-
-			return translates[index]
+			return Format(translates[index], format...)
 		}
 	}
 
 	// not found
 	if number > 1 {
-		return pluralID
+		return Format(pluralID, format...)
 	}
 
-	return singleID
+	return Format(singleID, format...)
 }
