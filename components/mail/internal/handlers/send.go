@@ -29,7 +29,7 @@ func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 		if err := r.Component().(mail.Component).SendAndReturn(message); err != nil {
 			vars["error"] = err.Error()
 		} else {
-			vars["message"] = locale.Translate(r.Component().(mail.Component).Name(), "Message send success", "")
+			vars["message"] = locale.Translate(r.Component().Name(), "Message send success", "")
 		}
 	}
 
