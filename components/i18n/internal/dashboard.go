@@ -1,6 +1,9 @@
 package internal
 
 import (
+	"reflect"
+	"strconv"
+
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -11,11 +14,69 @@ func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 	}
 }
 
+func (c *Component) convertToInt(number interface{}) (cast int) {
+	switch v := number.(type) {
+	case string:
+		cast, _ = strconv.Atoi(v)
+
+	case bool:
+		if v {
+			cast = 1
+		}
+
+	case []byte:
+		cast = c.convertToInt(string(v))
+
+	case int64:
+		cast = int(v)
+
+	case int:
+		cast = v
+
+	case int8:
+		cast = int(v)
+
+	case int16:
+		cast = int(v)
+
+	case int32:
+		cast = int(v)
+
+	case uint:
+		cast = int(v)
+
+	case uint8:
+		cast = int(v)
+
+	case uint16:
+		cast = int(v)
+
+	case uint32:
+		cast = int(v)
+
+	case uint64:
+		cast = int(v)
+
+	case float32:
+		cast = int(v)
+
+	case float64:
+		cast = int(v)
+
+	default:
+		if reflect.ValueOf(v).Kind() == reflect.Ptr {
+			return c.convertToInt(reflect.Indirect(reflect.ValueOf(v)).Interface())
+		}
+	}
+
+	return cast
+}
+
 func (c *Component) templateFunctionTranslate(ID string, opts ...interface{}) string {
 	return c.templateFunctionTranslatePlural(ID, "", 1, opts...)
 }
 
-func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, number int, opts ...interface{}) string {
+func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, number interface{}, opts ...interface{}) string {
 	var (
 		ctx     map[string]interface{}
 		context string // 0
@@ -75,5 +136,5 @@ func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, n
 		}
 	}
 
-	return c.Manager().TranslatePlural(locale, domain, singleID, pluralID, number, context, opts...)
+	return c.Manager().TranslatePlural(locale, domain, singleID, pluralID, c.convertToInt(number), context, opts...)
 }
