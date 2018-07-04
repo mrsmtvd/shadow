@@ -8,7 +8,13 @@ Shadow framework
 Development
 ------------------
 ```shell
+brew install protobuf
+brew install bower
+brew install grpc
+
+npm install
 bower install
+
 NODE_ENV=development gulp build
 NODE_ENV=development gulp watch
 ```
