@@ -7,15 +7,15 @@ import:
 - package: github.com/deckarep/golang-set
   version: ~v1.7
 - package: github.com/elazarl/go-bindata-assetfs
-  version: 30f82fa23fd844bd5bb1e5f216db87fd77b5eb43
+  version: 38087fe4dafb822e541b3f7955075cc1c30bd294
 - package: github.com/go-gorp/gorp
   version: 6a3c8a87d0457cf700e57046c41e19b7cf3c44fa
 - package: github.com/golang/protobuf
   version: ~v1.1
 - package: github.com/grpc-ecosystem/go-grpc-middleware
-  version: 93790b4a90fab4022bb148faf5e3f3580d817d50
+  version: ~v1.0
 - package: github.com/jhump/protoreflect
-  version: 8ade26da11f9c95de1041aa2988530addc889153
+  version: fa0b7e4c4fddc5dfc40938d5fa64dbba86a40fe2
 - package: github.com/julienschmidt/httprouter
   version: e1b9828bc9e5904baec057a154c09ca40fe7fae0
 - package: github.com/justinas/alice
@@ -33,9 +33,9 @@ import:
 - package: github.com/OneOfOne/xxhash
   version: ~v1.2.1
 - package: github.com/mailru/easyjson
-  version: 32fa128f234d041f196a9f3e0fea5ac9772c08e1
+  version: 3fdea8d05856a0c8df22ed4bc71b3219245e4485
 - package: github.com/rs/xlog
-  version: 7ed5dc1cca34bb0c9e8f0e58dcf19b6dea3044d5
+  version: 131980fab91b04c953b9dcb438298a7f06cf76cb
 - package: github.com/rubenv/sql-migrate
   version: 6edbfbd6a369ee82463312ec67b2c92f97a1d4dc
 - package: google.golang.org/grpc
