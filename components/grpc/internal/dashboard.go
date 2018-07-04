@@ -22,7 +22,7 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name()+"/", handlers.NewManagerHandler(c.config, c.server)).
+			dashboard.NewRoute("/"+c.Name()+"/", &handlers.ManagerHandler{}).
 				WithMethods([]string{http.MethodGet, http.MethodPost}).
 				WithAuth(true),
 		}

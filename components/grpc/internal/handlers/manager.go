@@ -13,7 +13,6 @@ import (
 	"github.com/jhump/protoreflect/dynamic"
 	"github.com/jhump/protoreflect/dynamic/grpcdynamic"
 	"github.com/jhump/protoreflect/grpcreflect"
-	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc"
 	"golang.org/x/net/context"
@@ -72,12 +71,6 @@ type ManagerHandlerFieldViewDataEnum struct {
 
 type ManagerHandler struct {
 	dashboard.Handler
-
-	config config.Component
-
-	connect *g.ClientConn
-	cli     *grpcreflect.Client
-	server  *g.Server
 }
 
 func getTypeName(field *desc.FieldDescriptor) string {
@@ -208,28 +201,11 @@ func (v *ManagerHandlerFieldViewData) JSON() string {
 	return ""
 }
 
-func NewManagerHandler(c config.Component, s *g.Server) *ManagerHandler {
-	h := &ManagerHandler{
-		config: c,
-		server: s,
-	}
+func (h *ManagerHandler) getServicesLightViewData(cmp grpc.Component) ([]managerHandlerServiceViewData, error) {
+	list := cmp.GetServiceInfo()
+	ret := make([]managerHandlerServiceViewData, 0, len(list))
 
-	ctx := context.Background()
-	addr := net.JoinHostPort(c.String(grpc.ConfigHost), c.String(grpc.ConfigPort))
-
-	var err error
-
-	if h.connect, err = g.DialContext(ctx, addr, g.WithInsecure()); err == nil {
-		h.cli = grpcreflect.NewClient(ctx, rpb.NewServerReflectionClient(h.connect))
-	}
-
-	return h
-}
-
-func (h *ManagerHandler) getServicesLightViewData() ([]managerHandlerServiceViewData, error) {
-	ret := []managerHandlerServiceViewData{}
-
-	for name, info := range h.server.GetServiceInfo() {
+	for name, info := range list {
 		if proto.FileDescriptor(info.Metadata.(string)) == nil {
 			continue
 		}
@@ -251,11 +227,21 @@ func (h *ManagerHandler) getServicesLightViewData() ([]managerHandlerServiceView
 	return ret, nil
 }
 
-func (h *ManagerHandler) getServicesViewData() ([]managerHandlerServiceViewData, error) {
-	ret := []managerHandlerServiceViewData{}
-	if services, err := h.cli.ListServices(); err == nil {
+func (h *ManagerHandler) getServicesViewData(r *dashboard.Request) ([]managerHandlerServiceViewData, error) {
+	ret := make([]managerHandlerServiceViewData, 0)
+
+	addr := net.JoinHostPort(r.Config().String(grpc.ConfigHost), r.Config().String(grpc.ConfigPort))
+	connect, err := g.DialContext(r.Context(), addr, g.WithInsecure())
+	if err != nil {
+		return ret, err
+	}
+
+	cli := grpcreflect.NewClient(r.Context(), rpb.NewServerReflectionClient(connect))
+	maxLevel := r.Config().Int64(grpc.ConfigManagerMaxLevel)
+
+	if services, err := cli.ListServices(); err == nil {
 		for _, s := range services {
-			service, err := h.cli.ResolveService(s)
+			service, err := cli.ResolveService(s)
 			if err != nil {
 				return ret, err
 			}
@@ -270,8 +256,8 @@ func (h *ManagerHandler) getServicesViewData() ([]managerHandlerServiceViewData,
 					Name:         m.GetName(),
 					InputStream:  m.IsClientStreaming(),
 					OutputStream: m.IsServerStreaming(),
-					InputType:    getMessageViewDate(m.GetInputType(), 1, h.config.Int64(grpc.ConfigManagerMaxLevel)),
-					OutputType:   getMessageViewDate(m.GetOutputType(), 1, h.config.Int64(grpc.ConfigManagerMaxLevel)),
+					InputType:    getMessageViewDate(m.GetInputType(), 1, maxLevel),
+					OutputType:   getMessageViewDate(m.GetOutputType(), 1, maxLevel),
 				})
 			}
 
@@ -291,7 +277,18 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		return
 	}
 
-	service, err := h.cli.ResolveService(s)
+	addr := net.JoinHostPort(r.Config().String(grpc.ConfigHost), r.Config().String(grpc.ConfigPort))
+	connect, err := g.DialContext(r.Context(), addr, g.WithInsecure())
+	if err != nil {
+		w.SendJSON(managerHandlerResponseCall{
+			Error: err.Error(),
+		})
+		return
+	}
+
+	cli := grpcreflect.NewClient(r.Context(), rpb.NewServerReflectionClient(connect))
+
+	service, err := cli.ResolveService(s)
 	if err != nil {
 		w.SendJSON(managerHandlerResponseCall{
 			Error: err.Error(),
@@ -307,7 +304,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		return
 	}
 
-	stub := grpcdynamic.NewStub(h.connect)
+	stub := grpcdynamic.NewStub(connect)
 	ctx := context.Background()
 	request := dynamic.NewMessage(method.GetInputType())
 
@@ -360,9 +357,9 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	)
 
 	if r.Config().Bool(grpc.ConfigReflectionEnabled) {
-		services, err = h.getServicesViewData()
+		services, err = h.getServicesViewData(r)
 	} else {
-		services, err = h.getServicesLightViewData()
+		services, err = h.getServicesLightViewData(r.Component().(grpc.Component))
 	}
 
 	h.Render(r.Context(), "manager", map[string]interface{}{

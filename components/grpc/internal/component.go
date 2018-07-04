@@ -134,3 +134,7 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	wgListen.Wait()
 	return nil
 }
+
+func (c *Component) GetServiceInfo() map[string]g.ServiceInfo {
+	return c.server.GetServiceInfo()
+}

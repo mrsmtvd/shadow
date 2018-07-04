@@ -11,7 +11,7 @@ import:
 - package: github.com/go-gorp/gorp
   version: 6a3c8a87d0457cf700e57046c41e19b7cf3c44fa
 - package: github.com/golang/protobuf
-  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
+  version: ~v1.1
 - package: github.com/grpc-ecosystem/go-grpc-middleware
   version: 93790b4a90fab4022bb148faf5e3f3580d817d50
 - package: github.com/jhump/protoreflect
@@ -39,7 +39,7 @@ import:
 - package: github.com/rubenv/sql-migrate
   version: 6edbfbd6a369ee82463312ec67b2c92f97a1d4dc
 - package: google.golang.org/grpc
-  version: ~1.11
+  version: ~1.13
 - package: gopkg.in/Masterminds/squirrel.v1
   version: a6b93000bd219143c56c16e6cb1c4b91da3f224b
 - package: gopkg.in/gomail.v2
