@@ -10,6 +10,8 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc"
+	"github.com/kihamo/shadow/components/grpc/interceptor"
+	"github.com/kihamo/shadow/components/grpc/stats"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/metrics"
@@ -65,24 +67,24 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 
 	// interceptors
 	unaryInterceptors := []g.UnaryServerInterceptor{
-		NewConfigUnaryServerInterceptor(c.config),
-		NewLoggerUnaryServerInterceptor(c.logger),
+		interceptor.NewConfigUnaryServerInterceptor(c.config),
+		interceptor.NewLoggerUnaryServerInterceptor(c.logger),
 	}
 	streamInterceptors := []g.StreamServerInterceptor{
-		NewConfigStreamServerInterceptor(c.config),
-		NewLoggerStreamServerInterceptor(c.logger),
+		interceptor.NewConfigStreamServerInterceptor(c.config),
+		interceptor.NewLoggerStreamServerInterceptor(c.logger),
 	}
 
-	if c.application.HasComponent(metrics.ComponentName) {
-		unaryInterceptors = append(unaryInterceptors, NewMetricsUnaryServerInterceptor())
-		streamInterceptors = append(streamInterceptors, NewMetricsStreamServerInterceptor())
-	}
-
-	unaryInterceptors = append(unaryInterceptors, NewRecoverUnaryServerInterceptor(c.logger))
-	streamInterceptors = append(streamInterceptors, NewRecoverStreamServerInterceptor(c.logger))
+	unaryInterceptors = append(unaryInterceptors, interceptor.NewRecoverUnaryServerInterceptor(c.logger))
+	streamInterceptors = append(streamInterceptors, interceptor.NewRecoverStreamServerInterceptor(c.logger))
 
 	serverOptions = append(serverOptions, grpc_middleware.WithUnaryServerChain(unaryInterceptors...))
 	serverOptions = append(serverOptions, grpc_middleware.WithStreamServerChain(streamInterceptors...))
+
+	// stats handlers
+	if c.application.HasComponent(metrics.ComponentName) {
+		serverOptions = append(serverOptions, stats.WithStatsHandlerServerChain(stats.NewMetricHandler()))
+	}
 
 	c.server = g.NewServer(serverOptions...)
 

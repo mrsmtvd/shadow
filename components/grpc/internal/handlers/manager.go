@@ -277,8 +277,10 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		return
 	}
 
+	ctx := context.Background()
+
 	addr := net.JoinHostPort(r.Config().String(grpc.ConfigHost), r.Config().String(grpc.ConfigPort))
-	connect, err := g.DialContext(r.Context(), addr, g.WithInsecure())
+	connect, err := g.DialContext(ctx, addr, g.WithInsecure())
 	if err != nil {
 		w.SendJSON(managerHandlerResponseCall{
 			Error: err.Error(),
@@ -286,7 +288,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		return
 	}
 
-	cli := grpcreflect.NewClient(r.Context(), rpb.NewServerReflectionClient(connect))
+	cli := grpcreflect.NewClient(ctx, rpb.NewServerReflectionClient(connect))
 
 	service, err := cli.ResolveService(s)
 	if err != nil {
@@ -305,7 +307,6 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 	}
 
 	stub := grpcdynamic.NewStub(connect)
-	ctx := context.Background()
 	request := dynamic.NewMessage(method.GetInputType())
 
 	var (
