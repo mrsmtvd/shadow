@@ -25,6 +25,7 @@
     {{ staticHTML (staticURL "/dashboard/assets/css/dashboard.css" true) }}
     {{ staticHTML (staticURL "/dashboard/assets/css/custom.css" true) }}
     {{ staticHTML (staticURL "/dashboard/assets/js/functions.js" true) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 
     {{ block "head" . }} {{ end }}
 </head>
@@ -191,7 +192,6 @@
     </div>
 </div>
 
-{{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 {{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js" false) }}
 
 {{ staticHTML (staticURL "/dashboard/assets/vendors/autosize/js/autosize.min.js" false) }}
