@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"html/template"
+	"io"
 	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
@@ -102,11 +104,25 @@ func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) erro
 	return nil
 }
 
-func (r *Renderer) Render(ctx context.Context, componentName, viewName string, data map[string]interface{}) error {
-	return r.RenderLayout(ctx, componentName, viewName, TemplateDefaultLayout, data)
+func (r *Renderer) RenderAndReturn(ctx context.Context, componentName, viewName string, data map[string]interface{}) (string, error) {
+	wr := bytes.NewBuffer(nil)
+	err := r.Render(wr, ctx, componentName, viewName, data)
+
+	return wr.String(), err
 }
 
-func (r *Renderer) RenderLayout(ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) error {
+func (r *Renderer) Render(wr io.Writer, ctx context.Context, componentName, viewName string, data map[string]interface{}) error {
+	return r.RenderLayout(wr, ctx, componentName, viewName, TemplateDefaultLayout, data)
+}
+
+func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) (string, error) {
+	wr := bytes.NewBuffer(nil)
+	err := r.RenderLayout(wr, ctx, componentName, viewName, layoutName, data)
+
+	return wr.String(), err
+}
+
+func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) error {
 	component, ok := r.views[componentName]
 	if !ok {
 		return fmt.Errorf("DashboardTemplates for component \"%s\" not found", componentName)
@@ -132,16 +148,19 @@ func (r *Renderer) RenderLayout(ctx context.Context, componentName, viewName, la
 		}
 	}
 
-	return view.ExecuteTemplate(dashboard.ResponseFromContext(ctx), layoutName, executeData)
+	return view.ExecuteTemplate(wr, layoutName, executeData)
 }
 
 func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface{} {
-	request := dashboard.RequestFromContext(ctx)
+	vars := map[string]interface{}{}
 
-	return map[string]interface{}{
-		"Request": request,
-		"User":    request.User(),
+	request := dashboard.RequestFromContext(ctx)
+	if request != nil {
+		vars["Request"] = request
+		vars["User"] = request.User()
 	}
+
+	return vars
 }
 
 func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[string]string, error) {

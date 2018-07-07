@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"bytes"
+	"context"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -80,8 +82,14 @@ func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 		"replace":    templateFunctionReplace,
 		"staticHTML": templateFunctionStaticHTML,
 		"staticURL":  c.templateFunctionStaticURL,
+		"toolbar":    c.templateFunctionToolbar,
 		"date_since": shadow.DateSinceAsMessage,
 	}
+}
+
+func (c *Component) DashboardToolbar(ctx context.Context) string {
+	content, _ := c.renderer.RenderLayoutAndReturn(ctx, c.Name(), "toolbar", "blank", nil)
+	return content
 }
 
 func (c *Component) templateFunctionStaticURL(file string, prefix bool) string {
@@ -111,6 +119,35 @@ func (c *Component) templateFunctionStaticURL(file string, prefix bool) string {
 	}
 
 	return u.String()
+}
+
+func (c *Component) templateFunctionToolbar(opts ...interface{}) template.HTML {
+	components, err := c.application.GetComponents()
+	if err != nil {
+		return ""
+	}
+
+	ctx := context.Background()
+
+	if len(opts) > 0 {
+		if templateCtx, ok := opts[0].(map[string]interface{}); ok {
+			if requestCtx, ok := templateCtx["Request"]; ok {
+				if request, ok := requestCtx.(*dashboard.Request); ok {
+					ctx = request.Context()
+				}
+			}
+		}
+	}
+
+	buf := bytes.NewBuffer(nil)
+
+	for _, component := range components {
+		if componentToolbar, ok := component.(dashboard.HasToolbar); ok {
+			buf.WriteString(componentToolbar.DashboardToolbar(ctx))
+		}
+	}
+
+	return template.HTML(buf.String())
 }
 
 func templateFunctionRaw(x string) template.HTML {

@@ -119,18 +119,8 @@
                     </div>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="">
-                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ if .User.AvatarURL }}{{ .User.AvatarURL }}{{ else }}/dashboard/assets/images/anonymous.png{{ end }}" alt="{{ .User.Name }}" style="background: #fff">
-                                {{ if .User.Name }}{{ .User.Name }}{{ else }}{{ i18n "Anonymous" . "" "dashboard" }}{{ end }}
-                                {{ if .User.IsAuthorized }}<span class=" fa fa-angle-down"></span>{{ end }}
-                            </a>
-                            {{ if .User.IsAuthorized }}
-                            <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                <li><a href="/dashboard/logout"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
-                            </ul>
-                            {{ end }}
-                        </li>
+                        {{ toolbar . }}
+
 
                         <!--
                         <li role="presentation" class="dropdown" id="alerts">

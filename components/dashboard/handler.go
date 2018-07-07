@@ -42,7 +42,7 @@ func (h *Handler) Render(ctx context.Context, view string, data map[string]inter
 		panic("Component isn't set in context")
 	}
 
-	if err := render.Render(ctx, component.Name(), view, data); err != nil {
+	if err := render.Render(ResponseFromContext(ctx), ctx, component.Name(), view, data); err != nil {
 		panic(err.Error())
 	}
 }
@@ -58,7 +58,7 @@ func (h *Handler) RenderLayout(ctx context.Context, view, layout string, data ma
 		panic("Component isn't set in context")
 	}
 
-	if err := render.RenderLayout(ctx, component.Name(), view, layout, data); err != nil {
+	if err := render.RenderLayout(ResponseFromContext(ctx), ctx, component.Name(), view, layout, data); err != nil {
 		panic(err.Error())
 	}
 }
