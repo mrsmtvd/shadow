@@ -203,3 +203,7 @@ func (c *Component) initSession() {
 	c.session.Persist(c.config.Bool(dashboard.ConfigSessionPersist))
 	c.session.Secure(c.config.Bool(dashboard.ConfigSessionSecure))
 }
+
+func (c *Component) Renderer() dashboard.Renderer {
+	return c.renderer
+}
