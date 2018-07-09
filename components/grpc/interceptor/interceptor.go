@@ -5,14 +5,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-type ContextKey struct {
-	name string
-}
-
-func (k *ContextKey) String() string {
-	return "grpc context value " + k.name
-}
-
 func WithUnaryClientChain(interceptors ...grpc.UnaryClientInterceptor) grpc.DialOption {
 	return grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(interceptors...))
 }

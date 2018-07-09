@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync/atomic"
 	"time"
+
+	"github.com/kihamo/gotypes"
 )
 
 const (
@@ -215,7 +217,11 @@ func (v *VariableSimple) String() string {
 		}
 	}
 
-	return fmt.Sprintf("%s", value)
+	if value == nil {
+		return "<nil>"
+	}
+
+	return fmt.Sprintf("%s", gotypes.ToString(value))
 }
 
 func (v *VariableSimple) GoString() string {

@@ -72,7 +72,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 				item := NewVariableItem(variable, component.Name())
 
 				variablesForSort := &variableSort{
-					variable: item,
+					variable: item.variable,
 				}
 
 				c.mutex.Lock()

@@ -17,6 +17,7 @@ import (
 	"github.com/kihamo/shadow/components/metrics"
 	g "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	s "google.golang.org/grpc/stats"
 )
 
 type Component struct {
@@ -67,24 +68,25 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 
 	// interceptors
 	unaryInterceptors := []g.UnaryServerInterceptor{
-		interceptor.NewConfigUnaryServerInterceptor(c.config),
-		interceptor.NewLoggerUnaryServerInterceptor(c.logger),
+		interceptor.NewRecoverUnaryServerInterceptor(c.logger),
 	}
 	streamInterceptors := []g.StreamServerInterceptor{
-		interceptor.NewConfigStreamServerInterceptor(c.config),
-		interceptor.NewLoggerStreamServerInterceptor(c.logger),
+		interceptor.NewRecoverStreamServerInterceptor(c.logger),
 	}
-
-	unaryInterceptors = append(unaryInterceptors, interceptor.NewRecoverUnaryServerInterceptor(c.logger))
-	streamInterceptors = append(streamInterceptors, interceptor.NewRecoverStreamServerInterceptor(c.logger))
 
 	serverOptions = append(serverOptions, grpc_middleware.WithUnaryServerChain(unaryInterceptors...))
 	serverOptions = append(serverOptions, grpc_middleware.WithStreamServerChain(streamInterceptors...))
 
 	// stats handlers
-	if c.application.HasComponent(metrics.ComponentName) {
-		serverOptions = append(serverOptions, stats.WithStatsHandlerServerChain(stats.NewMetricHandler()))
+	statsHandlers := []s.Handler{
+		stats.NewLoggerHandler(c.logger),
+		stats.NewContextHandler(c.config),
 	}
+	if c.application.HasComponent(metrics.ComponentName) {
+		statsHandlers = append(statsHandlers, stats.NewMetricHandler())
+	}
+
+	serverOptions = append(serverOptions, stats.WithStatsHandlerServerChain(statsHandlers...))
 
 	c.server = g.NewServer(serverOptions...)
 
