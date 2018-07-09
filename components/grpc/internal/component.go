@@ -16,6 +16,7 @@ import (
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/metrics"
 	g "google.golang.org/grpc"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
 	s "google.golang.org/grpc/stats"
 )
@@ -63,6 +64,7 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
+	grpclog.SetLoggerV2(grpc.NewLogger(c.logger))
 
 	var serverOptions []g.ServerOption
 

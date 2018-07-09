@@ -1,4 +1,4 @@
-package internal
+package output
 
 import (
 	"path"
@@ -6,18 +6,42 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/kihamo/shadow/components/logger"
 	"github.com/rs/xlog"
 )
 
-type loggerWrapper struct {
+type WrapperXLog struct {
 	x      xlog.Logger
 	config xlog.Config
 
 	mutex sync.RWMutex
 }
 
-func newLogger(c xlog.Config) *loggerWrapper {
-	l := &loggerWrapper{
+func ConvertLoggerToXLogLevel(l logger.Level) xlog.Level {
+	switch l {
+	case logger.LevelEmergency:
+		return xlog.LevelFatal
+	case logger.LevelAlert:
+		return xlog.LevelFatal
+	case logger.LevelCritical:
+		return xlog.LevelFatal
+	case logger.LevelError:
+		return xlog.LevelError
+	case logger.LevelWarning:
+		return xlog.LevelWarn
+	case logger.LevelNotice:
+		return xlog.LevelInfo
+	case logger.LevelInformational:
+		return xlog.LevelInfo
+	case logger.LevelDebug:
+		return xlog.LevelDebug
+	}
+
+	return xlog.LevelInfo
+}
+
+func NewWrapperXLog(c xlog.Config) *WrapperXLog {
+	l := &WrapperXLog{
 		x:      xlog.New(c),
 		config: c,
 	}
@@ -28,7 +52,7 @@ func newLogger(c xlog.Config) *loggerWrapper {
 	return l
 }
 
-func (l *loggerWrapper) setLevel(lv xlog.Level) {
+func (l *WrapperXLog) SetLevel(lv xlog.Level) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 
@@ -41,7 +65,7 @@ func (l *loggerWrapper) setLevel(lv xlog.Level) {
 	l.config.Fields = nil
 }
 
-func (l *loggerWrapper) setFields(f map[string]interface{}) {
+func (l *WrapperXLog) SetFields(f map[string]interface{}) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 
@@ -53,7 +77,7 @@ func (l *loggerWrapper) setFields(f map[string]interface{}) {
 	l.config.Fields = nil
 }
 
-func (l *loggerWrapper) setCallFile(c int, f map[string]interface{}) {
+func (l *WrapperXLog) setCallFile(c int, f map[string]interface{}) {
 	if _, ok := f[xlog.KeyFile]; !ok {
 		if _, file, line, ok := runtime.Caller(c); ok {
 			f[xlog.KeyFile] = path.Base(file) + ":" + strconv.FormatInt(int64(line), 10)
@@ -61,7 +85,7 @@ func (l *loggerWrapper) setCallFile(c int, f map[string]interface{}) {
 	}
 }
 
-func (l *loggerWrapper) getArguments(c int, v ...interface{}) []interface{} {
+func (l *WrapperXLog) getArguments(c int, v ...interface{}) []interface{} {
 	fields := map[string]interface{}{}
 	args := make([]interface{}, 0)
 
@@ -82,103 +106,103 @@ func (l *loggerWrapper) getArguments(c int, v ...interface{}) []interface{} {
 }
 
 // FIXME: file field
-func (l *loggerWrapper) Write(p []byte) (n int, err error) {
+func (l *WrapperXLog) Write(p []byte) (n int, err error) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	return l.x.Write(p)
 }
 
-func (l *loggerWrapper) SetField(n string, v interface{}) {
+func (l *WrapperXLog) SetField(n string, v interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.SetField(n, v)
 }
 
-func (l *loggerWrapper) GetFields() xlog.F {
+func (l *WrapperXLog) GetFields() xlog.F {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	return l.x.GetFields()
 }
 
-func (l *loggerWrapper) Debug(v ...interface{}) {
+func (l *WrapperXLog) Debug(v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Debug(l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Debugf(f string, v ...interface{}) {
+func (l *WrapperXLog) Debugf(f string, v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Debugf(f, l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Info(v ...interface{}) {
+func (l *WrapperXLog) Info(v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Info(l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Infof(f string, v ...interface{}) {
+func (l *WrapperXLog) Infof(f string, v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Infof(f, l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Warn(v ...interface{}) {
+func (l *WrapperXLog) Warn(v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Warn(l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Warnf(f string, v ...interface{}) {
+func (l *WrapperXLog) Warnf(f string, v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Warnf(f, l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Error(v ...interface{}) {
+func (l *WrapperXLog) Error(v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Error(l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Errorf(f string, v ...interface{}) {
+func (l *WrapperXLog) Errorf(f string, v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Errorf(f, l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Fatal(v ...interface{}) {
+func (l *WrapperXLog) Fatal(v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Fatal(l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Fatalf(f string, v ...interface{}) {
+func (l *WrapperXLog) Fatalf(f string, v ...interface{}) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
 	l.x.Fatalf(f, l.getArguments(2, v...)...)
 }
 
-func (l *loggerWrapper) Output(f int, s string) error {
+func (l *WrapperXLog) Output(f int, s string) error {
 	l.Info(s)
 	return nil
 }
 
-func (l *loggerWrapper) OutputF(v xlog.Level, c int, m string, f map[string]interface{}) {
+func (l *WrapperXLog) OutputF(v xlog.Level, c int, m string, f map[string]interface{}) {
 	l.setCallFile(c+2, f)
 
 	l.mutex.RLock()
@@ -186,30 +210,30 @@ func (l *loggerWrapper) OutputF(v xlog.Level, c int, m string, f map[string]inte
 	l.x.OutputF(v, c, m, f)
 }
 
-func (l *loggerWrapper) Printf(f string, v ...interface{}) {
+func (l *WrapperXLog) Printf(f string, v ...interface{}) {
 	l.Infof(f, v...)
 }
 
-func (l *loggerWrapper) Print(v ...interface{}) {
+func (l *WrapperXLog) Print(v ...interface{}) {
 	l.Info(v...)
 }
 
-func (l *loggerWrapper) Println(v ...interface{}) {
+func (l *WrapperXLog) Println(v ...interface{}) {
 	l.Info(v...)
 }
 
-func (l *loggerWrapper) Panic(v ...interface{}) {
+func (l *WrapperXLog) Panic(v ...interface{}) {
 	l.Fatal(v...)
 }
 
-func (l *loggerWrapper) Panicf(f string, v ...interface{}) {
+func (l *WrapperXLog) Panicf(f string, v ...interface{}) {
 	l.Fatalf(f, v...)
 }
 
-func (l *loggerWrapper) Panicln(v ...interface{}) {
+func (l *WrapperXLog) Panicln(v ...interface{}) {
 	l.Fatal(v...)
 }
 
-func (l *loggerWrapper) Log(v ...interface{}) {
+func (l *WrapperXLog) Log(v ...interface{}) {
 	l.Info(v...)
 }

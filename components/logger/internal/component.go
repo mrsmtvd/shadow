@@ -9,7 +9,7 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
-	"github.com/rs/xlog"
+	"github.com/kihamo/shadow/components/logger/output"
 )
 
 const (
@@ -66,41 +66,14 @@ func (c *Component) Get(key string) logger.Logger {
 		return r
 	}
 
-	loggerConfig := xlog.Config{
-		Output: xlog.NewConsoleOutput(),
-		Level:  c.getXLogLevel(),
-		Fields: c.getFields(),
-	}
-
-	loggerConfig.Fields[fieldComponent] = key
-
-	l := newLogger(loggerConfig)
-	c.loggers[key] = l
-
-	return l
+	fields := c.getFields()
+	fields[fieldComponent] = key
+	c.loggers[key] = output.NewConsoleOutput(c.getLevel(), fields)
+	return c.loggers[key]
 }
 
-func (c *Component) getXLogLevel() xlog.Level {
-	switch c.config.IntDefault(logger.ConfigLevel, 5) {
-	case logger.LevelEmergency:
-		return xlog.LevelFatal
-	case logger.LevelAlert:
-		return xlog.LevelFatal
-	case logger.LevelCritical:
-		return xlog.LevelFatal
-	case logger.LevelError:
-		return xlog.LevelError
-	case logger.LevelWarning:
-		return xlog.LevelWarn
-	case logger.LevelNotice:
-		return xlog.LevelInfo
-	case logger.LevelInformational:
-		return xlog.LevelInfo
-	case logger.LevelDebug:
-		return xlog.LevelDebug
-	}
-
-	return xlog.LevelInfo
+func (c *Component) getLevel() logger.Level {
+	return logger.Level(c.config.IntDefault(logger.ConfigLevel, 5))
 }
 
 func (c *Component) getFields() map[string]interface{} {

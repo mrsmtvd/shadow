@@ -65,3 +65,11 @@ func (v *VariableItem) ViewOptions() map[string]interface{} {
 func (v *VariableItem) Change(value interface{}) error {
 	return v.variable.Change(value)
 }
+
+func (v *VariableItem) String() string {
+	return v.variable.String()
+}
+
+func (v *VariableItem) GoString() string {
+	return v.variable.GoString()
+}

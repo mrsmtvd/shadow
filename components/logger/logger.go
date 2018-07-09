@@ -4,8 +4,10 @@ import (
 	"github.com/rs/xlog"
 )
 
+type Level int
+
 const (
-	LevelEmergency = iota
+	LevelEmergency Level = iota
 	LevelAlert
 	LevelCritical
 	LevelError

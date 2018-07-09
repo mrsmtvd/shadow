@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logger/output"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {
@@ -43,10 +44,10 @@ func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	level := c.getXLogLevel()
+	level := output.ConvertLoggerToXLogLevel(c.getLevel())
 
-	for key, _ := range c.loggers {
-		c.loggers[key].(*loggerWrapper).setLevel(level)
+	for key := range c.loggers {
+		c.loggers[key].(*output.WrapperXLog).SetLevel(level)
 	}
 }
 
@@ -67,7 +68,7 @@ func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue i
 	globalFields := c.getFields()
 
 	for key, _ := range c.loggers {
-		l := c.loggers[key].(*loggerWrapper)
+		l := c.loggers[key].(*output.WrapperXLog)
 
 		existsFields := map[string]interface{}{}
 
@@ -81,6 +82,6 @@ func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue i
 			existsFields[k] = v
 		}
 
-		l.setFields(existsFields)
+		l.SetFields(existsFields)
 	}
 }
