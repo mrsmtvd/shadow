@@ -55,6 +55,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
+	c.server = server.NewServerWithDefaultOptions(c.config)
 
 	return nil
 }
@@ -62,8 +63,6 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 	grpclog.SetLoggerV2(grpc.NewLogger(c.logger))
-
-	c.server = server.NewServerWithDefaultServerOptions(c.config, c.logger)
 
 	components, err := c.application.GetComponents()
 	if err != nil {

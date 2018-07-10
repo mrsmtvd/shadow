@@ -5,27 +5,25 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/kihamo/shadow/components/grpc/stats"
-	"github.com/kihamo/shadow/components/logger"
 	"google.golang.org/grpc"
 	s "google.golang.org/grpc/stats"
 )
 
-func Dial(target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
-	return DialContext(context.Background(), target, opts...)
+func DialWithDefaultOptions(target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	return DialContextWithDefaultOptions(context.Background(), target, opts...)
 }
 
-func DialContext(ctx context.Context, target string, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
-	opts = append([]grpc.DialOption{WithDefaultStatsHandlerChain(nil)}, opts...)
+func DialContextWithDefaultOptions(ctx context.Context, target string, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
+	opts = append([]grpc.DialOption{WithDefaultStatsHandlerChain()}, opts...)
 
 	return grpc.DialContext(ctx, target, opts...)
 }
 
-func WithDefaultStatsHandlerChain(logger logger.Logger, handlers ...s.Handler) grpc.DialOption {
-	if logger != nil {
-		handlers = append(handlers, stats.NewLoggerHandler(logger))
-	}
-
-	handlers = append(handlers, stats.NewMetricHandler())
+func WithDefaultStatsHandlerChain(handlers ...s.Handler) grpc.DialOption {
+	handlers = append(handlers, []s.Handler{
+		stats.NewLoggerHandler(),
+		stats.NewMetricHandler(),
+	}...)
 
 	return WithStatsHandlerChain(handlers...)
 }

@@ -5,20 +5,20 @@ import (
 	"runtime/debug"
 
 	"github.com/kihamo/shadow/components/grpc/stats"
-	"github.com/kihamo/shadow/components/logger"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func NewRecoverUnaryServerInterceptor(l logger.Logger) grpc.UnaryServerInterceptor {
+func NewRecoverUnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
 		defer func() {
 			if r := recover(); r != nil {
 				err = status.Errorf(codes.Internal, "%s", r)
-				doRecover(ctx, l, info.FullMethod, req, err)
+				doRecover(ctx, info.FullMethod, req, err)
 			}
 		}()
 
@@ -26,12 +26,12 @@ func NewRecoverUnaryServerInterceptor(l logger.Logger) grpc.UnaryServerIntercept
 	}
 }
 
-func NewRecoverStreamServerInterceptor(l logger.Logger) grpc.StreamServerInterceptor {
+func NewRecoverStreamServerInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 		defer func() {
 			if r := recover(); r != nil {
 				err = status.Errorf(codes.Internal, "%s", r)
-				doRecover(ss.Context(), l, info.FullMethod, nil, err)
+				doRecover(ss.Context(), info.FullMethod, nil, err)
 			}
 		}()
 
@@ -39,7 +39,7 @@ func NewRecoverStreamServerInterceptor(l logger.Logger) grpc.StreamServerInterce
 	}
 }
 
-func doRecover(ctx context.Context, l logger.Logger, fullMethod string, req interface{}, err error) {
+func doRecover(ctx context.Context, fullMethod string, req interface{}, err error) {
 	fields := map[string]interface{}{
 		"error": err.Error(),
 		"trace": string(debug.Stack()),
@@ -61,5 +61,5 @@ func doRecover(ctx context.Context, l logger.Logger, fullMethod string, req inte
 		}
 	}
 
-	l.Error("Recovery panic", fields)
+	grpclog.Error("Recovery panic", fields)
 }

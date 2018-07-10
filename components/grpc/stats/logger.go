@@ -4,21 +4,17 @@ import (
 	"context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging"
-	"github.com/kihamo/shadow/components/logger"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/stats"
 )
 
 type LoggerHandler struct {
 	Handler
-
-	logger logger.Logger
 }
 
-func NewLoggerHandler(l logger.Logger) *LoggerHandler {
-	return &LoggerHandler{
-		logger: l,
-	}
+func NewLoggerHandler() *LoggerHandler {
+	return &LoggerHandler{}
 }
 
 func (h *LoggerHandler) HandleConn(ctx context.Context, stat stats.ConnStats) {
@@ -30,10 +26,10 @@ func (h *LoggerHandler) HandleConn(ctx context.Context, stat stats.ConnStats) {
 
 	switch stat.(type) {
 	case *stats.ConnBegin:
-		h.logger.Debug("GRPC connect is open", fields)
+		grpclog.Info("GRPC connect is open", fields)
 
 	case *stats.ConnEnd:
-		h.logger.Debug("GRPC connect is closed", fields)
+		grpclog.Info("GRPC connect is closed", fields)
 	}
 }
 
@@ -54,7 +50,7 @@ func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 			fields["request"] = s.Payload
 		}
 
-		h.logger.Debug("Call gRPC method", fields)
+		grpclog.Info("Call gRPC method", fields)
 
 	case *stats.OutPayload:
 		if s.IsClient() {
@@ -63,7 +59,7 @@ func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 			fields["response"] = s.Payload
 		}
 
-		h.logger.Debug("Call gRPC method", fields)
+		grpclog.Info("Call gRPC method", fields)
 
 	case *stats.End:
 		code := grpc_logging.DefaultErrorToCode(s.Error)
@@ -75,11 +71,11 @@ func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 
 		switch code {
 		case codes.OK:
-			h.logger.Debug("Called gRPC method", fields)
+			grpclog.Info("Called gRPC method", fields)
 		case codes.OutOfRange, codes.Internal, codes.Unavailable, codes.DataLoss:
-			h.logger.Error("Called gRPC method", fields)
+			grpclog.Error("Called gRPC method", fields)
 		default:
-			h.logger.Warn("Called gRPC method", fields)
+			grpclog.Info("Called gRPC method", fields)
 		}
 	}
 }
