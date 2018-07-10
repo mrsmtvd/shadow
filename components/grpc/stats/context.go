@@ -11,8 +11,22 @@ var (
 	configContextKey = &contextKey{"config"}
 )
 
-func ConfigFromContext(c context.Context) config.Component {
-	return c.Value(configContextKey).(config.Component)
+func ConfigFromContext(ctx context.Context) config.Component {
+	v := ctx.Value(configContextKey)
+
+	if v == nil {
+		return nil
+	}
+
+	if value, ok := v.(config.Component); ok {
+		return value
+	}
+
+	return nil
+}
+
+func ConfigToContext(ctx context.Context, c config.Component) context.Context {
+	return context.WithValue(ctx, configContextKey, c)
 }
 
 type ContextHandler struct {
@@ -28,5 +42,5 @@ func NewContextHandler(c config.Component) *ContextHandler {
 }
 
 func (h *ContextHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
-	return h.Handler.TagConn(context.WithValue(ctx, configContextKey, h.config), info)
+	return h.Handler.TagConn(ConfigToContext(ctx, h.config), info)
 }
