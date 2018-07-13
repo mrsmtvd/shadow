@@ -4,9 +4,15 @@ import (
 	"errors"
 	"time"
 
+	"github.com/heptiolabs/healthcheck"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/messengers"
 	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
+)
+
+const (
+	requestTimeout  = time.Second * 3
+	requestInterval = time.Minute
 )
 
 func (c *Component) LivenessCheck() map[string]dashboard.HealthCheck {
@@ -22,7 +28,7 @@ func (c *Component) ReadinessCheck() map[string]dashboard.HealthCheck {
 }
 
 func (c *Component) TelegramCheck() dashboard.HealthCheck {
-	return func() error {
+	return healthcheck.Async(healthcheck.Timeout(func() error {
 		if !c.config.Bool(messengers.ConfigTelegramEnabled) && !c.config.Bool(messengers.ConfigTelegramWebHookEnabled) && !!c.config.Bool(messengers.ConfigTelegramAnnotationsStorageEnabled) {
 			return nil
 		}
@@ -37,23 +43,13 @@ func (c *Component) TelegramCheck() dashboard.HealthCheck {
 			return errors.New("Telegram messenger isn't initialization")
 		}
 
-		result := make(chan error, 1)
-		go func() {
-			_, err := tg.Me()
-			result <- err
-		}()
-
-		select {
-		case err := <-result:
-			return err
-		case <-time.After(time.Second * 3):
-			return errors.New("Request timeout")
-		}
-	}
+		_, err := tg.Me()
+		return err
+	}, requestTimeout), requestInterval)
 }
 
 func (c *Component) TelegramWebHookCheck() dashboard.HealthCheck {
-	return func() error {
+	return healthcheck.Async(healthcheck.Timeout(func() error {
 		if !c.config.Bool(messengers.ConfigTelegramWebHookEnabled) {
 			return nil
 		}
@@ -68,17 +64,7 @@ func (c *Component) TelegramWebHookCheck() dashboard.HealthCheck {
 			return errors.New("Telegram messenger isn't initialization")
 		}
 
-		result := make(chan error, 1)
-		go func() {
-			_, err := tg.WebHook()
-			result <- err
-		}()
-
-		select {
-		case err := <-result:
-			return err
-		case <-time.After(time.Second * 3):
-			return errors.New("Request timeout")
-		}
-	}
+		_, err := tg.WebHook()
+		return err
+	}, requestTimeout), requestInterval)
 }

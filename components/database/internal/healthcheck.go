@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/kihamo/shadow/components/dashboard"
@@ -37,8 +36,6 @@ func (c *Component) SlavesExecutorCheck() dashboard.HealthCheck {
 		}
 
 		for _, executor := range s.Slaves() {
-			fmt.Println(executor)
-
 			if err := ExecutorCheck(executor); err != nil {
 				return err
 			}

@@ -2,21 +2,28 @@ package internal
 
 import (
 	"net"
+	"time"
+
+	"github.com/heptiolabs/healthcheck"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc"
 	"github.com/kihamo/shadow/components/grpc/client"
 	g "google.golang.org/grpc"
 )
 
+const (
+	requestTimeout = time.Second * 2
+)
+
 func (c *Component) LivenessCheck() map[string]dashboard.HealthCheck {
 	return map[string]dashboard.HealthCheck{
-		"server": c.ServerCheck(""),
+		"server":       c.ServerCheck(""),
 		"service_grpc": c.ServerCheck("shadow.grpc.Grpc"),
 	}
 }
 
 func (c *Component) ServerCheck(service string) dashboard.HealthCheck {
-	return func() error {
+	return healthcheck.Timeout(func() error {
 		target := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
 		dial, err := client.DefaultDial(target, g.WithInsecure())
 		if err != nil {
@@ -24,5 +31,5 @@ func (c *Component) ServerCheck(service string) dashboard.HealthCheck {
 		}
 
 		return grpc.HealthCheck(dial, service)
-	}
+	}, requestTimeout)
 }
