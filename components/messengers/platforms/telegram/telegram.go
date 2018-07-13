@@ -34,6 +34,10 @@ func (p *Telegram) chatId(to string) (int64, error) {
 	return int64(chatId), err
 }
 
+func (p *Telegram) Me() (tgbotapi.User, error) {
+	return p.bot.GetMe()
+}
+
 func (p *Telegram) SendMessage(to, message string) error {
 	chatId, err := p.chatId(to)
 	if err != nil {
@@ -84,4 +88,8 @@ func (p *Telegram) RegisterWebHook(link *url.URL, cert string) error {
 func (p *Telegram) UnregisterWebHook() error {
 	_, err := p.bot.RemoveWebhook()
 	return err
+}
+
+func (p *Telegram) WebHook() (tgbotapi.WebhookInfo, error) {
+	return p.bot.GetWebhookInfo()
 }
