@@ -146,10 +146,24 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 	return migrate.Exec(executor.DB(), dialect, c, dir)
 }
 
-func (c *Component) UpMigrations() (int, error) {
-	return c.execWithLock(migrate.Up)
+func (c *Component) UpMigrations() (n int, err error) {
+	n, err = c.execWithLock(migrate.Up)
+	if err != nil {
+		c.logger.Errorf("Up migrations failed with error %s", err)
+	} else {
+		c.logger.Infof("Applied %d migrations", n)
+	}
+
+	return
 }
 
-func (c *Component) DownMigrations() (int, error) {
-	return c.execWithLock(migrate.Down)
+func (c *Component) DownMigrations() (n int, err error) {
+	n, err = c.execWithLock(migrate.Down)
+	if err != nil {
+		c.logger.Errorf("Down migrations failed with error %s", err)
+	} else {
+		c.logger.Infof("Downgraded %d migrations", n)
+	}
+
+	return
 }

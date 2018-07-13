@@ -57,6 +57,8 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 			dashboard.NewRoute("/"+c.Name()+"/logout", &handlers.LogoutHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
+			dashboard.NewRoute("/healthcheck/:healthcheck", handlers.NewHealthCheckHandler(c.application)).
+				WithMethods([]string{http.MethodGet}),
 		}
 
 		componentsHandler := &handlers.ComponentsHandler{}

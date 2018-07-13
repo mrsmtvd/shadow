@@ -24,6 +24,9 @@ type Component struct {
 	logger      logger.Logger
 	routes      []dashboard.Route
 	storage     database.Storage
+
+	migrationsIsUp  bool
+	migrationsError error
 }
 
 func (c *Component) Name() string {
@@ -65,6 +68,14 @@ func (c *Component) Run() (err error) {
 	var slaves []string
 	if slavesFromConfig := c.config.String(database.ConfigDsnSlaves); slavesFromConfig != "" {
 		slaves = strings.Split(slavesFromConfig, ";")
+
+		for i := 0; i < len(slaves); i++ {
+			slaves[i] = strings.TrimSpace(slaves[i])
+
+			if slaves[i] == "" {
+				slaves = append(slaves[:i], slaves[i+1:]...)
+			}
+		}
 	}
 
 	s, err := storage.NewSQL(
@@ -99,12 +110,14 @@ func (c *Component) Run() (err error) {
 	migrate.SetSchema(c.config.String(database.ConfigMigrationsSchema))
 	migrate.SetTable(c.config.String(database.ConfigMigrationsTable))
 
-	n, err := c.UpMigrations()
-	if err != nil {
-		return err
-	}
+	go func() {
+		_, err := c.UpMigrations()
 
-	c.logger.Infof("Applied %d migrations", n)
+		c.mutex.Lock()
+		c.migrationsIsUp = err == nil
+		c.migrationsError = err
+		c.mutex.Unlock()
+	}()
 
 	return nil
 }

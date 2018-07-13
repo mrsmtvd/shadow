@@ -5,7 +5,7 @@ src
 node_modules
 bower_components
 package-lock.json
-server
+/server
 env.json
 *.tar.gz
 .DS_Store

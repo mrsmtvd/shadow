@@ -58,3 +58,5 @@ import:
   version: 332c0a7e205a29536e672337a4bea6c7a96b04c1
 - package: github.com/chai2010/gettext-go
   version: bf70f2a70fb1b1f36d90d671a72795984eab0fcb
+- package: github.com/heptiolabs/healthcheck
+  version: da5fdee475fb09de87c5d4a50da233b7d28767b1
