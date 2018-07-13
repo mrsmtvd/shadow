@@ -16,6 +16,8 @@ import (
 	"github.com/kihamo/shadow/components/metrics"
 	g "google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 	s "google.golang.org/grpc/stats"
 )
@@ -95,6 +97,8 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		if c.config.Bool(grpc.ConfigReflectionEnabled) {
 			reflection.Register(c.server)
 		}
+
+		grpc_health_v1.RegisterHealthServer(c.server, health.NewServer())
 
 		addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
 		lis, err := net.Listen("tcp", addr)
