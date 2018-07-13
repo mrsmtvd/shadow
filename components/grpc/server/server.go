@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/grpc/interceptor"
 	"github.com/kihamo/shadow/components/grpc/stats"
 	"google.golang.org/grpc"
@@ -13,21 +12,27 @@ func NewServer(opts ...grpc.ServerOption) *grpc.Server {
 	return grpc.NewServer(opts...)
 }
 
-func NewServerWithDefaultOptions(config config.Component, opts ...grpc.ServerOption) *grpc.Server {
+func NewDefaultServer(opts ...grpc.ServerOption) *grpc.Server {
 	opts = append([]grpc.ServerOption{
-		WithDefaultStatsHandlerChain(config),
 		WithDefaultUnaryChain(),
 		WithDefaultStreamChain(),
+		WithDefaultStatsHandlerChain(),
+	}, opts...)
+
+	return NewDefaultServerWithCustomOptions(nil, nil, nil)
+}
+
+func NewDefaultServerWithCustomOptions(unaryInterceptors []grpc.UnaryServerInterceptor, streamInterceptors []grpc.StreamServerInterceptor, statsHandlers []s.Handler, opts ...grpc.ServerOption) *grpc.Server {
+	opts = append([]grpc.ServerOption{
+		WithDefaultUnaryChain(unaryInterceptors...),
+		WithDefaultStreamChain(streamInterceptors...),
+		WithDefaultStatsHandlerChain(statsHandlers...),
 	}, opts...)
 
 	return grpc.NewServer(opts...)
 }
 
-func WithDefaultStatsHandlerChain(config config.Component, handlers ...s.Handler) grpc.ServerOption {
-	if config != nil {
-		handlers = append(handlers, stats.NewContextHandler(config))
-	}
-
+func WithDefaultStatsHandlerChain(handlers ...s.Handler) grpc.ServerOption {
 	handlers = append(handlers, []s.Handler{
 		stats.NewLoggerHandler(),
 		stats.NewMetricHandler(),

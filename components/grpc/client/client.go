@@ -9,12 +9,38 @@ import (
 	s "google.golang.org/grpc/stats"
 )
 
-func DialWithDefaultOptions(target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
-	return DialContextWithDefaultOptions(context.Background(), target, opts...)
+func Dial(target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	return grpc.Dial(target, opts...)
 }
 
-func DialContextWithDefaultOptions(ctx context.Context, target string, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
-	opts = append([]grpc.DialOption{WithDefaultStatsHandlerChain()}, opts...)
+func DefaultDial(target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	return DefaultDialContext(context.Background(), target, opts...)
+}
+
+func DefaultDialWithCustomOptions(target string, unaryInterceptors []grpc.UnaryClientInterceptor, streamInterceptors []grpc.StreamClientInterceptor, statsHandlers []s.Handler, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	return DefaultDialContextWithCustomOptions(context.Background(), target, unaryInterceptors, streamInterceptors, statsHandlers, opts...)
+}
+
+func DialContext(ctx context.Context, target string, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
+	return grpc.DialContext(ctx, target, opts...)
+}
+
+func DefaultDialContext(ctx context.Context, target string, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
+	opts = append([]grpc.DialOption{
+		WithDefaultUnaryChain(),
+		WithDefaultStreamChain(),
+		WithDefaultStatsHandlerChain(),
+	}, opts...)
+
+	return DefaultDialContextWithCustomOptions(ctx, target, nil, nil, nil, opts...)
+}
+
+func DefaultDialContextWithCustomOptions(ctx context.Context, target string, unaryInterceptors []grpc.UnaryClientInterceptor, streamInterceptors []grpc.StreamClientInterceptor, statsHandlers []s.Handler, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
+	opts = append([]grpc.DialOption{
+		WithDefaultUnaryChain(unaryInterceptors...),
+		WithDefaultStreamChain(streamInterceptors...),
+		WithDefaultStatsHandlerChain(statsHandlers...),
+	}, opts...)
 
 	return grpc.DialContext(ctx, target, opts...)
 }
@@ -32,8 +58,16 @@ func WithStatsHandlerChain(handlers ...s.Handler) grpc.DialOption {
 	return stats.WithStatsHandlerClientChain(handlers...)
 }
 
+func WithDefaultUnaryChain(interceptors ...grpc.UnaryClientInterceptor) grpc.DialOption {
+	return WithUnaryChain(interceptors...)
+}
+
 func WithUnaryChain(interceptors ...grpc.UnaryClientInterceptor) grpc.DialOption {
 	return grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(interceptors...))
+}
+
+func WithDefaultStreamChain(interceptors ...grpc.StreamClientInterceptor) grpc.DialOption {
+	return WithStreamChain(interceptors...)
 }
 
 func WithStreamChain(interceptors ...grpc.StreamClientInterceptor) grpc.DialOption {

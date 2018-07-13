@@ -10,12 +10,14 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc"
 	"github.com/kihamo/shadow/components/grpc/server"
+	"github.com/kihamo/shadow/components/grpc/stats"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/metrics"
 	g "google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
+	s "google.golang.org/grpc/stats"
 )
 
 type Component struct {
@@ -55,7 +57,10 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
-	c.server = server.NewServerWithDefaultOptions(c.config)
+	c.server = server.NewDefaultServerWithCustomOptions(
+		nil,
+		nil,
+		[]s.Handler{stats.NewContextHandler(c.config)})
 
 	return nil
 }
