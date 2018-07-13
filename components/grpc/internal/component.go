@@ -82,7 +82,12 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		}
 	}
 
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(c.server, healthServer)
+
 	for service, info := range c.server.GetServiceInfo() {
+		healthServer.SetServingStatus(service, grpc_health_v1.HealthCheckResponse_SERVING)
+
 		for _, method := range info.Methods {
 			c.logger.Debugf("Add method /%s/%s", service, method.Name)
 		}
@@ -97,8 +102,6 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		if c.config.Bool(grpc.ConfigReflectionEnabled) {
 			reflection.Register(c.server)
 		}
-
-		grpc_health_v1.RegisterHealthServer(c.server, health.NewServer())
 
 		addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
 		lis, err := net.Listen("tcp", addr)
