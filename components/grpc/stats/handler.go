@@ -132,7 +132,7 @@ func (h *Handler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Co
 	}
 
 	ctxValue := &RPCContextValue{
-		Type: "", // TODO:
+		ClientName: DefaultClientName,
 	}
 
 	ctxValue.Service, ctxValue.Method = SplitFullMethod(info.FullMethodName)

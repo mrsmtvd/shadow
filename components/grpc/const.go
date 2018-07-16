@@ -7,8 +7,9 @@ const (
 	LabelTypeUnary  = "unary"
 	LabelTypeStream = "stream"
 
-	StatusOK    = "ok"
-	StatusError = "error"
+	StatusOK      = "ok"
+	StatusTimeout = "timeout"
+	StatusError   = "error"
 
 	ProtocolGRPC = "grpc"
 )
