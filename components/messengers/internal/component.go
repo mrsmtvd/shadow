@@ -115,7 +115,7 @@ func (c *Component) initTelegram() {
 	if err != nil {
 		c.logger.Error("Failed init telegram messenger", map[string]interface{}{
 			"error":     err.Error(),
-			"messenger": "telegram",
+			"messenger": messengers.MessengerTelegram,
 		})
 		return
 	}
@@ -131,7 +131,7 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 		if err != nil {
 			c.logger.Error("Failed register webhook for telegram messenger", map[string]interface{}{
 				"error":     err.Error(),
-				"messenger": "telegram",
+				"messenger": messengers.MessengerTelegram,
 			})
 			return
 		}
@@ -142,7 +142,7 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 		if err != nil {
 			c.logger.Error("Failed unregister webhook for telegram messenger", map[string]interface{}{
 				"error":     err.Error(),
-				"messenger": "telegram",
+				"messenger": messengers.MessengerTelegram,
 			})
 			return
 		}

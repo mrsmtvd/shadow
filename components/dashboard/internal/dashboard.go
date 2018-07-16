@@ -25,7 +25,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Dashboard").
 		WithRoute(routes[9]).
 		WithIcon("dashboard").
-		WithChild(dashboard.NewMenu("Components").WithRoute(routes[9])).
+		WithChild(dashboard.NewMenu("Components").WithRoute(routes[10])).
 		WithChild(dashboard.NewMenu("Environment").WithRoute(routes[3])).
 		WithChild(dashboard.NewMenu("Bindata").WithRoute(routes[1])).
 		WithChild(dashboard.NewMenu("Routing").WithRoute(routes[4]))
