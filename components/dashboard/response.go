@@ -7,6 +7,7 @@ import (
 
 type Response struct {
 	http.ResponseWriter
+	length int64
 	status int
 }
 
@@ -25,7 +26,10 @@ func (w *Response) Write(data []byte) (int, error) {
 		w.status = http.StatusOK
 	}
 
-	return w.ResponseWriter.Write(data)
+	n, err := w.ResponseWriter.Write(data)
+	w.length += int64(n)
+
+	return n, err
 }
 
 func (w *Response) WriteHeader(code int) {
@@ -33,8 +37,12 @@ func (w *Response) WriteHeader(code int) {
 	w.ResponseWriter.WriteHeader(code)
 }
 
-func (w *Response) GetStatusCode() int {
+func (w *Response) StatusCode() int {
 	return w.status
+}
+
+func (w *Response) Length() int64 {
+	return w.length
 }
 
 func (w *Response) SendJSON(r interface{}) error {
@@ -43,8 +51,8 @@ func (w *Response) SendJSON(r interface{}) error {
 		return err
 	}
 
-	w.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.ResponseWriter.Write(response)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Write(response)
 
 	return nil
 }

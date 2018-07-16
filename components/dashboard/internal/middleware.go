@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,6 +13,12 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/metrics"
+)
+
+const (
+	DefaultClientName  = "unknown"
+	DefaultHandlerName = "unknown"
 )
 
 func ContextMiddleware(application shadow.Application, router *Router, config config.Component, logger logger.Logger, renderer *Renderer, sessionManager *scs.Manager) alice.Constructor {
@@ -48,7 +55,7 @@ func LoggerMiddleware() alice.Constructor {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			next.ServeHTTP(w, r)
 
-			statusCode := dashboard.ResponseFromContext(r.Context()).GetStatusCode()
+			statusCode := dashboard.ResponseFromContext(r.Context()).StatusCode()
 
 			fields := map[string]interface{}{
 				"remote-addr":    r.RemoteAddr,
@@ -79,13 +86,44 @@ func MetricsMiddleware() alice.Constructor {
 
 			next.ServeHTTP(w, r)
 
+			response := dashboard.ResponseFromContext(r.Context())
+
+			handlerName := DefaultHandlerName
 			route := dashboard.RouteFromContext(r.Context())
 			if route != nil {
-				metricHandlerExecuteTime.With(
-					"component", route.(*RouteItem).Component().Name(),
-					"handler", route.HandlerName(),
-				).UpdateSince(now)
+				handlerName = fmt.Sprintf("%s/%s", route.(*RouteItem).Component().Name(), route.HandlerName())
 			}
+
+			status := metrics.StatusOK
+			if response.StatusCode()/100 >= 4 { // 4xx + 5xx
+				status = metrics.StatusError
+			}
+
+			metrics.MetricRequestsTotal.With(
+				"handler", handlerName,
+				"protocol", metrics.ProtocolHTTP,
+				"client_name", DefaultClientName,
+			).Inc()
+
+			metrics.MetricRequestSizeBytes.With(
+				"handler", handlerName,
+				"protocol", metrics.ProtocolHTTP,
+				"client_name", DefaultClientName,
+			).Add(float64(r.ContentLength))
+
+			metrics.MetricResponseTimeSeconds.With(
+				"handler", handlerName,
+				"protocol", metrics.ProtocolHTTP,
+				"client_name", DefaultClientName,
+				"status", status,
+			).UpdateSince(now)
+
+			metrics.MetricResponseSizeBytes.With(
+				"handler", handlerName,
+				"protocol", metrics.ProtocolHTTP,
+				"client_name", DefaultClientName,
+				"status", status,
+			).Add(float64(response.Length()))
 		})
 	}
 }

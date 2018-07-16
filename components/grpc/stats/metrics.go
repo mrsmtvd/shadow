@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kihamo/shadow/components/grpc"
+	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/snitch"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
@@ -20,15 +21,6 @@ const (
 	MetricNameReceivedTotal = grpc.ComponentName + "_received_total"
 	MetricNameSentTotal     = grpc.ComponentName + "_sent_total"
 	MetricNameStartedTotal  = grpc.ComponentName + "_started_total"
-
-	// For all requests
-	MetricNameResponseTimeSeconds = grpc.ComponentName + "_response_time_seconds"
-	MetricNameRequestSizeBytes    = grpc.ComponentName + "_request_size_bytes"
-	MetricNameResponseSizeBytes   = grpc.ComponentName + "_response_size_bytes"
-	MetricNameRequestsTotal       = grpc.ComponentName + "_requests_total"
-
-	// For all external requests
-	MetricNameExternalResponseTimeSeconds = grpc.ComponentName + "_external_response_time_seconds"
 )
 
 var (
@@ -36,13 +28,6 @@ var (
 	MetricReceivedTotal = snitch.NewCounter(MetricNameReceivedTotal, "GRPC received requests total")
 	MetricSentTotal     = snitch.NewCounter(MetricNameSentTotal, "GRPC sent responses total")
 	MetricStartedTotal  = snitch.NewCounter(MetricNameStartedTotal, "GRPC started requests total")
-
-	MetricResponseTimeSeconds = snitch.NewTimer(MetricNameResponseTimeSeconds, "GRPC response time in seconds")
-	MetricRequestSizeBytes    = snitch.NewHistogram(MetricNameRequestSizeBytes, "GRPC size of requests in bytes")
-	MetricResponseSizeBytes   = snitch.NewHistogram(MetricNameResponseSizeBytes, "GRPC size of responses in bytes")
-	MetricRequestsTotal       = snitch.NewCounter(MetricNameRequestsTotal, "GRPC requests total")
-
-	MetricExternalResponseTimeSeconds = snitch.NewTimer(MetricNameExternalResponseTimeSeconds, "GRPC external response time in total")
 )
 
 type MetricsHandler struct {
@@ -67,7 +52,7 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 				"grpc_type", ctxValue.Type,
 				"client_name", ctxValue.ClientName).Inc()
 
-			MetricRequestsTotal.With(
+			metrics.MetricRequestsTotal.With(
 				"handler", fmt.Sprintf("%s/%s", ctxValue.Service, ctxValue.Method),
 				"protocol", grpc.ProtocolGRPC,
 				"client_name", ctxValue.ClientName).Inc()
@@ -78,11 +63,11 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 		responseTime := s.EndTime.Sub(s.BeginTime)
 		st := status.Convert(s.Error)
 
-		code := grpc.StatusOK
+		code := metrics.StatusOK
 		if st.Code() == codes.DeadlineExceeded {
-			code = grpc.StatusTimeout
+			code = metrics.StatusTimeout
 		} else if s.Error != nil {
-			code = grpc.StatusError
+			code = metrics.StatusError
 		}
 
 		if !s.IsClient() {
@@ -93,13 +78,13 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 				"client_name", ctxValue.ClientName,
 				"grpc_code", CodeAsString(st.Code())).Inc()
 
-			MetricResponseTimeSeconds.With(
+			metrics.MetricResponseTimeSeconds.With(
 				"handler", fmt.Sprintf("%s/%s", ctxValue.Service, ctxValue.Method),
 				"protocol", grpc.ProtocolGRPC,
 				"client_name", ctxValue.ClientName,
 				"status", code).Update(responseTime)
 		} else {
-			MetricExternalResponseTimeSeconds.With(
+			metrics.MetricExternalResponseTimeSeconds.With(
 				"external_service", ctxValue.Service,
 				"method", ctxValue.Method,
 				"status", code).Update(responseTime)
@@ -115,7 +100,7 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 				"grpc_type", ctxValue.Type,
 				"client_name", ctxValue.ClientName).Inc()
 
-			MetricRequestSizeBytes.With(
+			metrics.MetricRequestSizeBytes.With(
 				"handler", fmt.Sprintf("%s/%s", ctxValue.Service, ctxValue.Method),
 				"protocol", grpc.ProtocolGRPC,
 				"client_name", ctxValue.ClientName,
@@ -132,11 +117,11 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 				"grpc_type", ctxValue.Type,
 				"client_name", ctxValue.ClientName).Inc()
 
-			MetricResponseSizeBytes.With(
+			metrics.MetricResponseSizeBytes.With(
 				"handler", fmt.Sprintf("%s/%s", ctxValue.Service, ctxValue.Method),
 				"protocol", grpc.ProtocolGRPC,
 				"client_name", ctxValue.ClientName,
-				"status", grpc.StatusOK).Add(float64(s.WireLength))
+				"status", metrics.StatusOK).Add(float64(s.WireLength))
 		}
 
 	case *stats.InTrailer:
