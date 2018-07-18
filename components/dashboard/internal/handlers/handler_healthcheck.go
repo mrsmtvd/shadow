@@ -4,18 +4,21 @@ import (
 	"github.com/heptiolabs/healthcheck"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/snitch"
 )
 
 type HealthCheckHandler struct {
 	dashboard.Handler
 
-	healthCheck healthcheck.Handler
-	hasCheck    bool
+	healthCheck             healthcheck.Handler
+	metricHealthCheckStatus snitch.Gauge
+	hasCheck                bool
 }
 
-func NewHealthCheckHandler(a shadow.Application) *HealthCheckHandler {
+func NewHealthCheckHandler(a shadow.Application, m snitch.Gauge) *HealthCheckHandler {
 	h := &HealthCheckHandler{
-		healthCheck: healthcheck.NewHandler(),
+		healthCheck:             healthcheck.NewHandler(),
+		metricHealthCheckStatus: m,
 	}
 
 	components, err := a.GetComponents()
@@ -26,14 +29,16 @@ func NewHealthCheckHandler(a shadow.Application) *HealthCheckHandler {
 	for _, component := range components {
 		if componentLivenessCheck, ok := component.(dashboard.HasLivenessCheck); ok {
 			for name, check := range componentLivenessCheck.LivenessCheck() {
-				h.healthCheck.AddLivenessCheck(h.getCheckName(component, name), check)
+				checkName := h.getCheckName(component, name)
+				h.healthCheck.AddLivenessCheck(checkName, h.wrap(checkName, check))
 				h.hasCheck = true
 			}
 		}
 
 		if componentReadinessCheck, ok := component.(dashboard.HasReadinessCheck); ok {
 			for name, check := range componentReadinessCheck.ReadinessCheck() {
-				h.healthCheck.AddReadinessCheck(h.getCheckName(component, name), check)
+				checkName := h.getCheckName(component, name)
+				h.healthCheck.AddReadinessCheck(checkName, h.wrap(checkName, check))
 				h.hasCheck = true
 			}
 		}
@@ -64,4 +69,18 @@ func (h *HealthCheckHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reque
 	}
 
 	h.NotFound(w, r)
+}
+
+func (h *HealthCheckHandler) wrap(name string, check dashboard.HealthCheck) dashboard.HealthCheck {
+	return func() (err error) {
+		err = check()
+
+		if err == nil {
+			h.metricHealthCheckStatus.With("check", name).Set(0)
+		} else {
+			h.metricHealthCheckStatus.With("check", name).Set(1)
+		}
+
+		return err
+	}
 }
