@@ -13,6 +13,8 @@ import (
 
 var (
 	startTime = time.Now().UTC()
+
+	DefaultApplication = NewApp()
 )
 
 type Application interface {
@@ -68,7 +70,9 @@ type App struct {
 	resolved bool
 }
 
-var buildDate *time.Time
+var (
+	buildDate *time.Time
+)
 
 func init() {
 	if b, err := osext.Executable(); err == nil {
@@ -79,23 +83,14 @@ func init() {
 	}
 }
 
-func NewApp(name string, version string, build string, components []Component) (Application, error) {
+func NewApp() *App {
 	application := &App{
 		components: map[string]Component{},
-		name:       name,
-		version:    version,
-		build:      build,
 		wg:         new(sync.WaitGroup),
 		run:        false,
 	}
 
-	for i := range components {
-		if err := application.RegisterComponent(components[i]); err != nil {
-			return nil, err
-		}
-	}
-
-	return application, nil
+	return application
 }
 
 func (a *App) Run() (err error) {
@@ -167,12 +162,30 @@ func (a *App) RegisterComponent(c Component) error {
 	return nil
 }
 
+func (a *App) MustRegisterComponent(c Component) {
+	if err := a.RegisterComponent(c); err != nil {
+		panic(err)
+	}
+}
+
+func (a *App) SetName(name string) {
+	a.name = name
+}
+
 func (a *App) Name() string {
 	return a.name
 }
 
+func (a *App) SetVersion(version string) {
+	a.version = version
+}
+
 func (a *App) Version() string {
 	return a.version
+}
+
+func (a *App) SetBuild(build string) {
+	a.build = build
 }
 
 func (a *App) Build() string {
@@ -248,4 +261,28 @@ func (a *App) resolveDependencies() error {
 
 	a.resolved = true
 	return nil
+}
+
+func SetName(name string) {
+	DefaultApplication.SetName(name)
+}
+
+func SetVersion(version string) {
+	DefaultApplication.SetVersion(version)
+}
+
+func SetBuild(build string) {
+	DefaultApplication.SetBuild(build)
+}
+
+func MustRegisterComponent(c Component) {
+	DefaultApplication.MustRegisterComponent(c)
+}
+
+func RegisterComponent(c Component) error {
+	return DefaultApplication.RegisterComponent(c)
+}
+
+func Run() error {
+	return DefaultApplication.Run()
 }

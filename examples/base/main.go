@@ -6,18 +6,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kihamo/shadow"
-	annotations "github.com/kihamo/shadow/components/annotations/instance"
-	config "github.com/kihamo/shadow/components/config/instance"
-	dashboard "github.com/kihamo/shadow/components/dashboard/instance"
-	database "github.com/kihamo/shadow/components/database/instance"
-	grpc "github.com/kihamo/shadow/components/grpc/instance"
-	i18n "github.com/kihamo/shadow/components/i18n/instance"
-	logger "github.com/kihamo/shadow/components/logger/instance"
-	mail "github.com/kihamo/shadow/components/mail/instance"
-	messengers "github.com/kihamo/shadow/components/messengers/instance"
-	metrics "github.com/kihamo/shadow/components/metrics/instance"
-	profiling "github.com/kihamo/shadow/components/profiling/instance"
-	workers "github.com/kihamo/shadow/components/workers/instance"
+	_ "github.com/kihamo/shadow/components/annotations/instance"
+	_ "github.com/kihamo/shadow/components/config/instance"
+	_ "github.com/kihamo/shadow/components/dashboard/instance"
+	_ "github.com/kihamo/shadow/components/database/instance"
+	_ "github.com/kihamo/shadow/components/grpc/instance"
+	_ "github.com/kihamo/shadow/components/i18n/instance"
+	_ "github.com/kihamo/shadow/components/logger/instance"
+	_ "github.com/kihamo/shadow/components/mail/instance"
+	_ "github.com/kihamo/shadow/components/messengers/instance"
+	_ "github.com/kihamo/shadow/components/metrics/instance"
+	_ "github.com/kihamo/shadow/components/profiling/instance"
+	_ "github.com/kihamo/shadow/components/workers/instance"
 )
 
 var (
@@ -25,31 +25,11 @@ var (
 )
 
 func main() {
-	application, err := shadow.NewApp(
-		"Shadow base",
-		"1.0",
-		build,
-		[]shadow.Component{
-			annotations.NewComponent(),
-			config.NewComponent(),
-			dashboard.NewComponent(),
-			database.NewComponent(),
-			grpc.NewComponent(),
-			i18n.NewComponent(),
-			logger.NewComponent(),
-			mail.NewComponent(),
-			messengers.NewComponent(),
-			metrics.NewComponent(),
-			profiling.NewComponent(),
-			workers.NewComponent(),
-		},
-	)
+	shadow.SetName("Shadow base")
+	shadow.SetVersion("1.0")
+	shadow.SetBuild(build)
 
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err = application.Run(); err != nil {
+	if err := shadow.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

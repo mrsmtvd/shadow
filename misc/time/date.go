@@ -1,9 +1,9 @@
-package shadow
+package time
 
 import (
 	"fmt"
 	"math"
-	"time"
+	origin "time"
 )
 
 const (
@@ -15,8 +15,8 @@ const (
 	secondsInYear   = secondsInMonth * 12
 )
 
-func DateSinceAsMessage(t time.Time) string {
-	diff := time.Since(t)
+func DateSinceAsMessage(t origin.Time) string {
+	diff := origin.Since(t)
 
 	if diff.Seconds() < 1 {
 		return "just now"

@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
+	"github.com/kihamo/shadow/misc/time"
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {
@@ -85,7 +85,7 @@ func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 		"staticHTML": templateFunctionStaticHTML,
 		"staticURL":  c.templateFunctionStaticURL,
 		"toolbar":    c.templateFunctionToolbar,
-		"date_since": shadow.DateSinceAsMessage,
+		"date_since": time.DateSinceAsMessage,
 	}
 }
 
