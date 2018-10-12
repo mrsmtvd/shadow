@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -23,6 +22,8 @@ const (
 	TagAppVersion = "app_version"
 	TagAppBuild   = "app_build"
 	TagHostname   = "hostname"
+
+	StorageIDInflux = "influx"
 )
 
 type Component struct {
@@ -34,7 +35,6 @@ type Component struct {
 
 	mutex    sync.RWMutex
 	registry snitch.Registerer
-	storage  *storage.Influx
 }
 
 func (c *Component) Name() string {
@@ -81,28 +81,9 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
-	url := c.config.String(metrics.ConfigUrl)
-	if url == "" {
-		wg.Done()
-		return fmt.Errorf("%s is empty", metrics.ConfigUrl)
-	}
-
-	storage, err := storage.NewInflux(
-		c.config.String(metrics.ConfigUrl),
-		c.config.String(metrics.ConfigDatabase),
-		c.config.String(metrics.ConfigUsername),
-		c.config.String(metrics.ConfigPassword),
-		c.config.String(metrics.ConfigPrecision))
-	if err != nil {
-		wg.Done()
-		return err
-	}
-
-	c.registry.AddStorages(storage)
-	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
-
-	c.storage = storage
+	c.initStorage()
 	c.initLabels(c.config.String(metrics.ConfigLabels))
+	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
 
 	// search metrics
 	components, err := c.application.GetComponents()
@@ -125,6 +106,42 @@ func (c *Component) Registry() snitch.Registerer {
 
 func (c *Component) Register(cs ...snitch.Collector) {
 	c.registry.Register(cs...)
+}
+
+func (c *Component) initStorage() (err error) {
+	url := c.config.String(metrics.ConfigUrl)
+	if url != "" {
+		return
+	}
+
+	existsStorage, err := c.registry.GetStorage(StorageIDInflux)
+	if err != nil {
+		newStorage, err := storage.NewInfluxWithId(
+			StorageIDInflux,
+			url,
+			c.config.String(metrics.ConfigDatabase),
+			c.config.String(metrics.ConfigUsername),
+			c.config.String(metrics.ConfigPassword),
+			c.config.String(metrics.ConfigPrecision))
+
+		if err != nil {
+			return err
+		}
+
+		c.registry.AddStorages(newStorage)
+		return nil
+	}
+
+	if castStorage, ok := existsStorage.(*storage.Influx); ok {
+		err = castStorage.Reinitialization(
+			url,
+			c.config.String(metrics.ConfigDatabase),
+			c.config.String(metrics.ConfigUsername),
+			c.config.String(metrics.ConfigPassword),
+			c.config.String(metrics.ConfigPrecision))
+	}
+
+	return err
 }
 
 func (c *Component) initLabels(labels string) {

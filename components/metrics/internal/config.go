@@ -70,15 +70,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchForStorage(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	c.storage.Reinitialization(
-		c.config.String(metrics.ConfigUrl),
-		c.config.String(metrics.ConfigDatabase),
-		c.config.String(metrics.ConfigUsername),
-		c.config.String(metrics.ConfigPassword),
-		c.config.String(metrics.ConfigPrecision))
+	c.initStorage()
 }
 
 func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {

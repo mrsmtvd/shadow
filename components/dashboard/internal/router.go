@@ -125,8 +125,8 @@ func (r *Router) GetRoutes() []dashboard.Route {
 	return routes
 }
 
-func (r *Router) addMiddleware(m alice.Constructor) {
-	r.chain = r.chain.Append(m)
+func (r *Router) addMiddleware(m func(next http.Handler) http.Handler) {
+	r.chain = r.chain.Append(alice.Constructor(m))
 }
 
 func (r *Router) addRoute(route dashboard.Route) {

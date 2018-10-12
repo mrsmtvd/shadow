@@ -5,7 +5,6 @@ import (
 
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
-	"github.com/kihamo/shadow/components/metrics"
 )
 
 func (c *Component) getServeMux() (*Router, error) {
@@ -25,23 +24,24 @@ func (c *Component) getServeMux() (*Router, error) {
 	// Middleware
 	router.addMiddleware(ContextMiddleware(c.application, router, c.config, c.logger, c.renderer, c.session))
 
-	if c.application.HasComponent(metrics.ComponentName) {
-		router.addMiddleware(MetricsMiddleware())
-	}
-
-	router.addMiddleware(LoggerMiddleware())
-	router.addMiddleware(AuthorizationMiddleware())
-
-	// TODO: middleware from components
-
 	for _, component := range components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
 			for _, route := range componentRoute.DashboardRoutes() {
 				router.addRoute(NewRouteItem(route, component))
 			}
 		}
+
+		if componentMiddleware, ok := component.(dashboard.HasServerMiddleware); ok {
+			for _, middleware := range componentMiddleware.DashboardMiddleware() {
+				router.addMiddleware(middleware)
+			}
+		}
 	}
 
+	// fixing middleware
+	router.addMiddleware(AuthorizationMiddleware)
+
+	// fixing routes
 	startUrlRoute := NewRouteItem(dashboard.NewRoute("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
 	})), c)

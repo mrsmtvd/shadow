@@ -5,6 +5,7 @@ import (
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
+	m "github.com/kihamo/shadow/components/metrics/http"
 	"github.com/kihamo/shadow/components/metrics/internal/handlers"
 )
 
@@ -28,4 +29,10 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	}
 
 	return c.routes
+}
+
+func (c *Component) DashboardMiddleware() []func(http.Handler) http.Handler {
+	return []func(http.Handler) http.Handler{
+		m.ServerMiddleware,
+	}
 }
