@@ -25,7 +25,15 @@ func (c *Component) loadTemplates() error {
 		return err
 	}
 
+	for name, fn := range c.DashboardTemplateFunctions() {
+		c.renderer.AddFunc(name, fn)
+	}
+
 	for _, component := range components {
+		if component == c {
+			continue
+		}
+
 		if componentTemplateFuncs, ok := component.(dashboard.HasTemplateFunctions); ok {
 			for name, fn := range componentTemplateFuncs.DashboardTemplateFunctions() {
 				c.renderer.AddFunc(name, fn)

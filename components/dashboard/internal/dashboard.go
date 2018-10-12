@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -78,6 +79,8 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 
 func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 	return template.FuncMap{
+		"i18n":       templateFunctionMock(0),
+		"i18nPlural": templateFunctionMock(0),
 		"raw":        templateFunctionRaw,
 		"add":        templateFunctionAdd,
 		"mod":        templateFunctionMod,
@@ -150,6 +153,20 @@ func (c *Component) templateFunctionToolbar(opts ...interface{}) template.HTML {
 	}
 
 	return template.HTML(buf.String())
+}
+
+func templateFunctionStub(...interface{}) string {
+	return ""
+}
+
+func templateFunctionMock(i int) func(...interface{}) string {
+	return func(args ...interface{}) string {
+		if len(args) > i {
+			return fmt.Sprintf("%v", args[i])
+		}
+
+		return ""
+	}
 }
 
 func templateFunctionRaw(x string) template.HTML {
