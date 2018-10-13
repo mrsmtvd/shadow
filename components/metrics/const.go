@@ -24,4 +24,10 @@ const (
 
 	// For all external requests
 	MetricNameExternalResponseTimeSeconds = ComponentName + "_external_response_time_seconds"
+
+	// For GRPC
+	MetricNameHandledTotal  = ComponentName + "_grpc_handled_total"
+	MetricNameReceivedTotal = ComponentName + "_grpc_received_total"
+	MetricNameSentTotal     = ComponentName + "_grpc_sent_total"
+	MetricNameStartedTotal  = ComponentName + "_grpc_started_total"
 )

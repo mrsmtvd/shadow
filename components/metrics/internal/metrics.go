@@ -20,6 +20,11 @@ func (c *metricsCollector) Describe(ch chan<- *snitch.Description) {
 	metrics.MetricRequestUnmarshalTimeSeconds.Describe(ch)
 
 	metrics.MetricExternalResponseTimeSeconds.Describe(ch)
+
+	metrics.MetricGRPCHandledTotal.Describe(ch)
+	metrics.MetricGRPCReceivedTotal.Describe(ch)
+	metrics.MetricGRPCSentTotal.Describe(ch)
+	metrics.MetricGRPCStartedTotal.Describe(ch)
 }
 
 func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
@@ -34,6 +39,11 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 	metrics.MetricRequestUnmarshalTimeSeconds.Collect(ch)
 
 	metrics.MetricExternalResponseTimeSeconds.Collect(ch)
+
+	metrics.MetricGRPCHandledTotal.Collect(ch)
+	metrics.MetricGRPCReceivedTotal.Collect(ch)
+	metrics.MetricGRPCSentTotal.Collect(ch)
+	metrics.MetricGRPCStartedTotal.Collect(ch)
 }
 
 func (c *Component) Metrics() snitch.Collector {

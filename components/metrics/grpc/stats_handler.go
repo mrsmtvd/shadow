@@ -1,52 +1,32 @@
-package stats
+package grpc
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/kihamo/shadow/components/grpc"
+	st "github.com/kihamo/shadow/components/grpc/stats"
 	"github.com/kihamo/shadow/components/metrics"
-	"github.com/kihamo/snitch"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
 
-const (
-	DefaultClientName     = "undefined"
-	MetaDataClientNameKey = "user-agent"
-
-	// GRPC specific
-	MetricNameHandledTotal  = grpc.ComponentName + "_handled_total"
-	MetricNameReceivedTotal = grpc.ComponentName + "_received_total"
-	MetricNameSentTotal     = grpc.ComponentName + "_sent_total"
-	MetricNameStartedTotal  = grpc.ComponentName + "_started_total"
-)
-
-var (
-	MetricHandledTotal  = snitch.NewCounter(MetricNameHandledTotal, "GRPC handled requests total")
-	MetricReceivedTotal = snitch.NewCounter(MetricNameReceivedTotal, "GRPC received requests total")
-	MetricSentTotal     = snitch.NewCounter(MetricNameSentTotal, "GRPC sent responses total")
-	MetricStartedTotal  = snitch.NewCounter(MetricNameStartedTotal, "GRPC started requests total")
-)
-
-type MetricsHandler struct {
-	Handler
+type StatsHandler struct {
+	st.Handler
 }
 
-func NewMetricHandler() *MetricsHandler {
-	return &MetricsHandler{}
+func NewStatsHandler() *StatsHandler {
+	return &StatsHandler{}
 }
 
-func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
+func (h *StatsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 	ctxValue := h.RPCValueFromContext(ctx)
 
 	switch s := stat.(type) {
 	case *stats.Begin:
-		//fmt.Println("HandleRPC::Begin")
-
 		if !s.IsClient() {
-			MetricStartedTotal.With(
+			metrics.MetricGRPCStartedTotal.With(
 				"grpc_service", ctxValue.Service,
 				"grpc_method", ctxValue.Method,
 				"grpc_type", ctxValue.Type,
@@ -59,24 +39,23 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 		}
 
 	case *stats.End:
-		//fmt.Println("HandleRPC::End")
 		responseTime := s.EndTime.Sub(s.BeginTime)
-		st := status.Convert(s.Error)
+		sts := status.Convert(s.Error)
 
 		code := metrics.StatusOK
-		if st.Code() == codes.DeadlineExceeded {
+		if sts.Code() == codes.DeadlineExceeded {
 			code = metrics.StatusTimeout
 		} else if s.Error != nil {
 			code = metrics.StatusError
 		}
 
 		if !s.IsClient() {
-			MetricHandledTotal.With(
+			metrics.MetricGRPCHandledTotal.With(
 				"grpc_service", ctxValue.Service,
 				"grpc_method", ctxValue.Method,
 				"grpc_type", ctxValue.Type,
 				"client_name", ctxValue.ClientName,
-				"grpc_code", CodeAsString(st.Code())).Inc()
+				"grpc_code", st.CodeAsString(sts.Code())).Inc()
 
 			metrics.MetricResponseTimeSeconds.With(
 				"handler", fmt.Sprintf("%s/%s", ctxValue.Service, ctxValue.Method),
@@ -91,10 +70,8 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 		}
 
 	case *stats.InPayload:
-		//fmt.Println("HandleRPC::InPayload")
-
 		if !s.IsClient() {
-			MetricReceivedTotal.With(
+			metrics.MetricGRPCReceivedTotal.With(
 				"grpc_service", ctxValue.Service,
 				"grpc_method", ctxValue.Method,
 				"grpc_type", ctxValue.Type,
@@ -108,10 +85,8 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 		}
 
 	case *stats.OutPayload:
-		//fmt.Println("HandleRPC::OutPayload")
-
 		if !s.IsClient() {
-			MetricSentTotal.With(
+			metrics.MetricGRPCSentTotal.With(
 				"grpc_service", ctxValue.Service,
 				"grpc_method", ctxValue.Method,
 				"grpc_type", ctxValue.Type,
@@ -125,18 +100,13 @@ func (h *MetricsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 		}
 
 	case *stats.InTrailer:
-		//fmt.Println("HandleRPC::InTrailer")
 
 	case *stats.OutTrailer:
-		//fmt.Println("HandleRPC::OutTrailer")
 
 	case *stats.InHeader:
-		//fmt.Println("HandleRPC::InHeader")
 
 	case *stats.OutHeader:
-		//fmt.Println("HandleRPC::OutHeader")
 
 	default:
-		//fmt.Println("HandleRPC::default")
 	}
 }

@@ -33,10 +33,6 @@ func NewDefaultServerWithCustomOptions(unaryInterceptors []grpc.UnaryServerInter
 }
 
 func WithDefaultStatsHandlerChain(handlers ...s.Handler) grpc.ServerOption {
-	handlers = append(handlers, []s.Handler{
-		stats.NewMetricHandler(),
-	}...)
-
 	return WithStatsHandlerChain(handlers...)
 }
 

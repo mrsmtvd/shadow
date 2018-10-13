@@ -10,6 +10,11 @@ import (
 	"google.golang.org/grpc/stats"
 )
 
+const (
+	DefaultClientName     = "undefined"
+	MetaDataClientNameKey = "user-agent"
+)
+
 type contextKey struct {
 	name string
 }

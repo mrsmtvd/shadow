@@ -23,4 +23,10 @@ var (
 
 	// For all external requests
 	MetricExternalResponseTimeSeconds = snitch.NewTimer(MetricNameExternalResponseTimeSeconds, "External response time in total")
+
+	// For GRPC
+	MetricGRPCHandledTotal  = snitch.NewCounter(MetricNameHandledTotal, "GRPC handled requests total")
+	MetricGRPCReceivedTotal = snitch.NewCounter(MetricNameReceivedTotal, "GRPC received requests total")
+	MetricGRPCSentTotal     = snitch.NewCounter(MetricNameSentTotal, "GRPC sent responses total")
+	MetricGRPCStartedTotal  = snitch.NewCounter(MetricNameStartedTotal, "GRPC started requests total")
 )

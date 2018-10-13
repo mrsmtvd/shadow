@@ -13,7 +13,6 @@ import (
 	"github.com/kihamo/shadow/components/grpc/stats"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logger"
-	"github.com/kihamo/shadow/components/metrics"
 	g "google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/health"
@@ -49,9 +48,6 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		},
 		{
 			Name: logger.ComponentName,
-		},
-		{
-			Name: metrics.ComponentName,
 		},
 	}
 }
