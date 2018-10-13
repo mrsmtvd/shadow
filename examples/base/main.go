@@ -17,6 +17,7 @@ import (
 	_ "github.com/kihamo/shadow/components/messengers/instance"
 	_ "github.com/kihamo/shadow/components/metrics/instance"
 	_ "github.com/kihamo/shadow/components/profiling/instance"
+	_ "github.com/kihamo/shadow/components/tracing/instance"
 	_ "github.com/kihamo/shadow/components/workers/instance"
 )
 

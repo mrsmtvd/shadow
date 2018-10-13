@@ -59,10 +59,6 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
-	c.server = server.NewDefaultServerWithCustomOptions(
-		nil,
-		nil,
-		[]s.Handler{stats.NewContextHandler(c.config)})
 
 	return nil
 }
@@ -75,6 +71,28 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 	if err != nil {
 		return err
 	}
+
+	unaryInterceptors := make([]g.UnaryServerInterceptor, 0, 0)
+	streamInterceptors := make([]g.StreamServerInterceptor, 0, 0)
+	statsHandlers := []s.Handler{
+		stats.NewContextHandler(c.config),
+	}
+
+	for _, cmp := range components {
+		if cmpUnaryServerInterceptors, ok := cmp.(grpc.HasUnaryServerInterceptors); ok {
+			unaryInterceptors = append(unaryInterceptors, cmpUnaryServerInterceptors.GrpcUnaryServerInterceptors()...)
+		}
+
+		if cmpStreamServerInterceptors, ok := cmp.(grpc.HasStreamServerInterceptors); ok {
+			streamInterceptors = append(streamInterceptors, cmpStreamServerInterceptors.GrpcStreamServerInterceptors()...)
+		}
+
+		if cmpStatsHandlers, ok := cmp.(grpc.HasStatsHandlers); ok {
+			statsHandlers = append(statsHandlers, cmpStatsHandlers.GrpcStatsHandlers()...)
+		}
+	}
+
+	c.server = server.NewDefaultServerWithCustomOptions(unaryInterceptors, streamInterceptors, statsHandlers)
 
 	for _, cmp := range components {
 		if cmpGrpc, ok := cmp.(grpc.HasGrpcServer); ok {
@@ -126,5 +144,9 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 }
 
 func (c *Component) GetServiceInfo() map[string]g.ServiceInfo {
+	if c.server == nil {
+		return nil
+	}
+
 	return c.server.GetServiceInfo()
 }
