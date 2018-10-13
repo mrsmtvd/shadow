@@ -2,7 +2,6 @@ package internal
 
 import (
 	"net"
-	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -17,8 +16,7 @@ type Component struct {
 	application shadow.Application
 	config      config.Component
 
-	mutex  sync.RWMutex
-	tracer opentracing.Tracer
+	tracer *Tracer
 }
 
 func (c *Component) Name() string {
@@ -44,7 +42,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
-	c.tracer = opentracing.NoopTracer{}
+	c.tracer = NewTracer()
 	return nil
 }
 
@@ -54,9 +52,7 @@ func (c *Component) Run() error {
 
 func (c *Component) initTracer() error {
 	if !c.config.Bool(tracing.ConfigEnabled) {
-		c.mutex.Lock()
-		c.tracer = opentracing.NoopTracer{}
-		c.mutex.Unlock()
+		c.tracer.SetTracerNoop()
 
 		return nil
 	}
@@ -95,16 +91,11 @@ func (c *Component) initTracer() error {
 		return err
 	}
 
-	c.mutex.Lock()
-	c.tracer = tracer
-	c.mutex.Unlock()
+	c.tracer.SetTracer(tracer)
 
 	return nil
 }
 
 func (c *Component) Tracer() opentracing.Tracer {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
 	return c.tracer
 }
