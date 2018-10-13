@@ -43,6 +43,9 @@ func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.tracer = NewTracer()
+
+	opentracing.SetGlobalTracer(c.tracer)
+
 	return nil
 }
 
