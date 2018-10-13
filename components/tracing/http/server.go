@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/tracing"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
@@ -14,7 +15,7 @@ func ServerMiddleware(tracer opentracing.Tracer) func(http.Handler) http.Handler
 		return nethttp.MiddlewareFunc(tracer, func(w http.ResponseWriter, r *http.Request) {
 			if span := opentracing.SpanFromContext(r.Context()); span != nil {
 				if sc, ok := span.Context().(jaeger.SpanContext); ok {
-					w.Header().Set("trace-id", sc.TraceID().String())
+					w.Header().Set(tracing.ResponseTraceIDHeader, sc.TraceID().String())
 				}
 			}
 

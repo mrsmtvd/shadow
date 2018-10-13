@@ -62,3 +62,5 @@ import:
   version: da5fdee475fb09de87c5d4a50da233b7d28767b1
 - package: github.com/uber/jaeger-client-go
   version: ^2.15.0
+- package: github.com/grpc-ecosystem/grpc-opentracing
+  version: 8e809c8a86450a29b90dcc9efbf062d0fe6d9746
