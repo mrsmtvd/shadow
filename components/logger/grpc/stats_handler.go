@@ -1,23 +1,28 @@
-package stats
+package grpc
 
 import (
 	"context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging"
+	st "github.com/kihamo/shadow/components/grpc/stats"
+	"github.com/kihamo/shadow/components/logger"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/stats"
 )
 
-type LoggerHandler struct {
-	Handler
+type StatsHandler struct {
+	st.Handler
+
+	log logger.Logger
 }
 
-func NewLoggerHandler() *LoggerHandler {
-	return &LoggerHandler{}
+func NewStatsHandler(log logger.Logger) *StatsHandler {
+	return &StatsHandler{
+		log: log,
+	}
 }
 
-func (h *LoggerHandler) HandleConn(ctx context.Context, stat stats.ConnStats) {
+func (h *StatsHandler) HandleConn(ctx context.Context, stat stats.ConnStats) {
 	ctxValue := h.ConnectValueFromContext(ctx)
 	fields := map[string]interface{}{
 		"remote-address": ctxValue.RemoteAddr,
@@ -26,14 +31,14 @@ func (h *LoggerHandler) HandleConn(ctx context.Context, stat stats.ConnStats) {
 
 	switch stat.(type) {
 	case *stats.ConnBegin:
-		grpclog.Info("GRPC connect is open", fields)
+		h.log.Info("GRPC connect is open", fields)
 
 	case *stats.ConnEnd:
-		grpclog.Info("GRPC connect is closed", fields)
+		h.log.Info("GRPC connect is closed", fields)
 	}
 }
 
-func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
+func (h *StatsHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 	ctxValue := h.RPCValueFromContext(ctx)
 	fields := map[string]interface{}{
 		"service": ctxValue.Service,
@@ -50,7 +55,7 @@ func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 			fields["request"] = s.Payload
 		}
 
-		grpclog.Info("Call gRPC method", fields)
+		h.log.Info("Call gRPC method", fields)
 
 	case *stats.OutPayload:
 		if s.IsClient() {
@@ -59,7 +64,7 @@ func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 			fields["response"] = s.Payload
 		}
 
-		grpclog.Info("Call gRPC method", fields)
+		h.log.Info("Call gRPC method", fields)
 
 	case *stats.End:
 		code := grpc_logging.DefaultErrorToCode(s.Error)
@@ -71,11 +76,11 @@ func (h *LoggerHandler) HandleRPC(ctx context.Context, stat stats.RPCStats) {
 
 		switch code {
 		case codes.OK:
-			grpclog.Info("Called gRPC method", fields)
+			h.log.Info("Called gRPC method", fields)
 		case codes.OutOfRange, codes.Internal, codes.Unavailable, codes.DataLoss:
-			grpclog.Error("Called gRPC method", fields)
+			h.log.Error("Called gRPC method", fields)
 		default:
-			grpclog.Info("Called gRPC method", fields)
+			h.log.Info("Called gRPC method", fields)
 		}
 	}
 }

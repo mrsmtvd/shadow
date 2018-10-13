@@ -47,7 +47,6 @@ func DefaultDialContextWithCustomOptions(ctx context.Context, target string, una
 
 func WithDefaultStatsHandlerChain(handlers ...s.Handler) grpc.DialOption {
 	handlers = append(handlers, []s.Handler{
-		stats.NewLoggerHandler(),
 		stats.NewMetricHandler(),
 	}...)
 
