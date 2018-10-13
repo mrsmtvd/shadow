@@ -3,7 +3,6 @@ package internal
 import (
 	"net"
 	"sync"
-	"time"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -45,10 +44,23 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
+	c.tracer = opentracing.NoopTracer{}
 	return nil
 }
 
 func (c *Component) Run() error {
+	return c.initTracer()
+}
+
+func (c *Component) initTracer() error {
+	if !c.config.Bool(tracing.ConfigEnabled) {
+		c.mutex.Lock()
+		c.tracer = opentracing.NoopTracer{}
+		c.mutex.Unlock()
+
+		return nil
+	}
+
 	cfg := jconfig.Configuration{
 		Disabled:    false,
 		ServiceName: c.application.Name(),
@@ -56,13 +68,22 @@ func (c *Component) Run() error {
 			Type:  jaeger.SamplerTypeConst,
 			Param: 1,
 		},
+		Reporter: &jconfig.ReporterConfig{
+			QueueSize:           c.config.Int(tracing.ConfigReporterQueueSize),
+			BufferFlushInterval: c.config.Duration(tracing.ConfigReporterBufferFlushInterval),
+			LogSpans:            c.config.Bool(tracing.ConfigReporterLogSpans),
+
+			// Local collector
+			LocalAgentHostPort: net.JoinHostPort(c.config.String(tracing.ConfigCollectorLocalHost), c.config.String(tracing.ConfigCollectorLocalPort)),
+
+			// Remote collector
+			CollectorEndpoint: c.config.String(tracing.ConfigCollectorRemoteEndpoint),
+			User:              c.config.String(tracing.ConfigCollectorRemoteUser),
+			Password:          c.config.String(tracing.ConfigCollectorRemotePassword),
+		},
 	}
 
-	sender, _ := jaeger.NewUDPTransport(net.JoinHostPort(c.config.String(tracing.ConfigAgentHost), c.config.String(tracing.ConfigAgentPort)), 0)
-
-	options := []jconfig.Option{
-		jconfig.Reporter(jaeger.NewRemoteReporter(sender, jaeger.ReporterOptions.BufferFlushInterval(1*time.Second))),
-	}
+	options := make([]jconfig.Option, 0, 0)
 
 	if c.application.HasComponent(logger.ComponentName) {
 		log := logger.NewOrNop(c.Name(), c.application)
@@ -74,12 +95,9 @@ func (c *Component) Run() error {
 		return err
 	}
 
-	// if is global?
 	c.mutex.Lock()
 	c.tracer = tracer
 	c.mutex.Unlock()
-
-	//opentracing.SetGlobalTracer(tracer)
 
 	return nil
 }

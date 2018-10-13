@@ -14,12 +14,6 @@ func (c *Component) DashboardMiddleware() []func(http.Handler) http.Handler {
 
 func (c *Component) serverMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tracer := c.Tracer()
-
-		if tracer == nil {
-			next.ServeHTTP(w, r)
-		} else {
-			m.ServerMiddleware(tracer)(next).ServeHTTP(w, r)
-		}
+		m.ServerMiddleware(c.Tracer())(next).ServeHTTP(w, r)
 	})
 }
