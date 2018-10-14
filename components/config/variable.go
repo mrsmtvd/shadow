@@ -40,7 +40,7 @@ type HasVariables interface {
 }
 
 type variableValue struct {
-	original interface{}
+	fn func() interface{}
 }
 
 type VariableSimple struct {
@@ -112,17 +112,23 @@ func (v *VariableSimple) WithType(typ string) *VariableSimple {
 
 func (v *VariableSimple) Default() interface{} {
 	if l := v.def.Load(); l != nil {
-		return l.(*variableValue).original
+		return l.(*variableValue).fn()
 	}
 
 	return nil
 }
 
 func (v *VariableSimple) WithDefault(value interface{}) *VariableSimple {
-	v.def.Store(&variableValue{value})
+	return v.WithDefaultFunc(func() interface{} {
+		return value
+	})
+}
+
+func (v *VariableSimple) WithDefaultFunc(f func() interface{}) *VariableSimple {
+	v.def.Store(&variableValue{f})
 
 	if l := v.value.Load(); l == nil {
-		v.Change(value)
+		v.changeFunc(f)
 	}
 
 	return v
@@ -130,7 +136,7 @@ func (v *VariableSimple) WithDefault(value interface{}) *VariableSimple {
 
 func (v *VariableSimple) Value() interface{} {
 	if l := v.value.Load(); l != nil {
-		return l.(*variableValue).original
+		return l.(*variableValue).fn()
 	}
 
 	return nil
@@ -187,7 +193,14 @@ func (v *VariableSimple) WithViewOptions(viewOptions map[string]interface{}) *Va
 }
 
 func (v *VariableSimple) Change(value interface{}) error {
-	v.value.Store(&variableValue{value})
+	v.changeFunc(func() interface{} {
+		return value
+	})
+	return nil
+}
+
+func (v *VariableSimple) changeFunc(f func() interface{}) error {
+	v.value.Store(&variableValue{f})
 	return nil
 }
 
