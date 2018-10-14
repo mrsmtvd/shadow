@@ -8,7 +8,6 @@ import (
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/tracing"
 	"github.com/opentracing/opentracing-go"
-	"github.com/uber/jaeger-client-go"
 	jconfig "github.com/uber/jaeger-client-go/config"
 )
 
@@ -64,8 +63,11 @@ func (c *Component) initTracer() error {
 		Disabled:    false,
 		ServiceName: c.application.Name(),
 		Sampler: &jconfig.SamplerConfig{
-			Type:  jaeger.SamplerTypeConst,
-			Param: 1,
+			Type:                    c.config.String(tracing.ConfigSamplerType),
+			Param:                   c.config.Float64(tracing.ConfigSamplerParam),
+			SamplingServerURL:       c.config.String(tracing.ConfigSamplerServerURL),
+			MaxOperations:           c.config.Int(tracing.ConfigSamplerMaxOperations),
+			SamplingRefreshInterval: c.config.Duration(tracing.ConfigSamplerSamplingRefreshInterval),
 		},
 		Reporter: &jconfig.ReporterConfig{
 			QueueSize:           c.config.Int(tracing.ConfigReporterQueueSize),

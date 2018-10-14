@@ -53,6 +53,41 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithGroup("Reporter").
 			WithDefault(false).
 			WithEditable(true),
+		config.NewVariable(tracing.ConfigSamplerType, config.ValueTypeString).
+			WithUsage("Type").
+			WithGroup("Sampler").
+			WithDefault(jaeger.SamplerTypeRemote).
+			WithEditable(true).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{jaeger.SamplerTypeConst, "Constant"},
+					{jaeger.SamplerTypeProbabilistic, "Probabilistic"},
+					{jaeger.SamplerTypeRateLimiting, "Rate limiting"},
+					// {jaeger.SamplerTypeLowerBound, "Lower bound"},
+					{jaeger.SamplerTypeRemote, "Remote"},
+				},
+			}),
+		config.NewVariable(tracing.ConfigSamplerParam, config.ValueTypeFloat64).
+			WithUsage("Param is a value passed to the sampler").
+			WithGroup("Sampler").
+			WithDefault(0).
+			WithEditable(true),
+		config.NewVariable(tracing.ConfigSamplerServerURL, config.ValueTypeString).
+			WithUsage("Address of jaeger-agent's HTTP sampling server (only for remote sampler)").
+			WithGroup("Sampler").
+			WithDefault("http://localhost:5778/sampling").
+			WithEditable(true),
+		config.NewVariable(tracing.ConfigSamplerMaxOperations, config.ValueTypeInt).
+			WithUsage("Maximum number of operations that the sampler will keep track of. If an operation is not tracked, a default probabilistic sampler will be used rather than the per operation specific sampler").
+			WithGroup("Sampler").
+			WithDefault(2000).
+			WithEditable(true),
+		config.NewVariable(tracing.ConfigSamplerSamplingRefreshInterval, config.ValueTypeDuration).
+			WithUsage("Controls how often the remotely controlled sampler will poll jaeger-agent for the appropriate sampling strategy").
+			WithGroup("Sampler").
+			WithDefault(time.Minute).
+			WithEditable(true),
 	}
 }
 
@@ -68,6 +103,11 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 			tracing.ConfigReporterQueueSize,
 			tracing.ConfigReporterBufferFlushInterval,
 			tracing.ConfigReporterLogSpans,
+			tracing.ConfigSamplerType,
+			tracing.ConfigSamplerParam,
+			tracing.ConfigSamplerServerURL,
+			tracing.ConfigSamplerMaxOperations,
+			tracing.ConfigSamplerSamplingRefreshInterval,
 		}, c.watchReInit),
 	}
 }
