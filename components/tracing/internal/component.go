@@ -2,6 +2,7 @@ package internal
 
 import (
 	"net"
+	"strings"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -59,6 +60,30 @@ func (c *Component) initTracer() error {
 		return nil
 	}
 
+	tags := []opentracing.Tag{{
+		Key:   tracing.TagAppVersion,
+		Value: c.application.Version(),
+	}, {
+		Key:   tracing.TagAppBuild,
+		Value: c.application.Build(),
+	}}
+
+	tagsFromConfig := c.config.String(tracing.ConfigTags)
+	if len(tagsFromConfig) > 0 {
+		var parts []string
+
+		for _, tag := range strings.Split(tagsFromConfig, ",") {
+			parts = strings.Split(tag, "=")
+
+			if len(parts) > 1 {
+				tags = append(tags, opentracing.Tag{
+					Key:   strings.TrimSpace(parts[0]),
+					Value: strings.TrimSpace(parts[1]),
+				})
+			}
+		}
+	}
+
 	cfg := jconfig.Configuration{
 		Disabled:    false,
 		ServiceName: c.config.String(tracing.ConfigServiceName),
@@ -82,16 +107,7 @@ func (c *Component) initTracer() error {
 			User:              c.config.String(tracing.ConfigCollectorRemoteUser),
 			Password:          c.config.String(tracing.ConfigCollectorRemotePassword),
 		},
-		Tags: []opentracing.Tag{
-			{
-				Key:   tracing.TagAppVersion,
-				Value: c.application.Version(),
-			},
-			{
-				Key:   tracing.TagAppBuild,
-				Value: c.application.Build(),
-			},
-		},
+		Tags: tags,
 	}
 
 	options := make([]jconfig.Option, 0, 0)

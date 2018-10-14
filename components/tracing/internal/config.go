@@ -30,6 +30,11 @@ func (c *Component) ConfigVariables() []config.Variable {
 				return serviceName
 			}).
 			WithEditable(true),
+		config.NewVariable(tracing.ConfigTags, config.ValueTypeString).
+			WithUsage("Tags in format tag1_name=tag1_value").
+			WithEditable(true).
+			WithView([]string{config.ViewTags}).
+			WithViewOptions(map[string]interface{}{config.ViewOptionTagsDefaultText: "add a tag"}),
 		config.NewVariable(tracing.ConfigCollectorLocalHost, config.ValueTypeString).
 			WithUsage("Host").
 			WithGroup("Local collector").
@@ -111,6 +116,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 		config.NewWatcher([]string{
 			tracing.ConfigEnabled,
 			tracing.ConfigServiceName,
+			tracing.ConfigTags,
 			tracing.ConfigCollectorLocalHost,
 			tracing.ConfigCollectorLocalPort,
 			tracing.ConfigCollectorRemoteUser,
