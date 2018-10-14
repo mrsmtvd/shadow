@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"strings"
 	"time"
 
 	"github.com/kihamo/shadow/components/config"
@@ -14,6 +15,20 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithUsage("Enabled").
 			WithGroup("Others").
 			WithDefault(false).
+			WithEditable(true),
+		config.NewVariable(tracing.ConfigServiceName, config.ValueTypeString).
+			WithUsage("Service name").
+			WithGroup("Others").
+			WithDefaultFunc(func() interface{} {
+				if c.application == nil {
+					return "shadow"
+				}
+
+				serviceName := c.application.Name()
+				serviceName = strings.ToLower(serviceName)
+				serviceName = strings.Join(strings.Fields(serviceName), "-")
+				return serviceName
+			}).
 			WithEditable(true),
 		config.NewVariable(tracing.ConfigCollectorLocalHost, config.ValueTypeString).
 			WithUsage("Host").
@@ -95,6 +110,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher([]string{
 			tracing.ConfigEnabled,
+			tracing.ConfigServiceName,
 			tracing.ConfigCollectorLocalHost,
 			tracing.ConfigCollectorLocalPort,
 			tracing.ConfigCollectorRemoteUser,

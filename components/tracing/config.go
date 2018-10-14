@@ -2,6 +2,7 @@ package tracing
 
 const (
 	ConfigEnabled                        = ComponentName + ".enabled"
+	ConfigServiceName                    = ComponentName + ".service-name"
 	ConfigCollectorLocalHost             = ComponentName + ".collector.local.host"
 	ConfigCollectorLocalPort             = ComponentName + ".collector.local.port"
 	ConfigCollectorRemoteUser            = ComponentName + ".collector.remote.user"

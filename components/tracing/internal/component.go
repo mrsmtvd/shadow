@@ -61,7 +61,7 @@ func (c *Component) initTracer() error {
 
 	cfg := jconfig.Configuration{
 		Disabled:    false,
-		ServiceName: c.application.Name(),
+		ServiceName: c.config.String(tracing.ConfigServiceName),
 		Sampler: &jconfig.SamplerConfig{
 			Type:                    c.config.String(tracing.ConfigSamplerType),
 			Param:                   c.config.Float64(tracing.ConfigSamplerParam),
@@ -81,6 +81,16 @@ func (c *Component) initTracer() error {
 			CollectorEndpoint: c.config.String(tracing.ConfigCollectorRemoteEndpoint),
 			User:              c.config.String(tracing.ConfigCollectorRemoteUser),
 			Password:          c.config.String(tracing.ConfigCollectorRemotePassword),
+		},
+		Tags: []opentracing.Tag{
+			{
+				Key:   tracing.TagAppVersion,
+				Value: c.application.Version(),
+			},
+			{
+				Key:   tracing.TagAppBuild,
+				Value: c.application.Build(),
+			},
 		},
 	}
 
