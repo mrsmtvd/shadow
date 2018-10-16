@@ -2,7 +2,6 @@ package tracing
 
 import (
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/tracing/internal"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -11,5 +10,5 @@ func NewOrNop(application shadow.Application) opentracing.Tracer {
 		return cmp.(Component).Tracer()
 	}
 
-	return internal.NewTracer()
+	return opentracing.NoopTracer{}
 }
