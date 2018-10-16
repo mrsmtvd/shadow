@@ -81,7 +81,10 @@ func (c *Component) Init(a shadow.Application) error {
 func (c *Component) Run(wg *sync.WaitGroup) error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
-	c.initStorage()
+	if err := c.initStorage(); err != nil {
+		return err
+	}
+
 	c.initLabels(c.config.String(metrics.ConfigLabels))
 	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
 
@@ -110,7 +113,7 @@ func (c *Component) Register(cs ...snitch.Collector) {
 
 func (c *Component) initStorage() (err error) {
 	url := c.config.String(metrics.ConfigUrl)
-	if url != "" {
+	if url == "" {
 		return
 	}
 
