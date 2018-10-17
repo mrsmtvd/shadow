@@ -64,7 +64,7 @@ func (c *Component) Init(a shadow.Application) error {
 	return nil
 }
 
-func (c *Component) Run() (err error) {
+func (c *Component) Run() error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	c.dispatcher.SetTickerExecuteTasksDuration(c.config.Duration(workers.ConfigTickerExecuteTasksDuration))
@@ -79,11 +79,7 @@ func (c *Component) Run() (err error) {
 		c.AddSimpleWorker()
 	}
 
-	go func() {
-		c.dispatcher.Run()
-	}()
-
-	return nil
+	return c.dispatcher.Run()
 }
 
 func (c *Component) GetLockedListeners() []string {

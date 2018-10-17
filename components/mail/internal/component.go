@@ -87,40 +87,38 @@ func (c *Component) Run() error {
 		c.config.String(mail.ConfigSmtpPassword),
 	)
 
-	go func() {
-		for {
-			select {
-			case task, ok := <-c.queue:
-				if !ok {
-					return
-				}
-
-				err := c.execute(task)
-				if c.metricsEnabled {
-					metricMailTotal.Inc()
-
-					if err != nil {
-						metricMailTotal.With("status", "failed").Inc()
-					} else {
-						metricMailTotal.With("status", "success").Inc()
-					}
-				}
-
-			case <-time.After(mailDaemonTimeOut):
-				c.mutex.Lock()
-				if c.open {
-					if err := c.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
-						c.logger.Error("Dialer close failed", map[string]interface{}{"error": err.Error()})
-					} else {
-						c.logger.Debug("Dialer close success")
-					}
-
-					c.open = false
-				}
-				c.mutex.Unlock()
+	for {
+		select {
+		case task, ok := <-c.queue:
+			if !ok {
+				return nil
 			}
+
+			err := c.execute(task)
+			if c.metricsEnabled {
+				metricMailTotal.Inc()
+
+				if err != nil {
+					metricMailTotal.With("status", "failed").Inc()
+				} else {
+					metricMailTotal.With("status", "success").Inc()
+				}
+			}
+
+		case <-time.After(mailDaemonTimeOut):
+			c.mutex.Lock()
+			if c.open {
+				if err := c.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
+					c.logger.Error("Dialer close failed", map[string]interface{}{"error": err.Error()})
+				} else {
+					c.logger.Debug("Dialer close success")
+				}
+
+				c.open = false
+			}
+			c.mutex.Unlock()
 		}
-	}()
+	}
 
 	return nil
 }

@@ -62,7 +62,7 @@ func (c *Component) Init(a shadow.Application) error {
 	return nil
 }
 
-func (c *Component) Run() (err error) {
+func (c *Component) Run() error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	var slaves []string
@@ -110,14 +110,12 @@ func (c *Component) Run() (err error) {
 	migrate.SetSchema(c.config.String(database.ConfigMigrationsSchema))
 	migrate.SetTable(c.config.String(database.ConfigMigrationsTable))
 
-	go func() {
-		_, err := c.UpMigrations()
+	_, err = c.UpMigrations()
 
-		c.mutex.Lock()
-		c.migrationsIsUp = err == nil
-		c.migrationsError = err
-		c.mutex.Unlock()
-	}()
+	c.mutex.Lock()
+	c.migrationsIsUp = err == nil
+	c.migrationsError = err
+	c.mutex.Unlock()
 
 	return nil
 }
