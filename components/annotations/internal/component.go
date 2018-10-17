@@ -56,7 +56,7 @@ func (c *Component) Init(a shadow.Application) error {
 	return nil
 }
 
-func (c *Component) Run(wg *sync.WaitGroup) error {
+func (c *Component) Run() error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	c.initStorageGrafana()

@@ -16,8 +16,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithGroup("Lister").
 			WithDefault(50052),
 		config.NewVariable(grpc.ConfigReflectionEnabled, config.ValueTypeBool).
-			WithUsage("Enabled register reflection").
-			WithEditable(true),
+			WithUsage("Enabled register reflection"),
 		config.NewVariable(grpc.ConfigManagerMaxLevel, config.ValueTypeInt).
 			WithUsage("Max level of parsing types").
 			WithEditable(true).

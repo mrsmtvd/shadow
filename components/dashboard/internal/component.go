@@ -1,13 +1,13 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/alexedwards/scs"
 	"github.com/alexedwards/scs/stores/memstore"
@@ -32,6 +32,7 @@ type Component struct {
 	session     *scs.Manager
 	routes      []dashboard.Route
 	router      *Router
+	server      *http.Server
 }
 
 func (c *Component) Name() string {
@@ -64,7 +65,7 @@ func (c *Component) Init(a shadow.Application) error {
 	return nil
 }
 
-func (c *Component) Run(wg *sync.WaitGroup) (err error) {
+func (c *Component) Run() (err error) {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	if err := c.loadTemplates(); err != nil {
@@ -85,24 +86,33 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 		return err
 	}
 
-	go func() {
-		defer wg.Done()
+	addr := net.JoinHostPort(c.config.String(dashboard.ConfigHost), c.config.String(dashboard.ConfigPort))
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
+	}
 
-		addr := net.JoinHostPort(c.config.String(dashboard.ConfigHost), c.config.String(dashboard.ConfigPort))
-		lis, err := net.Listen("tcp", addr)
-		if err != nil {
-			c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
-		}
+	c.logger.Info("Running service", map[string]interface{}{
+		"addr": addr,
+		"pid":  os.Getpid(),
+	})
 
-		c.logger.Info("Running service", map[string]interface{}{
-			"addr": addr,
-			"pid":  os.Getpid(),
-		})
+	c.server = &http.Server{
+		Handler: c.router,
+	}
 
-		if err := http.Serve(lis, c.router); err != nil {
-			c.logger.Fatalf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
-		}
-	}()
+	if err := c.server.Serve(lis); err != nil {
+		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (c *Component) Shutdown() error {
+	if c.server != nil {
+		return c.server.Shutdown(context.Background())
+	}
 
 	return nil
 }

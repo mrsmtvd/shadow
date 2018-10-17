@@ -3,7 +3,6 @@ package internal
 import (
 	"net"
 	"os"
-	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -59,7 +58,7 @@ func (c *Component) Init(a shadow.Application) error {
 	return nil
 }
 
-func (c *Component) Run(wg *sync.WaitGroup) error {
+func (c *Component) Run() error {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 	grpclog.SetLoggerV2(grpc.NewLogger(c.logger))
 
@@ -107,35 +106,35 @@ func (c *Component) Run(wg *sync.WaitGroup) error {
 		}
 	}
 
-	var wgListen sync.WaitGroup
-	wgListen.Add(1)
+	if c.config.Bool(grpc.ConfigReflectionEnabled) {
+		reflection.Register(c.server)
+	}
 
-	go func() {
-		defer wg.Done()
+	addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		c.logger.Errorf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
+		return err
+	}
 
-		if c.config.Bool(grpc.ConfigReflectionEnabled) {
-			reflection.Register(c.server)
-		}
+	c.logger.Info("Running service", map[string]interface{}{
+		"addr": addr,
+		"pid":  os.Getpid(),
+	})
 
-		addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
-		lis, err := net.Listen("tcp", addr)
-		if err != nil {
-			c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
-		}
+	if err := c.server.Serve(lis); err != nil {
+		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
+		return err
+	}
 
-		c.logger.Info("Running service", map[string]interface{}{
-			"addr": addr,
-			"pid":  os.Getpid(),
-		})
+	return nil
+}
 
-		wgListen.Done()
+func (c *Component) Shutdown() error {
+	if c.server != nil {
+		c.server.GracefulStop()
+	}
 
-		if err := c.server.Serve(lis); err != nil {
-			c.logger.Fatalf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
-		}
-	}()
-
-	wgListen.Wait()
 	return nil
 }
 

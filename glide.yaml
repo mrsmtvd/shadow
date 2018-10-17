@@ -46,6 +46,8 @@ import:
   version: 81ebce5c23dfd25c6c67194b37d3dd3f338c98b1
 - package: github.com/markbates/goth
   version: ~v1.44.0
+- package: golang.org/x/sync/errgroup
+  version: 1d60e4601c6fd243af51cc01ddf169918a5407ca
 - package: golang.org/x/net
   version: d866cfc389cec985d6fda2859936a575a55a3ab6
 - package: golang.org/x/text

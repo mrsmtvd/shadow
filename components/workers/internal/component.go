@@ -64,7 +64,7 @@ func (c *Component) Init(a shadow.Application) error {
 	return nil
 }
 
-func (c *Component) Run(wg *sync.WaitGroup) (err error) {
+func (c *Component) Run() (err error) {
 	c.logger = logger.NewOrNop(c.Name(), c.application)
 
 	c.dispatcher.SetTickerExecuteTasksDuration(c.config.Duration(workers.ConfigTickerExecuteTasksDuration))
@@ -80,7 +80,6 @@ func (c *Component) Run(wg *sync.WaitGroup) (err error) {
 	}
 
 	go func() {
-		defer wg.Done()
 		c.dispatcher.Run()
 	}()
 

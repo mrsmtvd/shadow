@@ -21,6 +21,7 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 		row := map[string]interface{}{
 			"name":                    cmp.Name(),
 			"version":                 cmp.Version(),
+			"shutdown":                false,
 			"dependencies":            []string{},
 			"has_assetfs":             false,
 			"has_config_variables":    false,
@@ -31,6 +32,10 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 			"has_database_migrations": false,
 			"has_grpc_server":         false,
 			"has_metrics":             false,
+		}
+
+		if _, ok := cmp.(shadow.ComponentShutdown); ok {
+			row["shutdown"] = true
 		}
 
 		if deps, ok := cmp.(shadow.ComponentDependency); ok {

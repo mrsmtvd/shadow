@@ -4,11 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sync"
+	"os/signal"
+	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/bugsnag/osext"
 	"github.com/deckarep/golang-set"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -48,8 +51,8 @@ type ComponentDependency interface {
 	Dependencies() []Dependency
 }
 
-type ComponentAsyncRunner interface {
-	Run(*sync.WaitGroup) error
+type ComponentShutdown interface {
+	Shutdown() error
 }
 
 type Dependency struct {
@@ -65,9 +68,12 @@ type App struct {
 	version string
 	build   string
 
-	wg       *sync.WaitGroup
-	run      bool
 	resolved bool
+	shutdown int64
+
+	runDone        chan error
+	shutdownSignal chan os.Signal
+	closers        []func() error
 }
 
 var (
@@ -86,15 +92,13 @@ func init() {
 func NewApp() *App {
 	application := &App{
 		components: map[string]Component{},
-		wg:         new(sync.WaitGroup),
-		run:        false,
 	}
 
 	return application
 }
 
 func (a *App) Run() (err error) {
-	if a.run {
+	if a.shutdownSignal != nil {
 		return errors.New("Already running")
 	}
 
@@ -103,9 +107,19 @@ func (a *App) Run() (err error) {
 		return err
 	}
 
-	a.run = true
+	a.runDone = make(chan error)
+
+	// listen os signal
+	a.shutdownSignal = make(chan os.Signal)
+	signal.Notify(a.shutdownSignal, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
+
+	a.closers = make([]func() error, 0, len(components))
 
 	for i := range components {
+		if closer, ok := components[i].(ComponentShutdown); ok {
+			a.closers = append([]func() error{closer.Shutdown}, a.closers...)
+		}
+
 		if init, ok := components[i].(ComponentInit); ok {
 			if err = init.Init(a); err != nil {
 				return err
@@ -113,21 +127,42 @@ func (a *App) Run() (err error) {
 		}
 	}
 
+	if len(a.closers) > 0 {
+		go func() {
+			<-a.shutdownSignal
+
+			atomic.StoreInt64(&a.shutdown, 1)
+
+			signal.Stop(a.shutdownSignal)
+			close(a.shutdownSignal)
+
+			var shutdownEG errgroup.Group
+
+			for _, closer := range a.closers {
+				shutdownEG.Go(closer)
+			}
+
+			a.runDone <- shutdownEG.Wait()
+		}()
+	}
+
+	var runEG errgroup.Group
+
 	for i := range components {
-		if runner, ok := components[i].(ComponentAsyncRunner); ok {
-			a.wg.Add(1)
-			if err := runner.Run(a.wg); err != nil {
-				return err
-			}
-		} else if runner, ok := components[i].(ComponentRunner); ok {
-			if err := runner.Run(); err != nil {
-				return err
-			}
+		if runner, ok := components[i].(ComponentRunner); ok {
+			runEG.Go(runner.Run)
 		}
 	}
 
-	a.wg.Wait()
-	return nil
+	go func() {
+		err := runEG.Wait()
+
+		if atomic.LoadInt64(&a.shutdown) != 1 {
+			a.runDone <- err
+		}
+	}()
+
+	return <-a.runDone
 }
 
 func (a *App) GetComponent(n string) Component {

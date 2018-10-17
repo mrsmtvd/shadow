@@ -33,6 +33,10 @@
                             {{ end }}
                         </td>
                         <td>
+                            {{ if $component.shutdown }}
+                                <span class="label label-default">{{ i18n "graceful shutdown" $ }}</span>
+                            {{ end }}
+
                             {{ if $component.has_assetfs }}
                                 <span class="label label-success">{{ i18n "asset filesystem" $ }}</span>
                             {{ end }}
