@@ -120,14 +120,12 @@ func (c *Component) AddStorage(id string, s annotations.Storage) error {
 	}
 
 	c.storages[id] = s
-	c.logger.Debugf("Added annotations storage %s", id)
 	return nil
 }
 
 func (c *Component) RemoveStorage(id string) {
 	c.mutex.Lock()
 	delete(c.storages, id)
-	c.logger.Debugf("Removed annotations storage %s", id)
 	c.mutex.Unlock()
 }
 
