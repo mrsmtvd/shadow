@@ -61,6 +61,8 @@ type Dependency struct {
 }
 
 type App struct {
+	_ [4]byte // atomic requires 64-bit alignment for struct field access
+
 	components        map[string]Component
 	resolveComponents []Component
 
