@@ -89,7 +89,8 @@ func (c *Component) Run() (err error) {
 	addr := net.JoinHostPort(c.config.String(dashboard.ConfigHost), c.config.String(dashboard.ConfigPort))
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
-		c.logger.Fatalf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
+		c.logger.Errorf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
+		return err
 	}
 
 	c.logger.Info("Running service", map[string]interface{}{

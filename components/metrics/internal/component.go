@@ -103,6 +103,11 @@ func (c *Component) Run() error {
 	return nil
 }
 
+func (c *Component) Shutdown() error {
+	_, err := c.registry.Gather()
+	return err
+}
+
 func (c *Component) Registry() snitch.Registerer {
 	return c.registry
 }
