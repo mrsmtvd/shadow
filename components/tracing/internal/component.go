@@ -8,6 +8,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
 	"github.com/kihamo/shadow/components/tracing"
+	"github.com/kihamo/shadow/components/tracing/internal/tracer"
 	"github.com/opentracing/opentracing-go"
 	jconfig "github.com/uber/jaeger-client-go/config"
 )
@@ -15,8 +16,6 @@ import (
 type Component struct {
 	application shadow.Application
 	config      config.Component
-
-	tracer *Tracer
 }
 
 func (c *Component) Name() string {
@@ -42,9 +41,6 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
-	c.tracer = NewTracer()
-
-	opentracing.SetGlobalTracer(c.tracer)
 
 	return nil
 }
@@ -55,7 +51,7 @@ func (c *Component) Run() error {
 
 func (c *Component) initTracer() error {
 	if !c.config.Bool(tracing.ConfigEnabled) {
-		c.tracer.SetTracerNoop()
+		tracer.DefaultTracer.SetTracerNoop()
 
 		return nil
 	}
@@ -117,16 +113,16 @@ func (c *Component) initTracer() error {
 		options = append(options, jconfig.Logger(NewLogger(log)))
 	}
 
-	tracer, _, err := cfg.NewTracer(options...)
+	t, _, err := cfg.NewTracer(options...)
 	if err != nil {
 		return err
 	}
 
-	c.tracer.SetTracer(tracer)
+	tracer.DefaultTracer.SetTracer(t)
 
 	return nil
 }
 
 func (c *Component) Tracer() opentracing.Tracer {
-	return c.tracer
+	return tracer.DefaultTracer
 }
