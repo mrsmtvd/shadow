@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -133,8 +132,6 @@ type counter struct {
 }
 
 func (c *counter) Inc(value int64) {
-	fmt.Println("Counter +", value)
-
 	c.m.Add(float64(value))
 }
 
