@@ -2,6 +2,7 @@ package tracing
 
 const (
 	ConfigEnabled                        = ComponentName + ".enabled"
+	ConfigMetricsRPCEnabled              = ComponentName + ".metrics.rpc.enabled"
 	ConfigServiceName                    = ComponentName + ".service-name"
 	ConfigTags                           = ComponentName + ".tags"
 	ConfigCollectorLocalHost             = ComponentName + ".collector.local.host"

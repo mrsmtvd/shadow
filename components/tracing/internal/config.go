@@ -16,8 +16,13 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithGroup("Others").
 			WithDefault(false).
 			WithEditable(true),
+		config.NewVariable(tracing.ConfigMetricsRPCEnabled, config.ValueTypeBool).
+			WithUsage("Enabled metrics for RPC").
+			WithGroup("Others").
+			WithDefault(false).
+			WithEditable(true),
 		config.NewVariable(tracing.ConfigServiceName, config.ValueTypeString).
-			WithUsage("Service name").
+			WithUsage("Service scope").
 			WithGroup("Others").
 			WithDefaultFunc(func() interface{} {
 				if c.application == nil {
@@ -115,6 +120,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher([]string{
 			tracing.ConfigEnabled,
+			tracing.ConfigMetricsRPCEnabled,
 			tracing.ConfigServiceName,
 			tracing.ConfigTags,
 			tracing.ConfigCollectorLocalHost,

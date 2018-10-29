@@ -3,10 +3,12 @@ package internal
 import (
 	"net"
 	"strings"
+	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/shadow/components/tracing"
 	"github.com/kihamo/shadow/components/tracing/internal/tracer"
 	"github.com/opentracing/opentracing-go"
@@ -16,6 +18,9 @@ import (
 type Component struct {
 	application shadow.Application
 	config      config.Component
+
+	metricsOnce    sync.Once
+	metricsFactory *factory
 }
 
 func (c *Component) Name() string {
@@ -34,6 +39,9 @@ func (c *Component) Dependencies() []shadow.Dependency {
 		},
 		{
 			Name: logger.ComponentName,
+		},
+		{
+			Name: metrics.ComponentName,
 		},
 	}
 }
@@ -111,6 +119,11 @@ func (c *Component) initTracer() error {
 	if c.application.HasComponent(logger.ComponentName) {
 		log := logger.NewOrNop(c.Name(), c.application)
 		options = append(options, jconfig.Logger(NewLogger(log)))
+	}
+
+	if c.application.HasComponent(metrics.ComponentName) {
+		options = append(options, jconfig.Metrics(c.newMetricsFactory()))
+		cfg.RPCMetrics = c.config.Bool(tracing.ConfigMetricsRPCEnabled)
 	}
 
 	t, _, err := cfg.NewTracer(options...)
