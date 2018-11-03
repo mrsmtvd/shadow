@@ -70,7 +70,7 @@ func (c *Component) initLogger() {
 		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))))
 
 	c.wrapper.SetLogger(l)
-	zap.RedirectStdLog(l)
+	zap.RedirectStdLog(l.Named("std"))
 }
 
 func (c *Component) parseFields(f string) []zap.Field {

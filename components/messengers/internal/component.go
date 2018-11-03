@@ -113,10 +113,10 @@ func (c *Component) initTelegram() {
 		c.config.String(messengers.ConfigTelegramToken),
 		c.config.Bool(config.ConfigDebug))
 	if err != nil {
-		c.logger.Error("Failed init telegram messenger", map[string]interface{}{
-			"error":     err.Error(),
-			"messenger": messengers.MessengerTelegram,
-		})
+		c.logger.Error("Failed init telegram messenger",
+			"error", err.Error(),
+			"messenger", messengers.MessengerTelegram,
+		)
 		return
 	}
 
@@ -129,10 +129,10 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 	if enabled {
 		u, err := url.Parse(c.config.String(messengers.ConfigBaseURL))
 		if err != nil {
-			c.logger.Error("Failed register webhook for telegram messenger", map[string]interface{}{
-				"error":     err.Error(),
-				"messenger": messengers.MessengerTelegram,
-			})
+			c.logger.Error("Failed register webhook for telegram messenger",
+				"error", err.Error(),
+				"messenger", messengers.MessengerTelegram,
+			)
 			return
 		}
 
@@ -140,10 +140,10 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 	} else {
 		err := messenger.UnregisterWebHook()
 		if err != nil {
-			c.logger.Error("Failed unregister webhook for telegram messenger", map[string]interface{}{
-				"error":     err.Error(),
-				"messenger": messengers.MessengerTelegram,
-			})
+			c.logger.Error("Failed unregister webhook for telegram messenger",
+				"error", err.Error(),
+				"messenger", messengers.MessengerTelegram,
+			)
 			return
 		}
 	}

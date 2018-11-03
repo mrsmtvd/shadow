@@ -74,10 +74,10 @@ func (c *Component) Create(annotation annotations.Annotation) error {
 
 	for name, s := range c.storages {
 		if err := s.Create(annotation); err != nil {
-			c.logger.Error("Send annotation failed", map[string]interface{}{
-				"storage": name,
-				"error":   err.Error(),
-			})
+			c.logger.Error("Send annotation failed",
+				"storage", name,
+				"error", err.Error(),
+			)
 		}
 	}
 
@@ -100,10 +100,10 @@ func (c *Component) CreateInStorages(annotation annotations.Annotation, names []
 
 		if ok {
 			if err := s.Create(annotation); err != nil {
-				c.logger.Error("Send annotation failed", map[string]interface{}{
-					"storage": name,
-					"error":   err.Error(),
-				})
+				c.logger.Error("Send annotation failed",
+					"storage", name,
+					"error", err.Error(),
+				)
 			}
 		}
 	}

@@ -85,12 +85,12 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 
 			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, panicError)
 
-			r.logger.Error("Recovery panic", map[string]interface{}{
-				"panic.file":  panicError.File,
-				"panic.line":  panicError.Line,
-				"panic.stack": panicError.Stack,
-				"panic.error": fmt.Sprintf("%s", panicError.Error),
-			})
+			r.logger.Error("Recovery panic",
+				"panic.file", panicError.File,
+				"panic.line", panicError.Line,
+				"panic.stack", panicError.Stack,
+				"panic.error", fmt.Sprintf("%s", panicError.Error),
+			)
 
 			panicHandler.ServeHTTP(hw, hr.WithContext(ctx))
 		})).ServeHTTP(pw, pr)

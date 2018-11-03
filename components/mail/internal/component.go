@@ -109,7 +109,7 @@ func (c *Component) Run() error {
 			c.mutex.Lock()
 			if c.open {
 				if err := c.closer.Close(); err != nil && !strings.Contains(err.Error(), "4.4.2") {
-					c.logger.Error("Dialer close failed", map[string]interface{}{"error": err.Error()})
+					c.logger.Error("Dialer close failed", "error", err.Error())
 				} else {
 					c.logger.Debug("Dialer close success")
 				}
@@ -139,7 +139,7 @@ func (c *Component) execute(task *mailTask) error {
 
 	if !c.open {
 		if c.closer, err = c.dialer.Dial(); err != nil {
-			c.logger.Error("Dialer dial failed", map[string]interface{}{"error": err.Error()})
+			c.logger.Error("Dialer dial failed", "error", err.Error())
 			task.result <- err
 
 			return err
