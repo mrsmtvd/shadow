@@ -19,21 +19,21 @@ func ServerMiddleware(log logging.Logger) func(http.Handler) http.Handler {
 				statusCode = http.StatusOK
 			}
 
-			fields := map[string]interface{}{
-				"remote-addr":    r.RemoteAddr,
-				"method":         r.Method,
-				"request-uri":    r.RequestURI,
-				"prote":          r.Proto,
-				"code":           statusCode,
-				"content-length": r.ContentLength,
-				"referer":        r.Referer(),
-				"user-agent":     r.UserAgent(),
+			fields := []interface{}{
+				"remote-addr", r.RemoteAddr,
+				"method", r.Method,
+				"request-uri", r.RequestURI,
+				"prote", r.Proto,
+				"code", statusCode,
+				"content-length", r.ContentLength,
+				"referer", r.Referer(),
+				"user-agent", r.UserAgent(),
 			}
 
 			if statusCode/100 == 5 {
-				log.Error(http.StatusText(statusCode), fields)
+				log.Error(http.StatusText(statusCode), fields...)
 			} else {
-				log.Info(http.StatusText(statusCode), fields)
+				log.Info(http.StatusText(statusCode), fields...)
 			}
 		})
 	}
