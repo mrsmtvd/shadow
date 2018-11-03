@@ -15,7 +15,6 @@ const (
 	fieldAppName    = "app-name"
 	fieldAppVersion = "app-version"
 	fieldAppBuild   = "app-build"
-	fieldComponent  = "component"
 	fieldHostname   = "hostname"
 )
 
@@ -76,6 +75,7 @@ func (c *Component) initLogger() {
 	l := zap.New(zapcore.NewCore(encoder, output, c.level), zap.Fields(fields...))
 
 	logging.DefaultLogger().(loggerWrapper).SetLogger(l.Sugar())
+	zap.RedirectStdLog(l)
 }
 
 func (c *Component) parseFields(f string) []zap.Field {
