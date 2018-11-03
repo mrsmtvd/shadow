@@ -10,6 +10,8 @@ type wrapper struct {
 	mutex  sync.RWMutex
 	logger *zap.Logger
 	sugar  *zap.SugaredLogger
+	sub    []*wrapper
+	name   string
 }
 
 func newWrapper() *wrapper {
@@ -17,7 +19,9 @@ func newWrapper() *wrapper {
 }
 
 func newWrapperByLogger(l *zap.Logger) *wrapper {
-	w := &wrapper{}
+	w := &wrapper{
+		sub: make([]*wrapper, 0, 0),
+	}
 	w.SetLogger(l)
 
 	return w
@@ -39,13 +43,26 @@ func (w *wrapper) Logger() *zap.Logger {
 
 func (w *wrapper) SetLogger(l *zap.Logger) {
 	w.mutex.Lock()
+
 	w.logger = l
 	w.sugar = l.Sugar()
+
+	for _, sub := range w.sub {
+		sub.SetLogger(l.Named(sub.name))
+	}
+
 	w.mutex.Unlock()
 }
 
 func (w *wrapper) Named(name string) Logger {
-	return newWrapperByLogger(w.Logger().Named(name))
+	new := newWrapperByLogger(w.Logger().Named(name))
+	new.name = name
+
+	w.mutex.Lock()
+	w.sub = append(w.sub, new)
+	w.mutex.Unlock()
+
+	return new
 }
 
 func (w *wrapper) Debug(message string, args ...interface{}) {
