@@ -11,7 +11,6 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard/auth"
-	"github.com/kihamo/shadow/components/logging"
 )
 
 type Request struct {
@@ -47,10 +46,6 @@ func (r *Request) Component() shadow.Component {
 
 func (r *Request) Config() config.Component {
 	return ConfigFromContext(r.Context())
-}
-
-func (r *Request) Logger() logging.Logger {
-	return LoggingFromContext(r.Context())
 }
 
 func (r *Request) Render() Renderer {

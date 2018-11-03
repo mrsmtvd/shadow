@@ -22,7 +22,6 @@ func ContextMiddleware(application shadow.Application, router *Router, config co
 
 			ctx := context.WithValue(r.Context(), dashboard.ApplicationContextKey, application)
 			ctx = context.WithValue(ctx, dashboard.ConfigContextKey, config)
-			ctx = context.WithValue(ctx, dashboard.LoggingContextKey, logger)
 			ctx = context.WithValue(ctx, dashboard.RenderContextKey, renderer)
 			ctx = context.WithValue(ctx, dashboard.ResponseContextKey, writer)
 			ctx = context.WithValue(ctx, dashboard.RouterContextKey, router)

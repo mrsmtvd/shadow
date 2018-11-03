@@ -36,7 +36,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 
 		if r.Original().PostForm.Get("profile_"+id) != "" {
 			runProfiles = append(runProfiles, id)
-			r.Logger().Info("Run trace " + id)
+			h.Logger().Info("Run trace " + id)
 		}
 	}
 
@@ -45,7 +45,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 	}
 
 	err := trace.StartProfiles(runProfiles)
-	r.Logger().Info("Run trace: " + strings.Join(runProfiles, ", "))
+	h.Logger().Info("Run trace: " + strings.Join(runProfiles, ", "))
 
 	return err
 }
@@ -56,7 +56,7 @@ func (h *TraceHandler) actionStop(_ *dashboard.Response, r *dashboard.Request) e
 	}
 
 	err := trace.StopProfiles(r.Config().String(profiling.ConfigDumpDirectory))
-	r.Logger().Info("Stop trace")
+	h.Logger().Info("Stop trace")
 
 	return err
 }
@@ -99,7 +99,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 				return err
 			}
 
-			r.Logger().Info("Remove " + dump.GetId() + " dump from file " + dump.GetFile())
+			h.Logger().Info("Remove " + dump.GetId() + " dump from file " + dump.GetFile())
 		}
 
 		return nil
@@ -111,7 +111,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 	}
 
 	err := trace.DeleteDump(id)
-	r.Logger().Info("Remove " + id + " dump from file " + dump.GetFile())
+	h.Logger().Info("Remove " + id + " dump from file " + dump.GetFile())
 
 	return err
 }
@@ -147,7 +147,7 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 
 	} else if action == "download" {
 		if err = h.actionDownload(w, r); err != nil {
-			r.Logger().Error("Error in download trace: %s", err.Error())
+			h.Logger().Error("Error in download trace: %s", err.Error())
 		}
 
 		return

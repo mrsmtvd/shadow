@@ -62,7 +62,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 				user := r.User()
 				if user != nil {
-					r.Logger().Info("User change config "+key,
+					h.Logger().Info("User change config "+key,
 						"user.id", user.UserID,
 						"user.name", user.Name,
 					)

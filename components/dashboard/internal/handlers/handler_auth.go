@@ -44,7 +44,7 @@ func (h *AuthHandler) buildProvidersView(r *dashboard.Request) ProvidersView {
 		if p.Name() == "password" {
 			callback, err := h.redirectToExternal(r, p)
 			if err != nil {
-				r.Logger().Error("Error get redirect url for "+p.Name()+" provider", p.Name(), "error", err.Error())
+				h.Logger().Error("Error get redirect url for "+p.Name()+" provider", p.Name(), "error", err.Error())
 
 				continue
 			}
@@ -199,7 +199,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		return err
 	}
 
-	r.Logger().Debug("Auth user "+providerUser.Name+" is success",
+	h.Logger().Debug("Auth user "+providerUser.Name+" is success",
 		"auth.provider", provider.Name(),
 		"auth.user-id", providerUser.UserID,
 		"auth.email", providerUser.Email,
@@ -278,7 +278,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 			return
 		}
 
-		r.Logger().Debug("OAuth2 external redirect to " + externalUrl)
+		h.Logger().Debug("OAuth2 external redirect to " + externalUrl)
 		h.Redirect(externalUrl, http.StatusTemporaryRedirect, w, r)
 	} else {
 		if err = h.auth(r, provider); err != nil {
@@ -287,7 +287,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		}
 
 		authUrl := h.getRedirectToLastURL(r)
-		r.Logger().Debug("Redirect to " + authUrl + " after success auth")
+		h.Logger().Debug("Redirect to " + authUrl + " after success auth")
 		h.Redirect(authUrl, http.StatusTemporaryRedirect, w, r)
 	}
 }

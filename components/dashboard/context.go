@@ -5,14 +5,12 @@ import (
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logging"
 )
 
 var (
 	ApplicationContextKey = &ContextKey{"application"}
 	ComponentContextKey   = &ContextKey{"component"}
 	ConfigContextKey      = &ContextKey{"config"}
-	LoggingContextKey     = &ContextKey{"logging"}
 	PanicContextKey       = &ContextKey{"panic"}
 	RenderContextKey      = &ContextKey{"render"}
 	RequestContextKey     = &ContextKey{"request"}
@@ -52,15 +50,6 @@ func ConfigFromContext(c context.Context) config.Component {
 	v := c.Value(ConfigContextKey)
 	if v != nil {
 		return v.(config.Component)
-	}
-
-	return nil
-}
-
-func LoggingFromContext(c context.Context) logging.Logger {
-	v := c.Value(LoggingContextKey)
-	if v != nil {
-		return v.(logging.Logger)
 	}
 
 	return nil

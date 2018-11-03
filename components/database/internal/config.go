@@ -114,19 +114,25 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchAllowUseMasterAsSlave(_ string, newValue interface{}, _ interface{}) {
-	if newValue.(bool) {
-		c.Storage().AllowUseMasterAsSlave()
-	} else {
-		c.Storage().DisallowUseMasterAsSlave()
+	if s := c.Storage(); s != nil {
+		if newValue.(bool) {
+			c.Storage().AllowUseMasterAsSlave()
+		} else {
+			c.Storage().DisallowUseMasterAsSlave()
+		}
 	}
 }
 
 func (c *Component) watchBalancer(_ string, newValue interface{}, _ interface{}) {
-	c.initBalancer(c.Storage(), newValue.(string))
+	if s := c.Storage(); s != nil {
+		c.initBalancer(s, newValue.(string))
+	}
 }
 
 func (c *Component) watchDebug(_ string, newValue interface{}, _ interface{}) {
-	c.initTrace(c.Storage(), newValue.(bool))
+	if s := c.Storage(); s != nil {
+		c.initTrace(s, newValue.(bool))
+	}
 }
 
 func (c *Component) watchMigrationsTable(_ string, newValue interface{}, _ interface{}) {
@@ -138,13 +144,19 @@ func (c *Component) watchMigrationsSchema(_ string, newValue interface{}, _ inte
 }
 
 func (c *Component) watchMaxIdleConns(_ string, newValue interface{}, _ interface{}) {
-	c.Storage().(*storage.SQL).SetMaxIdleConns(newValue.(int))
+	if s := c.Storage(); s != nil {
+		s.(*storage.SQL).SetMaxIdleConns(newValue.(int))
+	}
 }
 
 func (c *Component) watchMaxOpenConns(_ string, newValue interface{}, _ interface{}) {
-	c.Storage().(*storage.SQL).SetMaxOpenConns(newValue.(int))
+	if s := c.Storage(); s != nil {
+		s.(*storage.SQL).SetMaxOpenConns(newValue.(int))
+	}
 }
 
 func (c *Component) watchConnMaxLifetime(_ string, newValue interface{}, _ interface{}) {
-	c.Storage().(*storage.SQL).SetConnMaxLifetime(newValue.(time.Duration))
+	if s := c.Storage(); s != nil {
+		s.(*storage.SQL).SetConnMaxLifetime(newValue.(time.Duration))
+	}
 }

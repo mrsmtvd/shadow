@@ -30,5 +30,5 @@ func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		"panic": fields,
 	})
 
-	r.Logger().Error("Frontend request error", fields)
+	h.Logger().Error("Frontend request error", fields)
 }
