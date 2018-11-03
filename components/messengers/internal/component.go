@@ -11,7 +11,7 @@ import (
 	"github.com/kihamo/shadow/components/annotations"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/messengers"
 	storages "github.com/kihamo/shadow/components/messengers/internal/annotations"
 	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
@@ -23,7 +23,7 @@ type Component struct {
 	application shadow.Application
 	annotations annotations.Component
 	config      config.Component
-	logger      logger.Logger
+	logger      logging.Logger
 	messengers  map[string]messengers.Messenger
 }
 
@@ -48,7 +48,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Name: i18n.ComponentName,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: logging.ComponentName,
 		},
 	}
 }
@@ -66,7 +66,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logger.NewOrNop(c.Name(), c.application)
+	c.logger = logging.NewOrNop(c.Name(), c.application)
 
 	c.initTelegram()
 	c.initAnnotationsStorageTelegram()

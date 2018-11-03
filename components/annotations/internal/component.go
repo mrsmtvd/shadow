@@ -12,7 +12,7 @@ import (
 	"github.com/kihamo/shadow/components/annotations/storage"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 )
 
 type Component struct {
@@ -20,7 +20,7 @@ type Component struct {
 
 	application shadow.Application
 	config      config.Component
-	logger      logger.Logger
+	logger      logging.Logger
 
 	storages map[string]annotations.Storage
 }
@@ -43,7 +43,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Name: i18n.ComponentName,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: logging.ComponentName,
 		},
 	}
 }
@@ -57,7 +57,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logger.NewOrNop(c.Name(), c.application)
+	c.logger = logging.NewOrNop(c.Name(), c.application)
 
 	c.initStorageGrafana()
 

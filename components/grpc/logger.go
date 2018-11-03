@@ -1,17 +1,17 @@
 package grpc
 
 import (
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	"google.golang.org/grpc/grpclog"
 )
 
 type Logger struct {
 	grpclog.LoggerV2
 
-	logger logger.Logger
+	logger logging.Logger
 }
 
-func NewLogger(l logger.Logger) *Logger {
+func NewLogger(l logging.Logger) *Logger {
 	return &Logger{
 		logger: l,
 	}

@@ -7,7 +7,7 @@ import (
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/shadow/components/tracing"
 	"github.com/kihamo/shadow/components/tracing/internal/tracer"
@@ -38,7 +38,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Required: true,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: logging.ComponentName,
 		},
 		{
 			Name: metrics.ComponentName,
@@ -116,8 +116,8 @@ func (c *Component) initTracer() error {
 
 	options := make([]jconfig.Option, 0, 0)
 
-	if c.application.HasComponent(logger.ComponentName) {
-		log := logger.NewOrNop(c.Name(), c.application)
+	if c.application.HasComponent(logging.ComponentName) {
+		log := logging.NewOrNop(c.Name(), c.application)
 		options = append(options, jconfig.Logger(NewLogger(log)))
 	}
 

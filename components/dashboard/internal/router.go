@@ -11,7 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 )
 
 const (
@@ -23,7 +23,7 @@ type Router struct {
 
 	mutex      sync.RWMutex
 	chain      alice.Chain
-	logger     logger.Logger
+	logger     logging.Logger
 	routes     []dashboard.Route
 	callerSkip int
 }
@@ -46,7 +46,7 @@ func FromRouteHandler(h RouterHandler) http.Handler {
 	})
 }
 
-func NewRouter(l logger.Logger, skip int) *Router {
+func NewRouter(l logging.Logger, skip int) *Router {
 	r := &Router{
 		chain:      alice.New(),
 		logger:     l,

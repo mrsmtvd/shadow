@@ -12,10 +12,10 @@
 package internal
 
 import (
-	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -90,7 +90,7 @@ func templatesViewsTraceHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/views/trace.html", size: 8752, mode: os.FileMode(420), modTime: time.Unix(1522000076, 0)}
+	info := bindataFileInfo{name: "templates/views/trace.html", size: 8752, mode: os.FileMode(420), modTime: time.Unix(1540767205, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -110,7 +110,7 @@ func assetsJsTraceMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/trace.min.js", size: 102, mode: os.FileMode(420), modTime: time.Unix(1522441472, 0)}
+	info := bindataFileInfo{name: "assets/js/trace.min.js", size: 102, mode: os.FileMode(420), modTime: time.Unix(1541260564, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -130,7 +130,7 @@ func assetsVendorsFlipclockCssFlipclockMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/flipclock/css/flipclock.min.css", size: 7618, mode: os.FileMode(420), modTime: time.Unix(1522441462, 0)}
+	info := bindataFileInfo{name: "assets/vendors/flipclock/css/flipclock.min.css", size: 7618, mode: os.FileMode(420), modTime: time.Unix(1541260561, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -150,7 +150,7 @@ func assetsVendorsFlipclockJsFlipclockMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/flipclock/js/flipclock.min.js", size: 20851, mode: os.FileMode(420), modTime: time.Unix(1522441462, 0)}
+	info := bindataFileInfo{name: "assets/vendors/flipclock/js/flipclock.min.js", size: 20851, mode: os.FileMode(420), modTime: time.Unix(1541260562, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -170,7 +170,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1003, mode: os.FileMode(420), modTime: time.Unix(1522441488, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1003, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -190,7 +190,7 @@ func localesRuLc_messagesProfilingMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/profiling.mo", size: 512, mode: os.FileMode(420), modTime: time.Unix(1522441488, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/profiling.mo", size: 512, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -210,7 +210,7 @@ func localesRuLc_messagesTraceMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/trace.mo", size: 2775, mode: os.FileMode(420), modTime: time.Unix(1522441488, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/trace.mo", size: 2775, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -267,13 +267,13 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/trace.html": templatesViewsTraceHtml,
-	"assets/js/trace.min.js": assetsJsTraceMinJs,
+	"templates/views/trace.html":                     templatesViewsTraceHtml,
+	"assets/js/trace.min.js":                         assetsJsTraceMinJs,
 	"assets/vendors/flipclock/css/flipclock.min.css": assetsVendorsFlipclockCssFlipclockMinCss,
-	"assets/vendors/flipclock/js/flipclock.min.js": assetsVendorsFlipclockJsFlipclockMinJs,
-	"locales/ru/LC_MESSAGES/config.mo": localesRuLc_messagesConfigMo,
-	"locales/ru/LC_MESSAGES/profiling.mo": localesRuLc_messagesProfilingMo,
-	"locales/ru/LC_MESSAGES/trace.mo": localesRuLc_messagesTraceMo,
+	"assets/vendors/flipclock/js/flipclock.min.js":   assetsVendorsFlipclockJsFlipclockMinJs,
+	"locales/ru/LC_MESSAGES/config.mo":               localesRuLc_messagesConfigMo,
+	"locales/ru/LC_MESSAGES/profiling.mo":            localesRuLc_messagesProfilingMo,
+	"locales/ru/LC_MESSAGES/trace.mo":                localesRuLc_messagesTraceMo,
 }
 
 // AssetDir returns the file names below a certain
@@ -315,6 +315,7 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"assets": &bintree{nil, map[string]*bintree{
 		"js": &bintree{nil, map[string]*bintree{
@@ -334,9 +335,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
-				"config.mo": &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
+				"config.mo":    &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
 				"profiling.mo": &bintree{localesRuLc_messagesProfilingMo, map[string]*bintree{}},
-				"trace.mo": &bintree{localesRuLc_messagesTraceMo, map[string]*bintree{}},
+				"trace.mo":     &bintree{localesRuLc_messagesTraceMo, map[string]*bintree{}},
 			}},
 		}},
 	}},
@@ -393,7 +394,6 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

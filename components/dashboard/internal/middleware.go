@@ -9,10 +9,10 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 )
 
-func ContextMiddleware(application shadow.Application, router *Router, config config.Component, logger logger.Logger, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
+func ContextMiddleware(application shadow.Application, router *Router, config config.Component, logger logging.Logger, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := dashboard.NewResponse(w)
@@ -22,7 +22,7 @@ func ContextMiddleware(application shadow.Application, router *Router, config co
 
 			ctx := context.WithValue(r.Context(), dashboard.ApplicationContextKey, application)
 			ctx = context.WithValue(ctx, dashboard.ConfigContextKey, config)
-			ctx = context.WithValue(ctx, dashboard.LoggerContextKey, logger)
+			ctx = context.WithValue(ctx, dashboard.LoggingContextKey, logger)
 			ctx = context.WithValue(ctx, dashboard.RenderContextKey, renderer)
 			ctx = context.WithValue(ctx, dashboard.ResponseContextKey, writer)
 			ctx = context.WithValue(ctx, dashboard.RouterContextKey, router)

@@ -3,16 +3,16 @@ package internal
 import (
 	"strings"
 
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/uber/jaeger-client-go"
 )
 
 type Logger struct {
 	jaeger.Logger
-	logger logger.Logger
+	logger logging.Logger
 }
 
-func NewLogger(l logger.Logger) *Logger {
+func NewLogger(l logging.Logger) *Logger {
 	return &Logger{
 		logger: l,
 	}

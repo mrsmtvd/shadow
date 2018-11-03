@@ -11,7 +11,7 @@ import (
 	"github.com/kihamo/shadow/components/grpc/server"
 	"github.com/kihamo/shadow/components/grpc/stats"
 	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	g "google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/health"
@@ -23,7 +23,7 @@ import (
 type Component struct {
 	application shadow.Application
 	config      config.Component
-	logger      logger.Logger
+	logger      logging.Logger
 	server      *g.Server
 	routes      []dashboard.Route
 }
@@ -46,7 +46,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Name: i18n.ComponentName,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: logging.ComponentName,
 		},
 	}
 }
@@ -59,7 +59,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logger.NewOrNop(c.Name(), c.application)
+	c.logger = logging.NewOrNop(c.Name(), c.application)
 	grpclog.SetLoggerV2(grpc.NewLogger(c.logger))
 
 	components, err := c.application.GetComponents()

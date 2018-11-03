@@ -14,7 +14,7 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 )
 
 func EnvKey(name string) string {
@@ -34,7 +34,7 @@ type variableSort struct {
 type Component struct {
 	mutex         sync.RWMutex
 	application   shadow.Application
-	logger        logger.Logger
+	logger        logging.Logger
 	envPrefix     string
 	variables     map[string]config.Variable
 	variablesSort []*variableSort
@@ -215,9 +215,9 @@ func (c *Component) Watch(watcher config.Watcher, source string) {
 	}
 }
 
-func (c *Component) log() logger.Logger {
+func (c *Component) log() logging.Logger {
 	if c.logger == nil {
-		c.logger = logger.NewOrNop(c.Name(), c.application)
+		c.logger = logging.NewOrNop(c.Name(), c.application)
 	}
 
 	return c.logger

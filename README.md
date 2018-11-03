@@ -11,6 +11,7 @@ Development
 brew install protobuf
 brew install bower
 brew install grpc
+go get -u github.com/golang/protobuf/protoc-gen-go
 
 npm install
 bower install

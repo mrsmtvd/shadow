@@ -17,7 +17,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard/auth"
 	"github.com/kihamo/shadow/components/dashboard/auth/providers/password"
 	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
@@ -27,7 +27,7 @@ import (
 type Component struct {
 	application shadow.Application
 	config      config.Component
-	logger      logger.Logger
+	logger      logging.Logger
 	renderer    *Renderer
 	session     *scs.Manager
 	routes      []dashboard.Route
@@ -53,7 +53,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Name: i18n.ComponentName,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: logging.ComponentName,
 		},
 	}
 }
@@ -66,7 +66,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() (err error) {
-	c.logger = logger.NewOrNop(c.Name(), c.application)
+	c.logger = logging.NewOrNop(c.Name(), c.application)
 
 	if err := c.loadTemplates(); err != nil {
 		return err

@@ -9,7 +9,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logger"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/mail"
 	"github.com/kihamo/shadow/components/metrics"
 	"gopkg.in/gomail.v2"
@@ -27,7 +27,7 @@ type mailTask struct {
 type Component struct {
 	application shadow.Application
 	config      config.Component
-	logger      logger.Logger
+	logger      logging.Logger
 	routes      []dashboard.Route
 
 	mutex          sync.RWMutex
@@ -59,7 +59,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Name: i18n.ComponentName,
 		},
 		{
-			Name: logger.ComponentName,
+			Name: logging.ComponentName,
 		},
 		{
 			Name: metrics.ComponentName,
@@ -78,7 +78,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logger.NewOrNop(c.Name(), c.application)
+	c.logger = logging.NewOrNop(c.Name(), c.application)
 
 	c.initDialer(
 		c.config.String(mail.ConfigSmtpHost),
