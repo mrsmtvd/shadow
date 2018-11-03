@@ -62,17 +62,13 @@ func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface
 }
 
 func (c *Component) watchLoggerStacktraceLevel(_ string, newValue interface{}, _ interface{}) {
-	w := c.Logger().(wrapper)
-	current := w.Logger()
-	new := current.WithOptions(zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))))
-
-	w.SetLogger(new)
+	c.wrapper.SetLogger(c.wrapper.Logger().WithOptions(
+		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))),
+	))
 }
 
 func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue interface{}) {
-	w := c.Logger().(wrapper)
-	current := w.Logger()
-	new := current.WithOptions(zap.Fields(c.parseFields(newValue.(string))...))
-
-	w.SetLogger(new)
+	c.wrapper.SetLogger(c.wrapper.Logger().WithOptions(
+		zap.Fields(c.parseFields(newValue.(string))...),
+	))
 }

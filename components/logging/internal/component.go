@@ -22,6 +22,7 @@ type Component struct {
 	application shadow.Application
 	config      config.Component
 	level       zap.AtomicLevel
+	wrapper     wrapper
 }
 
 func (c *Component) Name() string {
@@ -45,6 +46,7 @@ func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.level = zap.NewAtomicLevel()
+	c.wrapper = logging.DefaultLogger().(wrapper)
 
 	return nil
 }
@@ -67,7 +69,7 @@ func (c *Component) initLogger() {
 		zap.AddCallerSkip(1),
 		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))))
 
-	c.Logger().(wrapper).SetLogger(l)
+	c.wrapper.SetLogger(l)
 	zap.RedirectStdLog(l)
 }
 
@@ -98,4 +100,16 @@ func (c *Component) parseFields(f string) []zap.Field {
 
 func (c *Component) Logger() logging.Logger {
 	return logging.DefaultLogger()
+}
+
+func (c *Component) Shutdown() error {
+	if err := c.wrapper.Logger().Sync(); err != nil {
+		return err
+	}
+
+	if err := c.wrapper.Sugar().Sync(); err != nil {
+		return err
+	}
+
+	return nil
 }
