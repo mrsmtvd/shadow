@@ -9,10 +9,9 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
-	"github.com/kihamo/shadow/components/logging"
 )
 
-func ContextMiddleware(application shadow.Application, router *Router, config config.Component, logger logging.Logger, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
+func ContextMiddleware(application shadow.Application, router *Router, config config.Component, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := dashboard.NewResponse(w)

@@ -22,7 +22,7 @@ func (c *Component) getServeMux() (*Router, error) {
 	router.SetNotAllowedHandler(&handlers.MethodNotAllowedHandler{})
 
 	// Middleware
-	router.addMiddleware(ContextMiddleware(c.application, router, c.config, c.logger, c.renderer, c.session))
+	router.addMiddleware(ContextMiddleware(c.application, router, c.config, c.renderer, c.session))
 
 	for _, component := range components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {

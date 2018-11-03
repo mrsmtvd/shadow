@@ -18,10 +18,6 @@ const (
 	fieldHostname   = "hostname"
 )
 
-type loggerWrapper interface {
-	SetLogger(l *zap.SugaredLogger)
-}
-
 type Component struct {
 	application shadow.Application
 	config      config.Component
@@ -60,21 +56,18 @@ func (c *Component) Run() error {
 }
 
 func (c *Component) initLogger() {
-	fields := c.parseFields(c.config.String(logging.ConfigFields))
-	fields = append(fields, zap.String(fieldAppName, c.application.Name()))
-	fields = append(fields, zap.String(fieldAppVersion, c.application.Version()))
-	fields = append(fields, zap.String(fieldAppBuild, c.application.Build()))
-	if hostname, err := os.Hostname(); err == nil {
-		fields = append(fields, zap.String(fieldHostname, hostname))
-	}
-
 	output := zapcore.Lock(os.Stderr)
 	encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-	c.level.SetLevel(zapcore.Level(c.config.Uint64(logging.ConfigLevel)))
+	c.level.SetLevel(zapcore.Level(c.config.Int64(logging.ConfigLevel)))
 
-	l := zap.New(zapcore.NewCore(encoder, output, c.level), zap.Fields(fields...))
+	l := zap.New(
+		zapcore.NewCore(encoder, output, c.level),
+		zap.Fields(c.parseFields(c.config.String(logging.ConfigFields))...),
+		zap.AddCaller(),
+		zap.AddCallerSkip(1),
+		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))))
 
-	logging.DefaultLogger().(loggerWrapper).SetLogger(l.Sugar())
+	c.Logger().(wrapper).SetLogger(l)
 	zap.RedirectStdLog(l)
 }
 
@@ -91,6 +84,13 @@ func (c *Component) parseFields(f string) []zap.Field {
 		if parts = strings.Split(tag, "="); len(parts) > 1 {
 			fields = append(fields, zap.String(strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])))
 		}
+	}
+
+	fields = append(fields, zap.String(fieldAppName, c.application.Name()))
+	fields = append(fields, zap.String(fieldAppVersion, c.application.Version()))
+	fields = append(fields, zap.String(fieldAppBuild, c.application.Build()))
+	if hostname, err := os.Hostname(); err == nil {
+		fields = append(fields, zap.String(fieldHostname, hostname))
 	}
 
 	return fields

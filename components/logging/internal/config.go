@@ -3,15 +3,32 @@ package internal
 import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logging"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(logging.ConfigLevel, config.ValueTypeInt).
-			WithUsage("Log level in format RFC5424").
+			WithUsage("Log level").
 			WithEditable(true).
-			WithDefault(zapcore.InfoLevel).
+			WithDefault(int8(zapcore.InfoLevel)).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{int8(zapcore.DebugLevel), "Debug"},
+					{int8(zapcore.InfoLevel), "Informational"},
+					{int8(zapcore.WarnLevel), "Warning"},
+					{int8(zapcore.ErrorLevel), "Error"},
+					{int8(zapcore.PanicLevel), "Panic"},
+					{int8(zapcore.DPanicLevel), "Development panic"},
+					{int8(zapcore.FatalLevel), "Fatal"},
+				},
+			}),
+		config.NewVariable(logging.ConfigStacktraceLevel, config.ValueTypeInt).
+			WithUsage("Stacktrace log level").
+			WithEditable(true).
+			WithDefault(int8(zapcore.FatalLevel)).
 			WithView([]string{config.ViewEnum}).
 			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
@@ -35,14 +52,27 @@ func (c *Component) ConfigVariables() []config.Variable {
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher([]string{logging.ConfigLevel}, c.watchLoggerLevel),
+		config.NewWatcher([]string{logging.ConfigStacktraceLevel}, c.watchLoggerStacktraceLevel),
 		config.NewWatcher([]string{logging.ConfigFields}, c.watchLoggerFields),
 	}
 }
 
 func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface{}) {
-	c.level.SetLevel(zapcore.Level(c.config.Uint64(logging.ConfigLevel)))
+	c.level.SetLevel(zapcore.Level(c.config.Int64(logging.ConfigLevel)))
+}
+
+func (c *Component) watchLoggerStacktraceLevel(_ string, newValue interface{}, _ interface{}) {
+	w := c.Logger().(wrapper)
+	current := w.Logger()
+	new := current.WithOptions(zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))))
+
+	w.SetLogger(new)
 }
 
 func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue interface{}) {
-	c.initLogger()
+	w := c.Logger().(wrapper)
+	current := w.Logger()
+	new := current.WithOptions(zap.Fields(c.parseFields(newValue.(string))...))
+
+	w.SetLogger(new)
 }

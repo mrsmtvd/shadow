@@ -8,71 +8,90 @@ import (
 
 type wrapper struct {
 	mutex  sync.RWMutex
-	logger *zap.SugaredLogger
+	logger *zap.Logger
+	sugar  *zap.SugaredLogger
 }
 
 func newWrapper() *wrapper {
-	return &wrapper{
-		logger: zap.NewNop().Sugar(),
-	}
+	return newWrapperByLogger(zap.NewNop())
 }
 
-func (w *wrapper) SetLogger(l *zap.SugaredLogger) {
+func newWrapperByLogger(l *zap.Logger) *wrapper {
+	w := &wrapper{}
+	w.SetLogger(l)
+
+	return w
+}
+
+func (w *wrapper) Sugar() *zap.SugaredLogger {
+	w.mutex.RLock()
+	defer w.mutex.RUnlock()
+
+	return w.sugar
+}
+
+func (w *wrapper) Logger() *zap.Logger {
+	w.mutex.RLock()
+	defer w.mutex.RUnlock()
+
+	return w.logger
+}
+
+func (w *wrapper) SetLogger(l *zap.Logger) {
 	w.mutex.Lock()
 	w.logger = l
+	w.sugar = l.Sugar()
 	w.mutex.Unlock()
 }
 
 func (w *wrapper) Named(name string) Logger {
-	return &wrapper{
-		logger: w.logger.Named(name),
-	}
+	return newWrapperByLogger(w.Logger().Named(name))
 }
 
 func (w *wrapper) Debug(message string, args ...interface{}) {
-	w.logger.Debugw(message, args...)
+	w.Sugar().Debugw(message, args...)
 }
 
 func (w *wrapper) Debugf(template string, args ...interface{}) {
-	w.logger.Debugf(template, args...)
+	w.Sugar().Debugf(template, args...)
 }
 
 func (w *wrapper) Info(message string, args ...interface{}) {
-	w.logger.Infow(message, args...)
+	w.Sugar().Infow(message, args...)
 }
 
 func (w *wrapper) Infof(template string, args ...interface{}) {
-	w.logger.Infof(template, args...)
+	w.Sugar().Infof(template, args...)
 }
 
 func (w *wrapper) Warn(message string, args ...interface{}) {
-	w.logger.Warnw(message, args...)
+	w.Sugar().Warnw(message, args...)
 }
 
 func (w *wrapper) Warnf(template string, args ...interface{}) {
-	w.logger.Warnf(template, args...)
+	w.Sugar().Warnf(template, args...)
 }
 
 func (w *wrapper) Error(message string, args ...interface{}) {
-	w.logger.Errorw(message, args...)
+	w.Sugar().Errorw(message, args...)
 }
 
 func (w *wrapper) Errorf(template string, args ...interface{}) {
-	w.logger.Errorf(template, args...)
+	w.Sugar().Errorf(template, args...)
 }
 
 func (w *wrapper) Panic(message string, args ...interface{}) {
-	w.logger.Panicw(message, args...)
+	w.Sugar().Panicw(message, args...)
 }
 
 func (w *wrapper) Panicf(template string, args ...interface{}) {
-	w.logger.Panicf(template, args...)
+	w.Sugar().Panicf(template, args...)
 }
 
 func (w *wrapper) Fatal(message string, args ...interface{}) {
-	w.logger.Fatalw(message, args...)
+	w.Sugar().Fatalw(message, args...)
 }
 
 func (w *wrapper) Fatalf(template string, args ...interface{}) {
-	w.logger.Fatalf(template, args...)
+	w.Sugar().Fatalf(template, args...)
 }
