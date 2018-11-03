@@ -95,3 +95,7 @@ func (c *Component) parseFields(f string) []zap.Field {
 
 	return fields
 }
+
+func (c *Component) Logger() logging.Logger {
+	return logging.DefaultLogger()
+}
