@@ -133,7 +133,7 @@ func assetsCssMigrationsMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1541260563, 0)}
+	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1541273607, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -153,7 +153,7 @@ func assetsJsMigrationsMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1541260563, 0)}
+	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1541273607, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -173,7 +173,7 @@ func assetsVendorsHighlightjsCssTomorrowMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1541260560, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1541273597, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -193,7 +193,7 @@ func assetsVendorsHighlightjsJsHighlightPackMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1541260564, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1541273607, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -213,7 +213,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 2422, mode: os.FileMode(420), modTime: time.Unix(1541260569, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 2422, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -233,7 +233,7 @@ func localesRuLc_messagesDatabaseMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/database.mo", size: 568, mode: os.FileMode(420), modTime: time.Unix(1541260569, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/database.mo", size: 568, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -253,7 +253,7 @@ func localesRuLc_messagesMigrationsMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/migrations.mo", size: 779, mode: os.FileMode(420), modTime: time.Unix(1541260569, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/migrations.mo", size: 779, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -273,7 +273,7 @@ func localesRuLc_messagesStatusMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/status.mo", size: 694, mode: os.FileMode(420), modTime: time.Unix(1541260569, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/status.mo", size: 694, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

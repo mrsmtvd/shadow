@@ -107,7 +107,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1455, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1455, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func localesRuLc_messagesListMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/list.mo", size: 1188, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/list.mo", size: 1188, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func localesRuLc_messagesMetricsMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/metrics.mo", size: 465, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/metrics.mo", size: 465, mode: os.FileMode(420), modTime: time.Unix(1541273625, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

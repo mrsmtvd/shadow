@@ -66,7 +66,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() (err error) {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	if err := c.loadTemplates(); err != nil {
 		return err
@@ -93,10 +93,10 @@ func (c *Component) Run() (err error) {
 		return err
 	}
 
-	c.logger.Info("Running service", map[string]interface{}{
-		"addr": addr,
-		"pid":  os.Getpid(),
-	})
+	c.logger.Info("Running service",
+		"addr", addr,
+		"pid", os.Getpid(),
+	)
 
 	c.server = &http.Server{
 		Handler: c.router,

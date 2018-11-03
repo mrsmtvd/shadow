@@ -79,7 +79,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	if err := c.initStorage(); err != nil {
 		return err

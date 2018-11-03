@@ -6,6 +6,4 @@ import (
 
 type Component interface {
 	shadow.Component
-
-	Get(key string) Logger
 }

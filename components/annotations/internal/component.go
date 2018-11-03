@@ -57,7 +57,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	c.initStorageGrafana()
 
@@ -150,7 +150,7 @@ func (c *Component) initStorageGrafana() {
 		c.config.String(annotations.ConfigStorageGrafanaUsername),
 		c.config.String(annotations.ConfigStorageGrafanaPassword),
 		dashboards,
-		c.logger)
+		&logger{c.logger})
 
 	c.AddStorage(annotations.StorageGrafana, s)
 }

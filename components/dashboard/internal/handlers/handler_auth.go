@@ -44,9 +44,7 @@ func (h *AuthHandler) buildProvidersView(r *dashboard.Request) ProvidersView {
 		if p.Name() == "password" {
 			callback, err := h.redirectToExternal(r, p)
 			if err != nil {
-				r.Logger().Errorf("Error get redirect url for %s provider", p.Name(), map[string]interface{}{
-					"error": err.Error(),
-				})
+				r.Logger().Error("Error get redirect url for "+p.Name()+" provider", p.Name(), "error", err.Error())
 
 				continue
 			}
@@ -201,15 +199,15 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		return err
 	}
 
-	r.Logger().Debugf("Auth user %s is success", providerUser.Name, map[string]interface{}{
-		"auth.provider":            provider.Name(),
-		"auth.user-id":             providerUser.UserID,
-		"auth.email":               providerUser.Email,
-		"auth.access-token":        providerUser.AccessToken,
-		"auth.access-token-secret": providerUser.AccessTokenSecret,
-		"auth.refresh-token":       providerUser.RefreshToken,
-		"auth.expires":             providerUser.ExpiresAt,
-	})
+	r.Logger().Debug("Auth user "+providerUser.Name+" is success",
+		"auth.provider", provider.Name(),
+		"auth.user-id", providerUser.UserID,
+		"auth.email", providerUser.Email,
+		"auth.access-token", providerUser.AccessToken,
+		"auth.access-token-secret", providerUser.AccessTokenSecret,
+		"auth.refresh-token", providerUser.RefreshToken,
+		"auth.expires", providerUser.ExpiresAt,
+	)
 
 	if err = session.PutObject(dashboard.SessionUser, auth.NewUser(providerUser)); err != nil {
 		return err
@@ -280,7 +278,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 			return
 		}
 
-		r.Logger().Debugf("OAuth2 external redirect to %s", externalUrl)
+		r.Logger().Debug("OAuth2 external redirect to " + externalUrl)
 		h.Redirect(externalUrl, http.StatusTemporaryRedirect, w, r)
 	} else {
 		if err = h.auth(r, provider); err != nil {
@@ -289,7 +287,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		}
 
 		authUrl := h.getRedirectToLastURL(r)
-		r.Logger().Debugf("Redirect to %s after success auth", authUrl)
+		r.Logger().Debug("Redirect to " + authUrl + " after success auth")
 		h.Redirect(authUrl, http.StatusTemporaryRedirect, w, r)
 	}
 }

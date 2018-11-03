@@ -18,11 +18,11 @@ func NewLogger(l logging.Logger) *Logger {
 }
 
 func (l *Logger) Info(args ...interface{}) {
-	l.logger.Info(args...)
+	l.logger.Info("", args...)
 }
 
 func (l *Logger) Infoln(args ...interface{}) {
-	l.logger.Info(args...)
+	l.logger.Info("", args...)
 }
 
 func (l *Logger) Infof(format string, args ...interface{}) {
@@ -30,11 +30,11 @@ func (l *Logger) Infof(format string, args ...interface{}) {
 }
 
 func (l *Logger) Warning(args ...interface{}) {
-	l.logger.Warn(args...)
+	l.logger.Warn("", args...)
 }
 
 func (l *Logger) Warningln(args ...interface{}) {
-	l.logger.Warn(args...)
+	l.logger.Warn("", args...)
 }
 
 func (l *Logger) Warningf(format string, args ...interface{}) {
@@ -42,11 +42,11 @@ func (l *Logger) Warningf(format string, args ...interface{}) {
 }
 
 func (l *Logger) Error(args ...interface{}) {
-	l.logger.Error(args...)
+	l.logger.Error("", args...)
 }
 
 func (l *Logger) Errorln(args ...interface{}) {
-	l.logger.Error(args...)
+	l.logger.Error("", args...)
 }
 
 func (l *Logger) Errorf(format string, args ...interface{}) {
@@ -54,11 +54,11 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 }
 
 func (l *Logger) Fatal(args ...interface{}) {
-	l.logger.Fatal(args...)
+	l.logger.Fatal("", args...)
 }
 
 func (l *Logger) Fatalln(args ...interface{}) {
-	l.logger.Fatal(args...)
+	l.logger.Fatal("", args...)
 }
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {

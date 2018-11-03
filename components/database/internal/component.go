@@ -63,7 +63,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	var slaves []string
 	if slavesFromConfig := c.config.String(database.ConfigDsnSlaves); slavesFromConfig != "" {
@@ -122,7 +122,7 @@ func (c *Component) Run() error {
 
 func (c *Component) initTrace(s database.Storage, d bool) {
 	if d {
-		s.(*storage.SQL).TraceOn(c.logger)
+		s.(*storage.SQL).TraceOn(&logger{c.logger})
 	} else {
 		s.(*storage.SQL).TraceOff()
 	}

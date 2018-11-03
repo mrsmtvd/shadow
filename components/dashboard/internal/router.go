@@ -152,12 +152,12 @@ func (r *Router) addRoute(route dashboard.Route) {
 	}
 
 	for i, method := range route.Methods() {
-		r.logger.Debug("Add handler", map[string]interface{}{
-			"handler": route.HandlerName(),
-			"method":  method,
-			"path":    route.Path(),
-			"auth":    route.Auth(),
-		})
+		r.logger.Debug("Add handler",
+			"handler", route.HandlerName(),
+			"method", method,
+			"path", route.Path(),
+			"auth", route.Auth(),
+		)
 
 		localChan := alice.New(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

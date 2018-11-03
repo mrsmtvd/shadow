@@ -59,7 +59,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 	grpclog.SetLoggerV2(grpc.NewLogger(c.logger))
 
 	components, err := c.application.GetComponents()
@@ -102,7 +102,7 @@ func (c *Component) Run() error {
 		healthServer.SetServingStatus(service, grpc_health_v1.HealthCheckResponse_SERVING)
 
 		for _, method := range info.Methods {
-			c.logger.Debugf("Add method /%s/%s", service, method.Name)
+			c.logger.Debug("Add method /" + service + "/" + method.Name)
 		}
 	}
 
@@ -117,10 +117,10 @@ func (c *Component) Run() error {
 		return err
 	}
 
-	c.logger.Info("Running service", map[string]interface{}{
-		"addr": addr,
-		"pid":  os.Getpid(),
-	})
+	c.logger.Info("Running service",
+		"addr", addr,
+		"pid", os.Getpid(),
+	)
 
 	if err := c.server.Serve(lis); err != nil {
 		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())

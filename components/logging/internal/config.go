@@ -3,7 +3,7 @@ package internal
 import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/logging/output"
+	"go.uber.org/zap/zapcore"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {
@@ -11,18 +11,17 @@ func (c *Component) ConfigVariables() []config.Variable {
 		config.NewVariable(logging.ConfigLevel, config.ValueTypeInt).
 			WithUsage("Log level in format RFC5424").
 			WithEditable(true).
-			WithDefault(logging.LevelInformational).
+			WithDefault(zapcore.InfoLevel).
 			WithView([]string{config.ViewEnum}).
 			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
-					{logging.LevelEmergency, "Emergency"},
-					{logging.LevelAlert, "Alert"},
-					{logging.LevelCritical, "Critical"},
-					{logging.LevelError, "Error"},
-					{logging.LevelWarning, "Warning"},
-					{logging.LevelNotice, "Notice"},
-					{logging.LevelInformational, "Informational"},
-					{logging.LevelDebug, "Debug"},
+					{int8(zapcore.DebugLevel), "Debug"},
+					{int8(zapcore.InfoLevel), "Informational"},
+					{int8(zapcore.WarnLevel), "Warning"},
+					{int8(zapcore.ErrorLevel), "Error"},
+					{int8(zapcore.PanicLevel), "Panic"},
+					{int8(zapcore.DPanicLevel), "Development panic"},
+					{int8(zapcore.FatalLevel), "Fatal"},
 				},
 			}),
 		config.NewVariable(logging.ConfigFields, config.ValueTypeString).
@@ -41,47 +40,9 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	level := output.ConvertLoggerToXLogLevel(c.getLevel())
-
-	for key := range c.loggers {
-		c.loggers[key].(*output.WrapperXLog).SetLevel(level)
-	}
+	c.level.SetLevel(zapcore.Level(c.config.Uint64(logging.ConfigLevel)))
 }
 
 func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue interface{}) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	removeFields := map[string]struct{}{}
-	newFields := c.parseFields(newValue.(string))
-	oldFields := c.parseFields(oldValue.(string))
-
-	for k, _ := range oldFields {
-		if _, ok := newFields[k]; !ok {
-			removeFields[k] = struct{}{}
-		}
-	}
-
-	globalFields := c.getFields()
-
-	for key, _ := range c.loggers {
-		l := c.loggers[key].(*output.WrapperXLog)
-
-		existsFields := map[string]interface{}{}
-
-		for k, v := range l.GetFields() {
-			if _, ok := removeFields[k]; !ok {
-				existsFields[k] = v
-			}
-		}
-
-		for k, v := range globalFields {
-			existsFields[k] = v
-		}
-
-		l.SetFields(existsFields)
-	}
+	c.initLogger()
 }

@@ -78,7 +78,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	c.initDialer(
 		c.config.String(mail.ConfigSmtpHost),
@@ -156,21 +156,21 @@ func (c *Component) execute(task *mailTask) error {
 
 		if err = gomail.Send(c.closer, task.message); err != nil {
 			if strings.Contains(err.Error(), "4.4.2") {
-				c.logger.Debug("SMTP server response timeout exceeded", map[string]interface{}{
-					"mail":  task.message,
-					"error": err.Error(),
-				})
+				c.logger.Debug("SMTP server response timeout exceeded",
+					"mail", task.message,
+					"error", err.Error(),
+				)
 
 				c.open = false
 				return c.execute(task)
 			} else {
-				c.logger.Error(err.Error(), map[string]interface{}{"mail": task.message})
+				c.logger.Error(err.Error(), "mail", task.message)
 				task.result <- err
 
 				return err
 			}
 		} else {
-			c.logger.Debug("Send message success", map[string]interface{}{"mail": task.message})
+			c.logger.Debug("Send message success", "mail", task.message)
 			task.result <- nil
 		}
 	}
@@ -185,7 +185,7 @@ func (c *Component) Send(message *gomail.Message) {
 	}
 	c.queue <- task
 
-	c.logger.Debug("Send new message to queue", map[string]interface{}{"mail": message})
+	c.logger.Debug("Send new message to queue", "mail", message)
 
 }
 

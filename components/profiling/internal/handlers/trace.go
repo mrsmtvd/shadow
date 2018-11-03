@@ -36,7 +36,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 
 		if r.Original().PostForm.Get("profile_"+id) != "" {
 			runProfiles = append(runProfiles, id)
-			r.Logger().Infof("Run trace \"%s\"", id)
+			r.Logger().Info("Run trace " + id)
 		}
 	}
 
@@ -45,7 +45,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 	}
 
 	err := trace.StartProfiles(runProfiles)
-	r.Logger().Infof("Run trace: %s", strings.Join(runProfiles, ", "))
+	r.Logger().Info("Run trace: " + strings.Join(runProfiles, ", "))
 
 	return err
 }
@@ -99,7 +99,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 				return err
 			}
 
-			r.Logger().Infof("Remove %s dump from file %s", dump.GetId(), dump.GetFile())
+			r.Logger().Info("Remove " + dump.GetId() + " dump from file " + dump.GetFile())
 		}
 
 		return nil
@@ -111,7 +111,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 	}
 
 	err := trace.DeleteDump(id)
-	r.Logger().Infof("Remove %s dump from file %s", id, dump.GetFile())
+	r.Logger().Info("Remove " + id + " dump from file " + dump.GetFile())
 
 	return err
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/chai2010/gettext-go/gettext/mo"
@@ -54,7 +55,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	components, err := c.application.GetComponents()
 	if err != nil {
@@ -80,21 +81,21 @@ func (c *Component) Run() error {
 				for _, reader := range readers {
 					b, err := ioutil.ReadAll(reader)
 					if err != nil {
-						c.logger.Warn("Failed read from file", map[string]interface{}{
-							"locale": localeName,
-							"error":  err.Error(),
-							"domain": cmp.Name(),
-						})
+						c.logger.Warn("Failed read from file",
+							"locale", localeName,
+							"error", err.Error(),
+							"domain", cmp.Name(),
+						)
 						continue
 					}
 
 					file, err := mo.LoadData(b)
 					if err != nil {
-						c.logger.Warn("Failed parse MO file", map[string]interface{}{
-							"locale": localeName,
-							"error":  err.Error(),
-							"domain": cmp.Name(),
-						})
+						c.logger.Warn("Failed parse MO file",
+							"locale", localeName,
+							"error", err.Error(),
+							"domain", cmp.Name(),
+						)
 						continue
 					}
 
@@ -112,11 +113,11 @@ func (c *Component) Run() error {
 					} else {
 						mergeDomain, err := domain.Merge(domainTmp)
 						if err != nil {
-							c.logger.Warn("Failed merge domains", map[string]interface{}{
-								"locale": localeName,
-								"domain": cmp.Name(),
-								"error":  err.Error(),
-							})
+							c.logger.Warn("Failed merge domains",
+								"locale", localeName,
+								"domain", cmp.Name(),
+								"error", err.Error(),
+							)
 						} else {
 							domain = mergeDomain
 						}
@@ -126,10 +127,10 @@ func (c *Component) Run() error {
 				if domain != nil {
 					locale.AddDomain(domain)
 
-					c.logger.Debugf("Load %d translations", len(domain.Messages()), map[string]interface{}{
-						"locale": localeName,
-						"domain": cmp.Name(),
-					})
+					c.logger.Debug("Load "+strconv.FormatInt(int64(len(domain.Messages())), 10)+" translations",
+						"locale", localeName,
+						"domain", cmp.Name(),
+					)
 				}
 			}
 		}

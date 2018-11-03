@@ -107,7 +107,7 @@ func assetsJsManagerMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/manager.min.js", size: 2044, mode: os.FileMode(420), modTime: time.Unix(1541260563, 0)}
+	info := bindataFileInfo{name: "assets/js/manager.min.js", size: 2044, mode: os.FileMode(420), modTime: time.Unix(1541273605, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 609, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 609, mode: os.FileMode(420), modTime: time.Unix(1541273623, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func localesRuLc_messagesManageMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/manage.mo", size: 1040, mode: os.FileMode(420), modTime: time.Unix(1541260570, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/manage.mo", size: 1040, mode: os.FileMode(420), modTime: time.Unix(1541273623, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -66,7 +66,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run() error {
-	c.logger = logging.NewOrNop(c.Name(), c.application)
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	c.initTelegram()
 	c.initAnnotationsStorageTelegram()
@@ -83,14 +83,14 @@ func (c *Component) RegisterMessenger(id string, messenger messengers.Messenger)
 	}
 
 	c.messengers[id] = messenger
-	c.logger.Debugf("Registered messenger %s", id)
+	c.logger.Debug("Registered messenger " + id)
 	return nil
 }
 
 func (c *Component) UnregisterMessenger(id string) {
 	c.mutex.Lock()
 	delete(c.messengers, id)
-	c.logger.Debugf("Unregistered messenger %s", id)
+	c.logger.Debug("Unregistered messenger " + id)
 	c.mutex.Unlock()
 }
 

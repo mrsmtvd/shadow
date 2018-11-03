@@ -34,8 +34,6 @@ import:
   version: ~v1.2.1
 - package: github.com/mailru/easyjson
   version: 3fdea8d05856a0c8df22ed4bc71b3219245e4485
-- package: github.com/rs/xlog
-  version: 131980fab91b04c953b9dcb438298a7f06cf76cb
 - package: github.com/rubenv/sql-migrate
   version: 6edbfbd6a369ee82463312ec67b2c92f97a1d4dc
 - package: google.golang.org/grpc
@@ -66,3 +64,5 @@ import:
   version: ^2.15.0
 - package: github.com/grpc-ecosystem/grpc-opentracing
   version: 8e809c8a86450a29b90dcc9efbf062d0fe6d9746
+- package: go.uber.org/zap
+  version: ^1.9.1

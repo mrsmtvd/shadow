@@ -117,7 +117,7 @@ func (c *Component) initTracer() error {
 	options := make([]jconfig.Option, 0, 0)
 
 	if c.application.HasComponent(logging.ComponentName) {
-		log := logging.NewOrNop(c.Name(), c.application)
+		log := logging.DefaultLogger().Named(c.Name())
 		options = append(options, jconfig.Logger(NewLogger(log)))
 	}
 

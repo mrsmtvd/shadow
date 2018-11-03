@@ -83,7 +83,7 @@ func (c *Component) collection() MigrationsCollection {
 		if componentMigrations, ok := component.(database.HasMigrations); ok {
 			for _, migration := range componentMigrations.DatabaseMigrations() {
 				if !nameRegexp.MatchString(migration.Id()) {
-					c.logger.Warnf("Skip migration with wrong id %s", migration.Id())
+					c.logger.Warn("Skip migration with wrong id " + migration.Id())
 					continue
 				}
 
@@ -110,7 +110,7 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 		}
 
 		migrations = append(migrations, &mig)
-		c.logger.Debugf("Found %s migration and converted to %s", m.Id(), mig.Id)
+		c.logger.Debug("Found " + m.Id() + " migration and converted to " + mig.Id)
 	}
 
 	return migrations, nil
@@ -149,7 +149,7 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 func (c *Component) UpMigrations() (n int, err error) {
 	n, err = c.execWithLock(migrate.Up)
 	if err != nil {
-		c.logger.Errorf("Up migrations failed with error %s", err)
+		c.logger.Error("Up migrations failed with error " + err.Error())
 	} else {
 		c.logger.Infof("Applied %d migrations", n)
 	}
@@ -160,7 +160,7 @@ func (c *Component) UpMigrations() (n int, err error) {
 func (c *Component) DownMigrations() (n int, err error) {
 	n, err = c.execWithLock(migrate.Down)
 	if err != nil {
-		c.logger.Errorf("Down migrations failed with error %s", err)
+		c.logger.Error("Down migrations failed with error " + err.Error())
 	} else {
 		c.logger.Infof("Downgraded %d migrations", n)
 	}

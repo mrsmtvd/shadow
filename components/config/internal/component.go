@@ -217,7 +217,7 @@ func (c *Component) Watch(watcher config.Watcher, source string) {
 
 func (c *Component) log() logging.Logger {
 	if c.logger == nil {
-		c.logger = logging.NewOrNop(c.Name(), c.application)
+		c.logger = logging.DefaultLogger().Named(c.Name())
 	}
 
 	return c.logger
