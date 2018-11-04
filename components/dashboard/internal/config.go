@@ -91,7 +91,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithGroup("Authorization OAuth Gitlab provider").
 			WithEditable(true),
 		config.NewVariable(dashboard.ConfigOAuth2GitlabTokenURL, config.ValueTypeString).
-			WithUsage("ValueTypeString").
+			WithUsage("Endpoint token URL").
 			WithGroup("Authorization OAuth Gitlab provider").
 			WithEditable(true),
 		config.NewVariable(dashboard.ConfigOAuth2GitlabProfileURL, config.ValueTypeString).

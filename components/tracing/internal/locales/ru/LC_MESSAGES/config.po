@@ -1,0 +1,115 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: dev@kihamo.ru\n"
+"POT-Creation-Date: 2018-03-23 23:55+0300\n"
+"Last-Translator: Kihamo Muramodo <dev@kihamo.ru>\n"
+"Language-Team: \n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+
+msgctxt "config"
+msgid "Others"
+msgstr "Другое"
+
+msgctxt "config"
+msgid "Enabled"
+msgstr "Включено"
+
+msgctxt "config"
+msgid "Enabled metrics for RPC"
+msgstr "Включены RPC метрики"
+
+msgctxt "config"
+msgid "Service scope"
+msgstr "Область сервиса"
+
+msgctxt "config"
+msgid "Tags in format tag1_name=tag1_value"
+msgstr "Теги в формате tag1_name=tag1_value"
+
+msgctxt "config"
+msgid "Local collector"
+msgstr "Локальный коллектор"
+
+msgctxt "config"
+msgid "Host"
+msgstr "Хост"
+
+msgctxt "config"
+msgid "Port number"
+msgstr "Номер порта"
+
+msgctxt "config"
+msgid "User login"
+msgstr "Логин пользователя"
+
+msgctxt "config"
+msgid "User password"
+msgstr "Пароль пользователя"
+
+msgctxt "config"
+msgid "Remote collector"
+msgstr "Удаленный коллектор"
+
+msgctxt "config"
+msgid "Endpoint"
+msgstr "Конечная точка"
+
+msgctxt "config"
+msgid "Reporter"
+msgstr "Репортер"
+
+msgctxt "config"
+msgid "Size of internal queue where reported spans are stored before they are processed in the background"
+msgstr "Размер внутренней очереди, где спаны хранятся до их обработки в фоновом режиме"
+
+msgctxt "config"
+msgid "How often the buffer is force-flushed, even if it's not full"
+msgstr "Как часто буфер сбрасывается, даже если он не заполнен"
+
+msgctxt "config"
+msgid "When enabled, enables LoggingReporter that runs in parallel with the main reporter and logs all submitted spans"
+msgstr "Когда включено, включает LoggingReporter, который работает параллельно с основным репортером и регистрирует все отправленные спаны"
+
+msgctxt "config"
+msgid "Sampler"
+msgstr "Семплер"
+
+msgctxt "config"
+msgid "Type"
+msgstr "Тип"
+
+msgctxt "config"
+msgid "Constant"
+msgstr "Постоянный"
+
+msgctxt "config"
+msgid "Probabilistic"
+msgstr "Вероятностный"
+
+msgctxt "config"
+msgid "Rate limiting"
+msgstr "Рейт лимит"
+
+msgctxt "config"
+msgid "Remote"
+msgstr "Удаленный"
+
+msgctxt "config"
+msgid "Param is a value passed to the sampler"
+msgstr "Параметр это значение переданное в семплер"
+
+msgctxt "config"
+msgid "Address of jaeger-agent's HTTP sampling server (only for remote sampler)"
+msgstr "Адрес HTTP сепмлер сервера (только для удаленного сэмплера)"
+
+msgctxt "config"
+msgid "Maximum number of operations that the sampler will keep track of. If an operation is not tracked, a default probabilistic sampler will be used rather than the per operation specific sampler"
+msgstr "Максимальное количество операций, которые будет отслеживать сэмплер. Если операция не отслеживается, будет использоваться вероятностный сэмплер по умолчанию, а не конкретный сэмплер для каждой операции"
+
+msgctxt "config"
+msgid "Controls how often the remotely controlled sampler will poll jaeger-agent for the appropriate sampling strategy"
+msgstr "Контролирует, как часто дистанционно управляемый сэмплер будет опрашивать jaeger агента для соответствующей стратегии выборки"

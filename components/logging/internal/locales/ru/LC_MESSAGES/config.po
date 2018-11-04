@@ -11,40 +11,40 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
 
 msgctxt "config"
-msgid "Log level in format RFC5424"
-msgstr "Уровень логирования в формате RFC5424"
+msgid "General"
+msgstr "Основные"
 
 msgctxt "config"
-msgid "Emergency"
-msgstr "Авария"
+msgid "Log level"
+msgstr "Уровень логирования"
 
 msgctxt "config"
-msgid "Alert"
-msgstr "Тревога"
-
-msgctxt "config"
-msgid "Critical"
-msgstr "Критический"
-
-msgctxt "config"
-msgid "Error"
-msgstr "Ошибка"
-
-msgctxt "config"
-msgid "Warning"
-msgstr "Предупреждение"
-
-msgctxt "config"
-msgid "Notice"
-msgstr "Замечание"
+msgid "Debug"
+msgstr "Отладка"
 
 msgctxt "config"
 msgid "Informational"
 msgstr "Информационный"
 
 msgctxt "config"
-msgid "Debug"
-msgstr "Отладка"
+msgid "Warning"
+msgstr "Предупреждение"
+
+msgctxt "config"
+msgid "Error"
+msgstr "Ошибка"
+
+msgctxt "config"
+msgid "Panic"
+msgstr "Паника"
+
+msgctxt "config"
+msgid "Development panic"
+msgstr "Паника разработки"
+
+msgctxt "config"
+msgid "Fatal"
+msgstr "Фатальный"
 
 msgctxt "config"
 msgid "Fields in format field_name=field1_value,field2_name=field2_value"
@@ -53,3 +53,7 @@ msgstr "Поля в формате field_name=field1_value,field2_name=field2_va
 msgctxt "config"
 msgid "add a field"
 msgstr "Добавить поле"
+
+msgctxt "config"
+msgid "Stacktrace log level"
+msgstr "Stacktrace уровень логирования"

@@ -10,6 +10,7 @@ import (
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
 		config.NewVariable(logging.ConfigLevel, config.ValueTypeInt).
+			WithGroup("General").
 			WithUsage("Log level").
 			WithEditable(true).
 			WithDefault(int8(zapcore.InfoLevel)).
@@ -26,6 +27,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 				},
 			}),
 		config.NewVariable(logging.ConfigStacktraceLevel, config.ValueTypeInt).
+			WithGroup("General").
 			WithUsage("Stacktrace log level").
 			WithEditable(true).
 			WithDefault(int8(zapcore.FatalLevel)).
@@ -42,6 +44,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 				},
 			}),
 		config.NewVariable(logging.ConfigFields, config.ValueTypeString).
+			WithGroup("General").
 			WithUsage("Fields in format field_name=field1_value,field2_name=field2_value").
 			WithEditable(true).
 			WithView([]string{config.ViewTags}).
