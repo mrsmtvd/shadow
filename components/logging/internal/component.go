@@ -58,8 +58,24 @@ func (c *Component) Run() error {
 }
 
 func (c *Component) initLogger() {
+	var (
+		encoderConfig zapcore.EncoderConfig
+		encoder       zapcore.Encoder
+	)
+
+	if c.config.String(logging.ConfigMode) == logging.ModeProduction {
+		encoderConfig = zap.NewProductionEncoderConfig()
+	} else {
+		encoderConfig = zap.NewDevelopmentEncoderConfig()
+	}
+
+	if c.config.String(logging.ConfigEncoder) == logging.EncoderJSON {
+		encoder = zapcore.NewJSONEncoder(encoderConfig)
+	} else {
+		encoder = zapcore.NewConsoleEncoder(encoderConfig)
+	}
+
 	output := zapcore.Lock(os.Stderr)
-	encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
 	c.level.SetLevel(zapcore.Level(c.config.Int64(logging.ConfigLevel)))
 
 	l := zap.New(

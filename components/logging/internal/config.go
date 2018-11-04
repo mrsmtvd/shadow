@@ -9,6 +9,28 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
+		config.NewVariable(logging.ConfigMode, config.ValueTypeString).
+			WithGroup("General").
+			WithUsage("Mode").
+			WithDefault(logging.ModeProduction).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.ModeProduction, "Production"},
+					{logging.ModeDevelopment, "Development"},
+				},
+			}),
+		config.NewVariable(logging.ConfigEncoder, config.ValueTypeString).
+			WithGroup("General").
+			WithUsage("Encoder").
+			WithDefault(logging.EncoderJSON).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.EncoderJSON, "JSON"},
+					{logging.EncoderConsole, "Console"},
+				},
+			}),
 		config.NewVariable(logging.ConfigLevel, config.ValueTypeInt).
 			WithGroup("General").
 			WithUsage("Log level").

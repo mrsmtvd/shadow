@@ -15,6 +15,30 @@ msgid "General"
 msgstr "Основные"
 
 msgctxt "config"
+msgid "Mode"
+msgstr "Режим"
+
+msgctxt "config"
+msgid "Production"
+msgstr "Production"
+
+msgctxt "config"
+msgid "Development"
+msgstr "Разработка"
+
+msgctxt "config"
+msgid "Encoder"
+msgstr "Кодировщик"
+
+msgctxt "config"
+msgid "JSON"
+msgstr "JSON"
+
+msgctxt "config"
+msgid "Console"
+msgstr "Консоль"
+
+msgctxt "config"
 msgid "Log level"
 msgstr "Уровень логирования"
 
