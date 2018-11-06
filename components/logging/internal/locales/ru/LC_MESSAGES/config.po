@@ -31,12 +31,52 @@ msgid "Encoder"
 msgstr "Кодировщик"
 
 msgctxt "config"
+msgid "Type"
+msgstr "Тип"
+
+msgctxt "config"
 msgid "JSON"
 msgstr "JSON"
 
 msgctxt "config"
 msgid "Console"
 msgstr "Консоль"
+
+msgctxt "config"
+msgid "Time format"
+msgstr "Формат времени"
+
+msgctxt "config"
+msgid "Duration format"
+msgstr "Формат интервала времени"
+
+msgctxt "config"
+msgid "Seconds"
+msgstr "Секунды"
+
+msgctxt "config"
+msgid "Milliseconds"
+msgstr "Миллисекунды"
+
+msgctxt "config"
+msgid "Nanoseconds"
+msgstr "Наносекунды"
+
+msgctxt "config"
+msgid "String"
+msgstr "Строка"
+
+msgctxt "config"
+msgid "Caller"
+msgstr "Инициатор"
+
+msgctxt "config"
+msgid "Short"
+msgstr "Сокращенный"
+
+msgctxt "config"
+msgid "Full"
+msgstr "Полный"
 
 msgctxt "config"
 msgid "Log level"

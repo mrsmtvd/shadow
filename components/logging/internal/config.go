@@ -20,17 +20,6 @@ func (c *Component) ConfigVariables() []config.Variable {
 					{logging.ModeDevelopment, "Development"},
 				},
 			}),
-		config.NewVariable(logging.ConfigEncoder, config.ValueTypeString).
-			WithGroup("General").
-			WithUsage("Encoder").
-			WithDefault(logging.EncoderJSON).
-			WithView([]string{config.ViewEnum}).
-			WithViewOptions(map[string]interface{}{
-				config.ViewOptionEnumOptions: [][]interface{}{
-					{logging.EncoderJSON, "JSON"},
-					{logging.EncoderConsole, "Console"},
-				},
-			}),
 		config.NewVariable(logging.ConfigLevel, config.ValueTypeInt).
 			WithGroup("General").
 			WithUsage("Log level").
@@ -71,6 +60,53 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithEditable(true).
 			WithView([]string{config.ViewTags}).
 			WithViewOptions(map[string]interface{}{config.ViewOptionTagsDefaultText: "add a field"}),
+		config.NewVariable(logging.ConfigEncoderType, config.ValueTypeString).
+			WithGroup("Encoder").
+			WithUsage("Type").
+			WithDefault(logging.EncoderTypeJSON).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.EncoderTypeJSON, "JSON"},
+					{logging.EncoderTypeConsole, "Console"},
+				},
+			}),
+		config.NewVariable(logging.ConfigEncoderTime, config.ValueTypeString).
+			WithGroup("Encoder").
+			WithUsage("Time format").
+			WithDefault(logging.EncoderTimeISO8601).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.EncoderTimeISO8601, "ISO8601"},
+					{logging.EncoderTimeMillis, "Milliseconds"},
+					{logging.EncoderTimeNanos, "Nanoseconds"},
+					{logging.EncoderTimeSeconds, "Seconds"},
+				},
+			}),
+		config.NewVariable(logging.ConfigEncoderDuration, config.ValueTypeString).
+			WithGroup("Encoder").
+			WithUsage("Duration format").
+			WithDefault(logging.EncoderDurationString).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.EncoderDurationSeconds, "Seconds"},
+					{logging.EncoderDurationNanos, "Nanoseconds"},
+					{logging.EncoderDurationString, "String"},
+				},
+			}),
+		config.NewVariable(logging.ConfigEncoderCaller, config.ValueTypeString).
+			WithGroup("Encoder").
+			WithUsage("Caller").
+			WithDefault(logging.EncoderCallerShort).
+			WithView([]string{config.ViewEnum}).
+			WithViewOptions(map[string]interface{}{
+				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.EncoderCallerShort, "Short"},
+					{logging.EncoderCallerFull, "Full"},
+				},
+			}),
 	}
 }
 

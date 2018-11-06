@@ -68,8 +68,38 @@ func (c *Component) initLogger() {
 	} else {
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
 	}
+	encoderConfig.MessageKey = "message"
 
-	if c.config.String(logging.ConfigEncoder) == logging.EncoderJSON {
+	encoderConfig.TimeKey = "time"
+	switch c.config.String(logging.ConfigEncoderTime) {
+	case logging.EncoderTimeISO8601:
+		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	case logging.EncoderTimeMillis:
+		encoderConfig.EncodeTime = zapcore.EpochMillisTimeEncoder
+	case logging.EncoderTimeNanos:
+		encoderConfig.EncodeTime = zapcore.EpochNanosTimeEncoder
+	case logging.EncoderTimeSeconds:
+		encoderConfig.EncodeTime = zapcore.EpochTimeEncoder
+	}
+
+	switch c.config.String(logging.ConfigEncoderDuration) {
+	case logging.EncoderDurationString:
+		encoderConfig.EncodeDuration = zapcore.StringDurationEncoder
+	case logging.EncoderDurationSeconds:
+		encoderConfig.EncodeDuration = zapcore.SecondsDurationEncoder
+	case logging.EncoderDurationNanos:
+		encoderConfig.EncodeDuration = zapcore.NanosDurationEncoder
+	}
+
+	encoderConfig.CallerKey = "file"
+	switch c.config.String(logging.ConfigEncoderCaller) {
+	case logging.EncoderCallerShort:
+		encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	case logging.EncoderCallerFull:
+		encoderConfig.EncodeCaller = zapcore.FullCallerEncoder
+	}
+
+	if c.config.String(logging.ConfigEncoderType) == logging.EncoderTypeJSON {
 		encoder = zapcore.NewJSONEncoder(encoderConfig)
 	} else {
 		encoder = zapcore.NewConsoleEncoder(encoderConfig)

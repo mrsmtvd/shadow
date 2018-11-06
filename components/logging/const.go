@@ -7,6 +7,18 @@ const (
 	ModeDevelopment = "dev"
 	ModeProduction  = "prod"
 
-	EncoderJSON    = "json"
-	EncoderConsole = "console"
+	EncoderTypeJSON    = "json"
+	EncoderTypeConsole = "console"
+
+	EncoderTimeISO8601 = "iso8601"
+	EncoderTimeMillis  = "millis"
+	EncoderTimeNanos   = "nanos"
+	EncoderTimeSeconds = "seconds"
+
+	EncoderDurationSeconds = "seconds"
+	EncoderDurationNanos   = "nanos"
+	EncoderDurationString  = "string"
+
+	EncoderCallerFull  = "full"
+	EncoderCallerShort = "short"
 )
