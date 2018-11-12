@@ -2,7 +2,6 @@ package shadow
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"os/signal"
 	"sync/atomic"
@@ -101,7 +100,7 @@ func NewApp() *App {
 
 func (a *App) Run() (err error) {
 	if a.shutdownSignal != nil {
-		return errors.New("Already running")
+		return errors.New("already running")
 	}
 
 	components, err := a.GetComponents()
@@ -148,21 +147,35 @@ func (a *App) Run() (err error) {
 		}()
 	}
 
-	var runEG errgroup.Group
+	errCh := make(chan error)
+
+	go func() {
+		select {
+		case err := <-errCh:
+			if atomic.LoadInt64(&a.shutdown) == 0 {
+				a.closers = append([]func() error{
+					func() error {
+						return err
+					},
+				}, a.closers...)
+
+				a.shutdownSignal <- syscall.SIGQUIT
+			}
+
+			close(errCh)
+			return
+		}
+	}()
 
 	for i := range components {
 		if runner, ok := components[i].(ComponentRunner); ok {
-			runEG.Go(runner.Run)
+			go func() {
+				if err := runner.Run(); err != nil {
+					errCh <- err
+				}
+			}()
 		}
 	}
-
-	go func() {
-		err := runEG.Wait()
-
-		if atomic.LoadInt64(&a.shutdown) != 1 {
-			a.runDone <- err
-		}
-	}()
 
 	return <-a.runDone
 }
@@ -191,7 +204,7 @@ func (a *App) HasComponent(n string) bool {
 
 func (a *App) RegisterComponent(c Component) error {
 	if a.HasComponent(c.Name()) {
-		return fmt.Errorf("Component \"%s\" already exists", c.Name())
+		return errors.New("component \"" + c.Name() + "\" already exists")
 	}
 
 	a.components[c.Name()] = c
@@ -252,7 +265,7 @@ func (a *App) resolveDependencies() error {
 			for _, dep := range cmpDependency.Dependencies() {
 				if dep.Required {
 					if !a.HasComponent(dep.Name) {
-						return fmt.Errorf("Component \"%s\" has required dependency \"%s\"", cmp.Name(), dep.Name)
+						return errors.New("Component \"" + cmp.Name() + "\" has required dependency \"" + dep.Name + "\"")
 					}
 				} else if !a.HasComponent(dep.Name) {
 					cmpDependencies[dep.Name] = mapset.NewSet()
