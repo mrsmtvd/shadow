@@ -265,7 +265,7 @@ func (a *App) resolveDependencies() error {
 			for _, dep := range cmpDependency.Dependencies() {
 				if dep.Required {
 					if !a.HasComponent(dep.Name) {
-						return errors.New("Component \"" + cmp.Name() + "\" has required dependency \"" + dep.Name + "\"")
+						return errors.New("component \"" + cmp.Name() + "\" has required dependency \"" + dep.Name + "\"")
 					}
 				} else if !a.HasComponent(dep.Name) {
 					cmpDependencies[dep.Name] = mapset.NewSet()
@@ -289,7 +289,7 @@ func (a *App) resolveDependencies() error {
 		}
 
 		if readySet.Cardinality() == 0 {
-			return errors.New("Circular dependency found")
+			return errors.New("circular dependency found")
 		}
 
 		for name := range readySet.Iter() {
