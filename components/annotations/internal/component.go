@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -67,7 +66,7 @@ func (c *Component) Create(annotation annotations.Annotation) error {
 	defer c.mutex.RUnlock()
 
 	if len(c.storages) == 0 {
-		return errors.New("Storage not init")
+		return errors.New("storage not init")
 	}
 
 	for name, s := range c.storages {
@@ -88,7 +87,7 @@ func (c *Component) CreateInStorages(annotation annotations.Annotation, names []
 	c.mutex.RUnlock()
 
 	if l == 0 {
-		return errors.New("Storage not init")
+		return errors.New("storage not init")
 	}
 
 	for _, name := range names {
@@ -114,7 +113,7 @@ func (c *Component) AddStorage(id string, s annotations.Storage) error {
 	defer c.mutex.Unlock()
 
 	if _, ok := c.storages[id]; ok {
-		return fmt.Errorf("Storage %s already exists", id)
+		return errors.New("storage " + id + " already exists")
 	}
 
 	c.storages[id] = s

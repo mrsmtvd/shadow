@@ -3,7 +3,7 @@ package trace
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
+	"errors"
 	"io"
 	"log"
 	"os"
@@ -30,7 +30,7 @@ func IsStarted() bool {
 
 func StartProfiles(list []string) error {
 	if IsStarted() {
-		return fmt.Errorf("Trace already started")
+		return errors.New("trace already started")
 	}
 
 	LoadProfiles()
@@ -43,7 +43,7 @@ func StartProfiles(list []string) error {
 	for _, id := range list {
 		profile, ok := profiles.profiles[id]
 		if !ok {
-			return fmt.Errorf("Profile \"%s\" not found", id)
+			return errors.New("profile \"" + id + "\" not found")
 		}
 
 		runProfiles = append(runProfiles, profile)
@@ -75,7 +75,7 @@ func StartProfiles(list []string) error {
 
 func StopProfiles(path string) error {
 	if !IsStarted() {
-		return fmt.Errorf("Trace already stoped")
+		return errors.New("trace already stopped")
 	}
 
 	dir, err := os.Stat(path)
@@ -84,7 +84,7 @@ func StopProfiles(path string) error {
 	}
 
 	if !dir.IsDir() {
-		return fmt.Errorf("%s isn't directory", path)
+		return errors.New(path + " isn't directory")
 	}
 
 	profiles.mutex.RLock()

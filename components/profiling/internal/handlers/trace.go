@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -23,7 +23,7 @@ type TraceHandler struct {
 
 func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) error {
 	if trace.IsStarted() {
-		return fmt.Errorf("Trace already started")
+		return errors.New("trace already started")
 	}
 
 	if err := r.Original().ParseForm(); err != nil {
@@ -41,7 +41,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 	}
 
 	if len(runProfiles) == 0 {
-		return fmt.Errorf("Nothing to start")
+		return errors.New("nothing to start")
 	}
 
 	err := trace.StartProfiles(runProfiles)
@@ -52,7 +52,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 
 func (h *TraceHandler) actionStop(_ *dashboard.Response, r *dashboard.Request) error {
 	if !trace.IsStarted() {
-		return fmt.Errorf("Trace already stoped")
+		return errors.New("trace already stoped")
 	}
 
 	err := trace.StopProfiles(r.Config().String(profiling.ConfigDumpDirectory))
@@ -64,12 +64,12 @@ func (h *TraceHandler) actionStop(_ *dashboard.Response, r *dashboard.Request) e
 func (h *TraceHandler) actionDownload(w *dashboard.Response, r *dashboard.Request) error {
 	id := r.URL().Query().Get("id")
 	if id == "" {
-		return fmt.Errorf("Dump \"%s\" not found", id)
+		return errors.New("dump \"" + id + "\" not found")
 	}
 
 	dump := trace.GetDump(id)
 	if dump == nil {
-		return fmt.Errorf("Dump \"%s\" not found", id)
+		return errors.New("dump \"" + id + "\" not found")
 	}
 
 	file, err := os.Open(dump.GetFile())
@@ -90,7 +90,7 @@ func (h *TraceHandler) actionDownload(w *dashboard.Response, r *dashboard.Reques
 func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request) error {
 	id := r.URL().Query().Get("id")
 	if id == "" {
-		return fmt.Errorf("Dump \"%s\" not found", id)
+		return errors.New("dump \"" + id + "\" not found")
 	}
 
 	if id == "all" {
@@ -107,7 +107,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 
 	dump := trace.GetDump(id)
 	if dump == nil {
-		return fmt.Errorf("Dump \"%s\" not found", id)
+		return errors.New("dump \"" + id + "\" not found")
 	}
 
 	err := trace.DeleteDump(id)

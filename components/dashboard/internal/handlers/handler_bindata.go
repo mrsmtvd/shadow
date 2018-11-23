@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -71,12 +71,12 @@ func (h *BindataHandler) getRoot(application shadow.Application) ([]bindataList,
 
 func (h *BindataHandler) getComponentByPath(name, path string, application shadow.Application) ([]bindataList, error) {
 	if !application.HasComponent(name) {
-		return nil, fmt.Errorf("Component %s not found", name)
+		return nil, errors.New("component " + name + " not found")
 	}
 
 	componentTemplate, ok := application.GetComponent(name).(dashboard.HasAssetFS)
 	if !ok {
-		return nil, fmt.Errorf("Component %s haven't templates", name)
+		return nil, errors.New("component " + name + " haven't templates")
 	}
 
 	fs := componentTemplate.AssetFS()
@@ -108,7 +108,7 @@ func (h *BindataHandler) getComponentByPath(name, path string, application shado
 
 	fsDirectory, ok := statRoot.(*assetfs.AssetDirectory)
 	if !ok {
-		return nil, fmt.Errorf("Failed cast %s to assetfs.AssetDirectory", filepath.Join(path, statRoot.Name()))
+		return nil, errors.New("failed cast " + filepath.Join(path, statRoot.Name()) + " to assetfs.AssetDirectory")
 	}
 
 	files, err := fsDirectory.Readdir(0)

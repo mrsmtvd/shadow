@@ -3,7 +3,7 @@ package internal
 import (
 	"bytes"
 	"context"
-	"fmt"
+	"errors"
 	"html/template"
 	"io"
 	"strings"
@@ -125,12 +125,12 @@ func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, componentName, vie
 func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) error {
 	component, ok := r.views[componentName]
 	if !ok {
-		return fmt.Errorf("DashboardTemplates for component \"%s\" not found", componentName)
+		return errors.New("dashboardTemplates for component \"" + componentName + "\" not found")
 	}
 
 	view, ok := component[viewName+TemplatePostfix]
 	if !ok {
-		return fmt.Errorf("Template \"%s\" for component \"%s\" not found", viewName, componentName)
+		return errors.New("template \"" + viewName + "\" for component \"" + componentName + "\" not found")
 	}
 
 	executeData := r.getContextVariables(ctx)

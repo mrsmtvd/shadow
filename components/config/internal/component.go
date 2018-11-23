@@ -248,7 +248,7 @@ func (c *Component) Get(key string) interface{} {
 
 func (c *Component) Set(key string, value interface{}) error {
 	if !c.Has(key) {
-		return errors.New("Variable not found")
+		return errors.New("variable not found")
 	}
 
 	oldValue := c.Get(key)

@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"fmt"
+	"errors"
 	"net/url"
 	"strconv"
 	"strings"
@@ -77,7 +77,7 @@ func (c *Component) RegisterMessenger(id string, messenger messengers.Messenger)
 	defer c.mutex.Unlock()
 
 	if _, ok := c.messengers[id]; ok {
-		return fmt.Errorf("Storage %s already exists", id)
+		return errors.New("storage " + id + " already exists")
 	}
 
 	c.messengers[id] = messenger
