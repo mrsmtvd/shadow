@@ -91,6 +91,12 @@ func (a *App) Run() (err error) {
 	}
 
 	closers := make([]func() error, 0, total)
+	for _, cmp := range components {
+		if closer, ok := cmp.instance.(ComponentShutdown); ok {
+			closers = append(closers, closer.Shutdown)
+		}
+	}
+
 	chResults := make(chan *component, total)
 
 	chShutdown := make(chan os.Signal, 1)
@@ -102,12 +108,6 @@ func (a *App) Run() (err error) {
 		close(chResults)
 		close(chShutdown)
 	}()
-
-	for _, cmp := range components {
-		if closer, ok := cmp.instance.(ComponentShutdown); ok {
-			closers = append(closers, closer.Shutdown)
-		}
-	}
 
 	for _, cmp := range components {
 		go cmp.Run(a, chResults)
@@ -218,6 +218,12 @@ func (a *App) HasComponent(n string) bool {
 func (a *App) RegisterComponent(c Component) error {
 	if a.HasComponent(c.Name()) {
 		return errors.New("component \"" + c.Name() + "\" already exists")
+	}
+
+	if ini, ok := c.(ComponentInit); ok {
+		if err := ini.Init(a); err != nil {
+			return err
+		}
 	}
 
 	a.components.add(c.Name(), c)

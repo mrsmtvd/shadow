@@ -16,6 +16,10 @@ type Dependency struct {
 	Required bool
 }
 
+type ComponentInit interface {
+	Init(Application) error
+}
+
 type ComponentDependency interface {
 	Dependencies() []Dependency
 }
