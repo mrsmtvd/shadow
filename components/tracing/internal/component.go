@@ -12,6 +12,7 @@ import (
 	"github.com/kihamo/shadow/components/tracing"
 	"github.com/kihamo/shadow/components/tracing/internal/tracer"
 	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go"
 	jconfig "github.com/uber/jaeger-client-go/config"
 )
 
@@ -28,7 +29,7 @@ func (c *Component) Name() string {
 }
 
 func (c *Component) Version() string {
-	return tracing.ComponentVersion
+	return tracing.ComponentVersion + "/" + strings.Replace(jaeger.JaegerClientVersion, "Go-", "", -1)
 }
 
 func (c *Component) Dependencies() []shadow.Dependency {
