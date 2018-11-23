@@ -55,15 +55,12 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
-
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	var slaves []string
 	if slavesFromConfig := c.config.String(database.ConfigDsnSlaves); slavesFromConfig != "" {

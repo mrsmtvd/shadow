@@ -99,10 +99,11 @@ func (c *Component) ConfigVariables() []config.Variable {
 		config.NewVariable(logging.ConfigEncoderCaller, config.ValueTypeString).
 			WithGroup("Encoder").
 			WithUsage("Caller").
-			WithDefault(logging.EncoderCallerShort).
+			WithDefault(logging.EncoderCallerNone).
 			WithView([]string{config.ViewEnum}).
 			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
+					{logging.EncoderCallerNone, "None"},
 					{logging.EncoderCallerShort, "Short"},
 					{logging.EncoderCallerFull, "Full"},
 				},

@@ -58,15 +58,12 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error) {
 	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
-
-	return nil
-}
-
-func (c *Component) Run() (err error) {
 	c.logger = logging.DefaultLogger().Named(c.Name())
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	if err := c.loadTemplates(); err != nil {
 		return err
@@ -89,18 +86,16 @@ func (c *Component) Run() (err error) {
 	addr := net.JoinHostPort(c.config.String(dashboard.ConfigHost), c.config.String(dashboard.ConfigPort))
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
-		c.logger.Errorf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
-		return err
+		return fmt.Errorf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
 	}
 
-	c.logger.Info("Running service",
-		"addr", addr,
-		"pid", os.Getpid(),
-	)
+	c.logger.Info("Running service", "addr", addr, "pid", os.Getpid())
 
 	c.server = &http.Server{
 		Handler: c.router,
 	}
+
+	ready <- struct{}{}
 
 	if err := c.server.Serve(lis); err != nil {
 		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
@@ -120,7 +115,7 @@ func (c *Component) Shutdown() error {
 
 func (c *Component) initAuth() (err error) {
 	auth.ClearProviders()
-	providers := []goth.Provider{}
+	providers := make([]goth.Provider, 0, 0)
 
 	var baseURL *url.URL
 	baseURLFromConfig := c.config.String(dashboard.ConfigOAuth2BaseURL)

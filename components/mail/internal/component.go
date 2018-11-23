@@ -67,18 +67,14 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
-	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.open = false
 	c.queue = make(chan *mailTask)
-	c.metricsEnabled = a.HasComponent(metrics.ComponentName)
-
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
+	metricsEnabled := a.HasComponent(metrics.ComponentName)
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	c.initDialer(
 		c.config.String(mail.ConfigSmtpHost),
@@ -86,6 +82,8 @@ func (c *Component) Run() error {
 		c.config.String(mail.ConfigSmtpUsername),
 		c.config.String(mail.ConfigSmtpPassword),
 	)
+
+	ready <- struct{}{}
 
 	for {
 		select {
@@ -95,7 +93,7 @@ func (c *Component) Run() error {
 			}
 
 			err := c.execute(task)
-			if c.metricsEnabled {
+			if metricsEnabled {
 				metricMailTotal.Inc()
 
 				if err != nil {

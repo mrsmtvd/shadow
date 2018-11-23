@@ -19,6 +19,7 @@ const (
 	EncoderDurationNanos   = "nanos"
 	EncoderDurationString  = "string"
 
+	EncoderCallerNone  = "none"
 	EncoderCallerFull  = "full"
 	EncoderCallerShort = "short"
 )

@@ -16,13 +16,15 @@ type ComponentsHandler struct {
 func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	contextComponents := []map[string]interface{}{}
 
-	components, _ := r.Application().GetComponents()
+	a := r.Application()
+	components, _ := a.GetComponents()
 	for _, cmp := range components {
 		row := map[string]interface{}{
 			"name":                    cmp.Name(),
 			"version":                 cmp.Version(),
 			"shutdown":                false,
 			"dependencies":            []string{},
+			"ready":                   a.IsReadyComponent(cmp.Name()),
 			"has_assetfs":             false,
 			"has_config_variables":    false,
 			"has_config_watchers":     false,

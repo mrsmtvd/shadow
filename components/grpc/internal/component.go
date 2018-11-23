@@ -51,21 +51,18 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
-
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 	grpclog.SetLoggerV2(grpc.NewLogger(c.logger))
 
-	components, err := c.application.GetComponents()
+	components, err := a.GetComponents()
 	if err != nil {
 		return err
 	}
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	unaryInterceptors := make([]g.UnaryServerInterceptor, 0, 0)
 	streamInterceptors := make([]g.StreamServerInterceptor, 0, 0)
@@ -121,6 +118,8 @@ func (c *Component) Run() error {
 		"addr", addr,
 		"pid", os.Getpid(),
 	)
+
+	ready <- struct{}{}
 
 	if err := c.server.Serve(lis); err != nil {
 		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())

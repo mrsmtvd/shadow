@@ -16,10 +16,8 @@ import (
 )
 
 type Component struct {
-	application shadow.Application
-	config      config.Component
-	logger      logging.Logger
-	routes      []dashboard.Route
+	logger logging.Logger
+	routes []dashboard.Route
 
 	mutex              sync.RWMutex
 	dispatcher         *dispatcher.SimpleDispatcher
@@ -55,19 +53,16 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
-	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.dispatcher = dispatcher.NewSimpleDispatcher()
 	c.lockedListenersIds = []string{}
 
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
-	c.dispatcher.SetTickerExecuteTasksDuration(c.config.Duration(workers.ConfigTickerExecuteTasksDuration))
+	<-a.ReadyComponent(config.ComponentName)
+	cfg := a.GetComponent(config.ComponentName).(config.Component)
+
+	c.dispatcher.SetTickerExecuteTasksDuration(cfg.Duration(workers.ConfigTickerExecuteTasksDuration))
 
 	l := listener.NewFunctionListener(c.listenerLogging)
 	l.SetName(c.Name() + ".logging")
@@ -75,9 +70,11 @@ func (c *Component) Run() error {
 
 	c.AddListenerByEvents([]ws.Event{ws.EventAll}, l)
 
-	for i := 1; i <= c.config.Int(workers.ConfigWorkersCount); i++ {
+	for i := 1; i <= cfg.Int(workers.ConfigWorkersCount); i++ {
 		c.AddSimpleWorker()
 	}
+
+	ready <- struct{}{}
 
 	return c.dispatcher.Run()
 }

@@ -14,7 +14,6 @@ import (
 )
 
 type Component struct {
-	config config.Component
 	routes []dashboard.Route
 }
 
@@ -41,27 +40,22 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
-
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	expvar.Publish(c.Name()+".runtime", expvar.Func(expvarRuntime))
 
-	return nil
+	<-a.ReadyComponent(config.ComponentName)
+	cfg := a.GetComponent(config.ComponentName).(config.Component)
+
+	c.initGCPercent(cfg.Int(profiling.ConfigGCPercent))
+	c.initGoMaxProc(cfg.Int(profiling.ConfigGoMaxProc))
+
+	return trace.LoadDumps(cfg.String(profiling.ConfigDumpDirectory))
 }
 
-func (c *Component) Run() error {
-	c.initGCPercent()
-	c.initGoMaxProc()
-
-	trace.LoadDumps(c.config.String(profiling.ConfigDumpDirectory))
-
-	return nil
+func (c *Component) initGCPercent(value int) {
+	debug.SetGCPercent(value)
 }
 
-func (c *Component) initGCPercent() {
-	debug.SetGCPercent(c.config.Int(profiling.ConfigGCPercent))
-}
-
-func (c *Component) initGoMaxProc() {
-	runtime.GOMAXPROCS(c.config.Int(profiling.ConfigGoMaxProc))
+func (c *Component) initGoMaxProc(value int) {
+	runtime.GOMAXPROCS(value)
 }

@@ -14,6 +14,7 @@
                         <th>{{ i18n "Name" . }}</th>
                         <th>{{ i18n "Version" . }}</th>
                         <th>{{ i18n "Dependencies" . }}</th>
+                        <th>{{ i18n "Ready" . }}</th>
                         <th>{{ i18n "Functions" . }}</th>
                     </tr>
                     </thead>
@@ -30,6 +31,13 @@
                             {{ else }}
                             <span class="label label-info">{{ $dep.Name }}</span>
                             {{ end }}
+                            {{ end }}
+                        </td>
+                        <td>
+                            {{ if $component.ready }}
+                                <span class="label label-success">{{ i18n "ready" $ }}</span>
+                            {{ else }}
+                                <span class="label label-danger">{{ i18n "not ready" $ }}</span>
                             {{ end }}
                         </td>
                         <td>

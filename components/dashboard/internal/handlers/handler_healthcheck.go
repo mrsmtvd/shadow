@@ -12,7 +12,6 @@ type HealthCheckHandler struct {
 
 	healthCheck             healthcheck.Handler
 	metricHealthCheckStatus snitch.Gauge
-	hasCheck                bool
 }
 
 func NewHealthCheckHandler(a shadow.Application, m snitch.Gauge) *HealthCheckHandler {
@@ -31,7 +30,6 @@ func NewHealthCheckHandler(a shadow.Application, m snitch.Gauge) *HealthCheckHan
 			for name, check := range componentLivenessCheck.LivenessCheck() {
 				checkName := h.getCheckName(component, name)
 				h.healthCheck.AddLivenessCheck(checkName, h.wrap(checkName, check))
-				h.hasCheck = true
 			}
 		}
 
@@ -39,7 +37,6 @@ func NewHealthCheckHandler(a shadow.Application, m snitch.Gauge) *HealthCheckHan
 			for name, check := range componentReadinessCheck.ReadinessCheck() {
 				checkName := h.getCheckName(component, name)
 				h.healthCheck.AddReadinessCheck(checkName, h.wrap(checkName, check))
-				h.hasCheck = true
 			}
 		}
 	}
@@ -56,15 +53,13 @@ func (h *HealthCheckHandler) getCheckName(cmp shadow.Component, name string) str
 }
 
 func (h *HealthCheckHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	if h.hasCheck {
-		switch r.URL().Query().Get(":healthcheck") {
-		case "live":
-			h.healthCheck.LiveEndpoint(w, r.Original())
+	switch r.URL().Query().Get(":healthcheck") {
+	case "live":
+		h.healthCheck.LiveEndpoint(w, r.Original())
+		return
 
-		case "ready":
-			h.healthCheck.ReadyEndpoint(w, r.Original())
-		}
-
+	case "ready":
+		h.healthCheck.ReadyEndpoint(w, r.Original())
 		return
 	}
 

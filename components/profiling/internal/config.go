@@ -31,10 +31,10 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 	}
 }
 
-func (c *Component) watchGCPercent(_ string, _ interface{}, _ interface{}) {
-	c.initGCPercent()
+func (c *Component) watchGCPercent(_ string, new interface{}, _ interface{}) {
+	c.initGCPercent(new.(int))
 }
 
-func (c *Component) watchGoMaxProc(_ string, _ interface{}, _ interface{}) {
-	c.initGoMaxProc()
+func (c *Component) watchGoMaxProc(_ string, new interface{}, _ interface{}) {
+	c.initGoMaxProc(new.(int))
 }
