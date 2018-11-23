@@ -213,5 +213,5 @@
 {{ define "js" }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
-    {{ staticHTML (staticURL "/workers/assets/js/manager.js" true) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/js/manager.js") true) }}
 {{ end }}

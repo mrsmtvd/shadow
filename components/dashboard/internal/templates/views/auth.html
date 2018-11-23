@@ -9,13 +9,13 @@
 
     <title>{{ .Application.name }}</title>
 
-    <link rel="shortcut icon" href="{{ staticURL "/{{ .ComponentName }}/assets/images/favicon.svg" false }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ staticURL (print "/" .ComponentName "/assets/images/favicon.svg") false }}" type="image/svg+xml">
 
-    {{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css" false) }}
-    {{ staticHTML (staticURL "/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css" false) }}
-    {{ staticHTML (staticURL "/dashboard/assets/vendors/nprogress/css/nprogress.min.css" false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/bootstrap/css/bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/font-awesome/css/font-awesome.min.css") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/nprogress/css/nprogress.min.css") false) }}
 
-    {{ staticHTML (staticURL "/dashboard/assets/css/dashboard.css" true) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/css/dashboard.css") true) }}
 </head>
 
 <body class="login">
@@ -77,8 +77,8 @@
     </div>
 </div>
 
-{{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
-{{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/js/bootstrap.min.js" false) }}
+{{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/jquery/js/jquery.min.js") false) }}
+{{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/bootstrap/js/bootstrap.min.js") false) }}
 </body>
 </html>
 {{ end }}
