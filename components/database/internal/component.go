@@ -55,7 +55,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.application = a
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
@@ -106,6 +106,8 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 
 	migrate.SetSchema(c.config.String(database.ConfigMigrationsSchema))
 	migrate.SetTable(c.config.String(database.ConfigMigrationsTable))
+
+	ready <- struct{}{}
 
 	_, err = c.UpMigrations()
 

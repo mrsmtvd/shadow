@@ -55,6 +55,8 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	<-a.ReadyComponent(config.ComponentName)
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
+	ready <- struct{}{}
+
 	c.initStorageGrafana()
 
 	return nil

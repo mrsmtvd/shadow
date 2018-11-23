@@ -86,6 +86,8 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.initLabels(c.config.String(metrics.ConfigLabels))
 	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
 
+	ready <- struct{}{}
+
 	// search metrics
 	components, err := c.application.GetComponents()
 	if err != nil {
