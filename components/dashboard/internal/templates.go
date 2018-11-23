@@ -20,16 +20,11 @@ func (c *Component) loadTemplates() error {
 		return err
 	}
 
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return err
-	}
-
 	for name, fn := range c.DashboardTemplateFunctions() {
 		c.renderer.AddFunc(name, fn)
 	}
 
-	for _, component := range components {
+	for _, component := range c.components {
 		if component == c {
 			continue
 		}
@@ -41,7 +36,7 @@ func (c *Component) loadTemplates() error {
 		}
 	}
 
-	for _, component := range components {
+	for _, component := range c.components {
 		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
 			err := c.renderer.AddComponents(component.Name(), componentTemplate.DashboardTemplates())
 			if err != nil {

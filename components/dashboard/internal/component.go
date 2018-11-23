@@ -27,6 +27,7 @@ import (
 
 type Component struct {
 	application shadow.Application
+	components  []shadow.Component
 	config      config.Component
 	logger      logging.Logger
 	renderer    *Renderer
@@ -60,6 +61,10 @@ func (c *Component) Dependencies() []shadow.Dependency {
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error) {
+	if c.components, err = a.GetComponents(); err != nil {
+		return err
+	}
+
 	c.application = a
 	c.logger = logging.DefaultLogger().Named(c.Name())
 

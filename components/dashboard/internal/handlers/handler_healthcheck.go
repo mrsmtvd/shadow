@@ -14,15 +14,10 @@ type HealthCheckHandler struct {
 	metricHealthCheckStatus snitch.Gauge
 }
 
-func NewHealthCheckHandler(a shadow.Application, m snitch.Gauge) *HealthCheckHandler {
+func NewHealthCheckHandler(components []shadow.Component, m snitch.Gauge) *HealthCheckHandler {
 	h := &HealthCheckHandler{
 		healthCheck:             healthcheck.NewHandler(),
 		metricHealthCheckStatus: m,
-	}
-
-	components, err := a.GetComponents()
-	if err != nil {
-		return h
 	}
 
 	for _, component := range components {

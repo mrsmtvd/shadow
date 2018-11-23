@@ -15,10 +15,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -93,7 +93,7 @@ func templatesViewsMigrationsHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/views/migrations.html", size: 3443, mode: os.FileMode(420), modTime: time.Unix(1540767205, 0)}
+	info := bindataFileInfo{name: "templates/views/migrations.html", size: 3443, mode: os.FileMode(420), modTime: time.Unix(1530705550, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -113,7 +113,7 @@ func templatesViewsStatusHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/views/status.html", size: 1107, mode: os.FileMode(420), modTime: time.Unix(1540767205, 0)}
+	info := bindataFileInfo{name: "templates/views/status.html", size: 1107, mode: os.FileMode(420), modTime: time.Unix(1530705550, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -133,7 +133,7 @@ func assetsCssMigrationsMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1541273607, 0)}
+	info := bindataFileInfo{name: "assets/css/migrations.min.css", size: 115, mode: os.FileMode(420), modTime: time.Unix(1543013572, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -153,7 +153,7 @@ func assetsJsMigrationsMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1541273607, 0)}
+	info := bindataFileInfo{name: "assets/js/migrations.min.js", size: 411, mode: os.FileMode(420), modTime: time.Unix(1543013572, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -173,7 +173,7 @@ func assetsVendorsHighlightjsCssTomorrowMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1541273597, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/css/tomorrow.min.css", size: 628, mode: os.FileMode(420), modTime: time.Unix(1543013566, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -193,7 +193,7 @@ func assetsVendorsHighlightjsJsHighlightPackMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1541273607, 0)}
+	info := bindataFileInfo{name: "assets/vendors/highlightjs/js/highlight.pack.min.js", size: 526725, mode: os.FileMode(420), modTime: time.Unix(1543013572, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -213,7 +213,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 2422, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 2422, mode: os.FileMode(420), modTime: time.Unix(1543013580, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -233,7 +233,7 @@ func localesRuLc_messagesDatabaseMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/database.mo", size: 568, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/database.mo", size: 568, mode: os.FileMode(420), modTime: time.Unix(1543013580, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -253,7 +253,7 @@ func localesRuLc_messagesMigrationsMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/migrations.mo", size: 779, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/migrations.mo", size: 779, mode: os.FileMode(420), modTime: time.Unix(1543013580, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -273,7 +273,7 @@ func localesRuLc_messagesStatusMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/status.mo", size: 694, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/status.mo", size: 694, mode: os.FileMode(420), modTime: time.Unix(1543013580, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -330,16 +330,16 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/migrations.html":                     templatesViewsMigrationsHtml,
-	"templates/views/status.html":                         templatesViewsStatusHtml,
-	"assets/css/migrations.min.css":                       assetsCssMigrationsMinCss,
-	"assets/js/migrations.min.js":                         assetsJsMigrationsMinJs,
-	"assets/vendors/highlightjs/css/tomorrow.min.css":     assetsVendorsHighlightjsCssTomorrowMinCss,
+	"templates/views/migrations.html": templatesViewsMigrationsHtml,
+	"templates/views/status.html": templatesViewsStatusHtml,
+	"assets/css/migrations.min.css": assetsCssMigrationsMinCss,
+	"assets/js/migrations.min.js": assetsJsMigrationsMinJs,
+	"assets/vendors/highlightjs/css/tomorrow.min.css": assetsVendorsHighlightjsCssTomorrowMinCss,
 	"assets/vendors/highlightjs/js/highlight.pack.min.js": assetsVendorsHighlightjsJsHighlightPackMinJs,
-	"locales/ru/LC_MESSAGES/config.mo":                    localesRuLc_messagesConfigMo,
-	"locales/ru/LC_MESSAGES/database.mo":                  localesRuLc_messagesDatabaseMo,
-	"locales/ru/LC_MESSAGES/migrations.mo":                localesRuLc_messagesMigrationsMo,
-	"locales/ru/LC_MESSAGES/status.mo":                    localesRuLc_messagesStatusMo,
+	"locales/ru/LC_MESSAGES/config.mo": localesRuLc_messagesConfigMo,
+	"locales/ru/LC_MESSAGES/database.mo": localesRuLc_messagesDatabaseMo,
+	"locales/ru/LC_MESSAGES/migrations.mo": localesRuLc_messagesMigrationsMo,
+	"locales/ru/LC_MESSAGES/status.mo": localesRuLc_messagesStatusMo,
 }
 
 // AssetDir returns the file names below a certain
@@ -381,7 +381,6 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"assets": &bintree{nil, map[string]*bintree{
 		"css": &bintree{nil, map[string]*bintree{
@@ -404,17 +403,17 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
-				"config.mo":     &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
-				"database.mo":   &bintree{localesRuLc_messagesDatabaseMo, map[string]*bintree{}},
+				"config.mo": &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
+				"database.mo": &bintree{localesRuLc_messagesDatabaseMo, map[string]*bintree{}},
 				"migrations.mo": &bintree{localesRuLc_messagesMigrationsMo, map[string]*bintree{}},
-				"status.mo":     &bintree{localesRuLc_messagesStatusMo, map[string]*bintree{}},
+				"status.mo": &bintree{localesRuLc_messagesStatusMo, map[string]*bintree{}},
 			}},
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
 		"views": &bintree{nil, map[string]*bintree{
 			"migrations.html": &bintree{templatesViewsMigrationsHtml, map[string]*bintree{}},
-			"status.html":     &bintree{templatesViewsStatusHtml, map[string]*bintree{}},
+			"status.html": &bintree{templatesViewsStatusHtml, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -465,6 +464,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

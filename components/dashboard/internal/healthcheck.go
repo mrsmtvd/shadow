@@ -7,16 +7,11 @@ import (
 )
 
 func (c *Component) ReadinessCheck() map[string]dashboard.HealthCheck {
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return nil
-	}
-
 	// TODO: check shutdown application
 
-	hc := make(map[string]dashboard.HealthCheck, len(components))
+	hc := make(map[string]dashboard.HealthCheck, len(c.components))
 
-	for _, cmp := range components {
+	for _, cmp := range c.components {
 		hc["component_"+cmp.Name()+"_ready"] = c.ComponentReadyCheck(cmp.Name())
 	}
 

@@ -9,10 +9,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -87,7 +87,7 @@ func templatesViewsListHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/views/list.html", size: 3989, mode: os.FileMode(420), modTime: time.Unix(1540767205, 0)}
+	info := bindataFileInfo{name: "templates/views/list.html", size: 3989, mode: os.FileMode(420), modTime: time.Unix(1530705550, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,7 +107,7 @@ func localesRuLc_messagesConfigMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1455, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/config.mo", size: 1455, mode: os.FileMode(420), modTime: time.Unix(1543013580, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func localesRuLc_messagesListMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/list.mo", size: 1188, mode: os.FileMode(420), modTime: time.Unix(1541273624, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/list.mo", size: 1188, mode: os.FileMode(420), modTime: time.Unix(1543013580, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func localesRuLc_messagesMetricsMo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/metrics.mo", size: 465, mode: os.FileMode(420), modTime: time.Unix(1541273625, 0)}
+	info := bindataFileInfo{name: "locales/ru/LC_MESSAGES/metrics.mo", size: 465, mode: os.FileMode(420), modTime: time.Unix(1543013581, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -204,9 +204,9 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/list.html":         templatesViewsListHtml,
-	"locales/ru/LC_MESSAGES/config.mo":  localesRuLc_messagesConfigMo,
-	"locales/ru/LC_MESSAGES/list.mo":    localesRuLc_messagesListMo,
+	"templates/views/list.html": templatesViewsListHtml,
+	"locales/ru/LC_MESSAGES/config.mo": localesRuLc_messagesConfigMo,
+	"locales/ru/LC_MESSAGES/list.mo": localesRuLc_messagesListMo,
 	"locales/ru/LC_MESSAGES/metrics.mo": localesRuLc_messagesMetricsMo,
 }
 
@@ -249,13 +249,12 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
-				"config.mo":  &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
-				"list.mo":    &bintree{localesRuLc_messagesListMo, map[string]*bintree{}},
+				"config.mo": &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
+				"list.mo": &bintree{localesRuLc_messagesListMo, map[string]*bintree{}},
 				"metrics.mo": &bintree{localesRuLc_messagesMetricsMo, map[string]*bintree{}},
 			}},
 		}},
@@ -313,6 +312,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

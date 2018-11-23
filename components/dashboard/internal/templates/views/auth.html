@@ -9,7 +9,7 @@
 
     <title>{{ .Application.name }}</title>
 
-    <link rel="shortcut icon" href="{{ staticURL "/dashboard/assets/images/favicon.svg" false }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ staticURL "/{{ .ComponentName }}/assets/images/favicon.svg" false }}" type="image/svg+xml">
 
     {{ staticHTML (staticURL "/dashboard/assets/vendors/bootstrap/css/bootstrap.min.css" false) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/font-awesome/css/font-awesome.min.css" false) }}

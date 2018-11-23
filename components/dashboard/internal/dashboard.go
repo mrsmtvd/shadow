@@ -28,15 +28,18 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		WithIcon("dashboard").
 		WithChild(dashboard.NewMenu("Components").WithRoute(routes[10])).
 		WithChild(dashboard.NewMenu("Environment").WithRoute(routes[3])).
-		WithChild(dashboard.NewMenu("Bindata").WithRoute(routes[1])).
-		WithChild(dashboard.NewMenu("Routing").WithRoute(routes[4]))
+		WithChild(dashboard.NewMenu("BinData").WithRoute(routes[1])).
+		WithChild(dashboard.NewMenu("Routing").WithRoute(routes[4])).
+		WithChild(dashboard.NewMenu("Health check").
+			WithChild(dashboard.NewMenu("Liveness").WithUrl("/healthcheck/live?full=1")).
+			WithChild(dashboard.NewMenu("Readiness").WithUrl("/healthcheck/ready?full=1")))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name()+"/bindata", &handlers.BindataHandler{}).
+			dashboard.NewRoute("/"+c.Name()+"/bindata", handlers.NewBinDataHandler(c.components, c.application.BuildDate())).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
 			dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{}).
@@ -58,11 +61,11 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 			dashboard.NewRoute("/"+c.Name()+"/logout", &handlers.LogoutHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/healthcheck/:healthcheck", handlers.NewHealthCheckHandler(c.application, metricHealthCheckStatus)).
+			dashboard.NewRoute("/healthcheck/:healthcheck", handlers.NewHealthCheckHandler(c.components, metricHealthCheckStatus)).
 				WithMethods([]string{http.MethodGet}),
 		}
 
-		componentsHandler := &handlers.ComponentsHandler{}
+		componentsHandler := handlers.NewComponentsHandler(c.components, c.application.IsReadyComponent)
 
 		c.routes = append(c.routes, []dashboard.Route{
 			dashboard.NewRoute("/"+c.Name()+"/components", componentsHandler).
@@ -127,11 +130,6 @@ func (c *Component) templateFunctionStaticURL(file string, prefix bool) string {
 }
 
 func (c *Component) templateFunctionToolbar(opts ...interface{}) template.HTML {
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return ""
-	}
-
 	ctx := context.Background()
 
 	if len(opts) > 0 {
@@ -146,7 +144,7 @@ func (c *Component) templateFunctionToolbar(opts ...interface{}) template.HTML {
 
 	buf := bytes.NewBuffer(nil)
 
-	for _, component := range components {
+	for _, component := range c.components {
 		if componentToolbar, ok := component.(dashboard.HasToolbar); ok {
 			buf.WriteString(componentToolbar.DashboardToolbar(ctx))
 		}

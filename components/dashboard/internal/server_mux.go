@@ -9,11 +9,6 @@ import (
 
 func (c *Component) getServeMux() (*Router, error) {
 	// init routes
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return nil, err
-	}
-
 	router := NewRouter(c.logger, c.config.Int(dashboard.ConfigPanicHandlerCallerSkip))
 
 	// Special pages
@@ -24,7 +19,7 @@ func (c *Component) getServeMux() (*Router, error) {
 	// Middleware
 	router.addMiddleware(ContextMiddleware(c.application, router, c.config, c.renderer, c.session))
 
-	for _, component := range components {
+	for _, component := range c.components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
 			for _, route := range componentRoute.DashboardRoutes() {
 				router.addRoute(NewRouteItem(route, component))

@@ -16,8 +16,9 @@ import (
 )
 
 type Component struct {
-	logger logging.Logger
-	routes []dashboard.Route
+	application shadow.Application
+	logger      logging.Logger
+	routes      []dashboard.Route
 
 	mutex              sync.RWMutex
 	dispatcher         *dispatcher.SimpleDispatcher
@@ -51,6 +52,11 @@ func (c *Component) Dependencies() []shadow.Dependency {
 			Name: metrics.ComponentName,
 		},
 	}
+}
+
+func (c *Component) Init(a shadow.Application) error {
+	c.application = a
+	return nil
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {

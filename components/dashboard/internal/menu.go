@@ -20,14 +20,9 @@ func (m orderedMenus) Less(i, j int) bool {
 }
 
 func (c *Component) loadMenu() error {
-	components, err := c.application.GetComponents()
-	if err != nil {
-		return err
-	}
-
 	menus := make([]dashboard.Menu, 0)
 
-	for _, component := range components {
+	for _, component := range c.components {
 		if componentMenu, ok := component.(dashboard.HasMenu); ok {
 			menu := componentMenu.DashboardMenu()
 			if menu != nil {

@@ -42,14 +42,14 @@
 {{ end }}
 
 {{ define "head" }}
-<link href="/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
-<link href="/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+<link href="/{{ .ComponentName }}/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+<link href="/{{ .ComponentName }}/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
 {{ end }}
 
 {{ define "js" }}
-<script src="/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js?v={{ .Application.build }}"></script>
-<script src="/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js?v={{ .Application.build }}"></script>
+<script src="/{{ .ComponentName }}/assets/vendors/datatables.net/js/jquery.dataTables.min.js?v={{ .Application.build }}"></script>
+<script src="/{{ .ComponentName }}/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js?v={{ .Application.build }}"></script>
+<script src="/{{ .ComponentName }}/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js?v={{ .Application.build }}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#routes').DataTable().order([2, 'asc']).draw();

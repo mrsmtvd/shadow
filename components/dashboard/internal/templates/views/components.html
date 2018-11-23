@@ -46,7 +46,7 @@
                             {{ end }}
 
                             {{ if $component.has_assetfs }}
-                                <span class="label label-success">{{ i18n "asset filesystem" $ }}</span>
+                                <a href="/{{ $.ComponentName }}/bindata/?path=/{{ $component.name }}" class="label label-success">{{ i18n "asset filesystem" $ }}</a>
                             {{ end }}
 
                             {{ if $component.has_config_variables }}
@@ -65,11 +65,11 @@
                             {{ end }}
 
                             {{ if $component.has_dashboard_routes }}
-                            <a href="/dashboard/routing/" class="label label-success">{{ i18n "routes" $ }}</a>
+                            <a href="/{{ $.ComponentName }}/routing/" class="label label-success">{{ i18n "routes" $ }}</a>
                             {{ end }}
 
                             {{ if $component.has_dashboard_templates }}
-                            <a href="/dashboard/bindata/?path=/{{ $component.name }}/{{ $component.has_dashboard_templates }}" class="label label-success">{{ i18n "templates" $ }}</a>
+                            <a href="/{{ $.ComponentName }}/bindata/?path=/{{ $component.name }}/{{ $component.has_dashboard_templates }}" class="label label-success">{{ i18n "templates" $ }}</a>
                             {{ end }}
 
                             {{ if $component.has_database_migrations }}
