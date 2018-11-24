@@ -6,53 +6,58 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
-            <table class="table table-striped datatable" id="routes">
-                <thead>
-                <tr>
-                    <th>{{ i18n "Methods" . }}</th>
-                    <th>{{ i18n "Path" . }}</th>
-                    <th>{{ i18n "Component" . }}</th>
-                    <th>{{ i18n "Handler" . }}</th>
-                    <th>{{ i18n "Options" . }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{ range $r, $route := .routes }}
-                <tr>
-                    <td>
-                        {{ range $m, $method := $route.Methods }}
-                        <span class="label label-success">{{ $method }}</span>
-                        {{ end }}
-                    </td>
-                    <td>{{ $route.Path }}</td>
-                    <td>{{ $route.Component.Name }}</td>
-                    <td>{{ $route.HandlerName }}</td>
-                    <td>
+            <div class="table-responsive">
+                <table class="table table-striped datatable dt-responsive nowrap" id="routes" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>{{ i18n "Path" . }}</th>
+                        <th>{{ i18n "Component" . }}</th>
+                        <th>{{ i18n "Handler" . }}</th>
+                        <th>{{ i18n "Options" . }}</th>
+                        <th>{{ i18n "Methods" . }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $r, $route := .routes }}
+                    <tr>
+                        <td>{{ $route.Path }}</td>
+                        <td>{{ $route.Component.Name }}</td>
+                        <td>{{ $route.HandlerName }}</td>
+                        <td>
                         {{ if $route.Auth }}
-                        <span class="label label-info">{{ i18n "auth" . }}</span>
+                            <span class="label label-info">{{ i18n "auth" . }}</span>
                         {{ end }}
-                    </td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+                        </td>
+                        <td>
+                            {{ range $m, $method := $route.Methods }}
+                            <span class="label label-success">{{ $method }}</span>
+                            {{ end }}
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 {{ end }}
 
 {{ define "head" }}
-<link href="/{{ .ComponentName }}/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
-<link href="/{{ .ComponentName }}/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css?v={{ .Application.build }}" rel="stylesheet">
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css") false) }}
 {{ end }}
 
 {{ define "js" }}
-<script src="/{{ .ComponentName }}/assets/vendors/datatables.net/js/jquery.dataTables.min.js?v={{ .Application.build }}"></script>
-<script src="/{{ .ComponentName }}/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js?v={{ .Application.build }}"></script>
-<script src="/{{ .ComponentName }}/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js?v={{ .Application.build }}"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#routes').DataTable().order([2, 'asc']).draw();
-    });
-</script>
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net/js/jquery.dataTables.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js") false) }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#routes').DataTable().order([2, 'asc']).draw();
+        });
+    </script>
 {{ end }}

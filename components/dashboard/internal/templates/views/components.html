@@ -7,14 +7,14 @@
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-striped datatable dt-responsive nowrap" style="width:100%">
                     <thead>
                     <tr>
                         <th>#</th>
                         <th>{{ i18n "Name" . }}</th>
                         <th>{{ i18n "Version" . }}</th>
-                        <th>{{ i18n "Dependencies" . }}</th>
                         <th>{{ i18n "Ready" . }}</th>
+                        <th>{{ i18n "Dependencies" . }}</th>
                         <th>{{ i18n "Functions" . }}</th>
                     </tr>
                     </thead>
@@ -25,19 +25,19 @@
                         <td>{{ $component.name }}</td>
                         <td>{{ $component.version }}</td>
                         <td>
+                            {{ if $component.ready }}
+                                <span class="label label-success">{{ i18n "ready" $ }}</span>
+                            {{ else }}
+                                <span class="label label-danger">{{ i18n "not ready" $ }}</span>
+                            {{ end }}
+                        </td>
+                        <td>
                             {{ range $j, $dep := $component.dependencies }}
                             {{ if $dep.Required }}
                             <span class="label label-warning">{{ $dep.Name }}</span>
                             {{ else }}
                             <span class="label label-info">{{ $dep.Name }}</span>
                             {{ end }}
-                            {{ end }}
-                        </td>
-                        <td>
-                            {{ if $component.ready }}
-                                <span class="label label-success">{{ i18n "ready" $ }}</span>
-                            {{ else }}
-                                <span class="label label-danger">{{ i18n "not ready" $ }}</span>
                             {{ end }}
                         </td>
                         <td>
@@ -92,4 +92,18 @@
         </div>
     </div>
 </div>
+{{ end }}
+
+{{ define "head" }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css") false) }}
+{{ end }}
+
+{{ define "js" }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net/js/jquery.dataTables.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js") false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js") false) }}
 {{ end }}
