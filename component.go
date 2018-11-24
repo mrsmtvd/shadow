@@ -95,7 +95,6 @@ func (c *component) Run(a Application, result chan<- *component) {
 			atomic.StoreInt64(&c.ready, 1)
 
 			c.notify()
-			result <- c
 
 		case err := <-chError:
 			atomic.StoreInt64(&c.ready, 0)
@@ -103,14 +102,16 @@ func (c *component) Run(a Application, result chan<- *component) {
 			c.error.Store(err)
 
 			result <- c
+			c.notify()
+
 			return
 
 		case <-chDone:
 			atomic.StoreInt64(&c.ready, 1)
 			atomic.StoreInt64(&c.done, 1)
 
-			c.notify()
 			result <- c
+			c.notify()
 
 			return
 		}

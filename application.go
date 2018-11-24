@@ -117,16 +117,16 @@ func (a *App) Run() (err error) {
 
 	for {
 		select {
-		case hc := <-chResults:
-			if hc.Done() {
+		case cmp := <-chResults:
+			if cmp.Done() {
 				done++
 			}
 
-			if hc.Error() != nil {
+			if cmp.Error() != nil {
 				if !shutdown {
 					closers = append([]func() error{
 						func() error {
-							return hc.Error()
+							return cmp.Error()
 						},
 					}, closers...)
 
