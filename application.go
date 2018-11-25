@@ -102,18 +102,22 @@ func (a *App) Run() (err error) {
 	chShutdown := make(chan os.Signal, 1)
 	signal.Notify(chShutdown, sig...)
 
-	shutdown := false
+	var (
+		shutdown bool
+		done     int
+	)
 
 	defer func() {
-		close(chResults)
+		if done >= total {
+			close(chResults)
+		}
+
 		close(chShutdown)
 	}()
 
 	for _, cmp := range components {
 		go cmp.Run(a, chResults)
 	}
-
-	var done int
 
 	for {
 		select {
