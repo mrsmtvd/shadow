@@ -66,20 +66,18 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.registry = snitch.DefaultRegisterer
 
 	if c.application.HasComponent(profiling.ComponentName) {
 		c.registry.AddStorages(storage.NewExpvarWithId(metrics.ComponentName))
 	}
 
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	if err := c.initStorage(); err != nil {
 		return err
@@ -87,6 +85,8 @@ func (c *Component) Run() error {
 
 	c.initLabels(c.config.String(metrics.ConfigLabels))
 	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
+
+	ready <- struct{}{}
 
 	// search metrics
 	components, err := c.application.GetComponents()

@@ -253,5 +253,5 @@
 
 {{ define "js" }}
 {{ staticHTML (staticURL "/dashboard/assets/vendors/validator/js/validator.min.js" false) }}
-{{ staticHTML (staticURL "/grpc/assets/js/manager.js" true) }}
+{{ staticHTML (staticURL (print "/" .ComponentName "/assets/js/manager.js") true) }}
 {{ end }}

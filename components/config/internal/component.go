@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -33,7 +32,6 @@ type variableSort struct {
 
 type Component struct {
 	mutex         sync.RWMutex
-	application   shadow.Application
 	logger        logging.Logger
 	envPrefix     string
 	variables     map[string]config.Variable
@@ -50,13 +48,13 @@ func (c *Component) Version() string {
 	return config.ComponentVersion
 }
 
-func (c *Component) Init(a shadow.Application) (err error) {
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	components, err := a.GetComponents()
 	if err != nil {
 		return err
 	}
 
-	c.application = a
+	c.logger = logging.DefaultLogger().Named(c.Name())
 	c.envPrefix = EnvKey(a.Name()) + "_"
 	c.variables = make(map[string]config.Variable)
 	c.variablesSort = make([]*variableSort, 0)
@@ -66,7 +64,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 		if cmpVariables, ok := component.(config.HasVariables); ok {
 			for _, variable := range cmpVariables.ConfigVariables() {
 				if variable.Key() == config.WatcherForAll {
-					return fmt.Errorf("Use key %s not allowed", config.WatcherForAll)
+					return errors.New("use key " + config.WatcherForAll + " not allowed")
 				}
 
 				item := NewVariableItem(variable, component.Name())
@@ -107,22 +105,18 @@ func (c *Component) Init(a shadow.Application) (err error) {
 		}
 	}
 
-	return err
-}
-
-func (c *Component) Run() error {
-	fields := make(map[string]interface{}, 0)
+	vars := c.Variables()
+	fields := make([]interface{}, 0, len(vars)+2)
 
 	if c.envPrefix != "" {
-		fields["config.prefix"] = c.envPrefix
+		fields = append(fields, "config.prefix", c.envPrefix)
 	}
 
-	for _, v := range c.Variables() {
-		fields[v.Key()] = v.Value()
+	for _, v := range vars {
+		fields = append(fields, v.Key(), v.Value())
 	}
 
-	c.log().Info("Init config", fields)
-
+	c.logger.Info("Init config", fields...)
 	return nil
 }
 
@@ -181,7 +175,7 @@ func (c *Component) EnvPrefix() string {
 }
 
 func (c *Component) Watchers(key string) []config.Watcher {
-	watchers := []config.Watcher{}
+	watchers := make([]config.Watcher, 0)
 
 	if watchersForAll, ok := c.watchers[config.WatcherForAll]; ok {
 		for _, w := range watchersForAll {
@@ -213,14 +207,6 @@ func (c *Component) Watch(watcher config.Watcher, source string) {
 			c.watchers[key] = []*WatcherItem{item}
 		}
 	}
-}
-
-func (c *Component) log() logging.Logger {
-	if c.logger == nil {
-		c.logger = logging.DefaultLogger().Named(c.Name())
-	}
-
-	return c.logger
 }
 
 func (c *Component) Has(key string) bool {
@@ -262,7 +248,7 @@ func (c *Component) Get(key string) interface{} {
 
 func (c *Component) Set(key string, value interface{}) error {
 	if !c.Has(key) {
-		return errors.New("Variable not found")
+		return errors.New("variable not found")
 	}
 
 	oldValue := c.Get(key)
@@ -287,7 +273,7 @@ func (c *Component) Set(key string, value interface{}) error {
 		value = gotypes.ToDuration(value)
 	default:
 		c.mutex.RUnlock()
-		return fmt.Errorf("Unknown type %s for config %s", c.variables[key].Type(), c.variables[key].Key())
+		return errors.New("unknown type " + c.variables[key].Type() + " for config " + c.variables[key].Key())
 	}
 
 	err := c.variables[key].Change(value)

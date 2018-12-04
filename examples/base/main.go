@@ -9,7 +9,7 @@ import (
 	_ "github.com/kihamo/shadow/components/annotations/instance"
 	_ "github.com/kihamo/shadow/components/config/instance"
 	_ "github.com/kihamo/shadow/components/dashboard/instance"
-	_ "github.com/kihamo/shadow/components/database/instance"
+	//_ "github.com/kihamo/shadow/components/database/instance"
 	_ "github.com/kihamo/shadow/components/grpc/instance"
 	_ "github.com/kihamo/shadow/components/i18n/instance"
 	_ "github.com/kihamo/shadow/components/logging/instance"

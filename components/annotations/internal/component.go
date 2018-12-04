@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -18,9 +17,8 @@ import (
 type Component struct {
 	mutex sync.RWMutex
 
-	application shadow.Application
-	config      config.Component
-	logger      logging.Logger
+	config config.Component
+	logger logging.Logger
 
 	storages map[string]annotations.Storage
 }
@@ -48,16 +46,15 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
-	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.storages = make(map[string]annotations.Storage, 0)
 
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
+
+	ready <- struct{}{}
 
 	c.initStorageGrafana()
 
@@ -69,7 +66,7 @@ func (c *Component) Create(annotation annotations.Annotation) error {
 	defer c.mutex.RUnlock()
 
 	if len(c.storages) == 0 {
-		return errors.New("Storage not init")
+		return errors.New("storage not init")
 	}
 
 	for name, s := range c.storages {
@@ -90,7 +87,7 @@ func (c *Component) CreateInStorages(annotation annotations.Annotation, names []
 	c.mutex.RUnlock()
 
 	if l == 0 {
-		return errors.New("Storage not init")
+		return errors.New("storage not init")
 	}
 
 	for _, name := range names {
@@ -116,7 +113,7 @@ func (c *Component) AddStorage(id string, s annotations.Storage) error {
 	defer c.mutex.Unlock()
 
 	if _, ok := c.storages[id]; ok {
-		return fmt.Errorf("Storage %s already exists", id)
+		return errors.New("storage " + id + " already exists")
 	}
 
 	c.storages[id] = s

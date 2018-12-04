@@ -20,10 +20,8 @@ import (
 )
 
 type Component struct {
-	application shadow.Application
-	config      config.Component
-	logger      logging.Logger
-	manager     *internationalization.Manager
+	config  config.Component
+	manager *internationalization.Manager
 }
 
 func (c *Component) Name() string {
@@ -46,18 +44,12 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
-	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	c.manager = internationalization.NewManager("en")
 
-	return nil
-}
+	logger := logging.DefaultLogger().Named(c.Name())
 
-func (c *Component) Run() error {
-	c.logger = logging.DefaultLogger().Named(c.Name())
-
-	components, err := c.application.GetComponents()
+	components, err := a.GetComponents()
 	if err != nil {
 		return err
 	}
@@ -81,7 +73,7 @@ func (c *Component) Run() error {
 				for _, reader := range readers {
 					b, err := ioutil.ReadAll(reader)
 					if err != nil {
-						c.logger.Warn("Failed read from file",
+						logger.Warn("Failed read from file",
 							"locale", localeName,
 							"error", err.Error(),
 							"domain", cmp.Name(),
@@ -91,7 +83,7 @@ func (c *Component) Run() error {
 
 					file, err := mo.LoadData(b)
 					if err != nil {
-						c.logger.Warn("Failed parse MO file",
+						logger.Warn("Failed parse MO file",
 							"locale", localeName,
 							"error", err.Error(),
 							"domain", cmp.Name(),
@@ -113,7 +105,7 @@ func (c *Component) Run() error {
 					} else {
 						mergeDomain, err := domain.Merge(domainTmp)
 						if err != nil {
-							c.logger.Warn("Failed merge domains",
+							logger.Warn("Failed merge domains",
 								"locale", localeName,
 								"domain", cmp.Name(),
 								"error", err.Error(),
@@ -127,7 +119,7 @@ func (c *Component) Run() error {
 				if domain != nil {
 					locale.AddDomain(domain)
 
-					c.logger.Debug("Load "+strconv.FormatInt(int64(len(domain.Messages())), 10)+" translations",
+					logger.Debug("Load "+strconv.FormatInt(int64(len(domain.Messages())), 10)+" translations",
 						"locale", localeName,
 						"domain", cmp.Name(),
 					)
@@ -135,6 +127,9 @@ func (c *Component) Run() error {
 			}
 		}
 	}
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	return nil
 }

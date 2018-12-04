@@ -101,6 +101,8 @@ func (c *metricsCollector) listener(_ context.Context, event ws.Event, _ time.Ti
 }
 
 func (c *Component) Metrics() snitch.Collector {
+	<-c.application.ReadyComponent(c.Name())
+
 	collector := &metricsCollector{
 		component: c,
 	}

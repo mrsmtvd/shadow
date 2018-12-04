@@ -20,5 +20,5 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchChanges(key string, newValue interface{}, oldValue interface{}) {
-	c.log().Infof("Change value for %s with '%v' to '%v'", key, oldValue, newValue)
+	c.logger.Infof("Change value for %s with '%v' to '%v'", key, oldValue, newValue)
 }

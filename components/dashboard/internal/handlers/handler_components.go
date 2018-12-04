@@ -11,18 +11,28 @@ import (
 
 type ComponentsHandler struct {
 	dashboard.Handler
+
+	components       []shadow.Component
+	isReadyComponent func(string) bool
+}
+
+func NewComponentsHandler(components []shadow.Component, isReadyComponent func(string) bool) *ComponentsHandler {
+	return &ComponentsHandler{
+		components:       components,
+		isReadyComponent: isReadyComponent,
+	}
 }
 
 func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
-	contextComponents := []map[string]interface{}{}
+	contextComponents := make([]map[string]interface{}, 0, len(h.components))
 
-	components, _ := r.Application().GetComponents()
-	for _, cmp := range components {
+	for _, cmp := range h.components {
 		row := map[string]interface{}{
 			"name":                    cmp.Name(),
 			"version":                 cmp.Version(),
 			"shutdown":                false,
 			"dependencies":            []string{},
+			"ready":                   h.isReadyComponent(cmp.Name()),
 			"has_assetfs":             false,
 			"has_config_variables":    false,
 			"has_config_watchers":     false,

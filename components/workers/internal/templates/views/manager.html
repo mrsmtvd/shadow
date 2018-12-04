@@ -62,7 +62,7 @@
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
+                <table class="table table-hover table-striped dt-responsive nowrap" style="width:100%">
                     <thead>
                     <tr>
                         <th>{{ i18n "ID" . }}</th>
@@ -118,7 +118,7 @@
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
+                <table class="table table-hover table-striped dt-responsive nowrap" style="width:100%">
                     <thead>
                     <tr>
                         <th>{{ i18n "ID" . }}</th>
@@ -156,7 +156,7 @@
         </div>
         <div class="x_content">
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
+                <table class="table table-hover table-striped dt-responsive nowrap" style="width:100%">
                     <thead>
                     <tr>
                         <th>{{ i18n "ID" . }}</th>
@@ -208,10 +208,13 @@
 
 {{ define "head" }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" false) }}
 {{ end }}
 
 {{ define "js" }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
-    {{ staticHTML (staticURL "/workers/assets/js/manager.js" true) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/js/manager.js") true) }}
 {{ end }}

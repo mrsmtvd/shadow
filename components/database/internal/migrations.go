@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"sort"
 	"time"
@@ -21,7 +20,7 @@ var nameRegexp = regexp.MustCompile(`^([1-9]\d{3}[0-1]\d[0-3]\d[0-2]\d[0-5]\d[0-
 func formatId(source, id string) string {
 	parts := nameRegexp.FindStringSubmatch(id)
 	if len(parts) > 2 {
-		id = fmt.Sprintf("%s_%s%s", parts[1], source, parts[2])
+		id = parts[1] + "_" + source + parts[2]
 	}
 
 	return id
@@ -88,7 +87,6 @@ func (c *Component) collection() MigrationsCollection {
 				}
 
 				migrations = append(migrations, NewMigrationItem(migration, component.Name()))
-
 			}
 		}
 	}
@@ -117,8 +115,12 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 }
 
 func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
+	if len(c.Migrations()) == 0 {
+		return 0, nil
+	}
+
 	if c.Storage() == nil {
-		return -1, errors.New("Storage isn't initialized")
+		return -1, errors.New("storage isn't initialized")
 	}
 
 	s := c.Storage().(*storage.SQL)

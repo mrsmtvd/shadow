@@ -239,6 +239,15 @@ gulp.task('frontend', ['compress-components'], function() {
 
     gulp.src(['bower_components/datatables.net-fixedheader-bs/css/*.min.css'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-fixedheader-bs/css'));
+
+    gulp.src(['bower_components/datatables.net-responsive/js/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-responsive/js'));
+
+    gulp.src(['bower_components/datatables.net-responsive-bs/js/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-responsive-bs/js'));
+
+    gulp.src(['bower_components/datatables.net-responsive-bs/css/*.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/datatables.net-responsive-bs/css'));
     
     // echarts
     gulp.src(['bower_components/echarts/dist/echarts.common.min.js'])

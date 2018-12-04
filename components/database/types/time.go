@@ -3,6 +3,7 @@ package types
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -40,7 +41,7 @@ func (t *Time) Scan(value interface{}) (err error) {
 	case string:
 		t.Time, err = parseDateTime(v, time.UTC)
 	default:
-		err = fmt.Errorf("Can't convert %T to time.Time", value)
+		err = fmt.Errorf("can't convert %T to time.Time", value)
 	}
 
 	return err
@@ -68,7 +69,7 @@ func parseDateTime(str string, loc *time.Location) (t time.Time, err error) {
 		}
 		t, err = time.Parse(timeFormat[:len(str)], str)
 	default:
-		err = fmt.Errorf("invalid time string: %s", str)
+		err = errors.New("invalid time string: " + str)
 		return
 	}
 

@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"fmt"
+	"errors"
 	"net/url"
 	"strconv"
 	"strings"
@@ -20,7 +20,6 @@ import (
 type Component struct {
 	mutex sync.RWMutex
 
-	application shadow.Application
 	annotations annotations.Component
 	config      config.Component
 	logger      logging.Logger
@@ -53,20 +52,19 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
-	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.messengers = make(map[string]messengers.Messenger, 0)
 
 	if a.HasComponent(annotations.ComponentName) {
 		c.annotations = a.GetComponent(annotations.ComponentName).(annotations.Component)
 	}
 
-	return nil
-}
-
-func (c *Component) Run() error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
+
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
+
+	ready <- struct{}{}
 
 	c.initTelegram()
 	c.initAnnotationsStorageTelegram()
@@ -79,7 +77,7 @@ func (c *Component) RegisterMessenger(id string, messenger messengers.Messenger)
 	defer c.mutex.Unlock()
 
 	if _, ok := c.messengers[id]; ok {
-		return fmt.Errorf("Storage %s already exists", id)
+		return errors.New("storage " + id + " already exists")
 	}
 
 	c.messengers[id] = messenger

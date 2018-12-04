@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"time"
 
 	"google.golang.org/grpc"
@@ -21,7 +21,7 @@ func HealthCheck(conn *grpc.ClientConn, service string) error {
 	}
 
 	if response.Status != grpc_health_v1.HealthCheckResponse_SERVING {
-		return fmt.Errorf("Server is not healthy. Status is %s", response.Status.String())
+		return errors.New("server is not healthy. Status is " + response.Status.String())
 	}
 
 	return nil

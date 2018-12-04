@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -205,7 +206,7 @@ func DeleteDump(id string) error {
 
 	dump, ok := dumps.dumps[id]
 	if !ok {
-		return fmt.Errorf("Dump \"%s\" not found", id)
+		return errors.New("dump \"" + id + "\" not found")
 	}
 
 	if err := dump.Delete(); err != nil {

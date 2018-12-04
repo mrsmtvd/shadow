@@ -42,16 +42,14 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Init(a shadow.Application) error {
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	c.application = a
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.level = zap.NewAtomicLevel()
 	c.wrapper = logging.DefaultLogger().(wrapper)
 
-	return nil
-}
+	<-a.ReadyComponent(config.ComponentName)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
-func (c *Component) Run() error {
 	c.initLogger()
 
 	return nil

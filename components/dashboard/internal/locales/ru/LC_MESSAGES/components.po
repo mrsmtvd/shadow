@@ -22,6 +22,15 @@ msgstr "Версия"
 msgid "Dependencies"
 msgstr "Зависимости"
 
+msgid "Ready"
+msgstr "Готовность"
+
+msgid "ready"
+msgstr "готов"
+
+msgid "not ready"
+msgstr "не готов"
+
 msgid "Functions"
 msgstr "Функции"
 

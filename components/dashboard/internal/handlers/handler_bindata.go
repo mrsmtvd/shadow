@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -15,8 +15,11 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-type BindataHandler struct {
+type BinDataHandler struct {
 	dashboard.Handler
+
+	components []shadow.Component
+	buildDate  *time.Time
 }
 
 type bindataList struct {
@@ -35,20 +38,22 @@ type bindataBreadcrumb struct {
 	Active bool
 }
 
-func (h *BindataHandler) getRoot(application shadow.Application) ([]bindataList, error) {
-	components, err := application.GetComponents()
-	if err != nil {
-		return nil, err
+func NewBinDataHandler(components []shadow.Component, buildDate *time.Time) *BinDataHandler {
+	return &BinDataHandler{
+		components: components,
+		buildDate:  buildDate,
 	}
+}
 
-	files := make([]bindataList, 0, len(components))
+func (h *BinDataHandler) getRoot() ([]bindataList, error) {
+	files := make([]bindataList, 0, len(h.components))
 
 	modTime := time.Now()
-	if application.BuildDate() != nil {
-		modTime = *application.BuildDate()
+	if h.buildDate != nil {
+		modTime = *h.buildDate
 	}
 
-	for _, component := range components {
+	for _, component := range h.components {
 		if componentTemplate, ok := component.(dashboard.HasAssetFS); ok {
 			fs := componentTemplate.AssetFS()
 			if fs == nil {
@@ -69,14 +74,23 @@ func (h *BindataHandler) getRoot(application shadow.Application) ([]bindataList,
 	return files, nil
 }
 
-func (h *BindataHandler) getComponentByPath(name, path string, application shadow.Application) ([]bindataList, error) {
-	if !application.HasComponent(name) {
-		return nil, fmt.Errorf("Component %s not found", name)
+func (h *BinDataHandler) getComponentByPath(name, path string) ([]bindataList, error) {
+	var cmp shadow.Component
+
+	for _, c := range h.components {
+		if c.Name() == name {
+			cmp = c
+			break
+		}
 	}
 
-	componentTemplate, ok := application.GetComponent(name).(dashboard.HasAssetFS)
+	if cmp == nil {
+		return nil, errors.New("component " + name + " not found")
+	}
+
+	componentTemplate, ok := cmp.(dashboard.HasAssetFS)
 	if !ok {
-		return nil, fmt.Errorf("Component %s haven't templates", name)
+		return nil, errors.New("component " + name + " haven't templates")
 	}
 
 	fs := componentTemplate.AssetFS()
@@ -108,7 +122,7 @@ func (h *BindataHandler) getComponentByPath(name, path string, application shado
 
 	fsDirectory, ok := statRoot.(*assetfs.AssetDirectory)
 	if !ok {
-		return nil, fmt.Errorf("Failed cast %s to assetfs.AssetDirectory", filepath.Join(path, statRoot.Name()))
+		return nil, errors.New("failed cast " + filepath.Join(path, statRoot.Name()) + " to assetfs.AssetDirectory")
 	}
 
 	files, err := fsDirectory.Readdir(0)
@@ -140,8 +154,8 @@ func (h *BindataHandler) getComponentByPath(name, path string, application shado
 		}
 
 		if statSub.IsDir() {
-			if application.BuildDate() != nil {
-				infoSub.ModTime = *application.BuildDate()
+			if h.buildDate != nil {
+				infoSub.ModTime = *h.buildDate
 			}
 
 			// TODO: directory size
@@ -153,7 +167,7 @@ func (h *BindataHandler) getComponentByPath(name, path string, application shado
 	return ret, nil
 }
 
-func (h *BindataHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *BinDataHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	var (
 		files      []bindataList
 		breadcrumb []bindataBreadcrumb
@@ -169,15 +183,15 @@ func (h *BindataHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	}
 
 	if path == sep {
-		files, err = h.getRoot(r.Application())
+		files, err = h.getRoot()
 	} else {
 		dir, file := filepath.Split(path)
 		if dir == "" {
-			files, err = h.getComponentByPath(file, sep, r.Application())
+			files, err = h.getComponentByPath(file, sep)
 		} else {
 			parts := strings.Split(dir, sep)
 			if len(parts) > 1 {
-				files, err = h.getComponentByPath(parts[0], filepath.Join(filepath.Join(parts[1:]...), file), r.Application())
+				files, err = h.getComponentByPath(parts[0], filepath.Join(filepath.Join(parts[1:]...), file))
 			}
 		}
 	}

@@ -43,6 +43,8 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 }
 
 func (c *Component) Metrics() snitch.Collector {
+	<-c.application.ReadyComponent(c.Name())
+
 	return &metricsCollector{
 		component: c,
 	}

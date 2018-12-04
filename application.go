@@ -2,7 +2,6 @@ package shadow
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"os/signal"
 	"sync/atomic"
@@ -10,7 +9,6 @@ import (
 	"time"
 
 	"github.com/bugsnag/osext"
-	"github.com/deckarep/golang-set"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -22,64 +20,39 @@ var (
 
 type Application interface {
 	Run() error
-	GetComponent(string) Component
-	GetComponents() ([]Component, error)
-	HasComponent(string) bool
-	RegisterComponent(Component) error
 	Name() string
 	Version() string
 	Build() string
 	BuildDate() *time.Time
 	StartDate() *time.Time
 	Uptime() time.Duration
-}
-
-type Component interface {
-	Name() string
-	Version() string
-}
-
-type ComponentInit interface {
-	Init(Application) error
-}
-
-type ComponentRunner interface {
-	Run() error
-}
-
-type ComponentDependency interface {
-	Dependencies() []Dependency
-}
-
-type ComponentShutdown interface {
-	Shutdown() error
-}
-
-type Dependency struct {
-	Name     string
-	Required bool
+	GetComponent(string) Component
+	GetComponents() ([]Component, error)
+	HasComponent(string) bool
+	RegisterComponent(Component) error
+	IsReadyComponent(string) bool
+	ReadyComponent(string) <-chan struct{}
 }
 
 type App struct {
 	_ [4]byte // atomic requires 64-bit alignment for struct field access
 
-	components        map[string]Component
-	resolveComponents []Component
+	components *components
+	running    int64
 
 	name    string
 	version string
 	build   string
-
-	resolved bool
-	shutdown int64
-
-	runDone        chan error
-	shutdownSignal chan os.Signal
-	closers        []func() error
 }
 
 var (
 	buildDate *time.Time
+	sig       = []os.Signal{
+		syscall.SIGQUIT,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+	}
 )
 
 func init() {
@@ -93,116 +66,95 @@ func init() {
 
 func NewApp() *App {
 	application := &App{
-		components: map[string]Component{},
+		components: &components{},
 	}
 
 	return application
 }
 
 func (a *App) Run() (err error) {
-	if a.shutdownSignal != nil {
-		return errors.New("Already running")
+	if atomic.LoadInt64(&a.running) == 1 {
+		return errors.New("already running")
 	}
 
-	components, err := a.GetComponents()
+	atomic.StoreInt64(&a.running, 1)
+	defer atomic.StoreInt64(&a.running, 0)
+
+	components, err := a.components.all()
 	if err != nil {
 		return err
 	}
 
-	a.runDone = make(chan error)
+	total := len(components)
+	if total == 0 {
+		return
+	}
 
-	// listen os signal
-	a.shutdownSignal = make(chan os.Signal)
-	signal.Notify(a.shutdownSignal, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
-
-	a.closers = make([]func() error, 0, len(components))
-
-	for i := range components {
-		if closer, ok := components[i].(ComponentShutdown); ok {
-			a.closers = append([]func() error{closer.Shutdown}, a.closers...)
-		}
-
-		if init, ok := components[i].(ComponentInit); ok {
-			if err = init.Init(a); err != nil {
-				return err
-			}
+	closers := make([]func() error, 0, total)
+	for _, cmp := range components {
+		if closer, ok := cmp.instance.(ComponentShutdown); ok {
+			closers = append(closers, closer.Shutdown)
 		}
 	}
 
-	if len(a.closers) > 0 {
-		go func() {
-			<-a.shutdownSignal
+	chResults := make(chan *component, total)
 
-			atomic.StoreInt64(&a.shutdown, 1)
+	chShutdown := make(chan os.Signal, 1)
+	signal.Notify(chShutdown, sig...)
 
-			signal.Stop(a.shutdownSignal)
-			close(a.shutdownSignal)
+	var (
+		shutdown bool
+		done     int
+	)
+
+	defer func() {
+		if done >= total {
+			close(chResults)
+		}
+
+		close(chShutdown)
+	}()
+
+	for _, cmp := range components {
+		go cmp.Run(a, chResults)
+	}
+
+	for {
+		select {
+		case cmp := <-chResults:
+			if cmp.Done() {
+				done++
+			}
+
+			if cmp.Error() != nil {
+				if !shutdown {
+					closers = append([]func() error{
+						func() error {
+							return cmp.Error()
+						},
+					}, closers...)
+
+					chShutdown <- sig[0]
+				}
+			} else if done >= total {
+				chShutdown <- sig[0]
+			}
+
+		case <-chShutdown:
+			shutdown = true
+			signal.Stop(chShutdown)
 
 			var shutdownEG errgroup.Group
 
-			for _, closer := range a.closers {
+			for _, closer := range closers {
 				shutdownEG.Go(closer)
 			}
 
-			a.runDone <- shutdownEG.Wait()
-		}()
-	}
-
-	var runEG errgroup.Group
-
-	for i := range components {
-		if runner, ok := components[i].(ComponentRunner); ok {
-			runEG.Go(runner.Run)
+			return shutdownEG.Wait()
 		}
-	}
-
-	go func() {
-		err := runEG.Wait()
-
-		if atomic.LoadInt64(&a.shutdown) != 1 {
-			a.runDone <- err
-		}
-	}()
-
-	return <-a.runDone
-}
-
-func (a *App) GetComponent(n string) Component {
-	if cmp, ok := a.components[n]; ok {
-		return cmp
 	}
 
 	return nil
-}
-
-func (a *App) GetComponents() ([]Component, error) {
-	if !a.resolved {
-		if err := a.resolveDependencies(); err != nil {
-			return nil, err
-		}
-	}
-
-	return a.resolveComponents, nil
-}
-
-func (a *App) HasComponent(n string) bool {
-	return a.GetComponent(n) != nil
-}
-
-func (a *App) RegisterComponent(c Component) error {
-	if a.HasComponent(c.Name()) {
-		return fmt.Errorf("Component \"%s\" already exists", c.Name())
-	}
-
-	a.components[c.Name()] = c
-	a.resolved = false
-	return nil
-}
-
-func (a *App) MustRegisterComponent(c Component) {
-	if err := a.RegisterComponent(c); err != nil {
-		panic(err)
-	}
 }
 
 func (a *App) SetName(name string) {
@@ -241,62 +193,66 @@ func (a *App) Uptime() time.Duration {
 	return time.Now().UTC().Sub(startTime)
 }
 
-func (a *App) resolveDependencies() error {
-	a.resolveComponents = make([]Component, 0, len(a.components))
-
-	cmpDependencies := make(map[string]mapset.Set)
-	for _, cmp := range a.components {
-		dependencySet := mapset.NewSet()
-
-		if cmpDependency, ok := cmp.(ComponentDependency); ok {
-			for _, dep := range cmpDependency.Dependencies() {
-				if dep.Required {
-					if !a.HasComponent(dep.Name) {
-						return fmt.Errorf("Component \"%s\" has required dependency \"%s\"", cmp.Name(), dep.Name)
-					}
-				} else if !a.HasComponent(dep.Name) {
-					cmpDependencies[dep.Name] = mapset.NewSet()
-				}
-
-				dependencySet.Add(dep.Name)
-			}
-		}
-
-		cmpDependencies[cmp.Name()] = dependencySet
+func (a *App) GetComponent(n string) Component {
+	if cmp, ok := a.components.get(n); ok {
+		return cmp.instance
 	}
 
-	var components []string
+	return nil
+}
 
-	for len(cmpDependencies) > 0 {
-		readySet := mapset.NewSet()
-		for name, deps := range cmpDependencies {
-			if deps.Cardinality() == 0 {
-				readySet.Add(name)
-			}
-		}
+func (a *App) GetComponents() ([]Component, error) {
+	components, err := a.components.all()
+	if err != nil {
+		return nil, err
+	}
 
-		if readySet.Cardinality() == 0 {
-			return errors.New("Circular dependency found")
-		}
+	resolveComponents := make([]Component, len(components), len(components))
+	for _, cmp := range components {
+		resolveComponents[cmp.Order()] = cmp.instance
+	}
 
-		for name := range readySet.Iter() {
-			delete(cmpDependencies, name.(string))
-			components = append(components, name.(string))
-		}
+	return resolveComponents, nil
+}
 
-		for name, deps := range cmpDependencies {
-			diff := deps.Difference(readySet)
-			cmpDependencies[name] = diff
+func (a *App) HasComponent(n string) bool {
+	return a.GetComponent(n) != nil
+}
+
+func (a *App) RegisterComponent(c Component) error {
+	if a.HasComponent(c.Name()) {
+		return errors.New("component \"" + c.Name() + "\" already exists")
+	}
+
+	if ini, ok := c.(ComponentInit); ok {
+		if err := ini.Init(a); err != nil {
+			return err
 		}
 	}
 
-	for _, name := range components {
-		if cmp := a.GetComponent(name); cmp != nil {
-			a.resolveComponents = append(a.resolveComponents, cmp)
-		}
+	a.components.add(c.Name(), c)
+	return nil
+}
+
+func (a *App) MustRegisterComponent(c Component) {
+	if err := a.RegisterComponent(c); err != nil {
+		panic(err)
+	}
+}
+
+func (a *App) IsReadyComponent(n string) bool {
+	if cmp, ok := a.components.get(n); ok {
+		return cmp.Ready()
 	}
 
-	a.resolved = true
+	return false
+}
+
+func (a *App) ReadyComponent(n string) <-chan struct{} {
+	if cmp, ok := a.components.get(n); ok {
+		return cmp.Watch()
+	}
+
 	return nil
 }
 
