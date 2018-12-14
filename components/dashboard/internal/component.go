@@ -116,7 +116,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 
 	ready <- struct{}{}
 
-	if err := srv.Serve(lis); err != nil {
+	if err := srv.Serve(lis); err != nil && err != http.ErrServerClosed {
 		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		return err
 	}
