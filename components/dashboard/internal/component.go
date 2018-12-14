@@ -60,16 +60,22 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error) {
+func (c *Component) Init(a shadow.Application) (err error) {
+	c.application = a
+
 	if c.components, err = a.GetComponents(); err != nil {
 		return err
 	}
 
-	c.application = a
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
+
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error) {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	if err := c.loadTemplates(); err != nil {
 		return err

@@ -44,9 +44,14 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
+func (c *Component) Init(a shadow.Application) error {
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.manager = internationalization.NewManager("en")
 
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	logger := logging.DefaultLogger().Named(c.Name())
 
 	components, err := a.GetComponents()
@@ -129,7 +134,6 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	}
 
 	<-a.ReadyComponent(config.ComponentName)
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	return nil
 }

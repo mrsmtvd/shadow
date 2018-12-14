@@ -46,13 +46,17 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
+func (c *Component) Init(a shadow.Application) error {
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.storages = make(map[string]annotations.Storage)
 
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	ready <- struct{}{}
 

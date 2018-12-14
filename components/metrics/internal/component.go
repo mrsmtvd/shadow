@@ -66,7 +66,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
+func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.registry = snitch.DefaultRegisterer
 
@@ -74,10 +74,15 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 		c.registry.AddStorages(storage.NewExpvarWithId(metrics.ComponentName))
 	}
 
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
+
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	if err := c.initStorage(); err != nil {
 		return err

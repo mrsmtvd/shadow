@@ -48,6 +48,15 @@ func (c *Component) Version() string {
 	return config.ComponentVersion
 }
 
+func (c *Component) Init(a shadow.Application) error {
+	c.envPrefix = EnvKey(a.Name()) + "_"
+	c.variables = make(map[string]config.Variable)
+	c.variablesSort = make([]*variableSort, 0)
+	c.watchers = make(map[string][]*WatcherItem)
+
+	return nil
+}
+
 func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	components, err := a.GetComponents()
 	if err != nil {
@@ -55,10 +64,6 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	}
 
 	c.logger = logging.DefaultLogger().Named(c.Name())
-	c.envPrefix = EnvKey(a.Name()) + "_"
-	c.variables = make(map[string]config.Variable)
-	c.variablesSort = make([]*variableSort, 0)
-	c.watchers = make(map[string][]*WatcherItem)
 
 	for _, component := range components {
 		if cmpVariables, ok := component.(config.HasVariables); ok {

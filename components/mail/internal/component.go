@@ -65,14 +65,19 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
+func (c *Component) Init(a shadow.Application) error {
 	c.open = false
 	c.queue = make(chan *mailTask)
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
+
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 	metricsEnabled := a.HasComponent(metrics.ComponentName)
 
 	<-a.ReadyComponent(config.ComponentName)
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	c.initDialer(
 		c.config.String(mail.ConfigSmtpHost),

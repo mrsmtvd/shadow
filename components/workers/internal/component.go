@@ -56,13 +56,14 @@ func (c *Component) Dependencies() []shadow.Dependency {
 
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
+
+	c.dispatcher = dispatcher.NewSimpleDispatcher()
+	c.lockedListenersIds = []string{}
+
 	return nil
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
-	c.dispatcher = dispatcher.NewSimpleDispatcher()
-	c.lockedListenersIds = []string{}
-
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)

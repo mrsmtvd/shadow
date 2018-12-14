@@ -90,6 +90,14 @@ func (a *App) Run() (err error) {
 		return
 	}
 
+	for _, cmp := range components {
+		if ini, ok := cmp.instance.(ComponentInit); ok {
+			if err := ini.Init(a); err != nil {
+				return err
+			}
+		}
+	}
+
 	closers := make([]func() error, 0, total)
 	for _, cmp := range components {
 		if closer, ok := cmp.instance.(ComponentShutdown); ok {
@@ -220,12 +228,6 @@ func (a *App) HasComponent(n string) bool {
 func (a *App) RegisterComponent(c Component) error {
 	if a.HasComponent(c.Name()) {
 		return errors.New("component \"" + c.Name() + "\" already exists")
-	}
-
-	if ini, ok := c.(ComponentInit); ok {
-		if err := ini.Init(a); err != nil {
-			return err
-		}
 	}
 
 	a.components.add(c.Name(), c)

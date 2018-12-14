@@ -47,11 +47,15 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
+func (c *Component) Init(a shadow.Application) error {
 	c.application = a
-
-	<-a.ReadyComponent(config.ComponentName)
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
+
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
+	<-a.ReadyComponent(config.ComponentName)
 
 	return c.initTracer()
 }

@@ -52,17 +52,21 @@ func (c *Component) Dependencies() []shadow.Dependency {
 	}
 }
 
-func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
-	c.messengers = make(map[string]messengers.Messenger)
-
+func (c *Component) Init(a shadow.Application) error {
 	if a.HasComponent(annotations.ComponentName) {
 		c.annotations = a.GetComponent(annotations.ComponentName).(annotations.Component)
 	}
 
+	c.config = a.GetComponent(config.ComponentName).(config.Component)
+	c.messengers = make(map[string]messengers.Messenger)
+
+	return nil
+}
+
+func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
-	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	ready <- struct{}{}
 
