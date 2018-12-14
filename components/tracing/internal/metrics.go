@@ -33,7 +33,7 @@ func newFactory(scope string, tags map[string]string) *factory {
 	return &factory{
 		scope:    scope,
 		tags:     tags,
-		children: make([]snitch.Collector, 0, 0),
+		children: make([]snitch.Collector, 0),
 	}
 }
 

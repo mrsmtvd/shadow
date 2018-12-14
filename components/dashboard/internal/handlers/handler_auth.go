@@ -99,6 +99,10 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 	sessionKey := dashboard.AuthSessionName()
 
 	exists, err := session.Exists(sessionKey)
+	if err != nil {
+		return err
+	}
+
 	if !exists {
 		return errors.New("OAuth session not exists")
 	}
@@ -123,11 +127,14 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		return err
 	}
 
-	r.Original().ParseForm()
+	if err := r.Original().ParseForm(); err != nil {
+		return err
+	}
+
 	originalState := authURL.Query().Get("state")
 
 	if originalState != "" && (originalState != r.Original().Form.Get("state")) {
-		return errors.New("State token mismatch")
+		return errors.New("state token mismatch")
 	}
 
 	if providerUser, err := provider.FetchUser(providerSession); err == nil {

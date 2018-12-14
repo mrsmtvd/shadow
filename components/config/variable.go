@@ -60,8 +60,8 @@ func NewVariable(key string, typ string) *VariableSimple {
 		key:         key,
 		typ:         typ,
 		group:       "Others",
-		view:        make([]string, 0, 0),
-		viewOptions: make(map[string]interface{}, 0),
+		view:        make([]string, 0),
+		viewOptions: make(map[string]interface{}),
 	}
 }
 
@@ -128,7 +128,7 @@ func (v *VariableSimple) WithDefaultFunc(f func() interface{}) *VariableSimple {
 	v.def.Store(&variableValue{f})
 
 	if l := v.value.Load(); l == nil {
-		v.changeFunc(f)
+		_ = v.changeFunc(f)
 	}
 
 	return v
@@ -143,7 +143,7 @@ func (v *VariableSimple) Value() interface{} {
 }
 
 func (v *VariableSimple) WithValue(value interface{}) *VariableSimple {
-	v.Change(value)
+	_ = v.Change(value)
 	return v
 }
 
@@ -193,10 +193,9 @@ func (v *VariableSimple) WithViewOptions(viewOptions map[string]interface{}) *Va
 }
 
 func (v *VariableSimple) Change(value interface{}) error {
-	v.changeFunc(func() interface{} {
+	return v.changeFunc(func() interface{} {
 		return value
 	})
-	return nil
 }
 
 func (v *VariableSimple) changeFunc(f func() interface{}) error {
@@ -234,7 +233,7 @@ func (v *VariableSimple) String() string {
 		return "<nil>"
 	}
 
-	return fmt.Sprintf("%s", gotypes.ToString(value))
+	return gotypes.ToString(value)
 }
 
 func (v *VariableSimple) GoString() string {

@@ -25,7 +25,7 @@ type MenuSimple struct {
 func NewMenu(title string) *MenuSimple {
 	return &MenuSimple{
 		title:  title,
-		childs: make([]Menu, 0, 0),
+		childs: make([]Menu, 0),
 	}
 }
 

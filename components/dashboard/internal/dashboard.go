@@ -153,10 +153,6 @@ func (c *Component) templateFunctionToolbar(opts ...interface{}) template.HTML {
 	return template.HTML(buf.String())
 }
 
-func templateFunctionStub(...interface{}) string {
-	return ""
-}
-
 func templateFunctionMock(i int) func(...interface{}) string {
 	return func(args ...interface{}) string {
 		if len(args) > i {

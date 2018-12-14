@@ -121,7 +121,7 @@ func (c *Component) Shutdown() error {
 
 func (c *Component) initAuth() (err error) {
 	auth.ClearProviders()
-	providers := make([]goth.Provider, 0, 0)
+	providers := make([]goth.Provider, 0)
 
 	var baseURL *url.URL
 	baseURLFromConfig := c.config.String(dashboard.ConfigOAuth2BaseURL)

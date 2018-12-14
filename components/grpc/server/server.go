@@ -19,7 +19,7 @@ func NewDefaultServer(opts ...grpc.ServerOption) *grpc.Server {
 		WithDefaultStatsHandlerChain(),
 	}, opts...)
 
-	return NewDefaultServerWithCustomOptions(nil, nil, nil)
+	return NewDefaultServerWithCustomOptions(nil, nil, nil, opts...)
 }
 
 func NewDefaultServerWithCustomOptions(unaryInterceptors []grpc.UnaryServerInterceptor, streamInterceptors []grpc.StreamServerInterceptor, statsHandlers []s.Handler, opts ...grpc.ServerOption) *grpc.Server {

@@ -50,7 +50,9 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 
 			if len(auth.GetProviders()) > 0 && !request.User().IsAuthorized() {
 				if !request.IsAjax() && request.IsGet() {
-					request.Session().PutString(dashboard.SessionLastURL, request.URL().Path)
+					if err := request.Session().PutString(dashboard.SessionLastURL, request.URL().Path); err != nil {
+						panic(err.Error())
+					}
 				}
 
 				http.Redirect(w, r, dashboard.AuthPath, http.StatusFound)

@@ -207,7 +207,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchAuth(_ string, _ interface{}, _ interface{}) {
-	c.initAuth()
+	_ = c.initAuth()
 }
 
 func (c *Component) watchSessionCookieName(_ string, v interface{}, _ interface{}) {

@@ -18,7 +18,7 @@ type Locale struct {
 func NewLocale(locale string) *Locale {
 	return &Locale{
 		locale:  locale,
-		domains: make(map[string]*Domain, 0),
+		domains: make(map[string]*Domain),
 	}
 }
 

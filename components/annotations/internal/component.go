@@ -149,5 +149,5 @@ func (c *Component) initStorageGrafana() {
 		dashboards,
 		&logger{c.logger})
 
-	c.AddStorage(annotations.StorageGrafana, s)
+	_ = c.AddStorage(annotations.StorageGrafana, s)
 }

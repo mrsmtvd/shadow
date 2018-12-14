@@ -63,7 +63,9 @@ func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) erro
 
 	// layouts
 	for name, content := range r.baseLayouts {
-		baseComponent.New(name).Parse(content)
+		if _, err := baseComponent.New(name).Parse(content); err != nil {
+			return err
+		}
 	}
 
 	if files, err := r.getTemplateFiles(TemplateLayoutsDir, fs); err == nil {
@@ -75,7 +77,9 @@ func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) erro
 				tpl.New(tplName)
 			}
 
-			tpl.Parse(content)
+			if _, err := tpl.Parse(content); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -142,10 +146,8 @@ func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, componentName
 		executeData[i] = r.globals[i]
 	}
 
-	if data != nil {
-		for i := range data {
-			executeData[i] = data[i]
-		}
+	for i := range data {
+		executeData[i] = data[i]
 	}
 
 	return view.ExecuteTemplate(wr, layoutName, executeData)

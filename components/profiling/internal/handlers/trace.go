@@ -82,7 +82,7 @@ func (h *TraceHandler) actionDownload(w *dashboard.Response, r *dashboard.Reques
 	w.Header().Set("Content-Type", "application/x-gzip")
 	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(dump.GetFile()))
 
-	io.Copy(w, file)
+	_, _ = io.Copy(w, file)
 
 	return nil
 }
@@ -171,6 +171,7 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	for _, dump := range dumps {
 		if dump.GetStatus() == trace.DumpStatusPrepare {
 			context["remove_all"] = false
+			break
 		}
 	}
 

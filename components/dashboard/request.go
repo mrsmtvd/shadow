@@ -61,7 +61,7 @@ func (r *Request) User() *auth.User {
 
 	session := r.Session()
 	if session != nil {
-		session.GetObject(SessionUser, user)
+		_ = session.GetObject(SessionUser, user)
 	}
 
 	return user

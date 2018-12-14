@@ -118,7 +118,7 @@ func (c *Component) initLogger() {
 }
 
 func (c *Component) parseFields(f string) []zap.Field {
-	fields := make([]zap.Field, 0, 0)
+	fields := make([]zap.Field, 0)
 
 	if len(f) == 0 {
 		return fields

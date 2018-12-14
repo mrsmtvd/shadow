@@ -25,17 +25,15 @@ type mailTask struct {
 }
 
 type Component struct {
-	application shadow.Application
-	config      config.Component
-	logger      logging.Logger
-	routes      []dashboard.Route
+	config config.Component
+	logger logging.Logger
+	routes []dashboard.Route
 
-	mutex          sync.RWMutex
-	open           bool
-	dialer         *gomail.Dialer
-	closer         gomail.SendCloser
-	queue          chan *mailTask
-	metricsEnabled bool
+	mutex  sync.RWMutex
+	open   bool
+	dialer *gomail.Dialer
+	closer gomail.SendCloser
+	queue  chan *mailTask
 }
 
 func (c *Component) Name() string {

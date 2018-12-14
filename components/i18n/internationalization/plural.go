@@ -44,7 +44,9 @@ func (r *PluralRule) parse(rule string) {
 
 func (r *PluralRule) Number(number int) int {
 	env := vm.NewEnv()
-	env.Define("n", number)
+	if err := env.Define("n", number); err != nil {
+		return 0
+	}
 
 	plural, err := vm.Run(r.plural, env)
 	if err != nil {

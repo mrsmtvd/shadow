@@ -23,6 +23,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher([]string{workers.ConfigWorkersCount}, c.watchCount),
+		config.NewWatcher([]string{workers.ConfigTickerExecuteTasksDuration}, c.watchTickerExecuteTasksDuration),
 	}
 }
 

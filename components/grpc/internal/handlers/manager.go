@@ -282,9 +282,14 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 	addr := net.JoinHostPort(r.Config().String(grpc.ConfigHost), r.Config().String(grpc.ConfigPort))
 	connect, err := g.DialContext(ctx, addr, g.WithInsecure())
 	if err != nil {
-		w.SendJSON(managerHandlerResponseCall{
+		err = w.SendJSON(managerHandlerResponseCall{
 			Error: err.Error(),
 		})
+
+		if err != nil {
+			panic(err.Error())
+		}
+
 		return
 	}
 
@@ -292,17 +297,27 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 
 	service, err := cli.ResolveService(s)
 	if err != nil {
-		w.SendJSON(managerHandlerResponseCall{
+		err = w.SendJSON(managerHandlerResponseCall{
 			Error: err.Error(),
 		})
+
+		if err != nil {
+			panic(err.Error())
+		}
+
 		return
 	}
 
 	method := service.FindMethodByName(m)
 	if method == nil {
-		w.SendJSON(managerHandlerResponseCall{
+		err = w.SendJSON(managerHandlerResponseCall{
 			Error: "Method not found",
 		})
+
+		if err != nil {
+			panic(err.Error())
+		}
+
 		return
 	}
 
@@ -338,7 +353,10 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		}
 	}
 
-	w.SendJSON(response)
+	err = w.SendJSON(response)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {

@@ -113,7 +113,7 @@ func (c *Component) initTracer() error {
 		Tags: tags,
 	}
 
-	options := make([]jconfig.Option, 0, 0)
+	options := make([]jconfig.Option, 0)
 
 	if c.application.HasComponent(logging.ComponentName) {
 		log := logging.DefaultLogger().Named(c.Name())

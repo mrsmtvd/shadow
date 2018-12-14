@@ -53,7 +53,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
-	c.messengers = make(map[string]messengers.Messenger, 0)
+	c.messengers = make(map[string]messengers.Messenger)
 
 	if a.HasComponent(annotations.ComponentName) {
 		c.annotations = a.GetComponent(annotations.ComponentName).(annotations.Component)
@@ -120,7 +120,7 @@ func (c *Component) initTelegram() {
 
 	c.initTelegramWebHook(messenger, c.config.Bool(messengers.ConfigTelegramWebHookEnabled))
 
-	c.RegisterMessenger(messengers.MessengerTelegram, messenger)
+	_ = c.RegisterMessenger(messengers.MessengerTelegram, messenger)
 }
 
 func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bool) {
@@ -134,7 +134,14 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 			return
 		}
 
-		messenger.RegisterWebHook(u, "")
+		err = messenger.RegisterWebHook(u, "")
+		if err != nil {
+			c.logger.Error("Failed register webhook for telegram messenger",
+				"error", err.Error(),
+				"messenger", messengers.MessengerTelegram,
+			)
+			return
+		}
 	} else {
 		err := messenger.UnregisterWebHook()
 		if err != nil {
@@ -177,5 +184,5 @@ func (c *Component) initAnnotationsStorageTelegram() {
 	}
 
 	storage := storages.NewTelegram(t, chats)
-	c.annotations.AddStorage(messengers.MessengerTelegram, storage)
+	_ = c.annotations.AddStorage(messengers.MessengerTelegram, storage)
 }

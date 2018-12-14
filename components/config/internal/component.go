@@ -150,7 +150,7 @@ func (c *Component) LoadFromCLIArguments() error {
 
 	flagSet.Visit(func(f *flag.Flag) {
 		if c.Has(f.Name) {
-			c.Set(f.Name, f.Value.String())
+			_ = c.Set(f.Name, f.Value.String())
 		}
 	})
 

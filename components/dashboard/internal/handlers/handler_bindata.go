@@ -208,20 +208,25 @@ func (h *BinDataHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		switch r.URL().Query().Get("mode") {
 		case "raw":
 			if len(files) == 1 {
-				io.Copy(w, files[0].Reader)
+				if _, err := io.Copy(w, files[0].Reader); err != nil {
+					panic(err.Error())
+				}
+
 				return
 			}
-			break
+
 		case "file":
 			if len(files) == 1 {
 				w.Header().Set("Content-Length", strconv.FormatInt(files[0].Size, 10))
 				w.Header().Set("Content-Type", "application/x-gzip")
 				w.Header().Set("Content-Disposition", "attachment; filename="+files[0].Name)
 
-				io.Copy(w, files[0].Reader)
+				if _, err := io.Copy(w, files[0].Reader); err != nil {
+					panic(err.Error())
+				}
+
 				return
 			}
-			break
 		}
 	}
 

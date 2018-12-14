@@ -70,7 +70,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchForStorage(_ string, newValue interface{}, _ interface{}) {
-	c.initStorage()
+	_ = c.initStorage()
 }
 
 func (c *Component) watchInterval(_ string, newValue interface{}, _ interface{}) {

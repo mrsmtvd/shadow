@@ -73,7 +73,8 @@ func TestNullTime_NewInstanceAndUnmarshalJSONNil_ProtoReturnsNil(t *testing.T) {
 	a := assert.New(t)
 
 	var typ NullTime
-	json.Unmarshal([]byte(`null`), &typ)
+	e := json.Unmarshal([]byte(`null`), &typ)
 
 	a.Nil(typ.Proto())
+	a.Nil(e)
 }

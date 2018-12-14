@@ -16,18 +16,6 @@ type managerHandlerResponseSuccess struct {
 }
 
 // easyjson:json
-type managerHandlerStats struct {
-	TasksCount          uint64                       `json:"tasks_count"`
-	TasksWaitingCount   uint64                       `json:"tasks_waiting_count"`
-	WorkersCount        uint64                       `json:"workers_count"`
-	WorkersWaitingCount uint64                       `json:"workers_waiting_count"`
-	ListenersCount      uint64                       `json:"listeners_count"`
-	Workers             []managerHandlerItemWorker   `json:"workers"`
-	Tasks               []managerHandlerItemTask     `json:"tasks"`
-	Listeners           []managerHandlerItemListener `json:"listeners"`
-}
-
-// easyjson:json
 type managerHandlerItemWorker struct {
 	Id      string                  `json:"id"`
 	Created time.Time               `json:"created"`
@@ -93,9 +81,10 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	switch r.URL().Query().Get("entity") {
 	case "listeners":
-		list := make([]managerHandlerItemListener, 0, 0)
+		listListeners := component.GetListeners()
+		list := make([]managerHandlerItemListener, 0, len(listListeners))
 
-		for _, item := range component.GetListeners() {
+		for _, item := range listListeners {
 			listener := managerHandlerItemListener{
 				Id:     item.Id(),
 				Name:   item.Name(),
@@ -124,10 +113,11 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 		stats.Total = len(list)
 
 	case "workers":
-		list := make([]managerHandlerItemWorker, 0, 0)
+		listWorkers := component.GetWorkers()
+		list := make([]managerHandlerItemWorker, 0, len(listWorkers))
 		locale := i18n.NewOrNopFromRequest(r)
 
-		for _, item := range component.GetWorkers() {
+		for _, item := range listWorkers {
 			data := managerHandlerItemWorker{
 				Id:      item.Id(),
 				Created: item.CreatedAt(),
@@ -169,10 +159,11 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 		stats.Total = len(list)
 
 	case "tasks":
-		list := make([]managerHandlerItemTask, 0, 0)
+		listTasks := component.GetTasks()
+		list := make([]managerHandlerItemTask, 0, len(listTasks))
 		locale := i18n.NewOrNopFromRequest(r)
 
-		for _, item := range component.GetTasks() {
+		for _, item := range listTasks {
 			data := managerHandlerItemTask{
 				Id:             item.Id(),
 				Name:           item.Name(),

@@ -66,21 +66,17 @@ func NewSQLExecutor(driver string, dataSourceName string, options map[string]str
 			Engine:   engine,
 			Encoding: encoding,
 		}
-		break
 
 	case DialectOracle, "oci8":
 		dialect = gorp.OracleDialect{}
 		driver = "oci8"
 		dialectName = DialectOracle
-		break
 
 	case DialectPostgres:
 		dialect = gorp.PostgresDialect{}
-		break
 
 	case DialectSQLite3:
 		dialect = gorp.SqliteDialect{}
-		break
 
 	case DialectMSSQL:
 		version := ""
@@ -92,7 +88,6 @@ func NewSQLExecutor(driver string, dataSourceName string, options map[string]str
 		dialect = gorp.SqlServerDialect{
 			Version: version,
 		}
-		break
 
 	default:
 		return nil, errors.New("executor driver " + driver + " not found")

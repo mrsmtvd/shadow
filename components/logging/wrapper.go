@@ -20,7 +20,7 @@ func newWrapper() *wrapper {
 
 func newWrapperByLogger(l *zap.Logger) *wrapper {
 	w := &wrapper{
-		sub: make([]*wrapper, 0, 0),
+		sub: make([]*wrapper, 0),
 	}
 	w.SetLogger(l)
 
@@ -55,14 +55,14 @@ func (w *wrapper) SetLogger(l *zap.Logger) {
 }
 
 func (w *wrapper) Named(name string) Logger {
-	new := newWrapperByLogger(w.Logger().Named(name))
-	new.name = name
+	newLogger := newWrapperByLogger(w.Logger().Named(name))
+	newLogger.name = name
 
 	w.mutex.Lock()
-	w.sub = append(w.sub, new)
+	w.sub = append(w.sub, newLogger)
 	w.mutex.Unlock()
 
-	return new
+	return newLogger
 }
 
 func (w *wrapper) Debug(message string, args ...interface{}) {

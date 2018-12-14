@@ -26,8 +26,13 @@ func (h *ChangeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		return
 	}
 
-	component.SaveToSession(r.Session(), locale)
-	component.SaveToCookie(w, locale)
+	if err := component.SaveToSession(r.Session(), locale); err != nil {
+		panic(err.Error())
+	}
+
+	if err := component.SaveToCookie(w, locale); err != nil {
+		panic(err.Error())
+	}
 
 	redirect := r.URL().Query().Get("return")
 	if redirect == "" {

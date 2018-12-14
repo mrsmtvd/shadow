@@ -23,7 +23,7 @@ func MigrationsFromAsset(fs *assetfs.AssetFS) []Migration {
 		return nil
 	}
 
-	migrations := make([]Migration, 0, 0)
+	migrations := make([]Migration, 0)
 	for _, f := range files {
 		if f.IsDir() || filepath.Ext(f.Name()) != MigrationFileExt {
 			continue

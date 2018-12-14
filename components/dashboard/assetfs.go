@@ -60,7 +60,7 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 	w.Header().Set("Last-Modified", d.ModTime().UTC().Format(http.TimeFormat))
 	w.Header().Set("Content-Length", strconv.FormatInt(d.Size(), 10))
 	w.WriteHeader(http.StatusOK)
-	io.Copy(w, f)
+	_, _ = io.Copy(w, f)
 }
 
 type HasAssetFS interface {

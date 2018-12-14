@@ -141,7 +141,7 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 		}
 
 		defer func() {
-			executor.ExecByQuery("SELECT RELEASE_LOCK(?)", lockName)
+			_, _ = executor.ExecByQuery("SELECT RELEASE_LOCK(?)", lockName)
 		}()
 	}
 

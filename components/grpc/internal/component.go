@@ -64,8 +64,8 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	<-a.ReadyComponent(config.ComponentName)
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
-	unaryInterceptors := make([]g.UnaryServerInterceptor, 0, 0)
-	streamInterceptors := make([]g.StreamServerInterceptor, 0, 0)
+	unaryInterceptors := make([]g.UnaryServerInterceptor, 0)
+	streamInterceptors := make([]g.StreamServerInterceptor, 0)
 	statsHandlers := []s.Handler{
 		stats.NewContextHandler(c.config),
 	}

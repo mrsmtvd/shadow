@@ -50,9 +50,10 @@ func TestNullString_NewInstanceAndScanOne_ValidationIsTrue(t *testing.T) {
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan(1)
+	e := typ.Scan(1)
 
 	a.True(typ.Valid)
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanOne_ValueOne(t *testing.T) {
@@ -60,9 +61,10 @@ func TestNullString_NewInstanceAndScanOne_ValueOne(t *testing.T) {
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("one")
+	e := typ.Scan("one")
 
 	a.Equal(typ.String, "one")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanOne_ProtoReturnsOne(t *testing.T) {
@@ -70,9 +72,10 @@ func TestNullString_NewInstanceAndScanOne_ProtoReturnsOne(t *testing.T) {
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("one")
+	e := typ.Scan("one")
 
 	a.Equal(typ.Proto(), "one")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanOne_MarshalJSONReturnsOneAsBytes(t *testing.T) {
@@ -80,11 +83,12 @@ func TestNullString_NewInstanceAndScanOne_MarshalJSONReturnsOneAsBytes(t *testin
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("one")
+	es := typ.Scan("one")
 	j, e := json.Marshal(typ)
 
 	a.Equal(j, []byte(`"one"`))
 	a.Nil(e)
+	a.Nil(es)
 }
 
 func TestNullString_NewInstanceAndScanEmptyString_ValidationIsTrue(t *testing.T) {
@@ -92,9 +96,10 @@ func TestNullString_NewInstanceAndScanEmptyString_ValidationIsTrue(t *testing.T)
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("")
+	e := typ.Scan("")
 
 	a.True(typ.Valid)
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanEmptyString_ValueEmptyString(t *testing.T) {
@@ -102,9 +107,10 @@ func TestNullString_NewInstanceAndScanEmptyString_ValueEmptyString(t *testing.T)
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("")
+	e := typ.Scan("")
 
 	a.Equal(typ.String, "")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanEmptyString_ProtoReturnsEmptyString(t *testing.T) {
@@ -112,9 +118,10 @@ func TestNullString_NewInstanceAndScanEmptyString_ProtoReturnsEmptyString(t *tes
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("")
+	e := typ.Scan("")
 
 	a.Equal(typ.Proto(), "")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanEmptyString_MarshalJSONReturnsEmptyStringAsBytes(t *testing.T) {
@@ -122,11 +129,12 @@ func TestNullString_NewInstanceAndScanEmptyString_MarshalJSONReturnsEmptyStringA
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan("")
+	es := typ.Scan("")
 	j, e := json.Marshal(typ)
 
 	a.Equal(j, []byte(`""`))
 	a.Nil(e)
+	a.Nil(es)
 }
 
 func TestNullString_NewInstanceAndScanNil_ValidationIsFalse(t *testing.T) {
@@ -134,9 +142,10 @@ func TestNullString_NewInstanceAndScanNil_ValidationIsFalse(t *testing.T) {
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan(nil)
+	e := typ.Scan(nil)
 
 	a.False(typ.Valid)
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanNil_ValueEmptyString(t *testing.T) {
@@ -144,9 +153,10 @@ func TestNullString_NewInstanceAndScanNil_ValueEmptyString(t *testing.T) {
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan(nil)
+	e := typ.Scan(nil)
 
 	a.Equal(typ.String, "")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanNil_ProtoReturnsEmptyString(t *testing.T) {
@@ -154,9 +164,10 @@ func TestNullString_NewInstanceAndScanNil_ProtoReturnsEmptyString(t *testing.T) 
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan(nil)
+	e := typ.Scan(nil)
 
 	a.Equal(typ.String, "")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndScanNil_MarshalJSONReturnsNilAsBytes(t *testing.T) {
@@ -164,11 +175,12 @@ func TestNullString_NewInstanceAndScanNil_MarshalJSONReturnsNilAsBytes(t *testin
 	a := assert.New(t)
 
 	typ := &NullString{}
-	typ.Scan(nil)
+	es := typ.Scan(nil)
 	j, e := json.Marshal(typ)
 
 	a.Equal(j, []byte(`null`))
 	a.Nil(e)
+	a.Nil(es)
 }
 
 func TestNullString_NewInstanceAndUnmarshalJSONOne_ValidationIsTrue(t *testing.T) {
@@ -198,9 +210,10 @@ func TestNullString_NewInstanceAndUnmarshalJSONOne_ProtoReturnsOne(t *testing.T)
 	a := assert.New(t)
 
 	var typ NullString
-	json.Unmarshal([]byte(`"one"`), &typ)
+	e := json.Unmarshal([]byte(`"one"`), &typ)
 
 	a.Equal(typ.String, "one")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndUnmarshalJSONEmptyString_ValidationIsTrue(t *testing.T) {
@@ -230,9 +243,10 @@ func TestNullString_NewInstanceAndUnmarshalJSONEmptyString_ProtoReturnsEmptyStri
 	a := assert.New(t)
 
 	var typ NullString
-	json.Unmarshal([]byte(`""`), &typ)
+	e := json.Unmarshal([]byte(`""`), &typ)
 
 	a.Equal(typ.Proto(), "")
+	a.Nil(e)
 }
 
 func TestNullString_NewInstanceAndUnmarshalJSONNil_ValidationIsFalse(t *testing.T) {
@@ -262,7 +276,8 @@ func TestNullString_NewInstanceAndUnmarshalJSONNil_ProtoReturnsEmptyString(t *te
 	a := assert.New(t)
 
 	var typ NullString
-	json.Unmarshal([]byte(`null`), &typ)
+	e := json.Unmarshal([]byte(`null`), &typ)
 
 	a.Equal(typ.Proto(), "")
+	a.Nil(e)
 }
