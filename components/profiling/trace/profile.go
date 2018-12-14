@@ -107,16 +107,16 @@ func LoadProfiles() {
 	profiles.once.Do(loadProfilesOnce)
 }
 
-func GetProfiles() []Profile {
+func GetProfiles() []*Profile {
 	LoadProfiles()
 
 	profiles.mutex.RLock()
 	list := profiles.profiles
 	profiles.mutex.RUnlock()
 
-	result := make([]Profile, 0, len(list))
+	result := make([]*Profile, 0, len(list))
 	for _, profile := range list {
-		result = append(result, *profile)
+		result = append(result, profile)
 	}
 
 	sort.Slice(result, func(i, j int) bool {

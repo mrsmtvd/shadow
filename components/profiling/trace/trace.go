@@ -100,7 +100,7 @@ func StopProfiles(path string) error {
 		file:      filepath.Join(path, startAt.Format("20060102150405.tar.gz")),
 		startedAt: *startAt,
 		stoppedAt: time.Now(),
-		profiles:  make([]Profile, 0, len(profiles.profiles)),
+		profiles:  make([]*Profile, 0, len(profiles.profiles)),
 		status:    DumpStatusPrepare,
 	}
 
@@ -120,7 +120,7 @@ func StopProfiles(path string) error {
 			}
 		}
 
-		dump.AddProfile(*profile)
+		dump.AddProfile(profile)
 		profile.SetStarted(false)
 	}
 

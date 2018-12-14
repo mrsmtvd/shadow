@@ -37,7 +37,7 @@ type Dump struct {
 	status    int64
 	startedAt time.Time
 	stoppedAt time.Time
-	profiles  []Profile
+	profiles  []*Profile
 }
 
 var filePattern = regexp.MustCompile(`^[0-9]{14}.tar.gz$`)
@@ -90,14 +90,14 @@ func (d *Dump) GetStoppedAt() time.Time {
 	return d.stoppedAt
 }
 
-func (d *Dump) GetProfiles() []Profile {
+func (d *Dump) GetProfiles() []*Profile {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 
 	return d.profiles
 }
 
-func (d *Dump) AddProfile(profile Profile) {
+func (d *Dump) AddProfile(profile *Profile) {
 	d.mutex.Lock()
 	d.profiles = append(d.profiles, profile)
 	d.mutex.Unlock()
@@ -140,7 +140,7 @@ func LoadDumps(path string) error {
 			size:      f.Size(),
 			startedAt: f.ModTime(),
 			stoppedAt: f.ModTime(),
-			profiles:  []Profile{},
+			profiles:  make([]*Profile, 0),
 			status:    DumpStatusReading,
 		}
 
@@ -161,16 +161,14 @@ func LoadDumps(path string) error {
 	return nil
 }
 
-func GetDumps() []Dump {
+func GetDumps() []*Dump {
 	dumps.mutex.RLock()
 	list := dumps.dumps
 	dumps.mutex.RUnlock()
 
-	result := make([]Dump, 0, len(list))
+	result := make([]*Dump, 0, len(list))
 	for _, dump := range list {
-		dump.mutex.RLock()
-		result = append(result, *dump)
-		dump.mutex.RUnlock()
+		result = append(result, dump)
 	}
 
 	sort.Slice(result, func(i, j int) bool {
@@ -243,7 +241,7 @@ func readDump(dump *Dump) error {
 		}
 
 		if profile := GetProfile(m[1]); profile != nil {
-			dump.AddProfile(*profile)
+			dump.AddProfile(profile)
 		}
 
 	}
