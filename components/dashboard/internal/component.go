@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/alexedwards/scs"
 	"github.com/alexedwards/scs/stores/memstore"
@@ -26,6 +27,8 @@ import (
 )
 
 type Component struct {
+	mutex sync.RWMutex
+
 	application shadow.Application
 	components  []shadow.Component
 	config      config.Component
@@ -103,13 +106,17 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 
 	c.logger.Info("Running service", "addr", addr, "pid", os.Getpid())
 
-	c.server = &http.Server{
+	srv := &http.Server{
 		Handler: c.router,
 	}
 
+	c.mutex.Lock()
+	c.server = srv
+	c.mutex.Unlock()
+
 	ready <- struct{}{}
 
-	if err := c.server.Serve(lis); err != nil {
+	if err := srv.Serve(lis); err != nil {
 		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		return err
 	}
@@ -118,6 +125,9 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 }
 
 func (c *Component) Shutdown() error {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
 	if c.server != nil {
 		return c.server.Shutdown(context.Background())
 	}

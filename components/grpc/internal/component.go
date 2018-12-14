@@ -3,6 +3,7 @@ package internal
 import (
 	"net"
 	"os"
+	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -21,6 +22,8 @@ import (
 )
 
 type Component struct {
+	mutex sync.RWMutex
+
 	application shadow.Application
 	config      config.Component
 	logger      logging.Logger
@@ -89,18 +92,18 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 		}
 	}
 
-	c.server = server.NewDefaultServerWithCustomOptions(unaryInterceptors, streamInterceptors, statsHandlers)
+	srv := server.NewDefaultServerWithCustomOptions(unaryInterceptors, streamInterceptors, statsHandlers)
 
 	for _, cmp := range components {
 		if cmpGrpc, ok := cmp.(grpc.HasGrpcServer); ok {
-			cmpGrpc.RegisterGrpcServer(c.server)
+			cmpGrpc.RegisterGrpcServer(srv)
 		}
 	}
 
 	healthServer := health.NewServer()
-	grpc_health_v1.RegisterHealthServer(c.server, healthServer)
+	grpc_health_v1.RegisterHealthServer(srv, healthServer)
 
-	for service, info := range c.server.GetServiceInfo() {
+	for service, info := range srv.GetServiceInfo() {
 		healthServer.SetServingStatus(service, grpc_health_v1.HealthCheckResponse_SERVING)
 
 		for _, method := range info.Methods {
@@ -109,7 +112,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	}
 
 	if c.config.Bool(grpc.ConfigReflectionEnabled) {
-		reflection.Register(c.server)
+		reflection.Register(srv)
 	}
 
 	addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
@@ -124,9 +127,13 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 		"pid", os.Getpid(),
 	)
 
+	c.mutex.Lock()
+	c.server = srv
+	c.mutex.Unlock()
+
 	ready <- struct{}{}
 
-	if err := c.server.Serve(lis); err != nil {
+	if err := srv.Serve(lis); err != nil {
 		c.logger.Errorf("Failed to serve [%d]: %s\n", os.Getpid(), err.Error())
 		return err
 	}
@@ -135,6 +142,9 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 }
 
 func (c *Component) Shutdown() error {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
 	if c.server != nil {
 		c.server.GracefulStop()
 	}
@@ -143,6 +153,9 @@ func (c *Component) Shutdown() error {
 }
 
 func (c *Component) GetServiceInfo() map[string]g.ServiceInfo {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
 	if c.server == nil {
 		return nil
 	}
