@@ -168,7 +168,7 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	}
 
 	if started != nil {
-		context["duration"] = time.Now().Sub(*started)
+		context["duration"] = time.Since(*started)
 	}
 
 	for _, dump := range dumps {

@@ -171,7 +171,7 @@ func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[s
 		return nil, err
 	}
 
-	templates := make(map[string]string, 0)
+	templates := make(map[string]string)
 
 	for _, file := range files {
 		if !strings.HasSuffix(file, TemplatePostfix) {

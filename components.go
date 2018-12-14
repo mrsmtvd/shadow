@@ -37,7 +37,7 @@ func (c *components) all() ([]*component, error) {
 		return nil, err
 	}
 
-	result := make([]*component, 0, 0)
+	result := make([]*component, 0)
 
 	c.Range(func(_, value interface{}) bool {
 		result = append(result, value.(*component))

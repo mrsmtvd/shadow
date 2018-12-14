@@ -205,7 +205,7 @@ func (a *App) GetComponents() ([]Component, error) {
 		return nil, err
 	}
 
-	resolveComponents := make([]Component, len(components), len(components))
+	resolveComponents := make([]Component, len(components))
 	for _, cmp := range components {
 		resolveComponents[cmp.Order()] = cmp.instance
 	}

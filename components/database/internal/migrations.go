@@ -42,7 +42,7 @@ func (c *Component) Migrations() []database.Migration {
 		return nil
 	}
 
-	migrations := make([]database.Migration, len(collection), len(collection))
+	migrations := make([]database.Migration, len(collection))
 	s := c.Storage().(*storage.SQL)
 	executor := s.Master().(*storage.SQLExecutor)
 

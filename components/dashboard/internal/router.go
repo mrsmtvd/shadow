@@ -118,9 +118,7 @@ func (r *Router) GetRoutes() []dashboard.Route {
 	defer r.mutex.RUnlock()
 
 	routes := make([]dashboard.Route, 0, len(r.routes))
-	for _, route := range r.routes {
-		routes = append(routes, route)
-	}
+	copy(routes, r.routes)
 
 	return routes
 }

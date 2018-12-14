@@ -47,7 +47,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
-	c.storages = make(map[string]annotations.Storage, 0)
+	c.storages = make(map[string]annotations.Storage)
 
 	c.logger = logging.DefaultLogger().Named(c.Name())
 

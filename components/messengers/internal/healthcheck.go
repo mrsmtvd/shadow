@@ -29,18 +29,18 @@ func (c *Component) ReadinessCheck() map[string]dashboard.HealthCheck {
 
 func (c *Component) TelegramCheck() dashboard.HealthCheck {
 	return healthcheck.Async(healthcheck.Timeout(func() error {
-		if !c.config.Bool(messengers.ConfigTelegramEnabled) && !c.config.Bool(messengers.ConfigTelegramWebHookEnabled) && !!c.config.Bool(messengers.ConfigTelegramAnnotationsStorageEnabled) {
+		if !c.config.Bool(messengers.ConfigTelegramEnabled) && !c.config.Bool(messengers.ConfigTelegramWebHookEnabled) && !c.config.Bool(messengers.ConfigTelegramAnnotationsStorageEnabled) {
 			return nil
 		}
 
 		messenger := c.Messenger(messengers.MessengerTelegram)
 		if messenger == nil {
-			return errors.New("Telegram messenger isn't initialization")
+			return errors.New("telegram messenger isn't initialization")
 		}
 
 		tg, ok := messenger.(*telegram.Telegram)
 		if !ok {
-			return errors.New("Telegram messenger isn't initialization")
+			return errors.New("telegram messenger isn't initialization")
 		}
 
 		_, err := tg.Me()
@@ -56,12 +56,12 @@ func (c *Component) TelegramWebHookCheck() dashboard.HealthCheck {
 
 		messenger := c.Messenger(messengers.MessengerTelegram)
 		if messenger == nil {
-			return errors.New("Telegram messenger isn't initialization")
+			return errors.New("telegram messenger isn't initialization")
 		}
 
 		tg, ok := messenger.(*telegram.Telegram)
 		if !ok {
-			return errors.New("Telegram messenger isn't initialization")
+			return errors.New("telegram messenger isn't initialization")
 		}
 
 		_, err := tg.WebHook()

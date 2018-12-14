@@ -63,7 +63,7 @@ func (d *Domain) PluralRule() *PluralRule {
 }
 
 func (d *Domain) Messages() []*Message {
-	list := make([]*Message, len(d.messages), len(d.messages))
+	list := make([]*Message, len(d.messages))
 	copy(list, d.messages)
 
 	return list

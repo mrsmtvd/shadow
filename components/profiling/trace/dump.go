@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"sync/atomic"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,6 +15,7 @@ import (
 	"regexp"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/kardianos/osext"

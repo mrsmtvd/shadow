@@ -98,7 +98,7 @@ func getMessageViewDate(message *desc.MessageDescriptor, currentLevel, maxLevel 
 
 	view := &ManagerHandlerMessageViewData{
 		Name:   message.GetName(),
-		Fields: make([]*ManagerHandlerFieldViewData, len(fields), len(fields)),
+		Fields: make([]*ManagerHandlerFieldViewData, len(fields)),
 	}
 
 	for i, f := range fields {
@@ -151,7 +151,7 @@ func getFieldViewDate(field *desc.FieldDescriptor, currentLevel, maxLevel int64)
 	// Enumerations
 	if field.GetEnumType() != nil {
 		values := field.GetEnumType().GetValues()
-		data.Enum = make([]*ManagerHandlerFieldViewDataEnum, len(values), len(values))
+		data.Enum = make([]*ManagerHandlerFieldViewDataEnum, len(values))
 
 		for e, enum := range values {
 			def, ok := field.GetDefaultValue().(int32)
