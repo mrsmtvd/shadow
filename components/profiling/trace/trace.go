@@ -91,7 +91,9 @@ func StopProfiles(path string) error {
 	defer profiles.mutex.RUnlock()
 
 	hash := md5.New()
-	io.WriteString(hash, startAt.String())
+	if _, err := io.WriteString(hash, startAt.String()); err != nil {
+		return err
+	}
 
 	dump := &Dump{
 		id:        hex.EncodeToString(hash.Sum(nil)),
@@ -113,7 +115,9 @@ func StopProfiles(path string) error {
 		case ProfileTrace:
 			trace.Stop()
 		default:
-			pprof.Lookup(profile.GetId()).WriteTo(profile, 0)
+			if err := pprof.Lookup(profile.GetId()).WriteTo(profile, 0); err != nil {
+				return err
+			}
 		}
 
 		dump.AddProfile(*profile)

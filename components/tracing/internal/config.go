@@ -141,5 +141,5 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchReInit(_ string, newValue interface{}, _ interface{}) {
-	c.initTracer()
+	_ = c.initTracer()
 }

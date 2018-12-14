@@ -52,7 +52,7 @@ func (w *Response) SendJSON(r interface{}) error {
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write(response)
+	_, err = w.Write(response)
 
-	return nil
+	return err
 }

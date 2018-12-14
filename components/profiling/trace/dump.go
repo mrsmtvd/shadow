@@ -142,7 +142,9 @@ func LoadDumps(path string) error {
 		filePath := filepath.Join(path, f.Name())
 
 		hash := md5.New()
-		io.WriteString(hash, filePath)
+		if _, err := io.WriteString(hash, filePath); err != nil {
+			return err
+		}
 
 		dump := &Dump{
 			id:        hex.EncodeToString(hash.Sum(nil)),
@@ -299,7 +301,9 @@ func saveDump(dump *Dump) error {
 			return err
 		}
 
-		io.Copy(tmpfile, profile.buffer)
+		if _, err := io.Copy(tmpfile, profile.buffer); err != nil {
+			return err
+		}
 
 		if err := writeFile(tarWriter, tmpfile.Name(), fmt.Sprintf("%s.pprof", profile.id)); err != nil {
 			tmpfile.Close()

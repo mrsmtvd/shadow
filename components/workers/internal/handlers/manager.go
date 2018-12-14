@@ -197,7 +197,9 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 	stats.Filtered = stats.Total
 
-	w.SendJSON(stats)
+	if err := w.SendJSON(stats); err != nil {
+		panic(err.Error())
+	}
 }
 
 func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboard.Request) {
@@ -238,9 +240,13 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 		}
 	}
 
-	w.SendJSON(managerHandlerResponseSuccess{
+	err := w.SendJSON(managerHandlerResponseSuccess{
 		Result: "success",
 	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.Request) {
@@ -257,9 +263,13 @@ func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.R
 		}
 	}
 
-	w.SendJSON(managerHandlerResponseSuccess{
+	err := w.SendJSON(managerHandlerResponseSuccess{
 		Result: "success",
 	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (h *ManagerHandler) actionWorkerRemove(w *dashboard.Response, r *dashboard.Request) {
@@ -276,9 +286,13 @@ func (h *ManagerHandler) actionWorkerRemove(w *dashboard.Response, r *dashboard.
 		}
 	}
 
-	w.SendJSON(managerHandlerResponseSuccess{
+	err := w.SendJSON(managerHandlerResponseSuccess{
 		Result: "success",
 	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (h *ManagerHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Request) {
@@ -293,9 +307,13 @@ func (h *ManagerHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Re
 		}
 	}
 
-	w.SendJSON(managerHandlerResponseSuccess{
+	err := w.SendJSON(managerHandlerResponseSuccess{
 		Result: "success",
 	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {

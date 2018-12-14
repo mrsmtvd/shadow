@@ -7,11 +7,11 @@ import (
 )
 
 func (c *Component) AddSimpleWorker() {
-	c.dispatcher.AddWorker(worker.NewSimpleWorker())
+	_ = c.dispatcher.AddWorker(worker.NewSimpleWorker())
 }
 
 func (c *Component) AddWorker(worker ws.Worker) {
-	c.dispatcher.AddWorker(worker)
+	_ = c.dispatcher.AddWorker(worker)
 }
 
 func (c *Component) RemoveWorker(worker ws.Worker) {
@@ -27,7 +27,7 @@ func (c *Component) GetWorkers() []ws.Worker {
 }
 
 func (c *Component) AddTask(task ws.Task) {
-	c.dispatcher.AddTask(task)
+	_ = c.dispatcher.AddTask(task)
 }
 
 func (c *Component) RemoveTask(task ws.Task) {
@@ -47,7 +47,7 @@ func (c *Component) AddListener(listener workers.ListenerWithEvents) {
 }
 
 func (c *Component) AddListenerByEvent(event ws.Event, listener ws.Listener) {
-	c.dispatcher.AddListener(event, listener)
+	_ = c.dispatcher.AddListener(event, listener)
 }
 
 func (c *Component) AddListenerByEvents(events []ws.Event, listener ws.Listener) {
