@@ -115,8 +115,6 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 			c.mutex.Unlock()
 		}
 	}
-
-	return nil
 }
 
 func (c *Component) initDialer(host string, port int, username, password string) {

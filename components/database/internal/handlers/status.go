@@ -13,9 +13,10 @@ type StatusHandler struct {
 }
 
 func (h *StatusHandler) status(e database.Executor, ctx context.Context) string {
-	c, _ := context.WithTimeout(ctx, time.Second)
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
 
-	if err := e.Ping(c); err != nil {
+	if err := e.Ping(ctx); err != nil {
 		return err.Error()
 	}
 

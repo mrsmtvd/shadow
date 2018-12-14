@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"sync/atomic"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,7 +22,7 @@ import (
 )
 
 const (
-	DumpStatusPrepare = iota
+	DumpStatusPrepare int64 = iota
 	DumpStatusFinished
 	DumpStatusReading
 	DumpStatusError
@@ -33,10 +34,10 @@ type Dump struct {
 	id        string
 	file      string
 	size      int64
+	status    int64
 	startedAt time.Time
 	stoppedAt time.Time
 	profiles  []Profile
-	status    int
 }
 
 var filePattern = regexp.MustCompile(`^[0-9]{14}.tar.gz$`)
@@ -68,17 +69,11 @@ func (d *Dump) GetFile() string {
 }
 
 func (d *Dump) GetSize() int64 {
-	d.mutex.RLock()
-	defer d.mutex.RUnlock()
-
-	return d.size
+	return atomic.LoadInt64(&d.size)
 }
 
 func (d *Dump) SetSize(size int64) {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-
-	d.size = size
+	atomic.StoreInt64(&d.size, size)
 }
 
 func (d *Dump) GetStartedAt() time.Time {
@@ -104,23 +99,16 @@ func (d *Dump) GetProfiles() []Profile {
 
 func (d *Dump) AddProfile(profile Profile) {
 	d.mutex.Lock()
-	defer d.mutex.Unlock()
-
 	d.profiles = append(d.profiles, profile)
+	d.mutex.Unlock()
 }
 
-func (d *Dump) GetStatus() int {
-	d.mutex.RLock()
-	defer d.mutex.RUnlock()
-
-	return d.status
+func (d *Dump) GetStatus() int64 {
+	return atomic.LoadInt64(&d.status)
 }
 
-func (d *Dump) SetStatus(status int) {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-
-	d.status = status
+func (d *Dump) SetStatus(status int64) {
+	atomic.StoreInt64(&d.status, status)
 }
 
 var dumps struct {
@@ -175,10 +163,11 @@ func LoadDumps(path string) error {
 
 func GetDumps() []Dump {
 	dumps.mutex.RLock()
-	defer dumps.mutex.RUnlock()
+	list := dumps.dumps
+	dumps.mutex.RUnlock()
 
-	result := make([]Dump, 0, len(dumps.dumps))
-	for _, dump := range dumps.dumps {
+	result := make([]Dump, 0, len(list))
+	for _, dump := range list {
 		dump.mutex.RLock()
 		result = append(result, *dump)
 		dump.mutex.RUnlock()

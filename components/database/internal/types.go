@@ -65,7 +65,11 @@ func (c TypeConverter) FromDb(target interface{}) (gorp.CustomScanner, bool) {
 			}
 			return json.Unmarshal([]byte(*s), target)
 		}
-		return gorp.CustomScanner{new(string), target, binder}, true
+		return gorp.CustomScanner{
+			Holder: new(string),
+			Target: target,
+			Binder: binder,
+		}, true
 	}
 
 	return gorp.CustomScanner{}, false

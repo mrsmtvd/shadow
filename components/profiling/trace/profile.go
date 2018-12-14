@@ -111,10 +111,11 @@ func GetProfiles() []Profile {
 	LoadProfiles()
 
 	profiles.mutex.RLock()
-	defer profiles.mutex.RUnlock()
+	list := profiles.profiles
+	profiles.mutex.RUnlock()
 
-	result := make([]Profile, 0, len(profiles.profiles))
-	for _, profile := range profiles.profiles {
+	result := make([]Profile, 0, len(list))
+	for _, profile := range list {
 		result = append(result, *profile)
 	}
 

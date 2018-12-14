@@ -33,12 +33,20 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 	path := r.URL().Query().Get(":filepath")
 
 	f, err := h.root.Open(path)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	if os.IsNotExist(err) {
 		h.NotFound(w, r)
 		return
 	}
 
 	d, err := f.Stat()
+	if err != nil {
+		panic(err.Error())
+	}
+
 	if d.IsDir() {
 		h.NotFound(w, r)
 		return
@@ -50,9 +58,9 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 		n, _ := io.ReadFull(f, buf[:])
 		ctype = http.DetectContentType(buf[:n])
 		_, err := f.Seek(0, io.SeekStart)
+
 		if err != nil {
 			panic(err)
-			return
 		}
 	}
 	w.Header().Set("Content-Type", ctype)
@@ -60,7 +68,11 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 	w.Header().Set("Last-Modified", d.ModTime().UTC().Format(http.TimeFormat))
 	w.Header().Set("Content-Length", strconv.FormatInt(d.Size(), 10))
 	w.WriteHeader(http.StatusOK)
-	_, _ = io.Copy(w, f)
+	_, err = io.Copy(w, f)
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 type HasAssetFS interface {

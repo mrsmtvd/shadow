@@ -11,7 +11,8 @@ import (
 
 func HealthCheck(conn *grpc.ClientConn, service string) error {
 	healthClient := grpc_health_v1.NewHealthClient(conn)
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
 
 	response, err := healthClient.Check(ctx, &grpc_health_v1.HealthCheckRequest{
 		Service: service,

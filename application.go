@@ -153,8 +153,6 @@ func (a *App) Run() (err error) {
 			return shutdownEG.Wait()
 		}
 	}
-
-	return nil
 }
 
 func (a *App) SetName(name string) {

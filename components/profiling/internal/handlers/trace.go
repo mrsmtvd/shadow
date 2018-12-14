@@ -30,8 +30,10 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 		return err
 	}
 
-	runProfiles := []string{}
-	for _, profile := range trace.GetProfiles() {
+	profiles := trace.GetProfiles()
+	runProfiles := make([]string, 0, len(profiles))
+
+	for _, profile := range profiles {
 		id := profile.GetId()
 
 		if r.Original().PostForm.Get("profile_"+id) != "" {
@@ -94,7 +96,8 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 	}
 
 	if id == "all" {
-		for _, dump := range trace.GetDumps() {
+		dumps := trace.GetDumps()
+		for _, dump := range dumps {
 			if err := trace.DeleteDump(dump.GetId()); err != nil {
 				return err
 			}

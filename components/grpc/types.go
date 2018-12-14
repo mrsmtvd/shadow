@@ -70,7 +70,6 @@ func ConvertInterfaceToStructValueProto(v interface{}) *ptypes_struct.Value {
 		return &ptypes_struct.Value{
 			Kind: &ptypes_struct.Value_NullValue{},
 		}
-		break
 
 	case bool:
 		return &ptypes_struct.Value{
