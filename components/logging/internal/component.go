@@ -115,6 +115,7 @@ func (c *Component) initLogger() {
 
 	c.wrapper.SetLogger(l)
 	zap.RedirectStdLog(l.Named("std"))
+	zap.ReplaceGlobals(l)
 }
 
 func (c *Component) parseFields(f string) []zap.Field {

@@ -15,7 +15,7 @@ type wrapper struct {
 }
 
 func newWrapper() *wrapper {
-	return newWrapperByLogger(zap.NewNop())
+	return newWrapperByLogger(zap.L())
 }
 
 func newWrapperByLogger(l *zap.Logger) *wrapper {
