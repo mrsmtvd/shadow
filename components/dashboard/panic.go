@@ -2,7 +2,7 @@ package dashboard
 
 type PanicError struct {
 	Error interface{}
-	Stack string
+	Stack []byte
 	File  string
 	Line  int
 }

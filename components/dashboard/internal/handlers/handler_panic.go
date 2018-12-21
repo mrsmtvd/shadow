@@ -16,7 +16,7 @@ func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	error := dashboard.PanicFromContext(r.Context())
 	fields := map[string]interface{}{
 		"error": fmt.Sprintf("%s", error.Error),
-		"stack": error.Stack,
+		"stack": string(error.Stack),
 		"file":  error.File,
 		"line":  error.Line,
 	}

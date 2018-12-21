@@ -78,7 +78,7 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 		r.chain.Then(http.HandlerFunc(func(hw http.ResponseWriter, hr *http.Request) {
 			panicError := &dashboard.PanicError{
 				Error: pe,
-				Stack: string(debug.Stack()),
+				Stack: debug.Stack(),
 				File:  file,
 				Line:  line,
 			}
@@ -88,7 +88,7 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 			r.logger.Error("Recovery panic",
 				"panic.file", panicError.File,
 				"panic.line", panicError.Line,
-				"panic.stack", panicError.Stack,
+				"panic.stack", string(panicError.Stack),
 				"panic.error", fmt.Sprintf("%s", panicError.Error),
 			)
 

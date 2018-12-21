@@ -20,7 +20,7 @@ const (
 )
 
 type Renderer struct {
-	baseLayouts map[string]string
+	baseLayouts map[string][]byte
 	globals     map[string]interface{}
 	views       map[string]map[string]*template.Template
 	funcs       template.FuncMap
@@ -28,7 +28,7 @@ type Renderer struct {
 
 func NewRenderer() *Renderer {
 	r := &Renderer{
-		baseLayouts: map[string]string{},
+		baseLayouts: map[string][]byte{},
 		globals:     map[string]interface{}{},
 		views:       map[string]map[string]*template.Template{},
 		funcs:       dashboard.DefaultTemplateFunctions.FuncMap(),
@@ -63,7 +63,7 @@ func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) erro
 
 	// layouts
 	for name, content := range r.baseLayouts {
-		if _, err := baseComponent.New(name).Parse(content); err != nil {
+		if _, err := baseComponent.New(name).Parse(string(content)); err != nil {
 			return err
 		}
 	}
@@ -77,7 +77,7 @@ func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) erro
 				tpl.New(tplName)
 			}
 
-			if _, err := tpl.Parse(content); err != nil {
+			if _, err := tpl.Parse(string(content)); err != nil {
 				return err
 			}
 		}
@@ -96,7 +96,7 @@ func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) erro
 			return err
 		}
 
-		if view, err = view.Parse(content); err != nil {
+		if view, err = view.Parse(string(content)); err != nil {
 			return err
 		}
 
@@ -165,13 +165,13 @@ func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface
 	return vars
 }
 
-func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[string]string, error) {
+func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[string][]byte, error) {
 	files, err := f.AssetDir(directory)
 	if err != nil {
 		return nil, err
 	}
 
-	templates := make(map[string]string)
+	templates := make(map[string][]byte)
 
 	for _, file := range files {
 		if !strings.HasSuffix(file, TemplatePostfix) {
@@ -183,7 +183,7 @@ func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[s
 			continue
 		}
 
-		templates[file] = string(content)
+		templates[file] = content
 	}
 
 	return templates, nil
