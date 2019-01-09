@@ -70,16 +70,16 @@ func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 	c.registry = snitch.DefaultRegisterer
 
-	if c.application.HasComponent(profiling.ComponentName) {
-		c.registry.AddStorages(storage.NewExpvarWithId(metrics.ComponentName))
-	}
-
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	return nil
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
+	if c.application.HasComponent(profiling.ComponentName) {
+		c.registry.AddStorages(storage.NewExpvarWithId(metrics.ComponentName))
+	}
+
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)

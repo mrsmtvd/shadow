@@ -65,17 +65,16 @@ func (c *Component) Dependencies() []shadow.Dependency {
 
 func (c *Component) Init(a shadow.Application) (err error) {
 	c.application = a
-
-	if c.components, err = a.GetComponents(); err != nil {
-		return err
-	}
-
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	return nil
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error) {
+	if c.components, err = a.GetComponents(); err != nil {
+		return err
+	}
+
 	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
