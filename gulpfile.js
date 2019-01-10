@@ -279,12 +279,12 @@ gulp.task('frontend', ['compress-components'], function() {
 
     // highlightjs
     gulp.src(['bower_components/highlightjs/*.min.js'])
-        .pipe(gulp.dest(VENDORS_DATABASE + '/highlightjs/js'));
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/highlightjs/js'));
 
     gulp.src(['bower_components/highlightjs/styles/tomorrow.css'])
         .pipe(cleanCss())
         .pipe(rename({suffix:'.min'}))
-        .pipe(gulp.dest(VENDORS_DATABASE + '/highlightjs/css'));
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/highlightjs/css'));
 
     // iCheck
     gulp.src(['bower_components/iCheck/*.min.js'])
