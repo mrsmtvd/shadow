@@ -34,12 +34,12 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 
 	f, err := h.root.Open(path)
 	if err != nil {
-		panic(err.Error())
-	}
+		if os.IsNotExist(err) {
+			h.NotFound(w, r)
+			return
+		}
 
-	if os.IsNotExist(err) {
-		h.NotFound(w, r)
-		return
+		panic(err.Error())
 	}
 
 	d, err := f.Stat()
