@@ -5,7 +5,7 @@ import (
 )
 
 type Router interface {
-	GetRoutes() []Route
+	Routes() []Route
 	NotFoundServeHTTP(w http.ResponseWriter, r *http.Request)
 	MethodNotAllowedServeHTTP(w http.ResponseWriter, r *http.Request)
 }

@@ -47,7 +47,7 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 			dashboard.NewRoute("/"+c.Name()+"/environment", &handlers.EnvironmentHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/routing", &handlers.RoutingHandler{}).
+			dashboard.NewRoute("/"+c.Name()+"/routing", handlers.NewRoutingHandler(c.router)).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
 			dashboard.NewRoute(dashboard.AuthPath+"/:provider/callback", &handlers.AuthHandler{

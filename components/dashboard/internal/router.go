@@ -113,11 +113,11 @@ func (r *Router) SetNotAllowedHandler(h RouterHandler) {
 	})
 }
 
-func (r *Router) GetRoutes() []dashboard.Route {
+func (r *Router) Routes() []dashboard.Route {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	routes := make([]dashboard.Route, 0, len(r.routes))
+	routes := make([]dashboard.Route, len(r.routes), len(r.routes))
 	copy(routes, r.routes)
 
 	return routes

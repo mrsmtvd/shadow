@@ -57,11 +57,11 @@
 {{ end }}
 
 {{ define "head" }}
-    {{ staticHTML (staticURL (print "/dashboard/assets/vendors/highlightjs/css/tomorrow.min.css") false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/highlightjs/css/tomorrow.min.css" false) }}
     {{ staticHTML (staticURL (print "/" .ComponentName "/assets/css/migrations.css") true) }}
 {{ end }}
 
 {{ define "js" }}
-    {{ staticHTML (staticURL (print "/dashboard/assets/vendors/highlightjs/js/highlight.pack.min.js") false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/highlightjs/js/highlight.pack.min.js" false) }}
     {{ staticHTML (staticURL (print "/" .ComponentName "/assets/js/migrations.js") true) }}
 {{ end }}
