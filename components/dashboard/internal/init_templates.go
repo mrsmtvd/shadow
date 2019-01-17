@@ -4,7 +4,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-func (c *Component) loadTemplates() error {
+func (c *Component) initTemplates() error {
 	c.renderer = NewRenderer()
 
 	c.renderer.AddGlobalVar("Application", map[string]interface{}{

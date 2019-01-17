@@ -19,7 +19,7 @@ func (m orderedMenus) Less(i, j int) bool {
 	return strings.Compare(m[i].Title(), m[j].Title()) < 0
 }
 
-func (c *Component) loadMenu() error {
+func (c *Component) initMenu() error {
 	menus := make([]dashboard.Menu, 0)
 
 	for _, component := range c.components {
