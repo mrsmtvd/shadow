@@ -28,6 +28,8 @@ type Component struct {
 	routes      []dashboard.Route
 	router      *Router
 	server      *http.Server
+
+	registryAssetFS sync.Map
 }
 
 func (c *Component) Name() string {
@@ -70,6 +72,8 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 	<-a.ReadyComponent(config.ComponentName)
 
 	c.router = NewRouter(c.logger, c.config.Int(dashboard.ConfigPanicHandlerCallerSkip))
+
+	c.initAssetFS()
 
 	if err := c.initTemplates(); err != nil {
 		return err

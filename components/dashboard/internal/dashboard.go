@@ -28,7 +28,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		WithIcon("dashboard").
 		WithChild(dashboard.NewMenu("Components").WithRoute(routes[10])).
 		WithChild(dashboard.NewMenu("Environment").WithRoute(routes[3])).
-		WithChild(dashboard.NewMenu("BinData").WithRoute(routes[1])).
+		WithChild(dashboard.NewMenu("Asset FS").WithRoute(routes[1])).
 		WithChild(dashboard.NewMenu("Routing").WithRoute(routes[4])).
 		WithChild(dashboard.NewMenu("Health check").
 			WithChild(dashboard.NewMenu("Liveness").WithUrl("/healthcheck/live?full=1")).
@@ -39,7 +39,7 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
 			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name()+"/bindata", handlers.NewBinDataHandler(c.components, c.application.BuildDate())).
+			dashboard.NewRoute("/"+c.Name()+"/assetfs", handlers.NewAssetFSHandler(c.registryAssetFS, c.application.BuildDate())).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
 			dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{}).
