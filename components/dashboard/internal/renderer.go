@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io"
 	"strings"
+	"sync"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -21,14 +22,38 @@ const (
 )
 
 type templatesNamespace struct {
+	mutex     sync.RWMutex
 	fs        *assetfs.AssetFS
 	templates map[string]*template.Template
 }
 
 type Renderer struct {
 	rootTemplate *template.Template
-	globals      map[string]interface{}
-	namespaces   map[string]*templatesNamespace
+
+	mutex      sync.RWMutex
+	globals    map[string]interface{}
+	namespaces map[string]*templatesNamespace
+}
+
+func newNamespace(fs *assetfs.AssetFS) *templatesNamespace {
+	return &templatesNamespace{
+		fs:        fs,
+		templates: make(map[string]*template.Template, 0),
+	}
+}
+
+func (n *templatesNamespace) get(name string) (*template.Template, bool) {
+	n.mutex.RLock()
+	tpl, ok := n.templates[name]
+	n.mutex.RUnlock()
+
+	return tpl, ok
+}
+
+func (n *templatesNamespace) set(name string, tpl *template.Template) {
+	n.mutex.Lock()
+	n.templates[name] = tpl
+	n.mutex.Unlock()
 }
 
 func NewRenderer() *Renderer {
@@ -71,11 +96,15 @@ func (r *Renderer) AddRootTemplates(fs *assetfs.AssetFS) error {
 }
 
 func (r *Renderer) AddGlobalVar(key string, value interface{}) {
+	r.mutex.Lock()
 	r.globals[key] = value
+	r.mutex.Unlock()
 }
 
 func (r *Renderer) IsRegisterNamespace(ns string) bool {
+	r.mutex.RLock()
 	_, ok := r.namespaces[ns]
+	r.mutex.RUnlock()
 	return ok
 }
 
@@ -84,10 +113,9 @@ func (r *Renderer) RegisterNamespace(ns string, fs *assetfs.AssetFS) error {
 		return errors.New("namesapce " + ns + " already exists")
 	}
 
-	r.namespaces[ns] = &templatesNamespace{
-		fs:        fs,
-		templates: make(map[string]*template.Template, 0),
-	}
+	r.mutex.Lock()
+	r.namespaces[ns] = newNamespace(fs)
+	r.mutex.Unlock()
 
 	return nil
 }
@@ -121,9 +149,11 @@ func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, lay
 	executeData["ViewName"] = view
 	executeData["LayoutName"] = layout
 
+	r.mutex.RLock()
 	for i := range r.globals {
 		executeData[i] = r.globals[i]
 	}
+	r.mutex.RUnlock()
 
 	for i := range data {
 		executeData[i] = data[i]
@@ -169,14 +199,17 @@ func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[s
 }
 
 func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, error) {
+	r.mutex.RLock()
 	namespace, ok := r.namespaces[ns]
+	r.mutex.RUnlock()
+
 	if !ok {
 		return nil, errors.New("namespace \"" + ns + "\" not found")
 	}
 
 	view += TemplatePostfix
 
-	tpl, ok := namespace.templates[view]
+	tpl, ok := namespace.get(view)
 	if ok {
 		return tpl, nil
 	}
@@ -229,6 +262,6 @@ func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, err
 		return nil, err
 	}
 
-	namespace.templates[view] = tpl
+	namespace.set(view, tpl)
 	return tpl, nil
 }
