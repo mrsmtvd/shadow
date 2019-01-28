@@ -38,7 +38,7 @@ func (c *Component) initTemplates() error {
 
 	for _, component := range c.components {
 		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
-			err := c.renderer.AddComponents(component.Name(), componentTemplate.DashboardTemplates())
+			err := c.renderer.RegisterComponent(component.Name(), componentTemplate.DashboardTemplates())
 			if err != nil {
 				return err
 			}

@@ -58,7 +58,12 @@ func (r *Renderer) AddGlobalVar(key string, value interface{}) {
 	r.globals[key] = value
 }
 
-func (r *Renderer) AddComponents(componentName string, fs *assetfs.AssetFS) error {
+func (r *Renderer) IsRegisterComponent(componentName string) bool {
+	_, ok := r.views[componentName]
+	return ok
+}
+
+func (r *Renderer) RegisterComponent(componentName string, fs *assetfs.AssetFS) error {
 	baseComponent := template.New("_component").Funcs(r.funcs)
 
 	// layouts
@@ -129,7 +134,7 @@ func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, componentName, vie
 func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) error {
 	component, ok := r.views[componentName]
 	if !ok {
-		return errors.New("dashboardTemplates for component \"" + componentName + "\" not found")
+		return errors.New("templates for component \"" + componentName + "\" not found")
 	}
 
 	view, ok := component[viewName+TemplatePostfix]
