@@ -417,7 +417,7 @@ gulp.task('bindata', function() {
                 };
             }
         }))
-        .pipe(exec('cd <%= file.path %> && go-bindata-assetfs <%= options.debug %> -ignore="('+ ignores.join('|') +')" -o ./bindata_assetfs.go -pkg=<%= options.path.basename(file.path) %> <%= file.contents %>', {
+        .pipe(exec('cd <%= file.path %> && go-bindata-assetfs <%= options.debug %> -ignore="('+ ignores.join('|') +')" -o ./bindata_assetfs.go -pkg=<%= options.path.basename(file.path) %> -nometadata -nomemcopy <%= file.contents %>', {
             path: path,
             debug: process.env.NODE_ENV === DEV_ENV ? '-debug' : ''
         }))
