@@ -5,8 +5,6 @@ import (
 )
 
 func (c *Component) initTemplates() error {
-	c.renderer = NewRenderer()
-
 	c.renderer.AddGlobalVar("Application", map[string]interface{}{
 		"name":       c.application.Name(),
 		"version":    c.application.Version(),
@@ -15,10 +13,6 @@ func (c *Component) initTemplates() error {
 		"start_date": c.application.StartDate(),
 		"uptime":     c.application.Uptime(),
 	})
-
-	if err := c.renderer.AddBaseLayouts(c.DashboardTemplates()); err != nil {
-		return err
-	}
 
 	for name, fn := range c.DashboardTemplateFunctions() {
 		c.renderer.AddFunc(name, fn)
@@ -36,9 +30,13 @@ func (c *Component) initTemplates() error {
 		}
 	}
 
+	if err := c.renderer.AddRootTemplates(c.DashboardTemplates()); err != nil {
+		return err
+	}
+
 	for _, component := range c.components {
 		if componentTemplate, ok := component.(dashboard.HasTemplates); ok {
-			err := c.renderer.RegisterComponent(component.Name(), componentTemplate.DashboardTemplates())
+			err := c.renderer.RegisterNamespace(component.Name(), componentTemplate.DashboardTemplates())
 			if err != nil {
 				return err
 			}

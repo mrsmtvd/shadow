@@ -385,7 +385,8 @@ gulp.task('i18n', function() {
 gulp.task('bindata', function() {
     var ignores = [
         '[.]DS_Store',
-        '[.]gitignore'
+        '[.]gitignore',
+        '.*?[.]go$',
     ];
 
     if (process.env.NODE_ENV !== DEV_ENV) {

@@ -8,12 +8,12 @@ import (
 )
 
 type Renderer interface {
-	IsRegisterComponent(component string) bool
-	RegisterComponent(component string, fs *assetfs.AssetFS) error
-	Render(wr io.Writer, ctx context.Context, component, view string, data map[string]interface{}) error
-	RenderAndReturn(ctx context.Context, component, view string, data map[string]interface{}) (string, error)
-	RenderLayout(wr io.Writer, ctx context.Context, component, view, layout string, data map[string]interface{}) error
-	RenderLayoutAndReturn(ctx context.Context, component, view, layout string, data map[string]interface{}) (string, error)
+	IsRegisterNamespace(ns string) bool
+	RegisterNamespace(ns string, fs *assetfs.AssetFS) error
+	Render(wr io.Writer, ctx context.Context, ns, view string, data map[string]interface{}) error
+	RenderAndReturn(ctx context.Context, ns, view string, data map[string]interface{}) (string, error)
+	RenderLayout(wr io.Writer, ctx context.Context, ns, view, layout string, data map[string]interface{}) error
+	RenderLayoutAndReturn(ctx context.Context, ns, view, layout string, data map[string]interface{}) (string, error)
 }
 
 type HasTemplates interface {

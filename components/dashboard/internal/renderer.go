@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	TemplateRootName      = "_root"
 	TemplatePostfix       = ".html"
 	TemplateLayoutsDir    = "templates/layouts"
 	TemplateViewsDir      = "templates/views"
@@ -20,37 +21,47 @@ const (
 )
 
 type Renderer struct {
-	baseLayouts map[string][]byte
-	globals     map[string]interface{}
-	views       map[string]map[string]*template.Template
-	funcs       template.FuncMap
+	rootTemplate *template.Template
+	globals      map[string]interface{}
+	templates    map[string]map[string]*template.Template
 }
 
 func NewRenderer() *Renderer {
+	root := template.New(TemplateRootName).
+		Funcs(dashboard.DefaultTemplateFunctions.FuncMap())
+
 	r := &Renderer{
-		baseLayouts: map[string][]byte{},
-		globals:     map[string]interface{}{},
-		views:       map[string]map[string]*template.Template{},
-		funcs:       dashboard.DefaultTemplateFunctions.FuncMap(),
+		rootTemplate: root,
+		globals:      map[string]interface{}{},
+		templates:    map[string]map[string]*template.Template{},
 	}
 
 	return r
 }
 
 func (r *Renderer) AddFunc(name string, f interface{}) {
-	r.funcs[name] = f
+	r.rootTemplate = r.rootTemplate.Funcs(template.FuncMap{
+		name: f,
+	})
 }
 
-func (r *Renderer) AddBaseLayouts(fs *assetfs.AssetFS) error {
+func (r *Renderer) AddRootTemplates(fs *assetfs.AssetFS) error {
 	files, err := r.getTemplateFiles(TemplateLayoutsDir, fs)
 	if err != nil {
 		return err
 	}
 
-	for name, content := range files {
-		r.baseLayouts[strings.TrimSuffix(name, TemplatePostfix)] = content
+	tpl := r.rootTemplate
+
+	for layout, content := range files {
+		layout = strings.TrimSuffix(layout, TemplatePostfix)
+
+		if tpl, err = tpl.New(layout).Parse(string(content)); err != nil {
+			return err
+		}
 	}
 
+	r.rootTemplate = tpl
 	return nil
 }
 
@@ -58,28 +69,25 @@ func (r *Renderer) AddGlobalVar(key string, value interface{}) {
 	r.globals[key] = value
 }
 
-func (r *Renderer) IsRegisterComponent(componentName string) bool {
-	_, ok := r.views[componentName]
+func (r *Renderer) IsRegisterNamespace(componentName string) bool {
+	_, ok := r.templates[componentName]
 	return ok
 }
 
-func (r *Renderer) RegisterComponent(componentName string, fs *assetfs.AssetFS) error {
-	baseComponent := template.New("_component").Funcs(r.funcs)
-
-	// layouts
-	for name, content := range r.baseLayouts {
-		if _, err := baseComponent.New(name).Parse(string(content)); err != nil {
-			return err
-		}
+func (r *Renderer) RegisterNamespace(ns string, fs *assetfs.AssetFS) error {
+	layouts, err := r.rootTemplate.Clone()
+	if err != nil {
+		return err
 	}
 
+	// layouts
 	if files, err := r.getTemplateFiles(TemplateLayoutsDir, fs); err == nil {
-		for name, content := range files {
-			tplName := strings.TrimSuffix(name, TemplatePostfix)
+		for layout, content := range files {
+			layout = strings.TrimSuffix(layout, TemplatePostfix)
 
-			tpl := baseComponent.Lookup(tplName)
+			tpl := layouts.Lookup(layout)
 			if tpl == nil {
-				tpl.New(tplName)
+				tpl = layouts.New(layout)
 			}
 
 			if _, err := tpl.Parse(string(content)); err != nil {
@@ -94,58 +102,53 @@ func (r *Renderer) RegisterComponent(componentName string, fs *assetfs.AssetFS) 
 		return nil
 	}
 
-	views := map[string]*template.Template{}
-	for name, content := range files {
-		view, err := baseComponent.Clone()
+	templates := map[string]*template.Template{}
+	for view, content := range files {
+		tpl, err := layouts.Clone()
 		if err != nil {
 			return err
 		}
 
-		if view, err = view.Parse(string(content)); err != nil {
+		if tpl, err = tpl.Parse(string(content)); err != nil {
 			return err
 		}
 
-		views[name] = view
+		templates[view] = tpl
 	}
 
-	r.views[componentName] = views
+	r.templates[ns] = templates
 
 	return nil
 }
 
-func (r *Renderer) RenderAndReturn(ctx context.Context, componentName, viewName string, data map[string]interface{}) (string, error) {
+func (r *Renderer) RenderAndReturn(ctx context.Context, ns, view string, data map[string]interface{}) (string, error) {
 	wr := bytes.NewBuffer(nil)
-	err := r.Render(wr, ctx, componentName, viewName, data)
+	err := r.Render(wr, ctx, ns, view, data)
 
 	return wr.String(), err
 }
 
-func (r *Renderer) Render(wr io.Writer, ctx context.Context, componentName, viewName string, data map[string]interface{}) error {
-	return r.RenderLayout(wr, ctx, componentName, viewName, TemplateDefaultLayout, data)
+func (r *Renderer) Render(wr io.Writer, ctx context.Context, ns, view string, data map[string]interface{}) error {
+	return r.RenderLayout(wr, ctx, ns, view, TemplateDefaultLayout, data)
 }
 
-func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) (string, error) {
+func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, ns, view, layout string, data map[string]interface{}) (string, error) {
 	wr := bytes.NewBuffer(nil)
-	err := r.RenderLayout(wr, ctx, componentName, viewName, layoutName, data)
+	err := r.RenderLayout(wr, ctx, ns, view, layout, data)
 
 	return wr.String(), err
 }
 
-func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, componentName, viewName, layoutName string, data map[string]interface{}) error {
-	component, ok := r.views[componentName]
-	if !ok {
-		return errors.New("templates for component \"" + componentName + "\" not found")
-	}
-
-	view, ok := component[viewName+TemplatePostfix]
-	if !ok {
-		return errors.New("template \"" + viewName + "\" for component \"" + componentName + "\" not found")
+func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, layout string, data map[string]interface{}) error {
+	tpl, err := r.getViewTemplate(ns, view)
+	if err != nil {
+		return err
 	}
 
 	executeData := r.getContextVariables(ctx)
-	executeData["ComponentName"] = componentName
-	executeData["ViewName"] = viewName
-	executeData["LayoutName"] = layoutName
+	executeData["ComponentName"] = ns
+	executeData["ViewName"] = view
+	executeData["LayoutName"] = layout
 
 	for i := range r.globals {
 		executeData[i] = r.globals[i]
@@ -155,7 +158,7 @@ func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, componentName
 		executeData[i] = data[i]
 	}
 
-	return view.ExecuteTemplate(wr, layoutName, executeData)
+	return tpl.ExecuteTemplate(wr, layout, executeData)
 }
 
 func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface{} {
@@ -192,4 +195,18 @@ func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[s
 	}
 
 	return templates, nil
+}
+
+func (r *Renderer) getViewTemplate(ns, view string) (*template.Template, error) {
+	tpls, ok := r.templates[ns]
+	if !ok {
+		return nil, errors.New("templates for namespace \"" + ns + "\" not found")
+	}
+
+	tpl, ok := tpls[view+TemplatePostfix]
+	if !ok {
+		return nil, errors.New("template \"" + view + "\" for namespace \"" + ns + "\" not found")
+	}
+
+	return tpl, nil
 }

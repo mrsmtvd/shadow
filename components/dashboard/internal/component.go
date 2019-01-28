@@ -58,6 +58,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) (err error) {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
+	c.renderer = NewRenderer()
 
 	return nil
 }
