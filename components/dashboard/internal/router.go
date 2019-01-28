@@ -92,6 +92,8 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 				"panic.error", fmt.Sprintf("%s", panicError.Error),
 			)
 
+			fmt.Println(panicError)
+
 			panicHandler.ServeHTTP(hw, hr.WithContext(ctx))
 		})).ServeHTTP(pw, pr)
 	}

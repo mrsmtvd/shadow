@@ -20,10 +20,15 @@ const (
 	TemplateDefaultLayout = "base"
 )
 
+type templatesNamespace struct {
+	fs        *assetfs.AssetFS
+	templates map[string]*template.Template
+}
+
 type Renderer struct {
 	rootTemplate *template.Template
 	globals      map[string]interface{}
-	templates    map[string]map[string]*template.Template
+	namespaces   map[string]*templatesNamespace
 }
 
 func NewRenderer() *Renderer {
@@ -33,7 +38,7 @@ func NewRenderer() *Renderer {
 	r := &Renderer{
 		rootTemplate: root,
 		globals:      map[string]interface{}{},
-		templates:    map[string]map[string]*template.Template{},
+		namespaces:   map[string]*templatesNamespace{},
 	}
 
 	return r
@@ -69,54 +74,20 @@ func (r *Renderer) AddGlobalVar(key string, value interface{}) {
 	r.globals[key] = value
 }
 
-func (r *Renderer) IsRegisterNamespace(componentName string) bool {
-	_, ok := r.templates[componentName]
+func (r *Renderer) IsRegisterNamespace(ns string) bool {
+	_, ok := r.namespaces[ns]
 	return ok
 }
 
 func (r *Renderer) RegisterNamespace(ns string, fs *assetfs.AssetFS) error {
-	layouts, err := r.rootTemplate.Clone()
-	if err != nil {
-		return err
+	if r.IsRegisterNamespace(ns) {
+		return errors.New("namesapce " + ns + " already exists")
 	}
 
-	// layouts
-	if files, err := r.getTemplateFiles(TemplateLayoutsDir, fs); err == nil {
-		for layout, content := range files {
-			layout = strings.TrimSuffix(layout, TemplatePostfix)
-
-			tpl := layouts.Lookup(layout)
-			if tpl == nil {
-				tpl = layouts.New(layout)
-			}
-
-			if _, err := tpl.Parse(string(content)); err != nil {
-				return err
-			}
-		}
+	r.namespaces[ns] = &templatesNamespace{
+		fs:        fs,
+		templates: make(map[string]*template.Template, 0),
 	}
-
-	// views
-	files, err := r.getTemplateFiles(TemplateViewsDir, fs)
-	if err != nil {
-		return nil
-	}
-
-	templates := map[string]*template.Template{}
-	for view, content := range files {
-		tpl, err := layouts.Clone()
-		if err != nil {
-			return err
-		}
-
-		if tpl, err = tpl.Parse(string(content)); err != nil {
-			return err
-		}
-
-		templates[view] = tpl
-	}
-
-	r.templates[ns] = templates
 
 	return nil
 }
@@ -140,7 +111,7 @@ func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, ns, view, layout s
 }
 
 func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, layout string, data map[string]interface{}) error {
-	tpl, err := r.getViewTemplate(ns, view)
+	tpl, err := r.getLazyViewTemplate(ns, view)
 	if err != nil {
 		return err
 	}
@@ -197,16 +168,67 @@ func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[s
 	return templates, nil
 }
 
-func (r *Renderer) getViewTemplate(ns, view string) (*template.Template, error) {
-	tpls, ok := r.templates[ns]
+func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, error) {
+	namespace, ok := r.namespaces[ns]
 	if !ok {
-		return nil, errors.New("templates for namespace \"" + ns + "\" not found")
+		return nil, errors.New("namespace \"" + ns + "\" not found")
 	}
 
-	tpl, ok := tpls[view+TemplatePostfix]
-	if !ok {
+	view += TemplatePostfix
+
+	tpl, ok := namespace.templates[view]
+	if ok {
+		return tpl, nil
+	}
+
+	files, err := r.getTemplateFiles(TemplateViewsDir, namespace.fs)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		found   bool
+		content []byte
+	)
+
+	for name, body := range files {
+		if name == view {
+			found = true
+			content = body
+			break
+		}
+	}
+
+	if !found {
 		return nil, errors.New("template \"" + view + "\" for namespace \"" + ns + "\" not found")
 	}
 
+	// layouts
+	tpl, err = r.rootTemplate.Clone()
+	if err != nil {
+		return nil, err
+	}
+
+	if files, err := r.getTemplateFiles(TemplateLayoutsDir, namespace.fs); err == nil {
+		for layout, body := range files {
+			layout = strings.TrimSuffix(layout, TemplatePostfix)
+
+			t := tpl.Lookup(layout)
+			if t == nil {
+				t = tpl.New(layout)
+			}
+
+			if _, err := t.Parse(string(body)); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	// views
+	if tpl, err = tpl.Parse(string(content)); err != nil {
+		return nil, err
+	}
+
+	namespace.templates[view] = tpl
 	return tpl, nil
 }
