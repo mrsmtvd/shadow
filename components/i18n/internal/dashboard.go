@@ -121,7 +121,7 @@ func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, n
 	}
 
 	if domain == "" && len(ctx) > 0 {
-		if componentName, ok := ctx["ComponentName"]; ok {
+		if componentName, ok := ctx["NamespaceName"]; ok {
 			domain = componentName.(string)
 		}
 	}
