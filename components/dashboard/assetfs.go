@@ -39,12 +39,14 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 			return
 		}
 
-		panic(err.Error())
+		h.InternalError(w, r, err)
+		return
 	}
 
 	d, err := f.Stat()
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
+		return
 	}
 
 	if d.IsDir() {
@@ -60,7 +62,8 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 		_, err := f.Seek(0, io.SeekStart)
 
 		if err != nil {
-			panic(err)
+			h.InternalError(w, r, err)
+			return
 		}
 	}
 	w.Header().Set("Content-Type", ctype)
@@ -71,7 +74,7 @@ func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
 	_, err = io.Copy(w, f)
 
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 

@@ -205,7 +205,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 	stats.Filtered = stats.Total
 
 	if err := w.SendJSON(stats); err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 
@@ -251,7 +251,7 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 	})
 
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 
@@ -273,7 +273,7 @@ func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.R
 	})
 
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 
@@ -295,7 +295,7 @@ func (h *ManagerHandler) actionWorkerRemove(w *dashboard.Response, r *dashboard.
 	})
 
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 
@@ -314,7 +314,7 @@ func (h *ManagerHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Re
 	})
 
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 

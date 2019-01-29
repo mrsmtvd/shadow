@@ -295,7 +295,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		})
 
 		if err != nil {
-			panic(err.Error())
+			h.InternalError(w, r, err)
 		}
 
 		return
@@ -310,7 +310,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		})
 
 		if err != nil {
-			panic(err.Error())
+			h.InternalError(w, r, err)
 		}
 
 		return
@@ -323,7 +323,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 		})
 
 		if err != nil {
-			panic(err.Error())
+			h.InternalError(w, r, err)
 		}
 
 		return
@@ -363,7 +363,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 
 	err = w.SendJSON(response)
 	if err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
 	}
 }
 

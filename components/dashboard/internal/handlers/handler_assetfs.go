@@ -198,7 +198,7 @@ func (h *AssetFSHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		case "raw":
 			if len(files) == 1 {
 				if _, err := io.Copy(w, files[0].Reader); err != nil {
-					panic(err.Error())
+					h.InternalError(w, r, err)
 				}
 
 				return
@@ -211,7 +211,7 @@ func (h *AssetFSHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 				w.Header().Set("Content-Disposition", "attachment; filename="+files[0].Name)
 
 				if _, err := io.Copy(w, files[0].Reader); err != nil {
-					panic(err.Error())
+					h.InternalError(w, r, err)
 				}
 
 				return

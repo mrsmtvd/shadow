@@ -33,11 +33,13 @@ func (h *ChangeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	}
 
 	if err := h.component.SaveToSession(r.Session(), locale); err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
+		return
 	}
 
 	if err := h.component.SaveToCookie(w, locale); err != nil {
-		panic(err.Error())
+		h.InternalError(w, r, err)
+		return
 	}
 
 	redirect := r.URL().Query().Get("return")
