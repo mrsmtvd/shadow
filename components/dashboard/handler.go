@@ -33,6 +33,15 @@ func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
 	router.MethodNotAllowedServeHTTP(w, r.Original())
 }
 
+func (h *Handler) InternalError(w *Response, r *Request, e error) {
+	router := RouterFromContext(r.Context())
+	if router == nil {
+		panic("Router isn't set in context")
+	}
+
+	router.InternalErrorServeHTTP(w, r.Original(), e)
+}
+
 func (h *Handler) Render(ctx context.Context, view string, data map[string]interface{}) {
 	render := RenderFromContext(ctx)
 	if render == nil {

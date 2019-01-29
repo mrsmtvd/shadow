@@ -65,6 +65,7 @@ func (r *Router) SetPanicHandlerCallerSkip(skip int) {
 	r.mutex.Unlock()
 }
 
+// TODO: двойной вызов мидлварей для хендлера происходит
 func (r *Router) SetPanicHandler(h RouterHandler) {
 	panicHandler := FromRouteHandler(h)
 
@@ -84,13 +85,6 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 			}
 
 			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, panicError)
-
-			r.logger.Error("Recovery panic",
-				"panic.file", panicError.File,
-				"panic.line", panicError.Line,
-				"panic.stack", string(panicError.Stack),
-				"panic.error", fmt.Sprintf("%s", panicError.Error),
-			)
 
 			panicHandler.ServeHTTP(hw, hr.WithContext(ctx))
 		})).ServeHTTP(pw, pr)
@@ -188,4 +182,8 @@ func (r *Router) NotFoundServeHTTP(w http.ResponseWriter, rq *http.Request) {
 
 func (r *Router) MethodNotAllowedServeHTTP(w http.ResponseWriter, rq *http.Request) {
 	r.MethodNotAllowed.ServeHTTP(w, rq)
+}
+
+func (r *Router) InternalErrorServeHTTP(w http.ResponseWriter, rq *http.Request, e error) {
+	r.PanicHandler(w, rq, e)
 }

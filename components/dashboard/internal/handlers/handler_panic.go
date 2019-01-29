@@ -23,7 +23,7 @@ func NewPanicHandler(component dashboard.Component) *PanicHandler {
 func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	error := dashboard.PanicFromContext(r.Context())
 	fields := map[string]interface{}{
-		"error": fmt.Sprintf("%s", error.Error),
+		"error": fmt.Sprintf("%v", error.Error),
 		"stack": string(error.Stack),
 		"file":  error.File,
 		"line":  error.Line,
@@ -38,5 +38,10 @@ func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		"panic": fields,
 	})
 
-	h.Logger().Error("Frontend request error", fields)
+	h.Logger().Error("Internal server error",
+		"error", fields["error"],
+		"stack", fields["stack"],
+		"file", fields["file"],
+		"line", fields["line"],
+	)
 }
