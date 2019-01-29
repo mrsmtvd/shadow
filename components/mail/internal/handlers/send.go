@@ -9,6 +9,14 @@ import (
 
 type SendHandler struct {
 	dashboard.Handler
+
+	component mail.Component
+}
+
+func NewSendHandler(component mail.Component) *SendHandler {
+	return &SendHandler{
+		component: component,
+	}
 }
 
 func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
@@ -26,10 +34,10 @@ func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 			message.SetBody("text/plain", r.Original().FormValue("message"))
 		}
 
-		if err := r.Component().(mail.Component).SendAndReturn(message); err != nil {
+		if err := h.component.SendAndReturn(message); err != nil {
 			vars["error"] = err.Error()
 		} else {
-			vars["message"] = locale.Translate(r.Component().Name(), "Message send success", "")
+			vars["message"] = locale.Translate(h.component.Name(), "Message send success", "")
 		}
 	}
 

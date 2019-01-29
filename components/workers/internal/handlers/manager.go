@@ -55,10 +55,18 @@ type managerHandlerItemListener struct {
 
 type ManagerHandler struct {
 	dashboard.Handler
+
+	component workers.Component
 }
 
-func (h *ManagerHandler) isLocked(id string, component workers.Component) bool {
-	for _, listenerId := range component.GetLockedListeners() {
+func NewManagerHandler(component workers.Component) *ManagerHandler {
+	return &ManagerHandler{
+		component: component,
+	}
+}
+
+func (h *ManagerHandler) isLocked(id string) bool {
+	for _, listenerId := range h.component.GetLockedListeners() {
 		if id == listenerId {
 			return true
 		}
@@ -77,21 +85,20 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 	}{}
 
 	stats.Draw = 1
-	component := r.Component().(workers.Component)
 
 	switch r.URL().Query().Get("entity") {
 	case "listeners":
-		listListeners := component.GetListeners()
+		listListeners := h.component.GetListeners()
 		list := make([]managerHandlerItemListener, 0, len(listListeners))
 
 		for _, item := range listListeners {
 			listener := managerHandlerItemListener{
 				Id:     item.Id(),
 				Name:   item.Name(),
-				Locked: h.isLocked(item.Id(), component),
+				Locked: h.isLocked(item.Id()),
 			}
 
-			md := component.GetListenerMetadata(item.Id())
+			md := h.component.GetListenerMetadata(item.Id())
 			if md == nil {
 				continue
 			}
@@ -113,7 +120,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 		stats.Total = len(list)
 
 	case "workers":
-		listWorkers := component.GetWorkers()
+		listWorkers := h.component.GetWorkers()
 		list := make([]managerHandlerItemWorker, 0, len(listWorkers))
 		locale := i18n.NewOrNopFromRequest(r)
 
@@ -123,7 +130,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 				Created: item.CreatedAt(),
 			}
 
-			if md := component.GetWorkerMetadata(item.Id()); md != nil {
+			if md := h.component.GetWorkerMetadata(item.Id()); md != nil {
 				data.Status = locale.Translate(workers.ComponentName, md[ws.WorkerMetadataStatus].(ws.Status).String(), "worker")
 				data.Locked = md[ws.WorkerMetadataLocked].(bool)
 
@@ -141,7 +148,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 						StartedAt:      item.StartedAt(),
 					}
 
-					if taskMD := component.GetTaskMetadata(item.Id()); taskMD != nil {
+					if taskMD := h.component.GetTaskMetadata(item.Id()); taskMD != nil {
 						data.Task.Status = taskMD[ws.TaskMetadataStatus].(ws.Status).String()
 						data.Task.Locked = taskMD[ws.TaskMetadataLocked].(bool)
 						data.Task.Attempts = taskMD[ws.TaskMetadataAttempts].(int64)
@@ -159,7 +166,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 		stats.Total = len(list)
 
 	case "tasks":
-		listTasks := component.GetTasks()
+		listTasks := h.component.GetTasks()
 		list := make([]managerHandlerItemTask, 0, len(listTasks))
 		locale := i18n.NewOrNopFromRequest(r)
 
@@ -175,7 +182,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 				StartedAt:      item.StartedAt(),
 			}
 
-			if md := component.GetTaskMetadata(item.Id()); md != nil {
+			if md := h.component.GetTaskMetadata(item.Id()); md != nil {
 				data.Status = locale.Translate(workers.ComponentName, md[ws.TaskMetadataStatus].(ws.Status).String(), "task")
 				data.Locked = md[ws.TaskMetadataLocked].(bool)
 				data.Attempts = md[ws.TaskMetadataAttempts].(int64)
@@ -204,15 +211,14 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboard.Request) {
 	checkId := r.Original().PostFormValue("id")
-	component := r.Component().(workers.Component)
 
-	if checkId != "" && !h.isLocked(checkId, component) {
-		for _, listener := range component.GetListeners() {
+	if checkId != "" && !h.isLocked(checkId) {
+		for _, listener := range h.component.GetListeners() {
 			if listener.Id() == checkId {
 				checkEvents := r.Original().PostForm["events[]"]
 
 				if len(checkEvents) != 0 {
-					md := component.GetListenerMetadata(listener.Id())
+					md := h.component.GetListenerMetadata(listener.Id())
 					if md == nil {
 						continue
 					}
@@ -229,10 +235,10 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 							continue
 						}
 
-						component.RemoveListenerByEvent(event, listener)
+						h.component.RemoveListenerByEvent(event, listener)
 					}
 				} else {
-					component.RemoveListener(listener)
+					h.component.RemoveListener(listener)
 				}
 
 				break
@@ -251,11 +257,10 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 
 func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.Request) {
 	checkId := r.Original().FormValue("id")
-	component := r.Component().(workers.Component)
 
-	for _, task := range component.GetTasks() {
+	for _, task := range h.component.GetTasks() {
 		if checkId == "" || task.Id() == checkId {
-			component.RemoveTask(task)
+			h.component.RemoveTask(task)
 
 			if checkId != "" {
 				break
@@ -274,11 +279,10 @@ func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.R
 
 func (h *ManagerHandler) actionWorkerRemove(w *dashboard.Response, r *dashboard.Request) {
 	checkId := r.Original().FormValue("id")
-	component := r.Component().(workers.Component)
 
-	for _, worker := range component.GetWorkers() {
+	for _, worker := range h.component.GetWorkers() {
 		if checkId == "" || worker.Id() == checkId {
-			component.RemoveWorker(worker)
+			h.component.RemoveWorker(worker)
 
 			if checkId != "" {
 				break
@@ -299,10 +303,8 @@ func (h *ManagerHandler) actionWorkersAdd(w *dashboard.Response, r *dashboard.Re
 	count := r.Original().FormValue("count")
 	if count != "" {
 		if c, err := strconv.Atoi(count); err == nil {
-			component := r.Component().(workers.Component)
-
 			for i := 0; i < c; i++ {
-				component.AddSimpleWorker()
+				h.component.AddSimpleWorker()
 			}
 		}
 	}

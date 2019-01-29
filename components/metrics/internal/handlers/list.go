@@ -10,12 +10,20 @@ import (
 
 type ListHandler struct {
 	dashboard.Handler
+
+	component metrics.Component
+}
+
+func NewListHandler(component metrics.Component) *ListHandler {
+	return &ListHandler{
+		component: component,
+	}
 }
 
 func (h *ListHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	var updated time.Time
 
-	measures, err := r.Component().(metrics.Component).Registry().Gather()
+	measures, err := h.component.Registry().Gather()
 	if err == nil {
 		sort.Sort(measures)
 

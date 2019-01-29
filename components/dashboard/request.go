@@ -40,10 +40,6 @@ func (r *Request) Application() shadow.Application {
 	return ApplicationFromContext(r.Context())
 }
 
-func (r *Request) Component() shadow.Component {
-	return ComponentFromContext(r.Context())
-}
-
 func (r *Request) Config() config.Component {
 	return ConfigFromContext(r.Context())
 }

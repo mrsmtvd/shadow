@@ -12,14 +12,14 @@ var child          = require('child_process'),
     reload         = require('gulp-livereload'),
     rename         = require('gulp-rename'),
     uglify         = require('gulp-uglify'),
-    util           = require('gulp-util'),
-    runSequence    = require('run-sequence');
+    util           = require('gulp-util');
 
 var COMPONENTS = __dirname + '/components',
     VENDORS_DATABASE = COMPONENTS + '/database/internal/assets/vendors/',
     VENDORS_DASHBOARD = COMPONENTS + '/dashboard/internal/assets/vendors/',
     VENDORS_PROFILING = COMPONENTS + '/profiling/internal/assets/vendors/',
-    DEV_ENV = 'development';
+    DEV_ENV = 'development',
+    SERVER_BIN_NAME = 'server';
 
 var execOptions = {
     err: true,
@@ -34,146 +34,20 @@ var execOptions = {
     });
 //}
 
-gulp.task('default', ['watch']);
-
-gulp.task('build', ['clean'], function () {
-    runSequence(['frontend', 'backend']);
-});
-
-gulp.task('clean', function() {
-    del.sync('server');
+gulp.task('clean', function(done) {
+    del.sync(SERVER_BIN_NAME);
     del.sync(VENDORS_DASHBOARD + '/*');
     del.sync(VENDORS_PROFILING + '/*');
     del.sync(COMPONENTS + '/**/assets/css/*.min.css');
     del.sync(COMPONENTS + '/**/assets/js/*.min.js');
-});
 
-/**
- * Develop
- */
-var
-    server = null,
-    serverBinName = 'server';
-
-// TODO: watch glide.yaml
-
-gulp.task('server:build', function() {
-    var build = new Date().getTime();
-    var args = ['-ldflags', '-X "main.build=' + build + '"', '-o', serverBinName, '-v', './examples/base/'];
-
-    if (process.env.NODE_ENV === DEV_ENV) {
-        args.unshift('-race');
-    }
-
-    args.unshift('build');
-
-    result = child.spawnSync('go', args);
-
-    if (result.status !== 0) {
-        util.log(util.colors.red('Error during "go install": ' + result.stderr));
-    }
-
-    return result;
-});
-
-gulp.task('server:spawn', function() {
-    if (server) {
-        server.kill();
-    }
-
-    server = child.spawn('./' + serverBinName);
-
-    server.stdout.once('data', function() {
-        reload.reload('/');
-    });
-
-    server.stdout.on('data', function(data) {
-        var lines = data.toString().split('\n');
-        for (var l in lines) {
-            if (lines[l].length) {
-                util.log(lines[l]);
-            }
-        }
-    });
-
-    server.stderr.on('data', function(data) {
-        process.stdout.write(data.toString());
-    });
-});
-
-gulp.task('server:watch', function() {
-    // templates
-    gulp.watch([
-        COMPONENTS + '/**/assets/css/*.css',
-        COMPONENTS + '/**/assets/js/*.js',
-        '!' + COMPONENTS + '/**/assets/css/*.min.css',
-        '!' + COMPONENTS + '/**/assets/js/*.min.js'
-    ], ['compress-components']);
-
-    gulp.watch([
-        COMPONENTS + '/**/*.html'
-    ], function() {
-        if (process.env.NODE_ENV !== DEV_ENV) {
-            runSequence(
-                'bindata',
-                'server:build',
-                'server:spawn'
-            );
-        } else {
-            runSequence(
-                'server:spawn'
-            );
-        }
-    });
-    
-    gulp.watch([
-        COMPONENTS + '/**/assets/css/*.css',
-        COMPONENTS + '/**/assets/js/*.js'
-    ], function() {
-        if (process.env.NODE_ENV !== DEV_ENV) {
-            runSequence(
-                'bindata',
-                'server:build',
-                'server:spawn'
-            );
-        } else {
-            runSequence(
-                'server:build', // for change app version
-                'server:spawn'
-            );
-        }
-    });
-
-    // proto
-    gulp.watch(['*/**/*.proto'], ['protobuf']);
-
-    // go source
-    gulp.watch(['*.go', '*/**/*.go', '!**/bindata_assetfs.go', '!**/bindata.go'], function() {
-        runSequence(
-            'server:build',
-            'server:spawn'
-        );
-    }, 'server');
-});
-
-gulp.task('watch', function() {
-    runSequence(
-        'bindata',
-        'server:build',
-        function() {
-            reload.listen();
-            runSequence(
-                'server:watch',
-                'server:spawn'
-            )
-        }
-    );
+    done();
 });
 
 /**
  * Frontend
  */
-gulp.task('compress-components', function() {
+gulp.task('compress-components', function(done) {
     gulp.src([COMPONENTS + '/**/*.css', '!**/*min.css'])
         .pipe(cleanCss())
         .pipe(rename({
@@ -188,9 +62,11 @@ gulp.task('compress-components', function() {
             suffix: '.min'
         }))
         .pipe(gulp.dest(COMPONENTS));
+
+    done();
 });
 
-gulp.task('frontend', ['compress-components'], function() {
+gulp.task('frontend', gulp.series('compress-components', function(done) {
     /**
      * Vendors
      */
@@ -355,19 +231,13 @@ gulp.task('frontend', ['compress-components'], function() {
 
     gulp.src(['bower_components/waitMe/*.min.css'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/waitMe/css'));
-});
+
+    done();
+}));
 
 /**
  * Backend
  */
-gulp.task('backend', [], function() {
-    runSequence(
-        'golang', 'i18n',
-        ['bindata', 'protobuf'],
-        'easyjson'
-    );
-});
-
 gulp.task('golang', function() {
     return gulp.src([__dirname + '/**/**/*.go', '!' + __dirname + '/vendor/**', '!/**/bindata_assetfs.go'])
         .pipe(exec('goimports -w <%= file.path %>'))
@@ -442,3 +312,109 @@ gulp.task('easyjson', function() {
         .pipe(exec('easyjson <%= file.path %>'))
         .pipe(exec.reporter(execOptions));
 });
+
+gulp.task('backend', gulp.parallel(
+    'golang', 'i18n',
+    ['bindata', 'protobuf'],
+    'easyjson'
+));
+
+/**
+ * Develop
+ */
+var server = null;
+
+// TODO: watch glide.yaml
+
+gulp.task('server:build', function(done) {
+    var build = new Date().getTime();
+    var args = ['-ldflags', '-X "main.build=' + build + '"', '-o', SERVER_BIN_NAME, '-v', './examples/base/'];
+
+    if (process.env.NODE_ENV === DEV_ENV) {
+        args.unshift('-race');
+    }
+
+    args.unshift('build');
+
+    result = child.spawnSync('go', args);
+    if (result.status !== 0) {
+        util.log(util.colors.red('Error during "go install": ' + result.stderr));
+    }
+
+    done();
+});
+
+gulp.task('server:spawn', function() {
+    if (server) {
+        server.kill();
+    }
+
+    server = child.spawn('./' + SERVER_BIN_NAME);
+
+    server.stdout.once('data', function() {
+        reload.reload('/');
+    });
+
+    server.stdout.on('data', function(data) {
+        var lines = data.toString().split('\n');
+        for (var l in lines) {
+            if (lines[l].length) {
+                util.log(lines[l]);
+            }
+        }
+    });
+
+    server.stderr.on('data', function(data) {
+        process.stdout.write(data.toString());
+    });
+});
+
+gulp.task('server:watch', function() {
+    // templates
+    gulp.watch([
+        COMPONENTS + '/**/assets/css/*.css',
+        COMPONENTS + '/**/assets/js/*.js',
+        '!' + COMPONENTS + '/**/assets/css/*.min.css',
+        '!' + COMPONENTS + '/**/assets/js/*.min.js'
+    ],  gulp.series('compress-components'));
+
+    gulp.watch([
+        COMPONENTS + '/**/*.html'
+    ], function() {
+        if (process.env.NODE_ENV !== DEV_ENV) {
+            gulp.parallel('bindata', 'server:build', 'server:spawn');
+        } else {
+            gulp.parallel('server:spawn');
+        }
+    });
+
+    gulp.watch([
+        COMPONENTS + '/**/assets/css/*.css',
+        COMPONENTS + '/**/assets/js/*.js'
+    ], function() {
+        if (process.env.NODE_ENV !== DEV_ENV) {
+            gulp.parallel('bindata', 'server:build', 'server:spawn');
+        } else {
+            gulp.parallel('server:build', 'server:spawn');
+        }
+    });
+
+    // proto
+    gulp.watch(['*/**/*.proto'],  gulp.series('protobuf'));
+
+    // go source
+    gulp.watch(['*.go', '*/**/*.go', '!**/bindata_assetfs.go', '!**/bindata.go'], gulp.parallel(
+        'server:build', 'server:spawn'
+    ), SERVER_BIN_NAME);
+});
+
+gulp.task('watch', gulp.parallel('bindata', 'server:build',
+    function() {
+        reload.listen();
+        return gulp.parallel('server:watch', 'server:spawn')
+    }
+));
+
+gulp.task('default', gulp.series('watch'));
+
+gulp.task('build', gulp.series('clean', gulp.parallel(['frontend', 'backend'])));

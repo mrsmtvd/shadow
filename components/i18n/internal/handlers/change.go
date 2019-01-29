@@ -9,6 +9,14 @@ import (
 
 type ChangeHandler struct {
 	dashboard.Handler
+
+	component i18n.Component
+}
+
+func NewChangeHandler(component i18n.Component) *ChangeHandler {
+	return &ChangeHandler{
+		component: component,
+	}
 }
 
 func (h *ChangeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -18,19 +26,17 @@ func (h *ChangeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		return
 	}
 
-	component := r.Component().(i18n.Component)
-
-	locale, ok := component.Manager().Locale(query)
+	locale, ok := h.component.Manager().Locale(query)
 	if !ok {
 		h.NotFound(w, r)
 		return
 	}
 
-	if err := component.SaveToSession(r.Session(), locale); err != nil {
+	if err := h.component.SaveToSession(r.Session(), locale); err != nil {
 		panic(err.Error())
 	}
 
-	if err := component.SaveToCookie(w, locale); err != nil {
+	if err := h.component.SaveToCookie(w, locale); err != nil {
 		panic(err.Error())
 	}
 

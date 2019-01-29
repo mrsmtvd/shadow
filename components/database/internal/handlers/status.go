@@ -10,6 +10,14 @@ import (
 
 type StatusHandler struct {
 	dashboard.Handler
+
+	component database.Component
+}
+
+func NewStatusHandler(component database.Component) *StatusHandler {
+	return &StatusHandler{
+		component: component,
+	}
 }
 
 func (h *StatusHandler) status(e database.Executor, ctx context.Context) string {
@@ -24,7 +32,7 @@ func (h *StatusHandler) status(e database.Executor, ctx context.Context) string 
 }
 
 func (h *StatusHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	s := r.Component().(database.Component).Storage()
+	s := h.component.Storage()
 
 	master := s.Master()
 	slaves := s.Slaves()

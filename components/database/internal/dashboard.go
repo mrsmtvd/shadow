@@ -29,10 +29,10 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 			dashboard.NewRoute("/"+c.Name(), &handlers.StatusHandler{}).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/migrations/", &handlers.MigrationsHandler{}).
+			dashboard.NewRoute("/"+c.Name()+"/migrations/", handlers.NewMigrationsHandler(c)).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/status/", &handlers.StatusHandler{}).
+			dashboard.NewRoute("/"+c.Name()+"/status/", handlers.NewStatusHandler(c)).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
 		}

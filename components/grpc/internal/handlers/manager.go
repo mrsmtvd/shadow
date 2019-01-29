@@ -71,6 +71,14 @@ type ManagerHandlerFieldViewDataEnum struct {
 
 type ManagerHandler struct {
 	dashboard.Handler
+
+	component grpc.Component
+}
+
+func NewManagerHandler(component grpc.Component) *ManagerHandler {
+	return &ManagerHandler{
+		component: component,
+	}
 }
 
 func getTypeName(field *desc.FieldDescriptor) string {
@@ -201,8 +209,8 @@ func (v *ManagerHandlerFieldViewData) JSON() string {
 	return ""
 }
 
-func (h *ManagerHandler) getServicesLightViewData(cmp grpc.Component) ([]managerHandlerServiceViewData, error) {
-	list := cmp.GetServiceInfo()
+func (h *ManagerHandler) getServicesLightViewData() ([]managerHandlerServiceViewData, error) {
+	list := h.component.GetServiceInfo()
 	ret := make([]managerHandlerServiceViewData, 0, len(list))
 
 	for name, info := range list {
@@ -378,7 +386,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	if r.Config().Bool(grpc.ConfigReflectionEnabled) {
 		services, err = h.getServicesViewData(r)
 	} else {
-		services, err = h.getServicesLightViewData(r.Component().(grpc.Component))
+		services, err = h.getServicesLightViewData()
 	}
 
 	h.Render(r.Context(), "manager", map[string]interface{}{

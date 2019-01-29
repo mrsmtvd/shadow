@@ -22,7 +22,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		c.routes = []dashboard.Route{
-			dashboard.NewRoute("/"+c.Name()+"/list/", &handlers.ListHandler{}).
+			dashboard.NewRoute("/"+c.Name()+"/list/", handlers.NewListHandler(c)).
 				WithMethods([]string{http.MethodGet}).
 				WithAuth(true),
 		}

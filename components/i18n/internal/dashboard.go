@@ -11,7 +11,7 @@ import (
 
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	return []dashboard.Route{
-		dashboard.NewRoute("/"+c.Name()+"/change/", &handlers.ChangeHandler{}).
+		dashboard.NewRoute("/"+c.Name()+"/change/", handlers.NewChangeHandler(c)).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
 	}
