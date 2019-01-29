@@ -1,13 +1,13 @@
 {{ define "content" }}
     <li class="">
         <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            <img src="{{ if .User.AvatarURL }}{{ .User.AvatarURL }}{{ else }}/{{ .ComponentName }}/assets/images/anonymous.png{{ end }}" alt="{{ .User.Name }}" style="background: #fff">
+            <img src="{{ if .User.AvatarURL }}{{ .User.AvatarURL }}{{ else }}/dashboard/assets/images/anonymous.png{{ end }}" alt="{{ .User.Name }}" style="background: #fff">
         {{ if .User.Name }}{{ .User.Name }}{{ else }}{{ i18n "Anonymous" . }}{{ end }}
         {{ if .User.IsAuthorized }}<span class=" fa fa-angle-down"></span>{{ end }}
         </a>
     {{ if .User.IsAuthorized }}
         <ul class="dropdown-menu dropdown-usermenu pull-right">
-            <li><a href="/{{ .ComponentName }}/logout"><i class="fa fa-sign-out pull-right"></i> {{ i18n "Log Out" . }}</a></li>
+            <li><a href="/dashboard/logout"><i class="fa fa-sign-out pull-right"></i> {{ i18n "Log Out" . }}</a></li>
         </ul>
     {{ end }}
     </li>

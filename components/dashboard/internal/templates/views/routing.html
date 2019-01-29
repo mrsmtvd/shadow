@@ -44,17 +44,17 @@
 {{ end }}
 
 {{ define "head" }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" false) }}
 {{ end }}
 
 {{ define "js" }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net/js/jquery.dataTables.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js") false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js" false) }}
     <script type="text/javascript">
         $(document).ready(function () {
             $('#routes').DataTable().order([2, 'asc']).draw();

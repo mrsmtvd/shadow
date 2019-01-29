@@ -46,7 +46,7 @@
                             {{ end }}
 
                             {{ if $component.has_assetfs }}
-                                <a href="/{{ $.ComponentName }}/bindata/?path=/{{ $component.name }}" class="label label-success">{{ i18n "asset filesystem" $ }}</a>
+                                <a href="/dashboard/assetfs/?path=/{{ $component.name }}" class="label label-success">{{ i18n "asset filesystem" $ }}</a>
                             {{ end }}
 
                             {{ if $component.has_config_variables }}
@@ -65,11 +65,11 @@
                             {{ end }}
 
                             {{ if $component.has_dashboard_routes }}
-                            <a href="/{{ $.ComponentName }}/routing/" class="label label-success">{{ i18n "routes" $ }}</a>
+                            <a href="/dashboard/routing/" class="label label-success">{{ i18n "routes" $ }}</a>
                             {{ end }}
 
                             {{ if $component.has_dashboard_templates }}
-                            <a href="/{{ $.ComponentName }}/bindata/?path=/{{ $component.name }}/{{ $component.has_dashboard_templates }}" class="label label-success">{{ i18n "templates" $ }}</a>
+                            <a href="/dashboard/assetfs/?path=/{{ $component.name }}/{{ $component.has_dashboard_templates }}" class="label label-success">{{ i18n "templates" $ }}</a>
                             {{ end }}
 
                             {{ if $component.has_database_migrations }}
@@ -95,15 +95,15 @@
 {{ end }}
 
 {{ define "head" }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css") false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" false) }}
 {{ end }}
 
 {{ define "js" }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net/js/jquery.dataTables.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js") false) }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js") false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js" false) }}
 {{ end }}

@@ -1,6 +1,6 @@
 {{ define "head" }}
     {{ if .started }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/flipclock/css/flipclock.min.css") false) }}
+    {{ staticHTML (staticURL "/profiling/assets/vendors/flipclock/css/flipclock.min.css" false) }}
     {{ end }}
 {{ end }}
 
@@ -144,10 +144,10 @@
 
 {{ define "js" }}
     {{ if .started }}
-    {{ staticHTML (staticURL (print "/" .ComponentName "/assets/vendors/flipclock/js/flipclock.min.js") false) }}
+    {{ staticHTML (staticURL "/profiling/assets/vendors/flipclock/js/flipclock.min.js" false) }}
     {{ end }}
 
-{{ staticHTML (staticURL (print "/" .ComponentName "/assets/js/trace.js") true) }}
+{{ staticHTML (staticURL "/profiling/assets/js/trace.js" true) }}
 
 <script type="text/javascript">
     $(document).ready(function () {

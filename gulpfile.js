@@ -284,7 +284,7 @@ gulp.task('bindata', function() {
                 
                 return {
                     path: group,
-                    contents: new Buffer(folders.join('/... ') + '/...')
+                    contents: Buffer.from(folders.join('/... ') + '/...')
                 };
             }
         }))
@@ -313,10 +313,9 @@ gulp.task('easyjson', function() {
         .pipe(exec.reporter(execOptions));
 });
 
-gulp.task('backend', gulp.parallel(
-    'golang', 'i18n',
-    ['bindata', 'protobuf'],
-    'easyjson'
+gulp.task('backend', gulp.series(
+    gulp.parallel('golang', 'i18n'),
+    gulp.parallel('bindata', 'protobuf', 'easyjson')
 ));
 
 /**
