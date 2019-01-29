@@ -59,6 +59,7 @@ func (c *Component) Init(a shadow.Application) (err error) {
 	c.application = a
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 	c.renderer = NewRenderer()
+	c.registryAssetFS = new(sync.Map)
 
 	return nil
 }
