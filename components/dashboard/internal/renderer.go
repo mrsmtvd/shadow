@@ -145,7 +145,7 @@ func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, lay
 	}
 
 	executeData := r.getContextVariables(ctx)
-	executeData["ComponentName"] = ns
+	executeData["NamespaceName"] = ns
 	executeData["ViewName"] = view
 	executeData["LayoutName"] = layout
 

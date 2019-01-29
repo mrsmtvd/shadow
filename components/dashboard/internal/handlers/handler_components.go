@@ -12,27 +12,26 @@ import (
 type ComponentsHandler struct {
 	dashboard.Handler
 
-	components       []shadow.Component
-	isReadyComponent func(string) bool
+	application shadow.Application
 }
 
-func NewComponentsHandler(components []shadow.Component, isReadyComponent func(string) bool) *ComponentsHandler {
+func NewComponentsHandler(application shadow.Application) *ComponentsHandler {
 	return &ComponentsHandler{
-		components:       components,
-		isReadyComponent: isReadyComponent,
+		application: application,
 	}
 }
 
 func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
-	contextComponents := make([]map[string]interface{}, 0, len(h.components))
+	components, _ := h.application.GetComponents()
+	contextComponents := make([]map[string]interface{}, 0, len(components))
 
-	for _, cmp := range h.components {
+	for _, cmp := range components {
 		row := map[string]interface{}{
 			"name":                    cmp.Name(),
 			"version":                 cmp.Version(),
 			"shutdown":                false,
 			"dependencies":            []string{},
-			"ready":                   h.isReadyComponent(cmp.Name()),
+			"ready":                   h.application.IsReadyComponent(cmp.Name()),
 			"has_assetfs":             false,
 			"has_config_variables":    false,
 			"has_config_watchers":     false,
@@ -80,19 +79,19 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 			}
 		}
 
-		if r.Application().HasComponent(database.ComponentName) {
+		if h.application.HasComponent(database.ComponentName) {
 			if _, ok := cmp.(database.HasMigrations); ok {
 				row["has_database_migrations"] = true
 			}
 		}
 
-		if r.Application().HasComponent(grpc.ComponentName) {
+		if h.application.HasComponent(grpc.ComponentName) {
 			if _, ok := cmp.(grpc.HasGrpcServer); ok {
 				row["has_grpc_server"] = true
 			}
 		}
 
-		if r.Application().HasComponent(metrics.ComponentName) {
+		if h.application.HasComponent(metrics.ComponentName) {
 			if _, ok := cmp.(metrics.HasMetrics); ok {
 				row["has_metrics"] = true
 			}

@@ -9,9 +9,9 @@ import (
 
 func (c *Component) initServeMux() error {
 	// Special pages
-	c.router.SetPanicHandler(&handlers.PanicHandler{})
-	c.router.SetNotFoundHandler(&handlers.NotFoundHandler{})
-	c.router.SetNotAllowedHandler(&handlers.MethodNotAllowedHandler{})
+	c.router.SetPanicHandler(handlers.NewPanicHandler(c))
+	c.router.SetNotFoundHandler(handlers.NewNotFoundHandler(c))
+	c.router.SetNotAllowedHandler(handlers.NewMethodNotAllowedHandler(c))
 
 	// Middleware
 	c.router.addMiddleware(ContextMiddleware(c.application, c.router, c.config, c.renderer, c.session))

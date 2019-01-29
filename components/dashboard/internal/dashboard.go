@@ -65,7 +65,7 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				WithMethods([]string{http.MethodGet}),
 		}
 
-		componentsHandler := handlers.NewComponentsHandler(c.components, c.application.IsReadyComponent)
+		componentsHandler := handlers.NewComponentsHandler(c.application)
 
 		c.routes = append(c.routes, []dashboard.Route{
 			dashboard.NewRoute("/"+c.Name()+"/components", componentsHandler).
