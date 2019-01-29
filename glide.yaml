@@ -49,7 +49,7 @@ import:
 - package: golang.org/x/net
   version: d866cfc389cec985d6fda2859936a575a55a3ab6
 - package: golang.org/x/text
-  version: 6eab0e8f74e86c598ec3b6fad4888e0c11482d48
+  version: e6919f6577db79269a6443b9dc46d18f2238fb5d
 - package: github.com/influxdata/influxdb
   version: ~v1.3.8
 - package: gopkg.in/telegram-bot-api.v4
