@@ -29,7 +29,7 @@ type Component struct {
 	router      *Router
 	server      *http.Server
 
-	registryAssetFS sync.Map
+	registryAssetFS *sync.Map
 }
 
 func (c *Component) Name() string {

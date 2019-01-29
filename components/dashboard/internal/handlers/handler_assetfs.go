@@ -18,7 +18,7 @@ import (
 type AssetFSHandler struct {
 	dashboard.Handler
 
-	registry  sync.Map
+	registry  *sync.Map
 	buildDate *time.Time
 }
 
@@ -38,7 +38,7 @@ type assetFSBreadcrumb struct {
 	Active bool
 }
 
-func NewAssetFSHandler(registry sync.Map, buildDate *time.Time) *AssetFSHandler {
+func NewAssetFSHandler(registry *sync.Map, buildDate *time.Time) *AssetFSHandler {
 	return &AssetFSHandler{
 		registry:  registry,
 		buildDate: buildDate,
