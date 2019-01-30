@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -10,14 +9,6 @@ import (
 
 type PanicHandler struct {
 	dashboard.Handler
-
-	component dashboard.Component
-}
-
-func NewPanicHandler(component dashboard.Component) *PanicHandler {
-	return &PanicHandler{
-		component: component,
-	}
 }
 
 func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -31,8 +22,7 @@ func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 
 	w.WriteHeader(http.StatusInternalServerError)
 
-	// FIXME: refactoring
-	ctx := context.WithValue(r.Context(), dashboard.ComponentContextKey, h.component)
+	ctx := dashboard.ContextWithTemplateNamespace(r.Context(), dashboard.ComponentName)
 
 	h.RenderLayout(ctx, "500", "simple", map[string]interface{}{
 		"panic": fields,

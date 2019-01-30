@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"runtime"
@@ -84,7 +83,7 @@ func (r *Router) SetPanicHandler(h RouterHandler) {
 				Line:  line,
 			}
 
-			ctx := context.WithValue(hr.Context(), dashboard.PanicContextKey, panicError)
+			ctx := dashboard.ContextWithPanic(hr.Context(), panicError)
 
 			panicHandler.ServeHTTP(hw, hr.WithContext(ctx))
 		})).ServeHTTP(pw, pr)
@@ -153,8 +152,8 @@ func (r *Router) addRoute(route dashboard.Route) {
 
 		localChan := alice.New(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				ctx := context.WithValue(r.Context(), dashboard.RouteContextKey, route)
-				next.ServeHTTP(w, r.WithContext(ctx))
+				r = r.WithContext(dashboard.ContextWithRoute(r.Context(), route))
+				next.ServeHTTP(w, r)
 			})
 		})
 

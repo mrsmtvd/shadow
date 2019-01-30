@@ -1,32 +1,29 @@
 package internal
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/alexedwards/scs"
-	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 )
 
-func ContextMiddleware(router *Router, config config.Component, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
+func ContextMiddleware(router *Router, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := dashboard.NewResponse(w)
 			request := dashboard.NewRequest(r)
-			session := NewSession(sessionManager.Load(r), w)
 			route := dashboard.RouteFromContext(r.Context())
 
-			ctx := context.WithValue(r.Context(), dashboard.RenderContextKey, renderer)
-			ctx = context.WithValue(ctx, dashboard.ResponseContextKey, writer)
-			ctx = context.WithValue(ctx, dashboard.RouterContextKey, router)
-			ctx = context.WithValue(ctx, dashboard.SessionContextKey, session)
-			ctx = context.WithValue(ctx, dashboard.RequestContextKey, request)
+			ctx := dashboard.ContextWithRender(r.Context(), renderer)
+			ctx = dashboard.ContextWithResponse(ctx, writer)
+			ctx = dashboard.ContextWithRouter(ctx, router)
+			ctx = dashboard.ContextWithSession(ctx, NewSession(sessionManager.Load(r), w))
+			ctx = dashboard.ContextWithRequest(ctx, request)
 
 			if route != nil {
 				if routeItem, ok := route.(*RouteItem); ok {
-					ctx = context.WithValue(ctx, dashboard.ComponentContextKey, routeItem.Component())
+					ctx = dashboard.ContextWithTemplateNamespace(ctx, routeItem.Component().Name())
 				}
 			}
 

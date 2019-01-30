@@ -9,12 +9,12 @@ import (
 
 func (c *Component) initServeMux() error {
 	// Special pages
-	c.router.SetPanicHandler(handlers.NewPanicHandler(c))
-	c.router.SetNotFoundHandler(handlers.NewNotFoundHandler(c))
-	c.router.SetNotAllowedHandler(handlers.NewMethodNotAllowedHandler(c))
+	c.router.SetPanicHandler(&handlers.PanicHandler{})
+	c.router.SetNotFoundHandler(&handlers.NotFoundHandler{})
+	c.router.SetNotAllowedHandler(&handlers.MethodNotAllowedHandler{})
 
 	// Middleware
-	c.router.addMiddleware(ContextMiddleware(c.router, c.config, c.renderer, c.session))
+	c.router.addMiddleware(ContextMiddleware(c.router, c.renderer, c.session))
 
 	for _, component := range c.components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {
