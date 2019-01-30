@@ -4,12 +4,10 @@ import (
 	"context"
 
 	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
 )
 
 var (
 	ComponentContextKey = &ContextKey{"component"}
-	ConfigContextKey    = &ContextKey{"config"}
 	PanicContextKey     = &ContextKey{"panic"}
 	RenderContextKey    = &ContextKey{"render"}
 	RequestContextKey   = &ContextKey{"request"}
@@ -31,15 +29,6 @@ func ComponentFromContext(c context.Context) shadow.Component {
 	v := c.Value(ComponentContextKey)
 	if v != nil {
 		return v.(shadow.Component)
-	}
-
-	return nil
-}
-
-func ConfigFromContext(c context.Context) config.Component {
-	v := c.Value(ConfigContextKey)
-	if v != nil {
-		return v.(config.Component)
 	}
 
 	return nil

@@ -18,8 +18,7 @@ func ContextMiddleware(router *Router, config config.Component, renderer *Render
 			session := NewSession(sessionManager.Load(r), w)
 			route := dashboard.RouteFromContext(r.Context())
 
-			ctx := context.WithValue(r.Context(), dashboard.ConfigContextKey, config)
-			ctx = context.WithValue(ctx, dashboard.RenderContextKey, renderer)
+			ctx := context.WithValue(r.Context(), dashboard.RenderContextKey, renderer)
 			ctx = context.WithValue(ctx, dashboard.ResponseContextKey, writer)
 			ctx = context.WithValue(ctx, dashboard.RouterContextKey, router)
 			ctx = context.WithValue(ctx, dashboard.SessionContextKey, session)
