@@ -4,6 +4,7 @@ package internal
 
 import (
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -22,6 +23,7 @@ import (
 type Component struct {
 	config  config.Component
 	manager *internationalization.Manager
+	logger  logging.Logger
 }
 
 func (c *Component) Name() string {
@@ -52,7 +54,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
-	logger := logging.DefaultLogger().Named(c.Name())
+	c.logger = logging.DefaultLogger().Named(c.Name())
 
 	components, err := a.GetComponents()
 	if err != nil {
@@ -61,81 +63,84 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 
 	for _, cmp := range components {
 		if cmpI18n, ok := cmp.(i18n.HasI18n); ok {
-			locales := cmpI18n.I18n()
-			if len(locales) == 0 {
-				continue
-			}
-
-			for localeName, readers := range locales {
-				var domain *internationalization.Domain
-
-				locale, ok := c.manager.Locale(localeName)
-				if !ok {
-					locale = internationalization.NewLocale(localeName)
-					c.manager.AddLocale(locale)
-				}
-
-				for _, reader := range readers {
-					b, err := ioutil.ReadAll(reader)
-					if err != nil {
-						logger.Warn("Failed read from file",
-							"locale", localeName,
-							"error", err.Error(),
-							"domain", cmp.Name(),
-						)
-						continue
-					}
-
-					file, err := mo.LoadData(b)
-					if err != nil {
-						logger.Warn("Failed parse MO file",
-							"locale", localeName,
-							"error", err.Error(),
-							"domain", cmp.Name(),
-						)
-						continue
-					}
-
-					pluralRule := internationalization.NewPluralRule(file.MimeHeader.PluralForms)
-
-					messages := make([]*internationalization.Message, 0, len(file.Messages))
-					for _, m := range file.Messages {
-						messages = append(messages, internationalization.NewMessage(m.MsgId, m.MsgStr, m.MsgIdPlural, m.MsgStrPlural, m.MsgContext))
-					}
-
-					domainTmp := internationalization.NewDomain(cmp.Name(), messages, pluralRule)
-
-					if domain == nil {
-						domain = domainTmp
-					} else {
-						mergeDomain, err := domain.Merge(domainTmp)
-						if err != nil {
-							logger.Warn("Failed merge domains",
-								"locale", localeName,
-								"domain", cmp.Name(),
-								"error", err.Error(),
-							)
-						} else {
-							domain = mergeDomain
-						}
-					}
-				}
-
-				if domain != nil {
-					locale.AddDomain(domain)
-
-					logger.Debug("Load "+strconv.FormatInt(int64(len(domain.Messages())), 10)+" translations",
-						"locale", localeName,
-						"domain", cmp.Name(),
-					)
-				}
-			}
+			c.LoadLocaleFromFiles(cmp.Name(), cmpI18n.I18n())
 		}
 	}
 
 	<-a.ReadyComponent(config.ComponentName)
 
 	return nil
+}
+
+func (c *Component) LoadLocaleFromFiles(domainName string, locales map[string][]io.ReadSeeker) {
+	if len(locales) == 0 {
+		return
+	}
+
+	for localeName, readers := range locales {
+		var domain *internationalization.Domain
+
+		locale, ok := c.manager.Locale(localeName)
+		if !ok {
+			locale = internationalization.NewLocale(localeName)
+			c.manager.AddLocale(locale)
+		}
+
+		for _, reader := range readers {
+			b, err := ioutil.ReadAll(reader)
+			if err != nil {
+				c.logger.Warn("Failed read from file",
+					"locale", localeName,
+					"error", err.Error(),
+					"domain", domainName,
+				)
+				continue
+			}
+
+			file, err := mo.LoadData(b)
+			if err != nil {
+				c.logger.Warn("Failed parse MO file",
+					"locale", localeName,
+					"error", err.Error(),
+					"domain", domainName,
+				)
+				continue
+			}
+
+			pluralRule := internationalization.NewPluralRule(file.MimeHeader.PluralForms)
+
+			messages := make([]*internationalization.Message, 0, len(file.Messages))
+			for _, m := range file.Messages {
+				messages = append(messages, internationalization.NewMessage(m.MsgId, m.MsgStr, m.MsgIdPlural, m.MsgStrPlural, m.MsgContext))
+			}
+
+			domainTmp := internationalization.NewDomain(domainName, messages, pluralRule)
+
+			if domain == nil {
+				domain = domainTmp
+			} else {
+				mergeDomain, err := domain.Merge(domainTmp)
+				if err != nil {
+					c.logger.Warn("Failed merge domains",
+						"locale", localeName,
+						"domain", domainName,
+						"error", err.Error(),
+					)
+				} else {
+					domain = mergeDomain
+				}
+			}
+		}
+
+		if domain != nil {
+			locale.AddDomain(domain)
+
+			c.logger.Debug("Load "+strconv.FormatInt(int64(len(domain.Messages())), 10)+" translations",
+				"locale", localeName,
+				"domain", domainName,
+			)
+		}
+	}
 }
 
 func (c *Component) Manager() *internationalization.Manager {
