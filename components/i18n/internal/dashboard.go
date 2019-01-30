@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/i18n/internal/handlers"
 )
 
@@ -21,6 +22,24 @@ func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 	return map[string]interface{}{
 		"i18n":       c.templateFunctionTranslate,
 		"i18nPlural": c.templateFunctionTranslatePlural,
+	}
+}
+
+func (c *Component) DashboardMiddleware() []func(http.Handler) http.Handler {
+	return []func(http.Handler) http.Handler{
+		func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// save locale in context
+				if request := dashboard.RequestFromContext(r.Context()); request != nil {
+					if locale, err := c.localeFromRequest(request); err == nil {
+						request.WithContext(i18n.ContextWithLocale(r.Context(), locale))
+						r = request.Original()
+					}
+				}
+
+				next.ServeHTTP(w, r)
+			})
+		},
 	}
 }
 
@@ -138,10 +157,7 @@ func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, n
 	if locale == "" && len(ctx) > 0 {
 		if requestCtx, ok := ctx["Request"]; ok {
 			if request, ok := requestCtx.(*dashboard.Request); ok {
-				localeRequest, err := c.LocaleFromRequest(request)
-				if err == nil {
-					locale = localeRequest.Locale()
-				}
+				locale = i18n.LocaleFromContext(request.Original().Context()).Locale()
 			}
 		}
 	}

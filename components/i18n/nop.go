@@ -21,14 +21,3 @@ func templateFunctionTranslatePlural(singleID, pluralID string, number int, form
 
 	return internationalization.Format(pluralID, format...)
 }
-
-func NewOrNopFromRequest(request *dashboard.Request) *internationalization.Locale {
-	if cmp := request.Application().GetComponent(ComponentName); cmp != nil {
-		locale, err := cmp.(Component).LocaleFromRequest(request)
-		if err == nil {
-			return locale
-		}
-	}
-
-	return internationalization.NewLocale("nop")
-}

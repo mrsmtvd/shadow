@@ -142,24 +142,24 @@ func (c *Component) Manager() *internationalization.Manager {
 	return c.manager
 }
 
-func (c *Component) LocaleFromRequest(request *dashboard.Request) (*internationalization.Locale, error) {
+func (c *Component) localeFromRequest(request *dashboard.Request) (*internationalization.Locale, error) {
 	// in session
-	localeSession, err := c.LocaleFromSession(request.Session())
+	localeSession, err := c.localeFromSession(request.Session())
 	if err == nil {
 		return localeSession, err
 	}
 
 	// in cookies
-	localeCookie, err := c.LocaleFromCookie(request.Original().Cookies())
+	localeCookie, err := c.localeFromCookie(request.Original().Cookies())
 	if err == nil {
 		return localeCookie, err
 	}
 
 	// in headers
-	return c.LocaleFromAcceptLanguage(request.Original().Header.Get("Accept-Language"))
+	return c.localeFromAcceptLanguage(request.Original().Header.Get("Accept-Language"))
 }
 
-func (c *Component) LocaleFromAcceptLanguage(acceptLanguage string) (*internationalization.Locale, error) {
+func (c *Component) localeFromAcceptLanguage(acceptLanguage string) (*internationalization.Locale, error) {
 	tags, _, err := language.ParseAcceptLanguage(acceptLanguage)
 	if err != nil {
 		return nil, err
@@ -172,13 +172,13 @@ func (c *Component) LocaleFromAcceptLanguage(acceptLanguage string) (*internatio
 		}
 	}
 
-	return nil, errors.New("Locale not found")
+	return nil, errors.New("locale not found")
 }
 
-func (c *Component) LocaleFromSession(session dashboard.Session) (*internationalization.Locale, error) {
+func (c *Component) localeFromSession(session dashboard.Session) (*internationalization.Locale, error) {
 	sessionKey := c.config.String(i18n.ConfigLocaleSessionKey)
 	if sessionKey == "" {
-		return nil, errors.New("Locale not found")
+		return nil, errors.New("locale not found")
 	}
 
 	localeName, err := session.GetString(sessionKey)
@@ -190,13 +190,13 @@ func (c *Component) LocaleFromSession(session dashboard.Session) (*international
 		return locale, nil
 	}
 
-	return nil, errors.New("Locale not found")
+	return nil, errors.New("locale not found")
 }
 
-func (c *Component) LocaleFromCookie(cookies []*http.Cookie) (*internationalization.Locale, error) {
+func (c *Component) localeFromCookie(cookies []*http.Cookie) (*internationalization.Locale, error) {
 	cookieName := c.config.String(i18n.ConfigLocaleCookieName)
 	if cookieName == "" {
-		return nil, errors.New("Locale not found")
+		return nil, errors.New("locale not found")
 	}
 
 	for _, cookie := range cookies {
@@ -209,7 +209,7 @@ func (c *Component) LocaleFromCookie(cookies []*http.Cookie) (*internationalizat
 		}
 	}
 
-	return nil, errors.New("Locale not found")
+	return nil, errors.New("locale not found")
 }
 
 func (c *Component) SaveToSession(session dashboard.Session, locale *internationalization.Locale) error {

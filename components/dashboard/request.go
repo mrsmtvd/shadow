@@ -8,7 +8,6 @@ import (
 	"net/url"
 
 	"github.com/kihamo/gotypes"
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 )
@@ -34,10 +33,6 @@ func (r *Request) Context() context.Context {
 func (r *Request) WithContext(ctx context.Context) *Request {
 	r.original = r.original.WithContext(ctx)
 	return r
-}
-
-func (r *Request) Application() shadow.Application {
-	return ApplicationFromContext(r.Context())
 }
 
 func (r *Request) Config() config.Component {

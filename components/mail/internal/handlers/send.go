@@ -20,7 +20,7 @@ func NewSendHandler(component mail.Component) *SendHandler {
 }
 
 func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
-	locale := i18n.NewOrNopFromRequest(r)
+	locale := i18n.Locale(r.Context())
 	vars := map[string]interface{}{}
 
 	if r.IsPost() {

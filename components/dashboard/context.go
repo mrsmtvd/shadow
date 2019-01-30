@@ -8,16 +8,15 @@ import (
 )
 
 var (
-	ApplicationContextKey = &ContextKey{"application"}
-	ComponentContextKey   = &ContextKey{"component"}
-	ConfigContextKey      = &ContextKey{"config"}
-	PanicContextKey       = &ContextKey{"panic"}
-	RenderContextKey      = &ContextKey{"render"}
-	RequestContextKey     = &ContextKey{"request"}
-	ResponseContextKey    = &ContextKey{"response"}
-	RouteContextKey       = &ContextKey{"route"}
-	RouterContextKey      = &ContextKey{"router"}
-	SessionContextKey     = &ContextKey{"session"}
+	ComponentContextKey = &ContextKey{"component"}
+	ConfigContextKey    = &ContextKey{"config"}
+	PanicContextKey     = &ContextKey{"panic"}
+	RenderContextKey    = &ContextKey{"render"}
+	RequestContextKey   = &ContextKey{"request"}
+	ResponseContextKey  = &ContextKey{"response"}
+	RouteContextKey     = &ContextKey{"route"}
+	RouterContextKey    = &ContextKey{"router"}
+	SessionContextKey   = &ContextKey{"session"}
 )
 
 type ContextKey struct {
@@ -26,15 +25,6 @@ type ContextKey struct {
 
 func (k *ContextKey) String() string {
 	return "dashboard context value " + k.Name
-}
-
-func ApplicationFromContext(c context.Context) shadow.Application {
-	v := c.Value(ApplicationContextKey)
-	if v != nil {
-		return v.(shadow.Application)
-	}
-
-	return nil
 }
 
 func ComponentFromContext(c context.Context) shadow.Component {

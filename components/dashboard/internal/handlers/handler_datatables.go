@@ -14,7 +14,7 @@ type DataTablesHandler struct {
 }
 
 func (h *DataTablesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	locale := i18n.NewOrNopFromRequest(r)
+	locale := i18n.Locale(r.Context())
 
 	translate := map[string]interface{}{
 		"processing":     locale.Translate(dashboard.ComponentName, "Processing...", DataTablesMessageCtx),
