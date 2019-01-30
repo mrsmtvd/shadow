@@ -256,7 +256,7 @@ func (h *AuthHandler) redirectToExternal(r *dashboard.Request, provider goth.Pro
 }
 
 func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
-	if len(auth.GetProviders()) == 0 || r.User().IsAuthorized() {
+	if r.User().IsAuthorized() {
 		h.Redirect(h.getRedirectToLastURL(r), http.StatusSeeOther, w, r)
 		return
 	}

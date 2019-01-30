@@ -5,7 +5,6 @@ import (
 
 	"github.com/alexedwards/scs"
 	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/dashboard/auth"
 )
 
 func ContextMiddleware(router *Router, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
@@ -42,7 +41,7 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 				panic("Request isn't set in context")
 			}
 
-			if len(auth.GetProviders()) > 0 && !request.User().IsAuthorized() {
+			if !request.User().IsAuthorized() {
 				if !request.IsAjax() && request.IsGet() {
 					if err := request.Session().PutString(dashboard.SessionLastURL, request.URL().Path); err != nil {
 						panic(err.Error())

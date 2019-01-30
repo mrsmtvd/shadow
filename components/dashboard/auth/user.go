@@ -43,5 +43,5 @@ func NewUser(u goth.User) *User {
 }
 
 func (u *User) IsAuthorized() bool {
-	return u.UserID != ""
+	return u.UserID != "" || len(GetProviders()) == 0
 }
