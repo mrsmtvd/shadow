@@ -42,6 +42,14 @@ func (v variableView) GetViewOption(o string) interface{} {
 
 type ManagerHandler struct {
 	dashboard.Handler
+
+	component config.Component
+}
+
+func NewManagerHandler(component config.Component) *ManagerHandler {
+	return &ManagerHandler{
+		component: component,
+	}
 }
 
 func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -51,11 +59,11 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		err = r.Original().ParseForm()
 		if err == nil {
 			for key, values := range r.Original().PostForm {
-				if !r.Config().Has(key) || !r.Config().IsEditable(key) || len(values) == 0 {
+				if !h.component.Has(key) || !h.component.IsEditable(key) || len(values) == 0 {
 					continue
 				}
 
-				err = r.Config().Set(key, values[0])
+				err = h.component.Set(key, values[0])
 				if err != nil {
 					break
 				}
@@ -77,7 +85,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	}
 
 	variables := map[string][]variableView{}
-	for _, v := range r.Config().Variables() {
+	for _, v := range h.component.Variables() {
 		source := v.(hasSource).Source()
 
 		cmp, ok := variables[source]
@@ -88,7 +96,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 		cmp = append(cmp, variableView{
 			Variable: v,
-			Watchers: r.Config().Watchers(v.Key()),
+			Watchers: h.component.Watchers(v.Key()),
 		})
 		variables[source] = cmp
 	}

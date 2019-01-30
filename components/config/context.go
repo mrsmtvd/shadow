@@ -1,0 +1,24 @@
+package config
+
+import (
+	"context"
+)
+
+type contextKey struct{}
+
+var (
+	configContextKey = contextKey{}
+)
+
+func ContextWithConfig(ctx context.Context, cfg Component) context.Context {
+	return context.WithValue(ctx, configContextKey, cfg)
+}
+
+func ConfigFromContext(ctx context.Context) Component {
+	v := ctx.Value(configContextKey)
+	if v != nil {
+		return v.(Component)
+	}
+
+	return nil
+}
