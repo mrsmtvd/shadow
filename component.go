@@ -135,15 +135,7 @@ func (c *component) Watch() <-chan struct{} {
 	ch := make(chan struct{}, 1)
 
 	if c.Ready() {
-		var wg sync.WaitGroup
-		wg.Add(1)
-		defer wg.Done()
-
-		go func() {
-			wg.Wait()
-			close(ch)
-		}()
-
+		close(ch)
 		return ch
 	} else {
 		c.Lock()

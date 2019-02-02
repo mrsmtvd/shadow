@@ -31,7 +31,7 @@ type Application interface {
 	HasComponent(string) bool
 	RegisterComponent(Component) error
 	IsReadyComponent(string) bool
-	ReadyComponent(string) <-chan struct{}
+	ReadyComponent(...string) <-chan struct{}
 }
 
 type App struct {
@@ -248,12 +248,25 @@ func (a *App) IsReadyComponent(n string) bool {
 	return false
 }
 
-func (a *App) ReadyComponent(n string) <-chan struct{} {
-	if cmp, ok := a.components.get(n); ok {
-		return cmp.Watch()
+func (a *App) ReadyComponent(n ...string) <-chan struct{} {
+	ch := make(chan struct{}, 1)
+
+	if len(n) == 0 {
+		close(ch)
+		return ch
 	}
 
-	return nil
+	go func() {
+		for _, name := range n {
+			if cmp, ok := a.components.get(name); ok {
+				<-cmp.Watch()
+			}
+		}
+
+		ch <- struct{}{}
+	}()
+
+	return ch
 }
 
 func SetName(name string) {
