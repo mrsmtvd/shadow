@@ -11,6 +11,7 @@ import (
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/i18n"
 )
 
 const (
@@ -163,7 +164,9 @@ func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, lay
 }
 
 func (r *Renderer) getContextVariables(ctx context.Context) map[string]interface{} {
-	vars := map[string]interface{}{}
+	vars := map[string]interface{}{
+		"Locale": i18n.Locale(ctx).Locale(),
+	}
 
 	request := dashboard.RequestFromContext(ctx)
 	if request != nil {

@@ -27,6 +27,10 @@
     {{ staticHTML (staticURL "/dashboard/assets/js/functions.js" true) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 
+    <script type="application/javascript">
+        window.shadowLocale = "{{ .Locale }}"
+    </script>
+
     {{ block "head" . }} {{ end }}
 </head>
 

@@ -246,7 +246,7 @@ function init_datatables() {
         paging: false,
         fixedHeader: true,
         language: {
-            url: '/dashboard/datatables/i18n.json'
+            url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
         }
     });
 }

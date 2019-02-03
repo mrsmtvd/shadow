@@ -18,6 +18,10 @@
 
     {{ staticHTML (staticURL "/dashboard/assets/js/functions.js" true) }}
 
+    <script type="application/javascript">
+        window.shadowLocale = "{{ .Locale }}"
+    </script>
+
     {{ block "head" . }} {{ end }}
 </head>
 
