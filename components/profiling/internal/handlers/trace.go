@@ -13,6 +13,7 @@ import (
 
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/shadow/components/profiling/trace"
 )
@@ -38,7 +39,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 
 		if r.Original().PostForm.Get("profile_"+id) != "" {
 			runProfiles = append(runProfiles, id)
-			h.Logger().Info("Run trace " + id)
+			logging.Log(r.Context()).Info("Run trace " + id)
 		}
 	}
 
@@ -47,7 +48,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 	}
 
 	err := trace.StartProfiles(runProfiles)
-	h.Logger().Info("Run trace: " + strings.Join(runProfiles, ", "))
+	logging.Log(r.Context()).Info("Run trace: " + strings.Join(runProfiles, ", "))
 
 	return err
 }
@@ -58,7 +59,7 @@ func (h *TraceHandler) actionStop(_ *dashboard.Response, r *dashboard.Request) e
 	}
 
 	err := trace.StopProfiles(r.Config().String(profiling.ConfigDumpDirectory))
-	h.Logger().Info("Stop trace")
+	logging.Log(r.Context()).Info("Stop trace")
 
 	return err
 }
@@ -102,7 +103,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 				return err
 			}
 
-			h.Logger().Info("Remove " + dump.GetId() + " dump from file " + dump.GetFile())
+			logging.Log(r.Context()).Info("Remove " + dump.GetId() + " dump from file " + dump.GetFile())
 		}
 
 		return nil
@@ -114,7 +115,7 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 	}
 
 	err := trace.DeleteDump(id)
-	h.Logger().Info("Remove " + id + " dump from file " + dump.GetFile())
+	logging.Log(r.Context()).Info("Remove " + id + " dump from file " + dump.GetFile())
 
 	return err
 }
@@ -150,7 +151,7 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 
 	} else if action == "download" {
 		if err = h.actionDownload(w, r); err != nil {
-			h.Logger().Error("Error in download trace: %s", err.Error())
+			logging.Log(r.Context()).Error("Error in download trace: %s", err.Error())
 		}
 
 		return

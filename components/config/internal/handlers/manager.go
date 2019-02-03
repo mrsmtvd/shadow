@@ -5,6 +5,7 @@ import (
 
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/logging"
 )
 
 type variableView struct {
@@ -70,7 +71,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 				user := r.User()
 				if user != nil {
-					h.Logger().Info("User change config "+key,
+					logging.Log(r.Context()).Info("User change config "+key,
 						"user.id", user.UserID,
 						"user.name", user.Name,
 					)

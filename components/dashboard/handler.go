@@ -3,8 +3,6 @@ package dashboard
 import (
 	"context"
 	"net/http"
-
-	"github.com/kihamo/shadow/components/logging"
 )
 
 type Handler struct {
@@ -62,8 +60,4 @@ func (h *Handler) RenderLayout(ctx context.Context, view, layout string, data ma
 	if err := render.RenderLayout(ResponseFromContext(ctx), ctx, TemplateNamespaceFromContext(ctx), view, layout, data); err != nil {
 		panic(err.Error())
 	}
-}
-
-func (h *Handler) Logger() logging.Logger {
-	return logging.DefaultLogger()
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/logging"
 )
 
 type PanicHandler struct {
@@ -28,7 +29,7 @@ func (h *PanicHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		"panic": fields,
 	})
 
-	h.Logger().Error("Internal server error",
+	logging.Log(r.Context()).Error("Internal server error",
 		"error", fields["error"],
 		"stack", fields["stack"],
 		"file", fields["file"],

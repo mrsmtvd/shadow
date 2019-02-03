@@ -12,6 +12,7 @@ import (
 
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/auth"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/markbates/goth"
 )
 
@@ -44,8 +45,7 @@ func (h *AuthHandler) buildProvidersView(r *dashboard.Request) ProvidersView {
 		if p.Name() == "password" {
 			callback, err := h.redirectToExternal(r, p)
 			if err != nil {
-				h.Logger().Error("Error get redirect url for "+p.Name()+" provider", p.Name(), "error", err.Error())
-
+				logging.Log(r.Context()).Error("Error get redirect url for "+p.Name()+" provider", p.Name(), "error", err.Error())
 				continue
 			}
 
@@ -206,7 +206,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		return err
 	}
 
-	h.Logger().Debug("Auth user "+providerUser.Name+" is success",
+	logging.Log(r.Context()).Debug("Auth user "+providerUser.Name+" is success",
 		"auth.provider", provider.Name(),
 		"auth.user-id", providerUser.UserID,
 		"auth.email", providerUser.Email,
@@ -285,7 +285,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 			return
 		}
 
-		h.Logger().Debug("OAuth2 external redirect to " + externalUrl)
+		logging.Log(r.Context()).Debug("OAuth2 external redirect to " + externalUrl)
 		h.Redirect(externalUrl, http.StatusTemporaryRedirect, w, r)
 	} else {
 		if err = h.auth(r, provider); err != nil {
@@ -294,7 +294,7 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		}
 
 		authUrl := h.getRedirectToLastURL(r)
-		h.Logger().Debug("Redirect to " + authUrl + " after success auth")
+		logging.Log(r.Context()).Debug("Redirect to " + authUrl + " after success auth")
 		h.Redirect(authUrl, http.StatusTemporaryRedirect, w, r)
 	}
 }
