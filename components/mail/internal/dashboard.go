@@ -13,19 +13,15 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
-	routes := c.DashboardRoutes()
-
-	return dashboard.NewMenu("Mail").WithRoute(routes[0]).WithIcon("envelope")
+	return dashboard.NewMenu("Mail").
+		WithUrl("/" + c.Name() + "/send/").
+		WithIcon("envelope")
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {
-	if c.routes == nil {
-		c.routes = []dashboard.Route{
-			dashboard.NewRoute("/"+c.Name()+"/send/", handlers.NewSendHandler(c)).
-				WithMethods([]string{http.MethodGet, http.MethodPost}).
-				WithAuth(true),
-		}
+	return []dashboard.Route{
+		dashboard.NewRoute("/"+c.Name()+"/send/", handlers.NewSendHandler(c)).
+			WithMethods([]string{http.MethodGet, http.MethodPost}).
+			WithAuth(true),
 	}
-
-	return c.routes
 }

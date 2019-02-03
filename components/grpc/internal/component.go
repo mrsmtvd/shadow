@@ -7,7 +7,6 @@ import (
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/grpc"
 	"github.com/kihamo/shadow/components/grpc/server"
 	"github.com/kihamo/shadow/components/grpc/stats"
@@ -28,7 +27,6 @@ type Component struct {
 	config      config.Component
 	logger      logging.Logger
 	server      *g.Server
-	routes      []dashboard.Route
 }
 
 func (c *Component) Name() string {

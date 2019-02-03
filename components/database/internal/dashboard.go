@@ -13,30 +13,24 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
-	routes := c.DashboardRoutes()
-
 	return dashboard.NewMenu("Database").
-		WithRoute(routes[1]).
+		WithUrl("/" + c.Name() + "/").
 		WithIcon("database").
-		WithChild(dashboard.NewMenu("Migrations").WithRoute(routes[2])).
-		WithChild(dashboard.NewMenu("Status").WithRoute(routes[3]))
+		WithChild(dashboard.NewMenu("Migrations").WithUrl("/" + c.Name() + "/migrations/")).
+		WithChild(dashboard.NewMenu("Status").WithUrl("/" + c.Name() + "/status/"))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {
-	if c.routes == nil {
-		c.routes = []dashboard.Route{
-			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name(), &handlers.StatusHandler{}).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/migrations/", handlers.NewMigrationsHandler(c)).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/status/", handlers.NewStatusHandler(c)).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-		}
+	return []dashboard.Route{
+		dashboard.RouteFromAssetFS(c),
+		dashboard.NewRoute("/"+c.Name()+"/", &handlers.StatusHandler{}).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/migrations/", handlers.NewMigrationsHandler(c)).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/status/", handlers.NewStatusHandler(c)).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
 	}
-
-	return c.routes
 }

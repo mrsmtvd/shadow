@@ -31,7 +31,6 @@ type Component struct {
 
 	config config.Component
 	logger logging.Logger
-	routes []dashboard.Route
 
 	mutex    sync.RWMutex
 	registry snitch.Registerer

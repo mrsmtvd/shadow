@@ -14,7 +14,6 @@ import (
 )
 
 type Component struct {
-	routes []dashboard.Route
 }
 
 func (c *Component) Name() string {

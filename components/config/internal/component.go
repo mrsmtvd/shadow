@@ -12,7 +12,6 @@ import (
 	"github.com/kihamo/gotypes"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logging"
 )
 
@@ -37,7 +36,6 @@ type Component struct {
 	variables     map[string]config.Variable
 	variablesSort []*variableSort
 	watchers      map[string][]*WatcherItem
-	routes        []dashboard.Route
 }
 
 func (c *Component) Name() string {

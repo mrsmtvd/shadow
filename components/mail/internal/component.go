@@ -27,7 +27,6 @@ type mailTask struct {
 type Component struct {
 	config config.Component
 	logger logging.Logger
-	routes []dashboard.Route
 
 	mutex  sync.RWMutex
 	open   bool

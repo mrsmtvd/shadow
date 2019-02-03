@@ -18,7 +18,6 @@ import (
 type Component struct {
 	application shadow.Application
 	logger      logging.Logger
-	routes      []dashboard.Route
 
 	mutex              sync.RWMutex
 	dispatcher         *dispatcher.SimpleDispatcher

@@ -6,7 +6,6 @@ import (
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/database"
 	"github.com/kihamo/shadow/components/database/balancer"
 	"github.com/kihamo/shadow/components/database/storage"
@@ -22,7 +21,6 @@ type Component struct {
 	application shadow.Application
 	config      config.Component
 	logger      logging.Logger
-	routes      []dashboard.Route
 	storage     database.Storage
 
 	migrationsIsUp  bool

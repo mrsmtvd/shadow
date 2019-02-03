@@ -25,7 +25,6 @@ type Component struct {
 	logger      logging.Logger
 	renderer    *Renderer
 	session     *scs.Manager
-	routes      []dashboard.Route
 	router      *Router
 	server      *http.Server
 

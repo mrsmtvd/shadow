@@ -21,63 +21,59 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
-	routes := c.DashboardRoutes()
-
 	return dashboard.NewMenu("Dashboard").
-		WithRoute(routes[9]).
+		WithUrl("/" + c.Name() + "/components").
 		WithIcon("dashboard").
-		WithChild(dashboard.NewMenu("Components").WithRoute(routes[10])).
-		WithChild(dashboard.NewMenu("Environment").WithRoute(routes[3])).
-		WithChild(dashboard.NewMenu("Asset FS").WithRoute(routes[1])).
-		WithChild(dashboard.NewMenu("Routing").WithRoute(routes[4])).
+		WithChild(dashboard.NewMenu("Components").WithUrl("/" + c.Name() + "/components")).
+		WithChild(dashboard.NewMenu("Environment").WithUrl("/" + c.Name() + "/environment")).
+		WithChild(dashboard.NewMenu("Asset FS").WithUrl("/" + c.Name() + "/assetfs")).
+		WithChild(dashboard.NewMenu("Routing").WithUrl("/" + c.Name() + "/routing")).
 		WithChild(dashboard.NewMenu("Health check").
 			WithChild(dashboard.NewMenu("Liveness").WithUrl("/healthcheck/live?full=1")).
 			WithChild(dashboard.NewMenu("Readiness").WithUrl("/healthcheck/ready?full=1")))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {
-	if c.routes == nil {
-		c.routes = []dashboard.Route{
-			dashboard.RouteFromAssetFS(c),
-			dashboard.NewRoute("/"+c.Name()+"/assetfs", handlers.NewAssetFSHandler(c.registryAssetFS, c.application.BuildDate())).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{}).
-				WithMethods([]string{http.MethodGet}),
-			dashboard.NewRoute("/"+c.Name()+"/environment", &handlers.EnvironmentHandler{}).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/routing", handlers.NewRoutingHandler(c.router)).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute(dashboard.AuthPath+"/:provider/callback", &handlers.AuthHandler{
-				IsCallback: true,
-			}).
-				WithMethods([]string{http.MethodGet, http.MethodPost}),
-			dashboard.NewRoute(dashboard.AuthPath+"/:provider", &handlers.AuthHandler{}).
-				WithMethods([]string{http.MethodGet, http.MethodPost}),
-			dashboard.NewRoute(dashboard.AuthPath, &handlers.AuthHandler{}).
-				WithMethods([]string{http.MethodGet}),
-			dashboard.NewRoute("/"+c.Name()+"/logout", &handlers.LogoutHandler{}).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute("/healthcheck/:healthcheck", handlers.NewHealthCheckHandler(c.components, metricHealthCheckStatus)).
-				WithMethods([]string{http.MethodGet}),
-		}
-
-		componentsHandler := handlers.NewComponentsHandler(c.application)
-
-		c.routes = append(c.routes, []dashboard.Route{
-			dashboard.NewRoute("/"+c.Name()+"/components", componentsHandler).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-			dashboard.NewRoute("/"+c.Name()+"/", componentsHandler).
-				WithMethods([]string{http.MethodGet}).
-				WithAuth(true),
-		}...)
+	routes := []dashboard.Route{
+		dashboard.RouteFromAssetFS(c),
+		dashboard.NewRoute("/"+c.Name()+"/assetfs", handlers.NewAssetFSHandler(c.registryAssetFS, c.application.BuildDate())).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{}).
+			WithMethods([]string{http.MethodGet}),
+		dashboard.NewRoute("/"+c.Name()+"/environment", &handlers.EnvironmentHandler{}).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/routing", handlers.NewRoutingHandler(c.router)).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute(dashboard.AuthPath+"/:provider/callback", &handlers.AuthHandler{
+			IsCallback: true,
+		}).
+			WithMethods([]string{http.MethodGet, http.MethodPost}),
+		dashboard.NewRoute(dashboard.AuthPath+"/:provider", &handlers.AuthHandler{}).
+			WithMethods([]string{http.MethodGet, http.MethodPost}),
+		dashboard.NewRoute(dashboard.AuthPath, &handlers.AuthHandler{}).
+			WithMethods([]string{http.MethodGet}),
+		dashboard.NewRoute("/"+c.Name()+"/logout", &handlers.LogoutHandler{}).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/healthcheck/:healthcheck", handlers.NewHealthCheckHandler(c.components, metricHealthCheckStatus)).
+			WithMethods([]string{http.MethodGet}),
 	}
 
-	return c.routes
+	componentsHandler := handlers.NewComponentsHandler(c.application)
+
+	routes = append(routes, []dashboard.Route{
+		dashboard.NewRoute("/"+c.Name()+"/components", componentsHandler).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/", componentsHandler).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+	}...)
+
+	return routes
 }
 
 func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
