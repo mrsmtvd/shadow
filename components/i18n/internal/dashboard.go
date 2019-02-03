@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/i18n/internal/handlers"
+	"github.com/kihamo/shadow/components/logging"
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {
@@ -64,7 +65,7 @@ func (c *Component) DashboardToolbar(ctx context.Context) string {
 	})
 
 	if err != nil {
-		c.logger.Error("Failed render toolbar", "error", err.Error())
+		logging.Log(ctx).Error("Failed render toolbar", "error", err.Error())
 	}
 
 	return content

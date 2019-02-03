@@ -13,6 +13,7 @@ import (
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/misc/time"
 )
 
@@ -95,7 +96,7 @@ func (c *Component) DashboardToolbar(ctx context.Context) string {
 	content, err := c.renderer.RenderLayoutAndReturn(ctx, c.Name(), "toolbar", "blank", nil)
 
 	if err != nil {
-		c.logger.Error("Failed render toolbar", "error", err.Error())
+		logging.Log(ctx).Error("Failed render toolbar", "error", err.Error())
 	}
 
 	return content
