@@ -146,7 +146,13 @@ func (c *Component) templateFunctionToolbar(opts ...interface{}) template.HTML {
 	buf := bytes.NewBuffer(nil)
 	defer buf.Reset()
 
+	buf.WriteString(c.DashboardToolbar(ctx))
+
 	for _, component := range c.components {
+		if component == c {
+			continue
+		}
+
 		if componentToolbar, ok := component.(dashboard.HasToolbar); ok {
 			buf.WriteString(componentToolbar.DashboardToolbar(ctx))
 		}
