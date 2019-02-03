@@ -59,6 +59,8 @@
                                                     <option value="{{ index $option 0 }}"{{ if eq (index $option 0) $config.Variable.Value }} selected="selected"{{ end }}>{{ i18n (index $option 1) $ "config" $name }}</option>
                                                     {{ end }}
                                                 </select>
+                                                {{ else if $config.HasView "textarea" }}
+                                                <textarea class="form-control resizable_textarea" rows="4" name="{{ $config.Variable.Key }}" id="{{ $varId }}">{{ $config.Variable.Value }}</textarea>
                                                 {{ else if eq $config.Variable.Type "bool" }}
                                                 <input type="checkbox" class="js-switch" name="{{ $config.Variable.Key }}" id="{{ $varId }}" {{ if eq (print $config.Variable.Value) "true" }} checked{{ end }} />
                                                 {{ else if or (eq $config.Variable.Type "int") (eq $config.Variable.Type "int64") }}

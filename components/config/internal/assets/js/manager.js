@@ -1,6 +1,6 @@
 $(document).ready(function () {
     // save config
-    $('#configs input[id], #configs select').change(function() {
+    $('#configs input[id], #configs select, #configs textarea[id]').change(function() {
         var
             e = $(this),
             row = e.parentsUntil('tbody', 'tr'),
@@ -34,7 +34,7 @@ $(document).ready(function () {
         var m = $('#modalConfig');
         var c = '';
 
-        $('#configs tr.has-error td input[name][type!=hidden], #configs tr.has-error td select').each(function(){
+        $('#configs tr.has-error td input[name][type!=hidden], #configs tr.has-error td select, #configs tr.has-error td textarea').each(function(){
             var e = $(this);
 
             if (e.prop('type') == 'checkbox') {
@@ -55,7 +55,7 @@ $(document).ready(function () {
     $('#modalConfig button[type=submit]').click(function() {
         var data = {};
 
-        $('#configs tr.has-error td input[id][type!=hidden], #configs tr.has-error td select').each(function(){
+        $('#configs tr.has-error td input[id][type!=hidden], #configs tr.has-error td select, #configs tr.has-error td textarea').each(function(){
             var e = $(this);
             data[e.prop('name')] = e.prop('type') == 'checkbox' ? e.prop('checked') : e.val();
         });

@@ -7,6 +7,7 @@ const (
 	ViewEnum     = "enum"
 	ViewPassword = "password"
 	ViewTags     = "tags"
+	ViewTextArea = "textarea"
 
 	ViewOptionEnumOptions     = "options"
 	ViewOptionTagsDefaultText = "default-text"
