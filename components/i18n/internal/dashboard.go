@@ -1,17 +1,24 @@
 package internal
 
 import (
+	"context"
 	"net/http"
 	"reflect"
 	"strconv"
 
+	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/i18n/internal/handlers"
 )
 
+func (c *Component) DashboardTemplates() *assetfs.AssetFS {
+	return dashboard.TemplatesFromAssetFS(c)
+}
+
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	return []dashboard.Route{
+		dashboard.RouteFromAssetFS(c),
 		dashboard.NewRoute("/"+c.Name()+"/change/", handlers.NewChangeHandler(c)).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
@@ -41,6 +48,26 @@ func (c *Component) DashboardMiddleware() []func(http.Handler) http.Handler {
 			})
 		},
 	}
+}
+
+func (c *Component) DashboardToolbar(ctx context.Context) string {
+	locales := c.Manager().Locales()
+	list := make([]string, 0, len(locales))
+
+	for _, locale := range locales {
+		list = append(list, locale.Locale())
+	}
+
+	content, err := c.dashboard.Renderer().RenderLayoutAndReturn(ctx, c.Name(), "toolbar", "blank", map[string]interface{}{
+		"locales": list,
+		"current": i18n.Locale(ctx).Locale(),
+	})
+
+	if err != nil {
+		c.logger.Error("Failed render toolbar", "error", err.Error())
+	}
+
+	return content
 }
 
 func (c *Component) convertToInt(number interface{}) (cast int) {

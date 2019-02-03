@@ -21,9 +21,10 @@ import (
 )
 
 type Component struct {
-	config  config.Component
-	manager *internationalization.Manager
-	logger  logging.Logger
+	config    config.Component
+	dashboard dashboard.Component
+	manager   *internationalization.Manager
+	logger    logging.Logger
 }
 
 func (c *Component) Name() string {
@@ -48,6 +49,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 
 func (c *Component) Init(a shadow.Application) error {
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
+	c.dashboard = a.GetComponent(dashboard.ComponentName).(dashboard.Component)
 	c.manager = internationalization.NewManager("en")
 
 	return nil

@@ -1,0 +1,24 @@
+{{ define "content" }}
+    {{ if gt (len .locales) 0 }}
+    {{ staticHTML (staticURL "/i18n/assets/vendors/bootstrap-languages/languages.min.css" false) }}
+    <li class="">
+        <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+            <span class="lang-lbl" lang="{{ .current }}"></span>
+            <i class="lang-sm" lang="{{ .current }}" style="top:.5em"></i>
+            <span class="fa fa-angle-down"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-usermenu pull-right">
+            {{ range $i, $locale := .locales }}
+                {{ if ne $locale $.current }}
+                    <li>
+                        <a href="/i18n/change/?locale={{ $locale }}">
+                            <i class="lang-sm pull-right" lang="{{ $locale }}"></i>
+                            <span class="lang-lbl" lang="{{ $locale }}"></span>
+                        </a>
+                    </li>
+                {{ end }}
+            {{ end }}
+        </ul>
+    </li>
+    {{ end }}
+{{ end }}

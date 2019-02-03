@@ -92,7 +92,12 @@ func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 }
 
 func (c *Component) DashboardToolbar(ctx context.Context) string {
-	content, _ := c.renderer.RenderLayoutAndReturn(ctx, c.Name(), "toolbar", "blank", nil)
+	content, err := c.renderer.RenderLayoutAndReturn(ctx, c.Name(), "toolbar", "blank", nil)
+
+	if err != nil {
+		c.logger.Error("Failed render toolbar", "error", err.Error())
+	}
+
 	return content
 }
 

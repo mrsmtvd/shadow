@@ -17,6 +17,7 @@ var child          = require('child_process'),
 var COMPONENTS = __dirname + '/components',
     VENDORS_DATABASE = COMPONENTS + '/database/internal/assets/vendors/',
     VENDORS_DASHBOARD = COMPONENTS + '/dashboard/internal/assets/vendors/',
+    VENDORS_I18N = COMPONENTS + '/i18n/internal/assets/vendors/',
     VENDORS_PROFILING = COMPONENTS + '/profiling/internal/assets/vendors/',
     DEV_ENV = 'development',
     SERVER_BIN_NAME = 'server';
@@ -231,6 +232,14 @@ gulp.task('frontend', gulp.series('compress-components', function(done) {
 
     gulp.src(['bower_components/waitMe/*.min.css'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/waitMe/css'));
+
+    // bootstrap-languages
+    gulp.src(['bower_components/bootstrap-languages/languages.css'])
+        .pipe(cleanCss())
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_I18N + '/bootstrap-languages'));
+    gulp.src(['bower_components/bootstrap-languages/*.png'])
+        .pipe(gulp.dest(VENDORS_I18N + '/bootstrap-languages'));
 
     done();
 }));

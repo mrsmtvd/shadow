@@ -39,7 +39,8 @@
     "select2": "^4.0.5",
     "switchery": "^0.8.2",
     "validator": "https://github.com/yairEO/validator.git#^1.0.6",
-    "waitMe": "https://github.com/vadimsva/waitMe.git#29.07.16"
+    "waitMe": "https://github.com/vadimsva/waitMe.git#29.07.16",
+    "bootstrap-languages": "https://github.com/usrz/bootstrap-languages.git"
   },
   "resolutions": {
     "jquery": "^2.2.4",
