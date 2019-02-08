@@ -8,22 +8,16 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
+type contextKey string
+
 var (
-	ComponentNameContextKey = &contextKey{"component"}
-	OperationNameContextKey = &contextKey{"operation name"}
-	ClientTraceContextKey   = &contextKey{"client trace"}
+	componentNameContextKey = contextKey("component")
+	operationNameContextKey = contextKey("operation name")
+	clientTraceContextKey   = contextKey("client trace")
 )
 
-type contextKey struct {
-	Name string
-}
-
-func (k *contextKey) String() string {
-	return "http client context value " + k.Name
-}
-
 func ComponentNameFromContext(ctx context.Context) string {
-	v := ctx.Value(ComponentNameContextKey)
+	v := ctx.Value(componentNameContextKey)
 	if v != nil {
 		return v.(string)
 	}
@@ -32,11 +26,11 @@ func ComponentNameFromContext(ctx context.Context) string {
 }
 
 func ComponentNameToContext(ctx context.Context, value string) context.Context {
-	return context.WithValue(ctx, ComponentNameContextKey, value)
+	return context.WithValue(ctx, componentNameContextKey, value)
 }
 
 func OperationNameFromContext(ctx context.Context) string {
-	v := ctx.Value(OperationNameContextKey)
+	v := ctx.Value(operationNameContextKey)
 	if v != nil {
 		return v.(string)
 	}
@@ -45,11 +39,11 @@ func OperationNameFromContext(ctx context.Context) string {
 }
 
 func OperationNameToContext(ctx context.Context, value string) context.Context {
-	return context.WithValue(ctx, OperationNameContextKey, value)
+	return context.WithValue(ctx, operationNameContextKey, value)
 }
 
 func ClientTraceFromContext(ctx context.Context) bool {
-	v := ctx.Value(ClientTraceContextKey)
+	v := ctx.Value(clientTraceContextKey)
 	if v != nil {
 		return v.(bool)
 	}
@@ -58,7 +52,7 @@ func ClientTraceFromContext(ctx context.Context) bool {
 }
 
 func ClientTraceToContext(ctx context.Context, value bool) context.Context {
-	return context.WithValue(ctx, ClientTraceContextKey, value)
+	return context.WithValue(ctx, clientTraceContextKey, value)
 }
 
 func TraceRequest(tr opentracing.Tracer, req *http.Request, options ...nethttp.ClientOption) (*http.Request, *nethttp.Tracer) {

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	configContextKey = &contextKey{"config"}
+	configContextKey = contextKey("config")
 )
 
 func ConfigFromContext(ctx context.Context) config.Component {

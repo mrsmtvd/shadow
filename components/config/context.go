@@ -4,10 +4,10 @@ import (
 	"context"
 )
 
-type contextKey struct{}
+type contextKey string
 
 var (
-	configContextKey = contextKey{}
+	configContextKey = contextKey("config")
 )
 
 func ContextWithConfig(ctx context.Context, cfg Component) context.Context {

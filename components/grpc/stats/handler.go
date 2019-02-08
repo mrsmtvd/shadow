@@ -15,17 +15,11 @@ const (
 	MetaDataClientNameKey = "user-agent"
 )
 
-type contextKey struct {
-	name string
-}
-
-func (k *contextKey) String() string {
-	return "grpc context value " + k.name
-}
+type contextKey string
 
 var (
-	connectContextKey = &contextKey{"connect"}
-	rpcContextKey     = &contextKey{"rpc"}
+	connectContextKey = contextKey("connect")
+	rpcContextKey     = contextKey("rpc")
 )
 
 type ConnectContextValue struct {

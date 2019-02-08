@@ -4,10 +4,10 @@ import (
 	"context"
 )
 
-type contextKey struct{}
+type contextKey string
 
 var (
-	loggerContextKey = contextKey{}
+	loggerContextKey = contextKey("logger")
 )
 
 func ContextWithLogger(ctx context.Context, logger Logger) context.Context {

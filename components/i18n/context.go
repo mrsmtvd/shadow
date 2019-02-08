@@ -6,10 +6,10 @@ import (
 	i18n "github.com/kihamo/shadow/components/i18n/internationalization"
 )
 
-type contextKey struct{}
+type contextKey string
 
 var (
-	localeContextKey = contextKey{}
+	localeContextKey = contextKey("locale")
 )
 
 func ContextWithLocale(ctx context.Context, locale *i18n.Locale) context.Context {
