@@ -1,11 +1,13 @@
 package internal
 
 import (
+	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/snitch"
 )
 
 type metricsCollector struct {
+	application shadow.Application
 }
 
 func (c *metricsCollector) Describe(ch chan<- *snitch.Description) {
@@ -44,8 +46,14 @@ func (c *metricsCollector) Collect(ch chan<- snitch.Metric) {
 	metrics.MetricGRPCReceivedTotal.Collect(ch)
 	metrics.MetricGRPCSentTotal.Collect(ch)
 	metrics.MetricGRPCStartedTotal.Collect(ch)
+
+	delta := c.application.Uptime().Seconds() - metrics.MetricUpTime.Count()
+	metrics.MetricUpTime.Add(delta)
+	metrics.MetricUpTime.Collect(ch)
 }
 
 func (c *Component) Metrics() snitch.Collector {
-	return &metricsCollector{}
+	return &metricsCollector{
+		application: c.application,
+	}
 }

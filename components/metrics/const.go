@@ -10,6 +10,8 @@ const (
 	StatusTimeout = "timeout"
 	StatusError   = "error"
 
+	MetricNameUpTime = ComponentName + "_uptime_seconds"
+
 	// For all responses
 	MetricNameResponseTimeSeconds        = ComponentName + "_response_time_seconds"
 	MetricNameResponseSizeBytes          = ComponentName + "_response_size_bytes"
