@@ -15,7 +15,7 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("gRPC").
 		WithUrl("/" + c.Name() + "/").
-		WithIcon("exchange")
+		WithIcon("exchange-alt")
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

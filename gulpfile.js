@@ -147,12 +147,10 @@ gulp.task('frontend', gulp.series('compress-components', function(done) {
         .pipe(gulp.dest(VENDORS_PROFILING + '/flipclock/css'));
 
     // font-awesome
-    gulp.src([
-        'bower_components/font-awesome/**/*.min.css',
-        'bower_components/font-awesome/**/fontawesome-*',
-        'bower_components/font-awesome/**/FontAwesome.otf'
-    ])
-        .pipe(gulp.dest(VENDORS_DASHBOARD + '/font-awesome'));
+    gulp.src(['bower_components/font-awesome/css/all.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/font-awesome/css'));
+    gulp.src(['bower_components/font-awesome/webfonts/*'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/font-awesome/webfonts'));
 
     // highlightjs
     gulp.src(['bower_components/highlightjs/*.min.js'])

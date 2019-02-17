@@ -24,7 +24,7 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Dashboard").
 		WithUrl("/" + c.Name() + "/components").
-		WithIcon("dashboard").
+		WithIcon("tachometer-alt").
 		WithChild(dashboard.NewMenu("Components").WithUrl("/" + c.Name() + "/components")).
 		WithChild(dashboard.NewMenu("Environment").WithUrl("/" + c.Name() + "/environment")).
 		WithChild(dashboard.NewMenu("Asset FS").WithUrl("/" + c.Name() + "/assetfs")).
