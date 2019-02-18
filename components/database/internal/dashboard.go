@@ -17,6 +17,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		WithUrl("/" + c.Name() + "/").
 		WithIcon("database").
 		WithChild(dashboard.NewMenu("Migrations").WithUrl("/" + c.Name() + "/migrations/")).
+		WithChild(dashboard.NewMenu("Tables").WithUrl("/" + c.Name() + "/tables/")).
 		WithChild(dashboard.NewMenu("Status").WithUrl("/" + c.Name() + "/status/"))
 }
 
@@ -27,6 +28,9 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
 		dashboard.NewRoute("/"+c.Name()+"/migrations/", handlers.NewMigrationsHandler(c)).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/tables/", handlers.NewTablesHandler(c)).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
 		dashboard.NewRoute("/"+c.Name()+"/status/", handlers.NewStatusHandler(c)).

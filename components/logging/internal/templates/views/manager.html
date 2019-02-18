@@ -6,50 +6,52 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
-            {{ if .error }}
-                <div class="alert alert-danger alert-dismissable">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                {{ .error.Error }}
-                </div>
-            {{ end }}
-            <form role="form" action="#" method="post" id="loggers" class="table-responsive">
-                <table class="table table-hover table-striped datatable dt-responsive nowrap" style="width:100%">
-                    <thead>
-                    <tr>
-                        <th>{{ i18n "Name" . }}</th>
-                        <th>{{ i18n "Level" . }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{ $index := 0 }}
-                    {{ range $id, $logger := .loggers }}
-                    {{ $index = add $index 1 }}
-                    <tr>
-                        <td>{{ $logger.Name }}</td>
-                        <td>{{ $lvl_set := 0 }}
-                            <select class="form-control select2" name="{{ $id }}" id="logger-{{ $index }}">
-                            {{ range $l, $lvl := $.levels }}
-                                <option value="{{ $lvl.Value}}"
-                                {{ if and (eq $lvl_set 0) (eq ($logger.Level) $lvl.Value) }}
-                                        selected="selected"
-                                        {{ $lvl_set = 1 }}
-                                {{ end }}>{{ i18n $lvl.Name $ "config" "logging" }}</option>
-                            {{ end }}
-                            </select>
-                            <script type="application/javascript">
-                                $(document).ready(function () {
-                                    $('#logger-{{ $index }}').on('select2:select', function (e) {
-                                        console.log(e);
-                                        $('#loggers').submit();
+            <div class="table-responsive">
+                {{ if .error }}
+                    <div class="alert alert-danger alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    {{ .error.Error }}
+                    </div>
+                {{ end }}
+                <form role="form" action="#" method="post" id="loggers">
+                    <table class="table table-hover table-striped datatable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>{{ i18n "Name" . }}</th>
+                            <th>{{ i18n "Level" . }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ $index := 0 }}
+                        {{ range $id, $logger := .loggers }}
+                        {{ $index = add $index 1 }}
+                        <tr>
+                            <td>{{ $logger.Name }}</td>
+                            <td>{{ $lvl_set := 0 }}
+                                <select class="form-control select2" name="{{ $id }}" id="logger-{{ $index }}">
+                                {{ range $l, $lvl := $.levels }}
+                                    <option value="{{ $lvl.Value}}"
+                                    {{ if and (eq $lvl_set 0) (eq ($logger.Level) $lvl.Value) }}
+                                            selected="selected"
+                                            {{ $lvl_set = 1 }}
+                                    {{ end }}>{{ i18n $lvl.Name $ "config" "logging" }}</option>
+                                {{ end }}
+                                </select>
+                                <script type="application/javascript">
+                                    $(document).ready(function () {
+                                        $('#logger-{{ $index }}').on('select2:select', function (e) {
+                                            console.log(e);
+                                            $('#loggers').submit();
+                                        });
                                     });
-                                });
-                            </script>
-                        </td>
-                    </tr>
-                    {{ end }}
-                    </tbody>
-                </table>
-            </form>
+                                </script>
+                            </td>
+                        </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
         </div>
     </div>
 </div>

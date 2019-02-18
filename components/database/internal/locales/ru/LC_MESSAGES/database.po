@@ -19,5 +19,12 @@ msgid "Migrations"
 msgstr "Миграции"
 
 msgctxt "menu"
+msgid "Tables"
+msgstr "Таблицы"
+
+msgctxt "menu"
 msgid "Status"
 msgstr "Статус"
+
+msgid "Show"
+msgstr "Показать"

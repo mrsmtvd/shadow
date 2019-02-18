@@ -1,0 +1,53 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>{{ i18n "Tables" . }}</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-hover" id="sql">
+                    <thead>
+                    <tr>
+                        <th class="col-md-1">{{ i18n "Scheme" . }}</th>
+                        <th class="col-md-2">{{ i18n "Table" . }}</th>
+                        <th class="col-md-1 actions">{{ i18n "Actions" . }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $table := .tables }}
+                    <tr class="description">
+                        <td>{{ $table.SchemaName }}</td>
+                        <td>{{ $table.TableName }}</td>
+                        <td>
+                            <div class="btn-group btn-group-xs">
+                                <button class="btn btn-success btn-icon"><i class="fas fa-eye" title="{{ i18n "Show" $ }}"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="no-hover" style="display:none">
+                        <td colspan="3">
+                            <pre>
+                                <button type="button" class="close">×</button>
+                                <code class="sql">{{ $table.SqlForCreate false }}</code></pre>
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/highlightjs/css/tomorrow.min.css" false) }}
+    {{ staticHTML (staticURL "/database/assets/css/sql.css" true) }}
+{{ end }}
+
+{{ define "js" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/highlightjs/js/highlight.pack.min.js" false) }}
+    {{ staticHTML (staticURL "/database/assets/js/sql.js" true) }}
+{{ end }}
