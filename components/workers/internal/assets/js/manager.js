@@ -1,10 +1,10 @@
 $(document).ready(function () {
     $('#workers-show').click(function () {
-        $('#workers .task-show:has(i.glyphicon-eye-open)').click();
+        $('#workers .task-show:has(i.fa-eye)').click();
     });
 
     $('#workers-hide').click(function () {
-        $('#workers .task-show:has(i.glyphicon-eye-close)').click();
+        $('#workers .task-show:has(i.fa-eye-slash)').click();
     });
 
     $('#workers-add button[type=submit]').click(function () {
@@ -74,7 +74,7 @@ $(document).ready(function () {
 
                         return '<div class="btn-group btn-group-xs">'
                             + '<button type="button" class="btn btn-danger btn-icon" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove listener #' + row.id + ' for all events" data-modal-callback="listenersRemove(\'' + row.id + '\');">'
-                            + '<i class="glyphicon glyphicon-trash" title="Remove listeners for all events"></i>'
+                            + '<i class="fa fa-trash-alt" title="Remove listeners for all events"></i>'
                             + '</button>'
                             + '</div>';
                     }
@@ -123,11 +123,11 @@ $(document).ready(function () {
                         var content = '<div class="btn-group btn-group-xs">';
 
                         if (data.task) {
-                            content += '<button type="button" class="btn btn-success btn-circle task-show" data-task="\' + i + \'"><i class="glyphicon glyphicon-eye-open" title="Show task\'s details"></i></button>';
+                            content += '<button type="button" class="btn btn-success btn-circle task-show" data-task="\' + i + \'"><i class="fa fa-eye" title="Show task\'s details"></i></button>';
                         }
 
                         content += '<button type="button" class="btn btn-danger btn-icon" data-toggle="modal" data-target="#modal" data-modal-title="Confirm kill worker #' + data.id + '" data-modal-callback="workersRemove(\'' + data.id + '\');">'
-                                 + '<i class="glyphicon glyphicon-trash" title="Remove worker"></i>'
+                                 + '<i class="fa fa-trash-alt" title="Remove worker"></i>'
                                  + '</button>'
                                  + '</div>';
 
@@ -143,10 +143,10 @@ $(document).ready(function () {
             var b = $(this).find('i');
             var row = tableWorkers.row($(this).closest('tr'));
 
-            if (b.hasClass('glyphicon-eye-open')) {
+            if (b.hasClass('fa-eye')) {
                 var task = row.data().task;
 
-                b.removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
+                b.removeClass('fa-eye').addClass('fa-eye-slash');
                 row.child(
                     '<table width="100%">' +
                         '<tr>' +
@@ -171,7 +171,7 @@ $(document).ready(function () {
                     '</table>'
                 ).show();
             } else {
-                b.removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
+                b.removeClass('fa-eye-slash').addClass('fa-eye');
                 row.child.hide();
             }
      });
@@ -263,7 +263,7 @@ $(document).ready(function () {
                     render: function (data) {
                         return '<div class="btn-group btn-group-xs">'
                             + '<button type="button" class="btn btn-danger btn-icon task-remove" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove task #' + data.id + '" data-modal-callback="tasksRemove(\'' + data.id + '\');">'
-                            + '<i class="glyphicon glyphicon-trash" title="Remove task"></i>'
+                            + '<i class="fa fa-trash-alt" title="Remove task"></i>'
                             + '</button>'
                             + '</div>';
                     }
