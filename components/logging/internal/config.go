@@ -22,7 +22,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 			}),
 		config.NewVariable(logging.ConfigLevel, config.ValueTypeInt).
 			WithGroup("General").
-			WithUsage("Log level").
+			WithUsage("Global log level").
 			WithEditable(true).
 			WithDefault(int8(zapcore.InfoLevel)).
 			WithView([]string{config.ViewEnum}).
@@ -120,17 +120,19 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 }
 
 func (c *Component) watchLoggerLevel(_ string, newValue interface{}, _ interface{}) {
-	c.level.SetLevel(zapcore.Level(c.config.Int64(logging.ConfigLevel)))
+	c.global.SetLevelEnabler(true, zapcore.Level(c.config.Int64(logging.ConfigLevel)))
 }
 
 func (c *Component) watchLoggerStacktraceLevel(_ string, newValue interface{}, _ interface{}) {
-	c.wrapper.SetLogger(c.wrapper.Logger().WithOptions(
+	c.global.WithOptions(
+		true,
 		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))),
-	))
+	)
 }
 
 func (c *Component) watchLoggerFields(_ string, newValue interface{}, oldValue interface{}) {
-	c.wrapper.SetLogger(c.wrapper.Logger().WithOptions(
+	c.global.WithOptions(
+		true,
 		zap.Fields(c.parseFields(newValue.(string))...),
-	))
+	)
 }

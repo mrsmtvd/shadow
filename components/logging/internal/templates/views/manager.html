@@ -1,0 +1,70 @@
+{{ define "content" }}
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>{{ i18n "Loggers" . }}</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            {{ if .error }}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ .error.Error }}
+                </div>
+            {{ end }}
+            <form role="form" action="#" method="post" id="loggers" class="table-responsive">
+                <table class="table table-hover table-striped datatable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>{{ i18n "Name" . }}</th>
+                        <th>{{ i18n "Level" . }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ $index := 0 }}
+                    {{ range $id, $logger := .loggers }}
+                    {{ $index = add $index 1 }}
+                    <tr>
+                        <td>{{ $logger.Name }}</td>
+                        <td>{{ $lvl_set := 0 }}
+                            <select class="form-control select2" name="{{ $id }}" id="logger-{{ $index }}">
+                            {{ range $l, $lvl := $.levels }}
+                                <option value="{{ $lvl.Value}}"
+                                {{ if and (eq $lvl_set 0) (eq ($logger.Level) $lvl.Value) }}
+                                        selected="selected"
+                                        {{ $lvl_set = 1 }}
+                                {{ end }}>{{ i18n $lvl.Name $ "config" "logging" }}</option>
+                            {{ end }}
+                            </select>
+                            <script type="application/javascript">
+                                $(document).ready(function () {
+                                    $('#logger-{{ $index }}').on('select2:select', function (e) {
+                                        console.log(e);
+                                        $('#loggers').submit();
+                                    });
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" false) }}
+{{ end }}
+
+{{ define "js" }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net/js/jquery.dataTables.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js" false) }}
+    {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js" false) }}
+{{ end }}

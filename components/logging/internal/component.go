@@ -7,6 +7,7 @@ import (
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logging"
+	"github.com/kihamo/shadow/components/logging/internal/wrapper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -21,8 +22,7 @@ const (
 type Component struct {
 	application shadow.Application
 	config      config.Component
-	level       zap.AtomicLevel
-	wrapper     wrapper
+	global      *wrapper.Wrapper
 }
 
 func (c *Component) Name() string {
@@ -44,8 +44,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
-	c.level = zap.NewAtomicLevel()
-	c.wrapper = logging.DefaultLogger().(wrapper)
+	c.global = logging.DefaultLogger().(*wrapper.Wrapper)
 
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
@@ -108,18 +107,17 @@ func (c *Component) initLogger() {
 	}
 
 	output := zapcore.Lock(os.Stderr)
-	c.level.SetLevel(zapcore.Level(c.config.Int64(logging.ConfigLevel)))
 
-	l := zap.New(
-		zapcore.NewCore(encoder, output, c.level),
+	c.global.InitFull(
+		encoder, output, zapcore.Level(c.config.Int64(logging.ConfigLevel)),
 		zap.Fields(c.parseFields(c.config.String(logging.ConfigFields))...),
 		zap.AddCaller(),
 		zap.AddCallerSkip(1),
-		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))))
+		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))),
+	)
 
-	c.wrapper.SetLogger(l)
-	zap.RedirectStdLog(l.Named("std"))
-	zap.ReplaceGlobals(l)
+	zap.RedirectStdLog(c.global.LoadOrStore("std").Logger())
+	zap.ReplaceGlobals(c.global.Logger())
 }
 
 func (c *Component) parseFields(f string) []zap.Field {
@@ -148,15 +146,15 @@ func (c *Component) parseFields(f string) []zap.Field {
 }
 
 func (c *Component) Logger() logging.Logger {
-	return logging.DefaultLogger()
+	return c.global
 }
 
 func (c *Component) Shutdown() error {
-	if err := c.wrapper.Logger().Sync(); err != nil {
+	if err := c.global.Logger().Sync(); err != nil {
 		return err
 	}
 
-	if err := c.wrapper.Sugar().Sync(); err != nil {
+	if err := c.global.Sugar().Sync(); err != nil {
 		return err
 	}
 

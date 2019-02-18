@@ -79,8 +79,8 @@ msgid "Full"
 msgstr "Полный"
 
 msgctxt "config"
-msgid "Log level"
-msgstr "Уровень логирования"
+msgid "Global log level"
+msgstr "глобальный уровень логирования"
 
 msgctxt "config"
 msgid "Debug"
