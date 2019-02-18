@@ -13,6 +13,9 @@ msgstr ""
 msgid "Logging"
 msgstr "Логирование"
 
+msgid "Loggers"
+msgstr "Логеры"
+
 msgid "Level"
 msgstr "Уровень"
 

@@ -59,11 +59,11 @@
                         {{ if $provider.NeedRedirect }}
                         <button type="button" class="btn btn-success" onclick="javascript:location.href='{{ $provider.CallbackURL }}'">
                             {{ if eq $provider.Name "github" }}
-                            <i class="fa fa-github fa-fw fa-lg"></i>
+                            <i class="fab fa-github fa-fw fa-lg"></i>
                             {{ else if eq $provider.Name "gitlab" }}
-                            <i class="fa fa-gitlab fa-fw fa-lg"></i>
+                            <i class="fab fa-gitlab fa-fw fa-lg"></i>
                             {{ else if eq $provider.Name "gplus" }}
-                            <i class="fa fa-google-plus fa-fw fa-lg"></i>
+                            <i class="fab fa-google-plus-g fa-fw fa-lg"></i>
                             {{ end }}
                             Log in with {{ $provider.Name }}
                         </button>

@@ -39,7 +39,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
     border: 0 !important;
     height: auto !important;
     width: auto !important;
-    font-family: FontAwesome !important;
+    font-family: 'Font Awesome 5 Free' !important;
     content: '\f078' !important;
 
     padding: .4em .6em .4em .6em;
@@ -51,7 +51,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
     border-radius: .25em !important;
 
     font-style: normal;
-    font-weight: 400;
+    font-weight: 900;
 }
 
 table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td:first-child:before,table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
