@@ -47,8 +47,8 @@
                         <td class="text-center">
                             {{ if not $file.IsDir }}
                                 <div class="btn-group btn-group-xs">
-                                    <a href="/dashboard/assetfs/?path={{ $file.Path }}&mode=raw" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-file" title="{{ i18n "Raw" $ }}"></i></a>
-                                    <a href="/dashboard/assetfs/?path={{ $file.Path }}&mode=file" class="btn btn-success btn-icon"><i class="glyphicon glyphicon-save-file" title="{{ i18n "Download" $ }}"></i></a>
+                                    <a href="/dashboard/assetfs/?path={{ $file.Path }}&mode=raw" class="btn btn-info btn-icon"><i class="fas fa-file" title="{{ i18n "Raw" $ }}"></i></a>
+                                    <a href="/dashboard/assetfs/?path={{ $file.Path }}&mode=file" class="btn btn-success btn-icon"><i class="fas fa-file-download" title="{{ i18n "Download" $ }}"></i></a>
                                 </div>
                             {{ end }}
                         </td>

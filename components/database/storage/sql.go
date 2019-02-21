@@ -16,6 +16,7 @@ type SQL struct {
 	masterExecutor   *SQLExecutor
 	slaveExecutors   []*SQLExecutor
 	balancer         database.Balancer
+	tables           []*gorp.TableMap
 }
 
 func NewSQL(driver string, masterDSN string, slavesDSN []string, options map[string]string, allowUseMasterAsSlave bool) (s *SQL, err error) {
@@ -25,6 +26,7 @@ func NewSQL(driver string, masterDSN string, slavesDSN []string, options map[str
 
 	s = &SQL{
 		slaveExecutors: make([]*SQLExecutor, 0, len(slavesDSN)),
+		tables:         make([]*gorp.TableMap, 0, 0),
 	}
 
 	if s.masterExecutor, err = NewSQLExecutor(driver, masterDSN, options); err != nil {
@@ -194,8 +196,19 @@ func (s *SQL) SetTypeConverter(converter gorp.TypeConverter) {
 	}
 }
 
+func (s *SQL) Tables() []*gorp.TableMap {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+
+	return s.tables
+}
+
 func (s *SQL) AddTableWithName(i interface{}, name string) {
-	s.masterExecutor.executor.(*gorp.DbMap).AddTableWithName(i, name)
+	table := s.masterExecutor.executor.(*gorp.DbMap).AddTableWithName(i, name)
+
+	s.mutex.Lock()
+	s.tables = append(s.tables, table)
+	s.mutex.Unlock()
 
 	for _, executor := range s.slaveExecutors {
 		executor.executor.(*gorp.DbMap).AddTableWithName(i, name)
