@@ -94,7 +94,7 @@ func (c *component) Run(a Application, result chan<- *component) {
 		case <-chReady:
 			atomic.StoreInt64(&c.ready, 1)
 
-			c.notify()
+			c.notifyReady()
 
 		case err := <-chError:
 			atomic.StoreInt64(&c.ready, 0)
@@ -102,7 +102,6 @@ func (c *component) Run(a Application, result chan<- *component) {
 			c.error.Store(err)
 
 			result <- c
-			c.notify()
 
 			return
 
@@ -111,14 +110,14 @@ func (c *component) Run(a Application, result chan<- *component) {
 			atomic.StoreInt64(&c.done, 1)
 
 			result <- c
-			c.notify()
+			c.notifyReady()
 
 			return
 		}
 	}
 }
 
-func (c *component) notify() {
+func (c *component) notifyReady() {
 	c.Lock()
 	tmp := append([]chan struct{}(nil), c.watchers...)
 	c.watchers = make([]chan struct{}, 0)
