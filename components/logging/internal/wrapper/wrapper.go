@@ -130,7 +130,14 @@ func (w *Wrapper) LoadOrStore(name string) *Wrapper {
 		return exists
 	}
 
-	l := New(name, w.encoder, w.writeSyncer, w.levelEnabler, w.options...)
+	w.lock.RLock()
+	encoder := w.encoder
+	writeSyncer := w.writeSyncer
+	levelEnabler := w.levelEnabler
+	options := w.options
+	w.lock.RUnlock()
+
+	l := New(name, encoder, writeSyncer, levelEnabler, options...)
 
 	w.lock.Lock()
 	w.tree[name] = l
