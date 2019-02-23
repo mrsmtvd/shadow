@@ -68,7 +68,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 		return err
 	}
 
-	c.logger = logging.DefaultLogger().Named(c.Name())
+	c.logger = logging.DefaultLazyLogger(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
 

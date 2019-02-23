@@ -120,7 +120,7 @@ func (c *Component) initTracer() error {
 	options := make([]jconfig.Option, 0)
 
 	if c.application.HasComponent(logging.ComponentName) {
-		log := logging.DefaultLogger().Named(c.Name())
+		log := logging.DefaultLazyLogger(c.Name())
 		options = append(options, jconfig.Logger(NewLogger(log)))
 	}
 

@@ -64,7 +64,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 		c.annotations = a.GetComponent(annotations.ComponentName).(annotations.Component)
 	}
 
-	c.logger = logging.DefaultLogger().Named(c.Name())
+	c.logger = logging.DefaultLazyLogger(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
 

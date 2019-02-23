@@ -63,7 +63,7 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
-	c.logger = logging.DefaultLogger().Named(c.Name())
+	c.logger = logging.DefaultLazyLogger(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
 	cfg := a.GetComponent(config.ComponentName).(config.Component)

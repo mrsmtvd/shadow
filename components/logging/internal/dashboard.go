@@ -49,10 +49,12 @@ func (c *Component) DashboardMiddleware() []func(http.Handler) http.Handler {
 	return []func(http.Handler) http.Handler{
 		func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				ctx := r.Context()
+
 				// save logger in context
-				if request := dashboard.RequestFromContext(r.Context()); request != nil {
-					name := dashboard.TemplateNamespaceFromContext(r.Context())
-					request.WithContext(logging.ContextWithLogger(r.Context(), c.Logger().Named(name)))
+				if request := dashboard.RequestFromContext(ctx); request != nil {
+					name := dashboard.TemplateNamespaceFromContext(ctx)
+					request.WithContext(logging.ContextWithLogger(ctx, logging.NewLazyLogger(c.Logger(), name)))
 					r = request.Original()
 				}
 

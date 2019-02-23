@@ -61,7 +61,7 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 		return err
 	}
 
-	c.logger = logging.DefaultLogger().Named(c.Name())
+	c.logger = logging.DefaultLazyLogger(c.Name())
 
 	for _, component := range components {
 		if cmpVariables, ok := component.(config.HasVariables); ok {

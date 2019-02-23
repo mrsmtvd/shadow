@@ -11,3 +11,7 @@ var defaultLogger = wrapper.NewNop("default")
 func DefaultLogger() Logger {
 	return defaultLogger
 }
+
+func DefaultLazyLogger(name string) Logger {
+	return NewLazyLogger(DefaultLogger(), name)
+}
