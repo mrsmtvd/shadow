@@ -15,9 +15,11 @@ const (
 )
 
 type loggerView struct {
-	Name   string
-	Level  int8
-	Logger *wrapper.Wrapper
+	Parent    string
+	Name      string
+	Level     int8
+	Logger    *wrapper.Wrapper
+	Dependent int
 }
 
 type levelView struct {
@@ -62,18 +64,23 @@ func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 		}
 	}
 
-	result := map[string]loggerView{
-		name: {
-			Name:   name,
-			Level:  level,
-			Logger: w,
-		},
-	}
+	result := make(map[string]loggerView, 0)
+	dependent := 0
 
 	for _, logger := range w.Tree() {
+		dependent++
+
 		for wrapName, wrapLogger := range h.collect(logger) {
+			wrapLogger.Parent = name
 			result[name+idSeparator+wrapName] = wrapLogger
 		}
+	}
+
+	result[name] = loggerView{
+		Name:      name,
+		Level:     level,
+		Logger:    w,
+		Dependent: dependent,
 	}
 
 	return result

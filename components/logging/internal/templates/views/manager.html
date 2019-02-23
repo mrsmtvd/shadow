@@ -6,19 +6,21 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
-            <div class="table-responsive">
-                {{ if .error }}
-                    <div class="alert alert-danger alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    {{ .error.Error }}
-                    </div>
-                {{ end }}
-                <form role="form" action="#" method="post" id="loggers">
-                    <table class="table table-hover table-striped datatable dt-responsive nowrap" style="width:100%">
+            {{ if .error }}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ .error.Error }}
+                </div>
+            {{ end }}
+            <form role="form" action="#" method="post" id="loggers">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped dt-responsive nowrap" style="width:100%">
                         <thead>
                         <tr>
+                            <th>{{ i18n "Parent" . }}</th>
                             <th>{{ i18n "Name" . }}</th>
                             <th>{{ i18n "Level" . }}</th>
+                            <th>{{ i18n "Dependent" . }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -26,6 +28,7 @@
                         {{ range $id, $logger := .loggers }}
                         {{ $index = add $index 1 }}
                         <tr>
+                            <td>{{ if eq $logger.Parent "" }}&nbsp;{{ else }}{{ $logger.Parent }}{{ end }}</td>
                             <td>{{ $logger.Name }}</td>
                             <td>{{ $lvl_set := 0 }}
                                 <select class="form-control select2" name="{{ $id }}" id="logger-{{ $index }}">
@@ -40,18 +43,18 @@
                                 <script type="application/javascript">
                                     $(document).ready(function () {
                                         $('#logger-{{ $index }}').on('select2:select', function (e) {
-                                            console.log(e);
                                             $('#loggers').submit();
                                         });
                                     });
                                 </script>
                             </td>
+                            <td>{{ $logger.Dependent }}</td>
                         </tr>
                         {{ end }}
                         </tbody>
                     </table>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -69,4 +72,5 @@
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" false) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive/js/dataTables.responsive.min.js" false) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.min.js" false) }}
+    {{ staticHTML (staticURL "/logging/assets/js/manager.js" true) }}
 {{ end }}

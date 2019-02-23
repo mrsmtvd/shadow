@@ -11,9 +11,13 @@
 }
 
 table tr.group, table tr.group:hover {
-    background: rgba(52, 73, 94, 0.94);
+    background: rgba(52, 73, 94, .94) !important;
     color: #ECF0F1;
     /* cursor: pointer; */
+}
+
+.table-striped>tbody>tr.group:nth-of-type(odd) {
+    background: rgba(52, 73, 94, .94) !important;
 }
 
 table .form-group {

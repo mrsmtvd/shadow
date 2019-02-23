@@ -16,8 +16,14 @@ msgstr "Логирование"
 msgid "Loggers"
 msgstr "Логеры"
 
+msgid "Parent"
+msgstr "Родитель"
+
 msgid "Level"
 msgstr "Уровень"
 
 msgid "Name"
 msgstr "Имя"
+
+msgid "Dependent"
+msgstr "Зависимых"
