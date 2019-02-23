@@ -86,12 +86,26 @@ func (w *Wrapper) init(full bool, enc zapcore.Encoder, ws zapcore.WriteSyncer, l
 	}
 }
 
+func (w *Wrapper) Encoder() zapcore.Encoder {
+	w.lock.RLock()
+	defer w.lock.RUnlock()
+
+	return w.encoder
+}
+
 func (w *Wrapper) SetEncoder(full bool, enc zapcore.Encoder) {
-	w.init(full, enc, w.writeSyncer, w.levelEnabler)
+	w.init(full, enc, w.WriteSyncer(), w.LevelEnabler())
+}
+
+func (w *Wrapper) WriteSyncer() zapcore.WriteSyncer {
+	w.lock.RLock()
+	defer w.lock.RUnlock()
+
+	return w.writeSyncer
 }
 
 func (w *Wrapper) SetWriteSyncer(full bool, ws zapcore.WriteSyncer) {
-	w.init(full, w.encoder, ws, w.levelEnabler)
+	w.init(full, w.Encoder(), ws, w.LevelEnabler())
 }
 
 func (w *Wrapper) LevelEnabler() zapcore.LevelEnabler {
@@ -102,15 +116,22 @@ func (w *Wrapper) LevelEnabler() zapcore.LevelEnabler {
 }
 
 func (w *Wrapper) SetLevelEnabler(full bool, level zapcore.LevelEnabler) {
-	w.init(full, w.encoder, w.writeSyncer, level)
+	w.init(full, w.Encoder(), w.WriteSyncer(), level)
+}
+
+func (w *Wrapper) Options() []zap.Option {
+	w.lock.RLock()
+	defer w.lock.RUnlock()
+
+	return w.options
 }
 
 func (w *Wrapper) WithOptions(full bool, options ...zap.Option) {
 	w.lock.RLock()
-	opts := append(w.options, options...)
+	opts := append(w.Options(), options...)
 	w.lock.RUnlock()
 
-	w.init(full, w.encoder, w.writeSyncer, w.levelEnabler, opts...)
+	w.init(full, w.Encoder(), w.WriteSyncer(), w.LevelEnabler(), opts...)
 }
 
 func (w *Wrapper) Name() string {
@@ -130,14 +151,7 @@ func (w *Wrapper) LoadOrStore(name string) *Wrapper {
 		return exists
 	}
 
-	w.lock.RLock()
-	encoder := w.encoder
-	writeSyncer := w.writeSyncer
-	levelEnabler := w.levelEnabler
-	options := w.options
-	w.lock.RUnlock()
-
-	l := New(name, encoder, writeSyncer, levelEnabler, options...)
+	l := New(name, w.Encoder(), w.WriteSyncer(), w.LevelEnabler(), w.Options()...)
 
 	w.lock.Lock()
 	w.tree[name] = l

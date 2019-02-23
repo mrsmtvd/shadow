@@ -54,6 +54,8 @@ func NewManagerHandler(wrapper *wrapper.Wrapper, levels [][]interface{}) *Manage
 func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 	name := w.Name()
 	level := int8(zap.DebugLevel) - 1
+	result := make(map[string]loggerView, 0)
+	dependent := 0
 
 	if lvl := w.LevelEnabler(); lvl != nil {
 		for _, v := range h.levels {
@@ -64,14 +66,14 @@ func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 		}
 	}
 
-	result := make(map[string]loggerView, 0)
-	dependent := 0
-
 	for _, logger := range w.Tree() {
 		dependent++
 
 		for wrapName, wrapLogger := range h.collect(logger) {
-			wrapLogger.Parent = name
+			if wrapLogger.Parent == "" {
+				wrapLogger.Parent = name
+			}
+
 			result[name+idSeparator+wrapName] = wrapLogger
 		}
 	}

@@ -80,7 +80,7 @@ msgstr "Полный"
 
 msgctxt "config"
 msgid "Global log level"
-msgstr "глобальный уровень логирования"
+msgstr "Глобальный уровень логирования"
 
 msgctxt "config"
 msgid "Debug"

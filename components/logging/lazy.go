@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/kihamo/shadow/components/logging/internal/wrapper"
+	"go.uber.org/zap"
 )
 
 type LazyLogger struct {
@@ -27,6 +28,10 @@ func NewLazyLogger(parent Logger, name string) Logger {
 func (l *LazyLogger) logger() Logger {
 	l.once.Do(func() {
 		l.instance = l.parent.Named(l.name)
+
+		if w, ok := l.instance.(*wrapper.Wrapper); ok {
+			w.WithOptions(false, zap.AddCallerSkip(1))
+		}
 	})
 
 	return l.instance
