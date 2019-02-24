@@ -320,9 +320,20 @@ gulp.task('easyjson', function() {
         .pipe(exec.reporter(execOptions));
 });
 
+gulp.task('enumer', function() {
+    return gulp.src(__dirname + '/**/*.go')
+        .pipe(filterBy(function (file) {
+            return file.contents.toString().indexOf('enumer:json') > -1
+        }))
+        .pipe(exec('enumer -type=componentStatus -trimprefix=ComponentStatus -output=component_status_enumer.go -transform=snake <%= options.path.dirname(file.path) %>', {
+            path: path
+        }))
+        .pipe(exec.reporter(execOptions));
+});
+
 gulp.task('backend', gulp.series(
     gulp.parallel('golang', 'i18n'),
-    gulp.parallel('bindata', 'protobuf', 'easyjson')
+    gulp.parallel('bindata', 'protobuf', 'easyjson', 'enumer')
 ));
 
 /**

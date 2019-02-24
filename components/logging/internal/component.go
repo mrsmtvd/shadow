@@ -3,6 +3,7 @@ package internal
 import (
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
@@ -23,6 +24,9 @@ type Component struct {
 	application shadow.Application
 	config      config.Component
 	global      *wrapper.Wrapper
+
+	lock          sync.Mutex
+	restoreStdLog func()
 }
 
 func (c *Component) Name() string {
@@ -106,7 +110,7 @@ func (c *Component) initLogger() {
 		encoder = zapcore.NewConsoleEncoder(encoderConfig)
 	}
 
-	output := zapcore.Lock(os.Stderr)
+	output := zapcore.AddSync(os.Stdout)
 
 	c.global.InitFull(
 		encoder, output, zapcore.Level(c.config.Int64(logging.ConfigLevel)),
@@ -116,8 +120,14 @@ func (c *Component) initLogger() {
 		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))),
 	)
 
-	zap.RedirectStdLog(c.global.LoadOrStore("std").Logger())
 	zap.ReplaceGlobals(c.global.Logger())
+	std := zap.RedirectStdLog(c.global.LoadOrStore("std").Logger())
+
+	c.lock.Lock()
+	if c.restoreStdLog == nil {
+		c.restoreStdLog = std
+	}
+	c.lock.Unlock()
 }
 
 func (c *Component) parseFields(f string) []zap.Field {
@@ -150,11 +160,13 @@ func (c *Component) Logger() logging.Logger {
 }
 
 func (c *Component) Shutdown() error {
-	if err := c.global.Logger().Sync(); err != nil {
-		return err
+	c.lock.Lock()
+	if c.restoreStdLog != nil {
+		c.restoreStdLog()
 	}
+	c.lock.Unlock()
 
-	if err := c.global.Sugar().Sync(); err != nil {
+	if err := c.global.Logger().Sync(); err != nil {
 		return err
 	}
 

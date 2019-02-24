@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 
+	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -20,10 +21,11 @@ func (c *Component) ReadinessCheck() map[string]dashboard.HealthCheck {
 
 func (c *Component) ComponentReadyCheck(name string) dashboard.HealthCheck {
 	return func() error {
-		if !c.application.IsReadyComponent(name) {
-			return errors.New("not ready")
+		switch c.application.StatusComponent(name) {
+		case shadow.ComponentStatusReady, shadow.ComponentStatusFinished:
+			return nil
 		}
 
-		return nil
+		return errors.New("not ready")
 	}
 }

@@ -26,12 +26,17 @@ type Application interface {
 	BuildDate() *time.Time
 	StartDate() *time.Time
 	Uptime() time.Duration
+
 	GetComponent(string) Component
 	GetComponents() ([]Component, error)
 	HasComponent(string) bool
 	RegisterComponent(Component) error
-	IsReadyComponent(string) bool
-	ReadyComponent(...string) <-chan struct{}
+
+	StatusComponent(string) componentStatus
+	WatchComponentStatus(status componentStatus, name string, names ...string) <-chan struct{}
+	ReadyComponent(name string, names ...string) <-chan struct{}
+	RunningComponent(name string, names ...string) <-chan struct{}
+	ShutdownComponent(name string, names ...string) <-chan struct{}
 }
 
 type App struct {
@@ -90,66 +95,98 @@ func (a *App) Run() (err error) {
 		return
 	}
 
+	// инициализируем компоненты
 	for _, cmp := range components {
-		if ini, ok := cmp.instance.(ComponentInit); ok {
-			if err := ini.Init(a); err != nil {
+		if in, ok := cmp.instance.(ComponentInit); ok {
+			if err := in.Init(a); err != nil {
 				return err
 			}
 		}
 	}
 
+	// региструем shutdown функции
 	closers := make([]func() error, 0, total)
+
 	for _, cmp := range components {
-		if closer, ok := cmp.instance.(ComponentShutdown); ok {
-			closers = append(closers, closer.Shutdown)
+		if _, ok := cmp.instance.(ComponentShutdown); !ok {
+			continue
 		}
+
+		fn := func(component *component) func() error {
+			return func() error {
+				needWaitDeps := make([]string, 0, total)
+
+				if dependency, ok := component.instance.(ComponentDependency); ok {
+					for _, dep := range dependency.Dependencies() {
+						if dep.Required {
+							needWaitDeps = append(needWaitDeps, dep.Name)
+						}
+					}
+				}
+
+				if len(needWaitDeps) > 0 {
+					<-a.ShutdownComponent(needWaitDeps[0], needWaitDeps[1:]...)
+				}
+
+				return component.Shutdown()
+			}
+		}(cmp)
+
+		closers = append(closers, fn)
 	}
 
-	chResults := make(chan *component, total)
+	chRunDone := make(chan *component, total)
 
 	chShutdown := make(chan os.Signal, 1)
 	signal.Notify(chShutdown, sig...)
 
 	var (
-		shutdown bool
-		done     int
+		shutdownRunning   bool
+		notBlockedRunning int
 	)
 
 	defer func() {
-		if done >= total {
-			close(chResults)
+		if notBlockedRunning >= total {
+			close(chRunDone)
 		}
 
 		close(chShutdown)
 	}()
 
+	// запускаем компоненты
 	for _, cmp := range components {
-		go cmp.Run(a, chResults)
+		go func(component *component) {
+			component.Run(a)
+			chRunDone <- component
+		}(cmp)
 	}
 
 	for {
 		select {
-		case cmp := <-chResults:
-			if cmp.Done() {
-				done++
-			}
+		case cmp := <-chRunDone:
+			notBlockedRunning++
 
-			if cmp.Error() != nil {
-				if !shutdown {
+			// если Run вернул ошибку, то завершаем все приложение
+			if cmp.Status() == ComponentStatusRunFailed {
+				if !shutdownRunning {
 					closers = append([]func() error{
 						func() error {
-							return cmp.Error()
+							return errors.New("Component " + cmp.instance.Name() + " run failed with error: " + cmp.RunError().Error())
 						},
 					}, closers...)
 
 					chShutdown <- sig[0]
 				}
-			} else if done >= total {
-				chShutdown <- sig[0]
+			}
+
+			if notBlockedRunning >= total {
+				if !shutdownRunning {
+					chShutdown <- sig[0]
+				}
 			}
 
 		case <-chShutdown:
-			shutdown = true
+			shutdownRunning = true
 			signal.Stop(chShutdown)
 
 			var shutdownEG errgroup.Group
@@ -240,26 +277,27 @@ func (a *App) MustRegisterComponent(c Component) {
 	}
 }
 
-func (a *App) IsReadyComponent(n string) bool {
+func (a *App) StatusComponent(n string) componentStatus {
 	if cmp, ok := a.components.get(n); ok {
-		return cmp.Ready()
+		return cmp.Status()
 	}
 
-	return false
+	return ComponentStatusUnknown
 }
 
-func (a *App) ReadyComponent(n ...string) <-chan struct{} {
+func (a *App) WatchComponentStatus(status componentStatus, name string, names ...string) <-chan struct{} {
 	ch := make(chan struct{}, 1)
+	ns := append([]string{name}, names...)
 
-	if len(n) == 0 {
+	if len(ns) == 0 {
 		close(ch)
 		return ch
 	}
 
 	go func() {
-		for _, name := range n {
-			if cmp, ok := a.components.get(name); ok {
-				<-cmp.Watch()
+		for _, n := range ns {
+			if cmp, ok := a.components.get(n); ok {
+				<-cmp.WatchStatus(status)
 			}
 		}
 
@@ -267,6 +305,18 @@ func (a *App) ReadyComponent(n ...string) <-chan struct{} {
 	}()
 
 	return ch
+}
+
+func (a *App) ReadyComponent(name string, names ...string) <-chan struct{} {
+	return a.WatchComponentStatus(ComponentStatusReady, name, names...)
+}
+
+func (a *App) RunningComponent(name string, names ...string) <-chan struct{} {
+	return a.WatchComponentStatus(ComponentStatusFinished, name, names...)
+}
+
+func (a *App) ShutdownComponent(name string, names ...string) <-chan struct{} {
+	return a.WatchComponentStatus(ComponentStatusShutdown, name, names...)
 }
 
 func SetName(name string) {

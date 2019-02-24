@@ -22,14 +22,8 @@ msgstr "Версия"
 msgid "Dependencies"
 msgstr "Зависимости"
 
-msgid "Ready"
-msgstr "Готовность"
-
-msgid "ready"
-msgstr "готов"
-
-msgid "not ready"
-msgstr "не готов"
+msgid "Status"
+msgstr "Статус"
 
 msgid "Functions"
 msgstr "Функции"
@@ -60,3 +54,23 @@ msgstr "метрики"
 
 msgid "grpc"
 msgstr "grpc"
+
+msgctxt "component-status"
+msgid "unknown"
+msgstr "неизвестно"
+
+msgctxt "component-status"
+msgid "ready"
+msgstr "готов"
+
+msgctxt "component-status"
+msgid "run_failed"
+msgstr "ошибка запуска"
+
+msgctxt "component-status"
+msgid "finished"
+msgstr "завершен"
+
+msgctxt "component-status"
+msgid "shutdown"
+msgstr "остановлен"

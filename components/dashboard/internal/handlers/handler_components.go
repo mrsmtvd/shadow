@@ -31,7 +31,8 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 			"version":                 cmp.Version(),
 			"shutdown":                false,
 			"dependencies":            []string{},
-			"ready":                   h.application.IsReadyComponent(cmp.Name()),
+			"ready":                   false,
+			"status":                  h.application.StatusComponent(cmp.Name()).String(),
 			"has_assetfs":             false,
 			"has_config_variables":    false,
 			"has_config_watchers":     false,
@@ -41,6 +42,11 @@ func (h *ComponentsHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Reques
 			"has_database_migrations": false,
 			"has_grpc_server":         false,
 			"has_metrics":             false,
+		}
+
+		switch h.application.StatusComponent(cmp.Name()) {
+		case shadow.ComponentStatusReady, shadow.ComponentStatusFinished:
+			row["ready"] = true
 		}
 
 		if _, ok := cmp.(shadow.ComponentShutdown); ok {
