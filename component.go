@@ -1,6 +1,7 @@
 package shadow
 
 import (
+	"errors"
 	"sync"
 	"sync/atomic"
 )
@@ -157,7 +158,9 @@ func (c *component) Shutdown() (err error) {
 	defer c.SetStatus(ComponentStatusShutdown)
 
 	if c.closer != nil {
-		return c.closer()
+		if err := c.closer(); err != nil {
+			return errors.New("component " + c.Name() + " shutdown failed with error: " + err.Error())
+		}
 	}
 
 	return nil

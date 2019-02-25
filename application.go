@@ -161,7 +161,7 @@ func (a *App) Run() (err error) {
 				if !shutdownRunning {
 					closers = append([]func() error{
 						func() error {
-							return errors.New("Component " + cmp.Name() + " run failed with error: " + cmp.RunError().Error())
+							return errors.New("component " + cmp.Name() + " run failed with error: " + cmp.RunError().Error())
 						},
 					}, closers...)
 
