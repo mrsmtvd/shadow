@@ -13,12 +13,12 @@ type components struct {
 	resolved sync.Once
 }
 
-func (c *components) add(n string, cmp Component) {
+func (c *components) Add(n string, cmp Component) {
 	c.Store(n, newComponent(cmp))
 	c.resolved = sync.Once{}
 }
 
-func (c *components) get(n string) (*component, bool) {
+func (c *components) Get(n string) (*component, bool) {
 	cmp, ok := c.Load(n)
 	if ok {
 		return cmp.(*component), ok
@@ -27,10 +27,10 @@ func (c *components) get(n string) (*component, bool) {
 	return nil, ok
 }
 
-func (c *components) all() ([]*component, error) {
+func (c *components) All() ([]*component, error) {
 	var err error
 	c.resolved.Do(func() {
-		err = c.resolve()
+		err = c.Resolve()
 	})
 
 	if err != nil {
@@ -47,7 +47,7 @@ func (c *components) all() ([]*component, error) {
 	return result, nil
 }
 
-func (c *components) resolve() (err error) {
+func (c *components) Resolve() (err error) {
 	dependencies := make(map[string]mapset.Set)
 	c.Range(func(_, value interface{}) bool {
 		ms := mapset.NewSet()
@@ -55,20 +55,23 @@ func (c *components) resolve() (err error) {
 
 		if dependency, ok := cmp.instance.(ComponentDependency); ok {
 			for _, dep := range dependency.Dependencies() {
-				if dep.Required {
-					if _, exist := c.get(dep.Name); !exist {
-						err = errors.New("component \"" + cmp.instance.Name() + "\" has required dependency \"" + dep.Name + "\"")
+				depCmp, exist := c.Get(dep.Name)
+				if exist {
+					depCmp.AddReverseDep(cmp.Name())
+				} else {
+					if dep.Required {
+						err = errors.New("component \"" + cmp.Name() + "\" has required dependency \"" + dep.Name + "\"")
 						return false
+					} else {
+						dependencies[dep.Name] = mapset.NewSet()
 					}
-				} else if _, exist := c.get(dep.Name); !exist {
-					dependencies[dep.Name] = mapset.NewSet()
 				}
 
 				ms.Add(dep.Name)
 			}
 		}
 
-		dependencies[cmp.instance.Name()] = ms
+		dependencies[cmp.Name()] = ms
 		return true
 	})
 
@@ -94,7 +97,7 @@ func (c *components) resolve() (err error) {
 			name := n.(string)
 			delete(dependencies, name)
 
-			if cmp, exist := c.get(name); exist {
+			if cmp, exist := c.Get(name); exist {
 				cmp.SetOrder(index)
 				index++
 			}

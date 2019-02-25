@@ -85,7 +85,7 @@ func (a *App) Run() (err error) {
 	atomic.StoreInt64(&a.running, 1)
 	defer atomic.StoreInt64(&a.running, 0)
 
-	components, err := a.components.all()
+	components, err := a.components.All()
 	if err != nil {
 		return err
 	}
@@ -114,18 +114,8 @@ func (a *App) Run() (err error) {
 
 		fn := func(component *component) func() error {
 			return func() error {
-				needWaitDeps := make([]string, 0, total)
-
-				if dependency, ok := component.instance.(ComponentDependency); ok {
-					for _, dep := range dependency.Dependencies() {
-						if dep.Required {
-							needWaitDeps = append(needWaitDeps, dep.Name)
-						}
-					}
-				}
-
-				if len(needWaitDeps) > 0 {
-					<-a.ShutdownComponent(needWaitDeps[0], needWaitDeps[1:]...)
+				for _, dep := range component.ReverseDep() {
+					<-a.ShutdownComponent(dep)
 				}
 
 				return component.Shutdown()
@@ -171,7 +161,7 @@ func (a *App) Run() (err error) {
 				if !shutdownRunning {
 					closers = append([]func() error{
 						func() error {
-							return errors.New("Component " + cmp.instance.Name() + " run failed with error: " + cmp.RunError().Error())
+							return errors.New("Component " + cmp.Name() + " run failed with error: " + cmp.RunError().Error())
 						},
 					}, closers...)
 
@@ -237,7 +227,7 @@ func (a *App) Uptime() time.Duration {
 }
 
 func (a *App) GetComponent(n string) Component {
-	if cmp, ok := a.components.get(n); ok {
+	if cmp, ok := a.components.Get(n); ok {
 		return cmp.instance
 	}
 
@@ -245,7 +235,7 @@ func (a *App) GetComponent(n string) Component {
 }
 
 func (a *App) GetComponents() ([]Component, error) {
-	components, err := a.components.all()
+	components, err := a.components.All()
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +257,7 @@ func (a *App) RegisterComponent(c Component) error {
 		return errors.New("component \"" + c.Name() + "\" already exists")
 	}
 
-	a.components.add(c.Name(), c)
+	a.components.Add(c.Name(), c)
 	return nil
 }
 
@@ -278,7 +268,7 @@ func (a *App) MustRegisterComponent(c Component) {
 }
 
 func (a *App) StatusComponent(n string) componentStatus {
-	if cmp, ok := a.components.get(n); ok {
+	if cmp, ok := a.components.Get(n); ok {
 		return cmp.Status()
 	}
 
@@ -296,7 +286,7 @@ func (a *App) WatchComponentStatus(status componentStatus, name string, names ..
 
 	go func() {
 		for _, n := range ns {
-			if cmp, ok := a.components.get(n); ok {
+			if cmp, ok := a.components.Get(n); ok {
 				<-cmp.WatchStatus(status)
 			}
 		}

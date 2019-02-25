@@ -36,14 +36,20 @@ type component struct {
 	status   int64
 	runError atomic.Value
 
-	watchers map[int64][]chan struct{}
+	watchers   map[int64][]chan struct{}
+	depReverse []string
 }
 
 func newComponent(instance Component) *component {
 	return &component{
-		instance: instance,
-		watchers: make(map[int64][]chan struct{}, 0),
+		instance:   instance,
+		watchers:   make(map[int64][]chan struct{}, 0),
+		depReverse: make([]string, 0, 0),
 	}
+}
+
+func (c *component) Name() string {
+	return c.instance.Name()
 }
 
 func (c *component) Order() int64 {
@@ -58,13 +64,26 @@ func (c *component) Status() componentStatus {
 	return componentStatus(atomic.LoadInt64(&c.status))
 }
 
-func (c *component) setStatus(status componentStatus) {
+func (c *component) SetStatus(status componentStatus) {
 	value := status.Int64()
 	old := atomic.SwapInt64(&c.status, value)
 
 	if old != value {
-		c.notify(status)
+		c.Notify(status)
 	}
+}
+
+func (c *component) ReverseDep() []string {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.depReverse
+}
+
+func (c *component) AddReverseDep(name string) {
+	c.Lock()
+	c.depReverse = append(c.depReverse, name)
+	c.Unlock()
 }
 
 func (c *component) RunError() error {
@@ -99,7 +118,7 @@ func (c *component) Run(a Application) {
 		// компонент до завершения Run сообщил о своей готовности
 		case <-chReady:
 			if c.Status() != ComponentStatusShutdown {
-				c.setStatus(ComponentStatusReady)
+				c.SetStatus(ComponentStatusReady)
 			}
 
 			// не выходим, ждем следующий этап - полное завершение Run компонента
@@ -109,7 +128,7 @@ func (c *component) Run(a Application) {
 			c.runError.Store(err)
 
 			if c.Status() != ComponentStatusShutdown {
-				c.setStatus(ComponentStatusRunFailed)
+				c.SetStatus(ComponentStatusRunFailed)
 			}
 
 			return
@@ -119,7 +138,7 @@ func (c *component) Run(a Application) {
 			// в случае долгоиграющего компонента Run может разблокировать когда уже завершают приложение
 			// в такой ситуации не надо менять уже установленный статус завершения
 			if c.Status() != ComponentStatusShutdown {
-				c.setStatus(ComponentStatusFinished)
+				c.SetStatus(ComponentStatusFinished)
 			}
 
 			return
@@ -128,7 +147,7 @@ func (c *component) Run(a Application) {
 }
 
 func (c *component) Shutdown() (err error) {
-	defer c.setStatus(ComponentStatusShutdown)
+	defer c.SetStatus(ComponentStatusShutdown)
 
 	closer, ok := c.instance.(ComponentShutdown)
 	if !ok {
@@ -171,11 +190,11 @@ func (c *component) WatchStatus(status componentStatus) <-chan struct{} {
 	return ch
 }
 
-func (c *component) notify(status componentStatus) {
+func (c *component) Notify(status componentStatus) {
 	// если статус Running то это автоматически значит что достигнут статус Ready
 	if status == ComponentStatusFinished {
 		go func() {
-			c.notify(ComponentStatusReady)
+			c.Notify(ComponentStatusReady)
 		}()
 	}
 
