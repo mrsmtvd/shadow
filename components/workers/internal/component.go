@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"sync"
 
 	ws "github.com/kihamo/go-workers"
@@ -83,6 +84,16 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	ready <- struct{}{}
 
 	return c.dispatcher.Run()
+}
+
+func (c *Component) Shutdown() error {
+	if c.dispatcher.Status() == ws.DispatcherStatusProcess {
+		if err := c.dispatcher.Cancel(); err != context.Canceled {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (c *Component) GetLockedListeners() []string {

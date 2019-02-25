@@ -33,6 +33,7 @@ type Component struct {
 	dialer *gomail.Dialer
 	closer gomail.SendCloser
 	queue  chan *mailTask
+	done   chan struct{}
 }
 
 func (c *Component) Name() string {
@@ -67,6 +68,7 @@ func (c *Component) Dependencies() []shadow.Dependency {
 func (c *Component) Init(a shadow.Application) error {
 	c.open = false
 	c.queue = make(chan *mailTask)
+	c.done = make(chan struct{}, 1)
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
 	return nil
@@ -117,8 +119,16 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 				c.open = false
 			}
 			c.mutex.Unlock()
+
+		case <-c.done:
+			return nil
 		}
 	}
+}
+
+func (c *Component) Shutdown() error {
+	close(c.done)
+	return nil
 }
 
 func (c *Component) initDialer(host string, port int, username, password string) {

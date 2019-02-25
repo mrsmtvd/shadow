@@ -26,7 +26,11 @@
                         <td>{{ $component.version }}</td>
                         <td>
                             {{ if $component.ready }}
-                                <span class="label label-success">{{ i18n $component.status $ "component-status" }}</span>
+                                {{ if and (eq $component.status "ready") (ne $component.shutdown true) }}
+                                    <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="{{ i18n "Shutdown function isn't set" $ }}">{{ i18n $component.status $ "component-status" }}</span>
+                                {{ else }}
+                                    <span class="label label-success">{{ i18n $component.status $ "component-status" }}</span>
+                                {{ end }}
                             {{ else }}
                                 {{ if eq $component.status "unknown" }}
                                     <span class="label label-warning">{{ i18n $component.status $ "component-status" }}</span>

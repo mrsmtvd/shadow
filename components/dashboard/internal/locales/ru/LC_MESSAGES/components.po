@@ -55,6 +55,9 @@ msgstr "метрики"
 msgid "grpc"
 msgstr "grpc"
 
+msgid "Shutdown function isn't set"
+msgstr "Не определена функция Shutdown"
+
 msgctxt "component-status"
 msgid "unknown"
 msgstr "неизвестно"
