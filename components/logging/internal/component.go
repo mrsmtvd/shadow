@@ -166,9 +166,10 @@ func (c *Component) Shutdown() error {
 	}
 	c.lock.Unlock()
 
-	if err := c.global.Logger().Sync(); err != nil {
-		return err
-	}
+	// FIXME: https://github.com/uber-go/zap/issues/370
+	//if err := c.global.Logger().Sync(); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
