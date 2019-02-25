@@ -108,7 +108,7 @@ func (a *App) Run() (err error) {
 	closers := make([]func() error, 0, total)
 
 	for _, cmp := range components {
-		if _, ok := cmp.instance.(ComponentShutdown); !ok {
+		if cmp.closer == nil {
 			continue
 		}
 

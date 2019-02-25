@@ -36,16 +36,23 @@ type component struct {
 	status   int64
 	runError atomic.Value
 
+	closer     func() error
 	watchers   map[int64][]chan struct{}
 	depReverse []string
 }
 
 func newComponent(instance Component) *component {
-	return &component{
+	c := &component{
 		instance:   instance,
 		watchers:   make(map[int64][]chan struct{}, 0),
 		depReverse: make([]string, 0, 0),
 	}
+
+	if closer, ok := instance.(ComponentShutdown); ok {
+		c.closer = closer.Shutdown
+	}
+
+	return c
 }
 
 func (c *component) Name() string {
@@ -149,12 +156,11 @@ func (c *component) Run(a Application) {
 func (c *component) Shutdown() (err error) {
 	defer c.SetStatus(ComponentStatusShutdown)
 
-	closer, ok := c.instance.(ComponentShutdown)
-	if !ok {
-		return nil
+	if c.closer != nil {
+		return c.closer()
 	}
 
-	return closer.Shutdown()
+	return nil
 }
 
 func (c *component) WatchStatus(status componentStatus) <-chan struct{} {
@@ -166,9 +172,9 @@ func (c *component) WatchStatus(status componentStatus) <-chan struct{} {
 	if status == current {
 		needClose = true
 	} else if current == ComponentStatusFinished {
-		// если статус Finished то считается что компонент был в статусе Ready
-		// если статус Finished то считается что компонент в статусе Shutdown
-		needClose = status == ComponentStatusReady || status == ComponentStatusShutdown
+		// если статус Finished, то считается что компонент был в статусе Ready
+		// если статус Finished, то считается что компонент в статусе Shutdown, если у него нет метода Shutdown
+		needClose = status == ComponentStatusReady || (status == ComponentStatusShutdown && c.closer == nil)
 	}
 
 	if needClose {
