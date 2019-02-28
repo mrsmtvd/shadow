@@ -1,7 +1,9 @@
-package main // import "github.com/kihamo/shadow/examples/base"
+package main // import "github.com/kihamo/shadow/examples/demo"
 
 import (
 	"log"
+	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -9,7 +11,8 @@ import (
 	_ "github.com/kihamo/shadow/components/annotations/instance"
 	_ "github.com/kihamo/shadow/components/config/instance"
 	_ "github.com/kihamo/shadow/components/dashboard/instance"
-	//_ "github.com/kihamo/shadow/components/database/instance"
+
+	_ "github.com/kihamo/shadow/components/database/instance"
 	_ "github.com/kihamo/shadow/components/grpc/instance"
 	_ "github.com/kihamo/shadow/components/i18n/instance"
 	_ "github.com/kihamo/shadow/components/logging/instance"
@@ -19,14 +22,15 @@ import (
 	_ "github.com/kihamo/shadow/components/profiling/instance"
 	_ "github.com/kihamo/shadow/components/tracing/instance"
 	_ "github.com/kihamo/shadow/components/workers/instance"
+	_ "github.com/kihamo/shadow/examples/demo/components/demo/instance"
 )
 
 var (
-	build = "common"
+	build = strconv.FormatInt(time.Now().Unix(), 10)
 )
 
 func main() {
-	shadow.SetName("Shadow base")
+	shadow.SetName("Demo")
 	shadow.SetVersion("1.0")
 	shadow.SetBuild(build)
 
