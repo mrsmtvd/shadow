@@ -35,7 +35,7 @@ import:
 - package: github.com/mailru/easyjson
   version: 3fdea8d05856a0c8df22ed4bc71b3219245e4485
 - package: github.com/rubenv/sql-migrate
-  version: 6edbfbd6a369ee82463312ec67b2c92f97a1d4dc
+  version: 1007f53448d75fe14190968f5de4d95ed63ebb83
 - package: google.golang.org/grpc
   version: ~1.18
 - package: gopkg.in/Masterminds/squirrel.v1

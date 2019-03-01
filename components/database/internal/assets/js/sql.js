@@ -66,7 +66,7 @@ $(document).ready(function () {
                         row.after('<tr class="no-hover" style="display:none"><td colspan="' + row.children().length + '">'
                             + '<pre>'
                             + '<button type="button" class="close" onclick="hideCode(this)">×</button>'
-                            + "<code class=\"sql\">-- +migrate Up\n" + group + "\n\n-- +migrate Down" + api.column(6, {page:'current'} ).data()[0] + '</code>'
+                            + "<code class=\"sql\">-- +migrate Up\n" + group + "\n\n-- +migrate Down" + api.column(6, {page:'current'} ).data()[i] + '</code>'
                             + '</pre>'
                             + '</td></tr>');
                         last = group;
