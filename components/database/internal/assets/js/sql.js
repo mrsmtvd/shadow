@@ -72,8 +72,6 @@ $(document).ready(function () {
                         last = group;
                     }
                 });
-
-                hljs.initHighlightingOnLoad();
             }
         });
 
@@ -82,7 +80,13 @@ $(document).ready(function () {
             .toggleClass('fas fa-eye')
             .toggleClass('fas fa-eye-slash');
 
-        $(e).closest('#sql tbody tr').next().toggle();
+        var code = $(e).closest('#sql tbody tr').next();
+
+        code.find('code')
+            .each(function (i, block) {
+                hljs.highlightBlock(block);
+            });
+        code.toggle();
     };
 
     window.hideCode = function(e) {
