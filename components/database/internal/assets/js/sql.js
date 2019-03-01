@@ -29,8 +29,8 @@ $(document).ready(function () {
                     render: function (data) {
                         var content = '<div class="btn-group btn-group-xs">'
                             + '<button class="btn btn-success btn-icon show" onclick="showCode(this)"><i class="fas fa-eye" title="Show"></i></button>'
-                            + '<a href="/dashboard/bindata/?path=/' + data.source + '/migrations/' + data.id + '&mode=raw" class="btn btn-info btn-icon"><i class="fas fa-file" title="Raw"></i></a>'
-                            + '<a href="/dashboard/bindata/?path=/' + data.source + '/migrations/' + data.id + '&mode=file" class="btn btn-warning btn-icon"><i class="fas fa-file-download" title="Download"></i></a>';
+                            + '<a href="/dashboard/assetfs/?path=/' + data.source + '/migrations/' + data.id + '&mode=raw" class="btn btn-info btn-icon"><i class="fas fa-file" title="Raw"></i></a>'
+                            + '<a href="/dashboard/assetfs/?path=/' + data.source + '/migrations/' + data.id + '&mode=file" class="btn btn-warning btn-icon"><i class="fas fa-file-download" title="Download"></i></a>';
 
                         if (data.applied_at) {
                             content += '<a href="javascript:void(0)" class="btn btn-danger btn-icon" data-toggle="modal" data-target="#modal" data-modal-title="Confirm rollback ' + data.id + ' for ' + data.source + ' migration" data-modal-callback="migrate(\'down\',\'' + data.id + '\',\'' + data.source + '\');">'
