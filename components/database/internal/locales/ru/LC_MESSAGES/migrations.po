@@ -33,3 +33,15 @@ msgstr "Просмотр"
 
 msgid "Download"
 msgstr "Скачать"
+
+msgid "Apply migrations success"
+msgstr "Миграции успешно применены"
+
+msgid "Apply migration %s for %s success"
+msgstr "Миграция %s для %s успешно применена"
+
+msgid "Rollback migrations success"
+msgstr "Откат миграций прошел успешно"
+
+msgid "Rollback migration %s for %s success"
+msgstr "Откат миграции %s для %s прошел успешно"

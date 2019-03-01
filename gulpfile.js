@@ -273,6 +273,11 @@ gulp.task('bindata', function() {
     }
     
     return gulp.src([
+        'examples/**/templates',
+        'examples/**/assets',
+        'examples/**/migrations',
+        'examples/**/locales',
+
         COMPONENTS + '/**/templates',
         COMPONENTS + '/**/assets',
         COMPONENTS + '/**/migrations',

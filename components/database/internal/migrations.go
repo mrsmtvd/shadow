@@ -96,7 +96,21 @@ func (c *Component) collection() MigrationsCollection {
 	return migrations
 }
 
-func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
+func (c *Component) prepareMigration(id, source string) *migrate.Migration {
+	for _, m := range c.collection() {
+		if m.Id() == id && m.Source() == source {
+			return &migrate.Migration{
+				Id:   formatId(m.Source(), m.Id()),
+				Up:   m.Up(),
+				Down: m.Down(),
+			}
+		}
+	}
+
+	return nil
+}
+
+func (c *Component) prepareMigrations() []*migrate.Migration {
 	collection := c.collection()
 	migrations := make([]*migrate.Migration, 0, len(collection))
 
@@ -111,10 +125,10 @@ func (c *Component) FindMigrations() ([]*migrate.Migration, error) {
 		c.logger.Debug("Found " + m.Id() + " migration and converted to " + mig.Id)
 	}
 
-	return migrations, nil
+	return migrations
 }
 
-func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
+func (c *Component) execWithLock(dir migrate.MigrationDirection, m migrate.MigrationSource) (int, error) {
 	if len(c.Migrations()) == 0 {
 		return 0, nil
 	}
@@ -145,13 +159,34 @@ func (c *Component) execWithLock(dir migrate.MigrationDirection) (int, error) {
 		}()
 	}
 
-	return migrate.Exec(executor.DB(), dialect, c, dir)
+	return migrate.Exec(executor.DB(), dialect, m, dir)
+}
+
+func (c *Component) UpMigration(id, source string) error {
+	m := c.prepareMigration(id, source)
+	if m == nil {
+		return errors.New("migration for source " + source + " with id " + id + " not found")
+	}
+
+	_, err := c.execWithLock(migrate.Up, migrate.MemoryMigrationSource{
+		Migrations: []*migrate.Migration{m},
+	})
+
+	if err != nil {
+		c.logger.Error("Up migration failed", "error", err.Error(), "source", source, "id", id)
+	} else {
+		c.logger.Info("Applied migration", "source", source, "id", id)
+	}
+
+	return err
 }
 
 func (c *Component) UpMigrations() (n int, err error) {
-	n, err = c.execWithLock(migrate.Up)
+	n, err = c.execWithLock(migrate.Up, migrate.MemoryMigrationSource{
+		Migrations: c.prepareMigrations(),
+	})
 	if err != nil {
-		c.logger.Error("Up migrations failed with error " + err.Error())
+		c.logger.Error("Up migrations failed", "error", err.Error())
 	} else {
 		c.logger.Infof("Applied %d migrations", n)
 	}
@@ -159,10 +194,32 @@ func (c *Component) UpMigrations() (n int, err error) {
 	return
 }
 
-func (c *Component) DownMigrations() (n int, err error) {
-	n, err = c.execWithLock(migrate.Down)
+func (c *Component) DownMigration(id, source string) error {
+	m := c.prepareMigration(id, source)
+	if m == nil {
+		return errors.New("migration for source " + source + " with id " + id + " not found")
+	}
+
+	_, err := c.execWithLock(migrate.Down, migrate.MemoryMigrationSource{
+		Migrations: []*migrate.Migration{m},
+	})
+
 	if err != nil {
-		c.logger.Error("Down migrations failed with error " + err.Error())
+		c.logger.Error("Down migration failed", "error", err.Error(), "source", source, "id", id)
+	} else {
+		c.logger.Info("Downgraded migration", "source", source, "id", id)
+	}
+
+	return err
+}
+
+func (c *Component) DownMigrations() (n int, err error) {
+	n, err = c.execWithLock(migrate.Down, migrate.MemoryMigrationSource{
+		Migrations: c.prepareMigrations(),
+	})
+
+	if err != nil {
+		c.logger.Error("Down migrations failed", "error", err.Error())
 	} else {
 		c.logger.Infof("Downgraded %d migrations", n)
 	}

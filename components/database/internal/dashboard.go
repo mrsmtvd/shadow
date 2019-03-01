@@ -22,13 +22,21 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {
+	migrationsHandler := handlers.NewMigrationsHandler(c, c)
+
 	return []dashboard.Route{
 		dashboard.RouteFromAssetFS(c),
 		dashboard.NewRoute("/"+c.Name()+"/", &handlers.StatusHandler{}).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
-		dashboard.NewRoute("/"+c.Name()+"/migrations/", handlers.NewMigrationsHandler(c)).
+		dashboard.NewRoute("/"+c.Name()+"/migrations/", migrationsHandler).
 			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/migrations/:action/", migrationsHandler).
+			WithMethods([]string{http.MethodPost}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/migrations/:action/:source/:id", migrationsHandler).
+			WithMethods([]string{http.MethodPost}).
 			WithAuth(true),
 		dashboard.NewRoute("/"+c.Name()+"/tables/", handlers.NewTablesHandler(c)).
 			WithMethods([]string{http.MethodGet}).
