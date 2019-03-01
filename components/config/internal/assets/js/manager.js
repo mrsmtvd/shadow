@@ -82,7 +82,7 @@ $(document).ready(function () {
 
     var table = $('#configs table').DataTable({
         language: {
-            url: '/dashboard/datatables/i18n.json'
+            url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
         },
         bPaginate: false,
         bInfo: false,

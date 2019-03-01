@@ -29,3 +29,15 @@ msgstr "Панель управления"
 msgctxt "menu"
 msgid "Routing"
 msgstr "Маршрутизация"
+
+msgid "Confirm action"
+msgstr "Подтверждение действия"
+
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Confirm"
+msgstr "Подтвердить"

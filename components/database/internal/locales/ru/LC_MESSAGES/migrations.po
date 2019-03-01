@@ -45,3 +45,15 @@ msgstr "Откат миграций прошел успешно"
 
 msgid "Rollback migration %s for %s success"
 msgstr "Откат миграции %s для %s прошел успешно"
+
+msgid "Rollback all"
+msgstr "Откатить все"
+
+msgid "Apply all"
+msgstr "Применить все"
+
+msgid "Confirm rollback all migration"
+msgstr "Подтверждения отката всех миграций"
+
+msgid "Confirm apply all migration"
+msgstr "Подтверждение применения всех миграций"

@@ -26,7 +26,7 @@ $(document).ready(function () {
         })
         .DataTable({
             language: {
-                url: '/dashboard/datatables/i18n.json'
+                url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },
             ajax: {
                 url: '/workers/?action=stats&entity=listeners',
@@ -91,7 +91,7 @@ $(document).ready(function () {
         })
         .DataTable({
             language: {
-                url: '/dashboard/datatables/i18n.json'
+                url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },
             ajax: {
                 url: '/workers/?action=stats&entity=workers',
@@ -184,7 +184,7 @@ $(document).ready(function () {
         })
         .DataTable({
             language: {
-                url: '/dashboard/datatables/i18n.json'
+                url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },
             ajax: {
                 url: '/workers/?action=stats&entity=tasks',

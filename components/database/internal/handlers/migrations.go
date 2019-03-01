@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"strings"
+	"time"
+
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/database"
 	"github.com/kihamo/shadow/components/i18n"
@@ -17,6 +20,13 @@ type MigrationsManager interface {
 	UpMigrations() (n int, err error)
 	DownMigration(id, source string) error
 	DownMigrations() (n int, err error)
+}
+
+type MigrationsItem interface {
+	database.Migration
+
+	Source() string
+	AppliedAt() *time.Time
 }
 
 type MigrationsHandler struct {
@@ -113,7 +123,27 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 		}
 	}
 
-	h.Render(r.Context(), "migrations", map[string]interface{}{
-		"migrations": h.component.Migrations(),
-	})
+	if r.IsAjax() {
+		all := h.component.Migrations()
+		data := make([]map[string]interface{}, 0, len(all))
+		for _, m := range all {
+			item := m.(MigrationsItem)
+
+			data = append(data, map[string]interface{}{
+				"id":          item.Id(),
+				"source":      item.Source(),
+				"modified_at": item.ModAt(),
+				"applied_at":  item.AppliedAt(),
+				"up":          strings.Join(item.Up(), "\n"),
+				"down":        strings.Join(item.Down(), "\n"),
+			})
+		}
+
+		w.SendJSON(map[string]interface{}{
+			"data": data,
+		})
+		return
+	}
+
+	h.Render(r.Context(), "migrations", nil)
 }

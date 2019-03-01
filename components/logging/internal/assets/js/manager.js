@@ -5,7 +5,7 @@ $(document).ready(function () {
         .DataTable({
             pageLength: 50,
             language: {
-                url: '/dashboard/datatables/i18n.json'
+                url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },
             order: [[groupColumn, 'asc']],
             columnDefs: [{
