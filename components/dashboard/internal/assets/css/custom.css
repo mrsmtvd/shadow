@@ -67,3 +67,11 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td:first-child:before,table
         border: 0 !important;
     }
 }
+
+.collapsed{
+    height: auto;
+
+    .x_content{
+        display:none;
+    }
+}

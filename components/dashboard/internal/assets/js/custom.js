@@ -533,6 +533,10 @@ function init_panel_toolbox() {
 
         $BOX_PANEL.remove();
     });
+
+    $('.collapsed').css('height', 'auto');
+    $('.collapsed').find('.x_content').css('display', 'none');
+    $('.collapsed').find('i').toggleClass('fa-chevron-up fa-chevron-down');
 }
 
 function init_password_show() {
