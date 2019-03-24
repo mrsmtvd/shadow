@@ -40,7 +40,8 @@
     "switchery": "^0.8.2",
     "validator": "https://github.com/yairEO/validator.git#^1.0.6",
     "waitMe": "https://github.com/vadimsva/waitMe.git#29.07.16",
-    "bootstrap-languages": "https://github.com/usrz/bootstrap-languages.git"
+    "bootstrap-languages": "https://github.com/usrz/bootstrap-languages.git",
+    "dropzonejs": "https://github.com/enyo/dropzone.git#^5.5.0"
   },
   "resolutions": {
     "jquery": "^2.2.4",

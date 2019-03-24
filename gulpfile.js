@@ -239,6 +239,13 @@ gulp.task('frontend', gulp.series('compress-components', function(done) {
     gulp.src(['bower_components/bootstrap-languages/*.png'])
         .pipe(gulp.dest(VENDORS_I18N + '/bootstrap-languages'));
 
+    // dropzonejs
+    gulp.src(['bower_components/dropzonejs/dist/min/dropzone.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/dropzonejs/js'));
+
+    gulp.src(['bower_components/dropzonejs/dist/min/dropzone.min.css'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/dropzonejs/css'));
+
     done();
 }));
 
