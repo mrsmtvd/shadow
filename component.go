@@ -45,8 +45,8 @@ type component struct {
 func newComponent(instance Component) *component {
 	c := &component{
 		instance:   instance,
-		watchers:   make(map[int64][]chan struct{}, 0),
-		depReverse: make([]string, 0, 0),
+		watchers:   make(map[int64][]chan struct{}),
+		depReverse: make([]string, 0),
 	}
 
 	if closer, ok := instance.(ComponentShutdown); ok {

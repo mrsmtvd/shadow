@@ -28,18 +28,18 @@ type Wrapper struct {
 
 func NewNop(name string) *Wrapper {
 	return &Wrapper{
-		options: make([]zap.Option, 0, 0),
+		options: make([]zap.Option, 0),
 		name:    name,
 		logger:  zap.L(),
 		sugar:   zap.S(),
-		tree:    make(map[string]*Wrapper, 0),
+		tree:    make(map[string]*Wrapper),
 	}
 }
 
 func New(name string, enc zapcore.Encoder, ws zapcore.WriteSyncer, level zapcore.LevelEnabler, options ...zap.Option) *Wrapper {
 	w := &Wrapper{
 		name: name,
-		tree: make(map[string]*Wrapper, 0),
+		tree: make(map[string]*Wrapper),
 	}
 
 	w.InitFull(enc, ws, level, options...)

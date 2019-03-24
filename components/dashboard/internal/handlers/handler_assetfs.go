@@ -46,7 +46,7 @@ func NewAssetFSHandler(registry *sync.Map, buildDate *time.Time) *AssetFSHandler
 }
 
 func (h *AssetFSHandler) getRoot() ([]assetFSList, error) {
-	files := make([]assetFSList, 0, 0)
+	files := make([]assetFSList, 0)
 
 	modTime := time.Now()
 	if h.buildDate != nil {

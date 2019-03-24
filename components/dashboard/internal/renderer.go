@@ -39,7 +39,7 @@ type Renderer struct {
 func newNamespace(fs *assetfs.AssetFS) *templatesNamespace {
 	return &templatesNamespace{
 		fs:        fs,
-		templates: make(map[string]*template.Template, 0),
+		templates: make(map[string]*template.Template),
 	}
 }
 

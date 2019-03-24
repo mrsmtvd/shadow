@@ -36,7 +36,7 @@ type ManagerHandler struct {
 }
 
 func NewManagerHandler(wrapper *wrapper.Wrapper, levels [][]interface{}) *ManagerHandler {
-	lvl := make([]levelView, len(levels), len(levels))
+	lvl := make([]levelView, len(levels))
 	for i, v := range levels {
 		lvl[i] = levelView{
 			Value: v[0].(int8),
@@ -54,7 +54,7 @@ func NewManagerHandler(wrapper *wrapper.Wrapper, levels [][]interface{}) *Manage
 func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 	name := w.Name()
 	level := int8(zap.DebugLevel) - 1
-	result := make(map[string]loggerView, 0)
+	result := make(map[string]loggerView)
 	dependent := 0
 
 	if lvl := w.LevelEnabler(); lvl != nil {

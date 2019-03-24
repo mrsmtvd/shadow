@@ -26,7 +26,7 @@ func NewSQL(driver string, masterDSN string, slavesDSN []string, options map[str
 
 	s = &SQL{
 		slaveExecutors: make([]*SQLExecutor, 0, len(slavesDSN)),
-		tables:         make([]*gorp.TableMap, 0, 0),
+		tables:         make([]*gorp.TableMap, 0),
 	}
 
 	if s.masterExecutor, err = NewSQLExecutor(driver, masterDSN, options); err != nil {

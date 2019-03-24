@@ -110,7 +110,7 @@ func (r *Router) Routes() []dashboard.Route {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	routes := make([]dashboard.Route, len(r.routes), len(r.routes))
+	routes := make([]dashboard.Route, len(r.routes))
 	copy(routes, r.routes)
 
 	return routes

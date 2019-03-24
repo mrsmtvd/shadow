@@ -65,7 +65,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			if source == "" && id == "" {
 				_, err = h.manager.UpMigrations()
 				if err == nil {
-					w.SendJSON(migrationsHandlerResponse{
+					_ = w.SendJSON(migrationsHandlerResponse{
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Apply migrations success", ""),
 					})
@@ -74,7 +74,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			} else if source != "" && id != "" {
 				err = h.manager.UpMigration(id, source)
 				if err == nil {
-					w.SendJSON(migrationsHandlerResponse{
+					_ = w.SendJSON(migrationsHandlerResponse{
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Apply migration %s for %s success", "", id, source),
 					})
@@ -89,7 +89,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			if source == "" && id == "" {
 				_, err = h.manager.DownMigrations()
 				if err == nil {
-					w.SendJSON(migrationsHandlerResponse{
+					_ = w.SendJSON(migrationsHandlerResponse{
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Rollback migrations success", ""),
 					})
@@ -98,7 +98,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			} else if source != "" && id != "" {
 				err = h.manager.DownMigration(id, source)
 				if err == nil {
-					w.SendJSON(migrationsHandlerResponse{
+					_ = w.SendJSON(migrationsHandlerResponse{
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Rollback migration %s for %s success", "", id, source),
 					})
@@ -115,7 +115,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 		}
 
 		if err != nil {
-			w.SendJSON(migrationsHandlerResponse{
+			_ = w.SendJSON(migrationsHandlerResponse{
 				Result:  "failed",
 				Message: err.Error(),
 			})
@@ -139,7 +139,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			})
 		}
 
-		w.SendJSON(map[string]interface{}{
+		_ = w.SendJSON(map[string]interface{}{
 			"data": data,
 		})
 		return
