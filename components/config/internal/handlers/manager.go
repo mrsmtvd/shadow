@@ -103,7 +103,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	}
 
 	if err != nil {
-		r.Session().FlashBag().Add("error", err.Error())
+		r.Session().FlashBag().Error(err.Error())
 	}
 
 	h.Render(r.Context(), "manager", map[string]interface{}{

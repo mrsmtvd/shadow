@@ -37,9 +37,9 @@ func (h *SendHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		}
 
 		if err := h.component.SendAndReturn(message); err != nil {
-			r.Session().FlashBag().Add("error", err.Error())
+			r.Session().FlashBag().Error(err.Error())
 		} else {
-			r.Session().FlashBag().Add("success", locale.Translate(h.component.Name(), "Message send success", ""))
+			r.Session().FlashBag().Success(locale.Translate(h.component.Name(), "Message send success", ""))
 			h.Redirect(r.URL().String(), http.StatusFound, w, r)
 			return
 		}
