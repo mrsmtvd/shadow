@@ -6,12 +6,6 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
-            {{ if .error }}
-                <div class="alert alert-danger alert-dismissable">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                {{ .error.Error }}
-                </div>
-            {{ end }}
             <form role="form" action="#" method="post" id="loggers">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped dt-responsive nowrap" style="width:100%">

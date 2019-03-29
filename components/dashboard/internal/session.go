@@ -1,22 +1,68 @@
 package internal
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs"
+	"github.com/kihamo/shadow/components/dashboard/session"
+)
+
+const (
+	SessionFlashBag = "flash-bag"
 )
 
 type Session struct {
 	session  *scs.Session
+	flashBag session.FlashBag
 	response http.ResponseWriter
 }
 
 func NewSession(s *scs.Session, w http.ResponseWriter) *Session {
-	return &Session{
+	r := &Session{
 		session:  s,
+		flashBag: session.NewAutoExpireFlashBag(),
 		response: w,
 	}
+	r.init()
+
+	return r
+}
+
+func (s *Session) init() {
+	if ok, err := s.Exists(SessionFlashBag); !ok || err != nil {
+		content, _ := json.Marshal(nil)
+		s.PutBytes(SessionFlashBag, content)
+		return
+	}
+
+	content, err := s.GetBytes(SessionFlashBag)
+	if err != nil {
+		return
+	}
+
+	dump := make(map[string][]string)
+
+	if err := json.Unmarshal(content, &dump); err != nil {
+		return
+	}
+
+	for level, messages := range dump {
+		for _, message := range messages {
+			s.flashBag.Add(level, message)
+		}
+	}
+}
+
+func (s *Session) Flush() {
+	if content, err := json.Marshal(s.flashBag.All()); err == nil {
+		s.PutBytes(SessionFlashBag, content)
+	}
+}
+
+func (s *Session) FlashBag() session.FlashBag {
+	return s.flashBag
 }
 
 func (s *Session) RenewToken() error {

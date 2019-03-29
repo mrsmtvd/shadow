@@ -165,7 +165,10 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		"started":    started,
 		"duration":   0,
 		"remove_all": len(dumps) != 0,
-		"error":      err,
+	}
+
+	if err != nil {
+		r.Session().FlashBag().Add("error", err.Error())
 	}
 
 	if started != nil {

@@ -120,9 +120,12 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		return
 	}
 
+	if err != nil {
+		r.Session().FlashBag().Add("error", err.Error())
+	}
+
 	h.Render(r.Context(), "manager", map[string]interface{}{
 		"loggers": loggers,
 		"levels":  h.levels,
-		"error":   err,
 	})
 }

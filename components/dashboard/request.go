@@ -91,7 +91,7 @@ func (r *Request) DecodeJSON(j interface{}) error {
 	converter := gotypes.NewConverter(in, &j)
 
 	if !converter.Valid() {
-		return errors.New("Convert failed")
+		return errors.New("convert failed")
 	}
 
 	return nil

@@ -19,14 +19,14 @@ import (
 type Component struct {
 	mutex sync.RWMutex
 
-	application shadow.Application
-	components  []shadow.Component
-	config      config.Component
-	logger      logging.Logger
-	renderer    *Renderer
-	session     *scs.Manager
-	router      *Router
-	server      *http.Server
+	application    shadow.Application
+	components     []shadow.Component
+	config         config.Component
+	logger         logging.Logger
+	renderer       *Renderer
+	sessionManager *scs.Manager
+	router         *Router
+	server         *http.Server
 
 	registryAssetFS *sync.Map
 }

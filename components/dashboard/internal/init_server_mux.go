@@ -14,7 +14,8 @@ func (c *Component) initServeMux() error {
 	c.router.SetNotAllowedHandler(&handlers.MethodNotAllowedHandler{})
 
 	// Middleware
-	c.router.addMiddleware(ContextMiddleware(c.router, c.renderer, c.session))
+	c.router.addMiddleware(ContextMiddleware(c.router, c.renderer))
+	c.router.addMiddleware(SessionMiddleware(c.sessionManager))
 
 	for _, component := range c.components {
 		if componentRoute, ok := component.(dashboard.HasRoutes); ok {

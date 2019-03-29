@@ -69,19 +69,3 @@
         }
     </style>
 {{ end }}
-
-{{ define "js" }}
-    {{ if .error }}
-    <script type="application/javascript">
-        $(document).ready(function () {
-            new PNotify({
-                title: 'Error',
-                text: '{{ .error }}',
-                type: 'error',
-                hide: false,
-                styling: 'bootstrap3'
-            });
-        });
-    </script>
-    {{ end }}
-{{ end }}

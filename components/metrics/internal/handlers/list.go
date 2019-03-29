@@ -34,9 +34,12 @@ func (h *ListHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 		}
 	}
 
+	if err != nil {
+		r.Session().FlashBag().Add("error", err.Error())
+	}
+
 	h.Render(r.Context(), "list", map[string]interface{}{
 		"measures": measures,
-		"error":    err,
 		"updated":  updated,
 	})
 }

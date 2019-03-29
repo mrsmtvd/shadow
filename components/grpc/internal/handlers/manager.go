@@ -389,8 +389,11 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		services, err = h.getServicesLightViewData()
 	}
 
+	if err != nil {
+		r.Session().FlashBag().Add("error", err.Error())
+	}
+
 	h.Render(r.Context(), "manager", map[string]interface{}{
-		"error":    err,
 		"services": services,
 	})
 }

@@ -102,8 +102,11 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		variables[source] = cmp
 	}
 
+	if err != nil {
+		r.Session().FlashBag().Add("error", err.Error())
+	}
+
 	h.Render(r.Context(), "manager", map[string]interface{}{
 		"variables": variables,
-		"error":     err,
 	})
 }

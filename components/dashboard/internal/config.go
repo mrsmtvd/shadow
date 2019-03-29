@@ -211,35 +211,35 @@ func (c *Component) watchAuth(_ string, _ interface{}, _ interface{}) {
 }
 
 func (c *Component) watchSessionCookieName(_ string, v interface{}, _ interface{}) {
-	c.session.Name(v.(string))
+	c.sessionManager.Name(v.(string))
 }
 
 func (c *Component) watchSessionDomain(_ string, v interface{}, _ interface{}) {
-	c.session.Domain(v.(string))
+	c.sessionManager.Domain(v.(string))
 }
 
 func (c *Component) watchSessionHttpOnly(_ string, v interface{}, _ interface{}) {
-	c.session.HttpOnly(v.(bool))
+	c.sessionManager.HttpOnly(v.(bool))
 }
 
 func (c *Component) watchSessionIdleTimeout(_ string, v interface{}, _ interface{}) {
-	c.session.IdleTimeout(v.(time.Duration))
+	c.sessionManager.IdleTimeout(v.(time.Duration))
 }
 
 func (c *Component) watchSessionLifetime(_ string, v interface{}, _ interface{}) {
-	c.session.Lifetime(v.(time.Duration))
+	c.sessionManager.Lifetime(v.(time.Duration))
 }
 
 func (c *Component) watchSessionPath(_ string, v interface{}, _ interface{}) {
-	c.session.Path(v.(string))
+	c.sessionManager.Path(v.(string))
 }
 
 func (c *Component) watchSessionPersist(_ string, v interface{}, _ interface{}) {
-	c.session.Persist(v.(bool))
+	c.sessionManager.Persist(v.(bool))
 }
 
 func (c *Component) watchSessionSecure(_ string, v interface{}, _ interface{}) {
-	c.session.Secure(v.(bool))
+	c.sessionManager.Secure(v.(bool))
 }
 
 func (c *Component) watchPanicHandlerCallerSkip(_ string, v interface{}, _ interface{}) {

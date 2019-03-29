@@ -239,9 +239,12 @@ func (h *AssetFSHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 	breadcrumb[len(breadcrumb)-1].Active = true
 
+	if err != nil {
+		r.Session().FlashBag().Add("error", err.Error())
+	}
+
 	h.Render(r.Context(), "assetfs", map[string]interface{}{
 		"breadcrumb": breadcrumb,
 		"files":      files,
-		"error":      err,
 	})
 }

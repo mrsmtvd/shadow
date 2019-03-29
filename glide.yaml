@@ -1,7 +1,7 @@
 package: github.com/kihamo/shadow
 import:
 - package: github.com/alexedwards/scs
-  version: ~v1.1.0
+  version: ~v1.4.0
 - package: github.com/bugsnag/osext
   version: 0dd3f918b21bec95ace9dc86c7e70266cfc5c702
 - package: github.com/deckarep/golang-set
@@ -61,7 +61,7 @@ import:
 - package: github.com/heptiolabs/healthcheck
   version: da5fdee475fb09de87c5d4a50da233b7d28767b1
 - package: github.com/uber/jaeger-client-go
-  version: ^2.15.0
+  version: ~v2.15
 - package: github.com/uber/jaeger-lib
   version: ^1.5.0
 - package: github.com/grpc-ecosystem/grpc-opentracing

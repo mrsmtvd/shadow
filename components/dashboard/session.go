@@ -2,9 +2,12 @@ package dashboard
 
 import (
 	"time"
+
+	"github.com/kihamo/shadow/components/dashboard/session"
 )
 
 type Session interface {
+	FlashBag() session.FlashBag
 	RenewToken() error
 	Destroy() error
 	GetString(k string) (string, error)

@@ -28,7 +28,45 @@
     {{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 
     <script type="application/javascript">
-        window.shadowLocale = "{{ .Locale }}"
+        window.shadowLocale = "{{ .Locale }}";
+
+        $(document).ready(function () {
+            {{ range $i, $message := (.Request.Session.FlashBag.Get "notice") }}
+                new PNotify({
+                    title: 'Notice',
+                    text: '{{ $message }}',
+                    type: 'notice',
+                    styling: 'bootstrap3'
+                });
+            {{ end }}
+
+            {{ range $i, $message := (.Request.Session.FlashBag.Get "info") }}
+                new PNotify({
+                    title: 'Info',
+                    text: '{{ $message }}',
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            {{ end }}
+
+            {{ range $i, $message := (.Request.Session.FlashBag.Get "success") }}
+                new PNotify({
+                    title: 'Success',
+                    text: '{{ $message }}',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            {{ end }}
+
+            {{ range $i, $message := (.Request.Session.FlashBag.Get "error") }}
+                new PNotify({
+                    title: 'Error',
+                    text: '{{ $message }}',
+                    type: 'error',
+                    styling: 'bootstrap3'
+                });
+            {{ end }}
+        });
     </script>
 
     {{ block "head" . }} {{ end }}

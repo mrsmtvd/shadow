@@ -7,7 +7,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-func ContextMiddleware(router *Router, renderer *Renderer, sessionManager *scs.Manager) func(http.Handler) http.Handler {
+func ContextMiddleware(router *Router, renderer *Renderer) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := dashboard.NewResponse(w)
@@ -17,7 +17,6 @@ func ContextMiddleware(router *Router, renderer *Renderer, sessionManager *scs.M
 			ctx := dashboard.ContextWithRender(r.Context(), renderer)
 			ctx = dashboard.ContextWithResponse(ctx, writer)
 			ctx = dashboard.ContextWithRouter(ctx, router)
-			ctx = dashboard.ContextWithSession(ctx, NewSession(sessionManager.Load(r), w))
 			ctx = dashboard.ContextWithRequest(ctx, request)
 
 			if route != nil {
@@ -29,6 +28,19 @@ func ContextMiddleware(router *Router, renderer *Renderer, sessionManager *scs.M
 			request = request.WithContext(ctx)
 			next.ServeHTTP(writer, request.Original())
 		})
+	}
+}
+
+func SessionMiddleware(sessionManager *scs.Manager) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return sessionManager.Use(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			session := NewSession(sessionManager.LoadFromContext(r.Context()), w)
+			ctx := dashboard.ContextWithSession(r.Context(), session)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+
+			session.Flush()
+		}))
 	}
 }
 

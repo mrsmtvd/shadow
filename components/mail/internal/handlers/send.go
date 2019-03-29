@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/mail"
@@ -19,7 +21,7 @@ func NewSendHandler(component mail.Component) *SendHandler {
 	}
 }
 
-func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
+func (h *SendHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	locale := i18n.Locale(r.Context())
 	vars := map[string]interface{}{}
 
@@ -35,9 +37,11 @@ func (h *SendHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 		}
 
 		if err := h.component.SendAndReturn(message); err != nil {
-			vars["error"] = err.Error()
+			r.Session().FlashBag().Add("error", err.Error())
 		} else {
-			vars["message"] = locale.Translate(h.component.Name(), "Message send success", "")
+			r.Session().FlashBag().Add("success", locale.Translate(h.component.Name(), "Message send success", ""))
+			h.Redirect(r.URL().String(), http.StatusFound, w, r)
+			return
 		}
 	}
 
