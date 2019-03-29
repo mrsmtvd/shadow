@@ -12,7 +12,7 @@
                         {{ range $name, $vars := .variables }}
                         <li role="presentation" {{ if eq $name "config" }} class="active"{{ end }}>
                             <a href="#{{ $name }}" aria-controls="{{ $name }}" role="tab" data-toggle="tab" aria-expanded="{{ if eq $name "config" }}true{{ else }}false{{ end }}">
-                                {{ $name }}
+                                {{ i18n $name $ "config-tab" $name }}
                             </a>
                         </li>
                         {{ end }}

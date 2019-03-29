@@ -13,6 +13,10 @@ msgstr ""
 msgid "Configuration"
 msgstr "Конфигурация"
 
+msgctxt "config-tab"
+msgid "config"
+msgstr "Конфигурация"
+
 msgctxt "config"
 msgid "Develop mode"
 msgstr "Режим разработки"
