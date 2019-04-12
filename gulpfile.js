@@ -246,6 +246,19 @@ gulp.task('frontend', gulp.series('compress-components', function(done) {
     gulp.src(['bower_components/dropzonejs/dist/min/dropzone.min.css'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/dropzonejs/css'));
 
+    // bootstrap-daterangepicker
+    gulp.src(['bower_components/bootstrap-daterangepicker/daterangepicker.css'])
+        .pipe(cleanCss())
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-daterangepicker/css'));
+    gulp.src(['bower_components/bootstrap-daterangepicker/daterangepicker.js'])
+        .pipe(uglify({mangle:false}))
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-daterangepicker/js'));
+
+    gulp.src(['bower_components/moment/min/*.min.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/moment/js'));
+
     done();
 }));
 
