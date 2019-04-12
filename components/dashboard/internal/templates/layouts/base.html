@@ -28,7 +28,19 @@
     {{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 
     <script type="application/javascript">
-        window.shadowLocale = "{{ .Locale }}";
+        window.shadowLocale = '{{ .Locale }}';
+        window.shadowI18n = {
+            labels: {
+                apply: '{{ i18n "Apply" . }}',
+                cancel: '{{ i18n "Cancel" . }}',
+                from: '{{ i18n "From" . }}',
+                to: '{{ i18n "To" . }}',
+                customRange: '{{ i18n "Custom" . }}',
+                week: '{{ i18n "W" . }}',
+            },
+            monthNames: ['{{ i18n "January" . }}','{{ i18n "February" . }}','{{ i18n "March" . }}','{{ i18n "April" . }}','{{ i18n "May" . }}','{{ i18n "June" . }}','{{ i18n "July" . }}','{{ i18n "August" . }}','{{ i18n "September" . }}','{{ i18n "October" . }}','{{ i18n "November" . }}','{{ i18n "December" . }}'],
+            daysOfWeek: ['{{ i18n "Su" . }}','{{ i18n "Mo" . }}','{{ i18n "Tu" . }}','{{ i18n "We" . }}','{{ i18n "Th" . }}','{{ i18n "Fr" . }}','{{ i18n "Sa" . }}']
+        };
 
         $(document).ready(function () {
             {{ range $i, $message := (.Request.Session.FlashBag.Get "notice") }}

@@ -153,6 +153,7 @@ $(document).ready(function () {
     init_tagsinput();
     init_tooltip();
     init_validator();
+    init_daterangepicker();
 });
 
 /**
@@ -721,4 +722,27 @@ function init_validator() {
     $('.multi.required').on('keyup blur', 'input', function() {
         validator.checkField.apply($(this).siblings().last()[0]);
     });
+}
+
+function init_daterangepicker() {
+    if(typeof ($.fn.daterangepicker) === 'undefined') {
+        return;
+    }
+
+    $.fn.daterangepicker.defaultOptions = {
+        timePicker: true,
+        timePicker24Hour: true,
+        locale: {
+            format: 'YYYY.MM.DD HH:mm:ss',
+            applyLabel: window.shadowI18n.labels.apply,
+            cancelLabel: window.shadowI18n.labels.cancel,
+            fromLabel: window.shadowI18n.labels.from,
+            toLabel: window.shadowI18n.labels.to,
+            customRangeLabel: window.shadowI18n.labels.customRange,
+            weekLabel: window.shadowI18n.labels.week,
+            daysOfWeek: window.shadowI18n.daysOfWeek,
+            monthNames: window.shadowI18n.monthNames,
+            firstDay: 1
+        }
+    };
 }
