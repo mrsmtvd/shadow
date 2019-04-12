@@ -732,6 +732,7 @@ function init_daterangepicker() {
     $.fn.daterangepicker.defaultOptions = {
         timePicker: true,
         timePicker24Hour: true,
+        applyButtonClasses: 'btn-success',
         locale: {
             format: 'YYYY.MM.DD HH:mm:ss',
             applyLabel: window.shadowI18n.labels.apply,

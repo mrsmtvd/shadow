@@ -23,7 +23,6 @@
     {{ staticHTML (staticURL "/dashboard/assets/vendors/waitMe/css/waitMe.min.css" false) }}
 
     {{ staticHTML (staticURL "/dashboard/assets/css/dashboard.css" true) }}
-    {{ staticHTML (staticURL "/dashboard/assets/css/custom.css" true) }}
     {{ staticHTML (staticURL "/dashboard/assets/js/functions.js" true) }}
     {{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 
@@ -82,6 +81,8 @@
     </script>
 
     {{ block "head" . }} {{ end }}
+
+    {{ staticHTML (staticURL "/dashboard/assets/css/custom.css" true) }}
 </head>
 
 <body class="nav-md">
