@@ -116,3 +116,15 @@ msgstr "Произвольная"
 
 msgid "W"
 msgstr "Н"
+
+msgid "Notice"
+msgstr "Предупреждение"
+
+msgid "Info"
+msgstr "Информационное"
+
+msgid "Success"
+msgstr "Успешно"
+
+msgid "Error"
+msgstr "Ошибка"

@@ -31,21 +31,21 @@
         window.shadowLocale = '{{ .Locale }}';
         window.shadowI18n = {
             labels: {
-                apply: '{{ i18n "Apply" . }}',
-                cancel: '{{ i18n "Cancel" . }}',
-                from: '{{ i18n "From" . }}',
-                to: '{{ i18n "To" . }}',
-                customRange: '{{ i18n "Custom" . }}',
-                week: '{{ i18n "W" . }}',
+                apply: '{{ i18n "Apply" . nil "dashboard" }}',
+                cancel: '{{ i18n "Cancel" . nil "dashboard" }}',
+                from: '{{ i18n "From" . nil "dashboard" }}',
+                to: '{{ i18n "To" . nil "dashboard" }}',
+                customRange: '{{ i18n "Custom" . nil "dashboard" }}',
+                week: '{{ i18n "W" . nil "dashboard" }}',
             },
-            monthNames: ['{{ i18n "January" . }}','{{ i18n "February" . }}','{{ i18n "March" . }}','{{ i18n "April" . }}','{{ i18n "May" . }}','{{ i18n "June" . }}','{{ i18n "July" . }}','{{ i18n "August" . }}','{{ i18n "September" . }}','{{ i18n "October" . }}','{{ i18n "November" . }}','{{ i18n "December" . }}'],
-            daysOfWeek: ['{{ i18n "Su" . }}','{{ i18n "Mo" . }}','{{ i18n "Tu" . }}','{{ i18n "We" . }}','{{ i18n "Th" . }}','{{ i18n "Fr" . }}','{{ i18n "Sa" . }}']
+            monthNames: ['{{ i18n "January" . nil "dashboard" }}','{{ i18n "February" . nil "dashboard" }}','{{ i18n "March" . nil "dashboard" }}','{{ i18n "April" . nil "dashboard" }}','{{ i18n "May" . nil "dashboard" }}','{{ i18n "June" . nil "dashboard" }}','{{ i18n "July" . nil "dashboard" }}','{{ i18n "August" . nil "dashboard" }}','{{ i18n "September" . nil "dashboard" }}','{{ i18n "October" . nil "dashboard" }}','{{ i18n "November" . nil "dashboard" }}','{{ i18n "December" . nil "dashboard" }}'],
+            daysOfWeek: ['{{ i18n "Su" . nil "dashboard" }}','{{ i18n "Mo" . nil "dashboard" }}','{{ i18n "Tu" . nil "dashboard" }}','{{ i18n "We" . nil "dashboard" }}','{{ i18n "Th" . nil "dashboard" }}','{{ i18n "Fr" . nil "dashboard" }}','{{ i18n "Sa" . nil "dashboard" }}']
         };
 
         $(document).ready(function () {
             {{ range $i, $message := (.Request.Session.FlashBag.Get "notice") }}
                 new PNotify({
-                    title: 'Notice',
+                    title: '{{ i18n "Notice" . nil "dashboard" }}',
                     text: '{{ $message }}',
                     type: 'notice',
                     styling: 'bootstrap3'
@@ -54,7 +54,7 @@
 
             {{ range $i, $message := (.Request.Session.FlashBag.Get "info") }}
                 new PNotify({
-                    title: 'Info',
+                    title: '{{ i18n "Info" . nil "dashboard" }}',
                     text: '{{ $message }}',
                     type: 'info',
                     styling: 'bootstrap3'
@@ -63,7 +63,7 @@
 
             {{ range $i, $message := (.Request.Session.FlashBag.Get "success") }}
                 new PNotify({
-                    title: 'Success',
+                    title: '{{ i18n "Success" . nil "dashboard" }}',
                     text: '{{ $message }}',
                     type: 'success',
                     styling: 'bootstrap3'
@@ -72,7 +72,7 @@
 
             {{ range $i, $message := (.Request.Session.FlashBag.Get "error") }}
                 new PNotify({
-                    title: 'Error',
+                    title: '{{ i18n "Error" . nil "dashboard" }}',
                     text: '{{ $message }}',
                     type: 'error',
                     styling: 'bootstrap3'
