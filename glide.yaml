@@ -67,4 +67,6 @@ import:
 - package: github.com/grpc-ecosystem/grpc-opentracing
   version: 8e809c8a86450a29b90dcc9efbf062d0fe6d9746
 - package: go.uber.org/zap
-  version: ^1.9.1
+  version: ~1.10
+- package: github.com/TheZeroSlave/zapsentry
+  version: ~v1.1

@@ -108,6 +108,12 @@ func (c *Component) ConfigVariables() []config.Variable {
 					{logging.EncoderCallerFull, "Full"},
 				},
 			}),
+		config.NewVariable(logging.ConfigSentryEnabled, config.ValueTypeBool).
+			WithGroup("Sentry").
+			WithUsage("Enabled"),
+		config.NewVariable(logging.ConfigSentryDSN, config.ValueTypeString).
+			WithGroup("Sentry").
+			WithUsage("DSN"),
 	}
 }
 

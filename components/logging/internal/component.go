@@ -5,6 +5,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/TheZeroSlave/zapsentry"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logging"
@@ -111,14 +112,33 @@ func (c *Component) initLogger() {
 	}
 
 	output := zapcore.AddSync(os.Stdout)
+	fields := c.parseFields(c.config.String(logging.ConfigFields))
 
-	c.global.InitFull(
-		encoder, output, zapcore.Level(c.config.Int64(logging.ConfigLevel)),
-		zap.Fields(c.parseFields(c.config.String(logging.ConfigFields))...),
+	options := []zap.Option{
+		zap.Fields(fields...),
 		zap.AddCaller(),
 		zap.AddCallerSkip(1),
 		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))),
-	)
+	}
+
+	if c.config.Bool(logging.ConfigSentryEnabled) {
+		sentryConfig := zapsentry.Configuration{
+			Tags:  make(map[string]string),
+			Level: zapcore.Level(c.config.Int64(logging.ConfigLevel)),
+		}
+
+		for _, f := range fields {
+			sentryConfig.Tags[f.Key] = f.String
+		}
+
+		sentryCore, _ := zapsentry.NewCore(sentryConfig, zapsentry.NewSentryClientFromDSN(c.config.String(logging.ConfigSentryDSN)))
+
+		options = append(options, zap.WrapCore(func(core zapcore.Core) zapcore.Core {
+			return zapcore.NewTee(core, sentryCore)
+		}))
+	}
+
+	c.global.InitFull(encoder, output, zapcore.Level(c.config.Int64(logging.ConfigLevel)), options...)
 
 	zap.ReplaceGlobals(c.global.Logger())
 	std := zap.RedirectStdLog(c.global.LoadOrStore("std").Logger())
