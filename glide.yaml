@@ -70,3 +70,5 @@ import:
   version: ~1.10
 - package: github.com/TheZeroSlave/zapsentry
   version: ~v1.1
+- package: github.com/getsentry/sentry-go
+  version: 759fbf8e9221cd2a2c3a26e3d7b41ecae2ed89d9

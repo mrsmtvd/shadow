@@ -123,7 +123,10 @@ func (w *Wrapper) Options() []zap.Option {
 	w.lock.RLock()
 	defer w.lock.RUnlock()
 
-	return w.options
+	opts := make([]zap.Option, len(w.options))
+	copy(opts, w.options)
+
+	return opts
 }
 
 func (w *Wrapper) WithOptions(full bool, options ...zap.Option) {
