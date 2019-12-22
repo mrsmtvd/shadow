@@ -10,20 +10,20 @@ import (
 	"github.com/kihamo/shadow/components/ota/release"
 )
 
-type DirectoryRepository struct {
-	*MemoryRepository
+type Directory struct {
+	*Memory
 
 	lock     sync.RWMutex
 	releases []ota.Release
 }
 
-func NewDirectoryRepository() *DirectoryRepository {
-	return &DirectoryRepository{
-		MemoryRepository: NewMemoryRepository(),
+func NewDirectory() *Directory {
+	return &Directory{
+		Memory: NewMemory(),
 	}
 }
 
-func (r *DirectoryRepository) Load(dir string) error {
+func (r *Directory) Load(dir string) error {
 	return filepath.Walk(dir, func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
 			return nil

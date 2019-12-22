@@ -7,24 +7,24 @@ import (
 	"github.com/kihamo/shadow/components/ota"
 )
 
-type MemoryRepository struct {
+type Memory struct {
 	lock     sync.RWMutex
 	releases []ota.Release
 }
 
-func NewMemoryRepository(releases ...ota.Release) *MemoryRepository {
-	return &MemoryRepository{
+func NewMemory(releases ...ota.Release) *Memory {
+	return &Memory{
 		releases: releases,
 	}
 }
 
-func (r *MemoryRepository) Add(release ota.Release) {
+func (r *Memory) Add(release ota.Release) {
 	r.lock.Lock()
 	r.releases = append(r.releases, release)
 	r.lock.Unlock()
 }
 
-func (r *MemoryRepository) Remove(release ota.Release) {
+func (r *Memory) Remove(release ota.Release) {
 	r.lock.Lock()
 
 	for i, rl := range r.releases {
@@ -37,7 +37,7 @@ func (r *MemoryRepository) Remove(release ota.Release) {
 	r.lock.Unlock()
 }
 
-func (r *MemoryRepository) Releases(arch string) ([]ota.Release, error) {
+func (r *Memory) Releases(arch string) ([]ota.Release, error) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
 
@@ -53,7 +53,7 @@ func (r *MemoryRepository) Releases(arch string) ([]ota.Release, error) {
 	return releases, nil
 }
 
-func (r *MemoryRepository) ReleaseLatest(arch string) (ota.Release, error) {
+func (r *Memory) ReleaseLatest(arch string) (ota.Release, error) {
 	releases, err := r.Releases(arch)
 	if err != nil {
 		return nil, err

@@ -9,7 +9,7 @@ import (
 	"github.com/kihamo/shadow/components/ota"
 )
 
-type LocalFileRelease struct {
+type LocalFile struct {
 	file         *os.File
 	path         string
 	version      string
@@ -18,7 +18,7 @@ type LocalFileRelease struct {
 	fileInfo     os.FileInfo
 }
 
-func NewLocalFile(path, version string) (*LocalFileRelease, error) {
+func NewLocalFile(path, version string) (*LocalFile, error) {
 	fd, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func NewLocalFile(path, version string) (*LocalFileRelease, error) {
 	return NewLocalFileFromFD(fd, version)
 }
 
-func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFileRelease, error) {
+func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFile, error) {
 	if dir == "" {
 		dir = os.TempDir()
 	}
@@ -45,7 +45,7 @@ func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFileRe
 	return NewLocalFileFromFD(fd, version)
 }
 
-func NewLocalFileFromFD(fd *os.File, version string) (*LocalFileRelease, error) {
+func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
 	stat, err := fd.Stat()
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFileRelease, error) 
 		version = stat.Name()
 	}
 
-	return &LocalFileRelease{
+	return &LocalFile{
 		file:         fd,
 		path:         fd.Name(),
 		version:      version,
@@ -72,31 +72,31 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFileRelease, error) 
 	}, nil
 }
 
-func (f *LocalFileRelease) Version() string {
+func (f *LocalFile) Version() string {
 	return f.version
 }
 
-func (f *LocalFileRelease) BinFile() io.ReadCloser {
+func (f *LocalFile) BinFile() (io.ReadCloser, error) {
 	f.file.Seek(0, io.SeekStart)
-	return f.file
+	return f.file, nil
 }
 
-func (f *LocalFileRelease) Path() string {
+func (f *LocalFile) Path() string {
 	return f.path
 }
 
-func (f *LocalFileRelease) Checksum() []byte {
+func (f *LocalFile) Checksum() []byte {
 	return f.checksum
 }
 
-func (f *LocalFileRelease) Size() int64 {
+func (f *LocalFile) Size() int64 {
 	return f.fileInfo.Size()
 }
 
-func (f *LocalFileRelease) Architecture() string {
+func (f *LocalFile) Architecture() string {
 	return f.architecture
 }
 
-func (f *LocalFileRelease) FileInfo() os.FileInfo {
+func (f *LocalFile) FileInfo() os.FileInfo {
 	return f.fileInfo
 }

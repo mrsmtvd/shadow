@@ -21,7 +21,8 @@ const (
 
 type Release interface {
 	Version() string
-	BinFile() io.ReadCloser
+	BinFile() (io.ReadCloser, error)
+	Path() string
 	Checksum() []byte
 	Size() int64
 	Architecture() string
@@ -47,6 +48,11 @@ func (u *Updater) AutoClean() error {
 func (u *Updater) UpdateTo(release Release, path string) error {
 	if release.Architecture() != runtime.GOARCH {
 		return errors.New("not valid architecture")
+	}
+
+	releaseBinFile, err := release.BinFile()
+	if err != nil {
+		return err
 	}
 
 	// TODO: проверка подписи к файлу
@@ -77,7 +83,7 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	}
 	defer newFile.Close()
 
-	_, err = io.Copy(newFile, release.BinFile())
+	_, err = io.Copy(newFile, releaseBinFile)
 	if err != nil {
 		return err
 	}

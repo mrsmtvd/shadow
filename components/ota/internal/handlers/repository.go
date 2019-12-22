@@ -17,7 +17,7 @@ import (
 type RepositoryHandler struct {
 	dashboard.Handler
 
-	Repository *repository.DirectoryRepository
+	Repository *repository.Directory
 }
 
 func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -32,8 +32,14 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 	if id := r.URL().Query().Get(":id"); id != "" {
 		for _, rl := range releases {
 			if rlID := release.GenerateReleaseID(rl); rlID == id {
+				releaseBinFile, err := rl.BinFile()
+				if err != nil {
+					h.InternalError(w, r, err)
+					return
+				}
+
 				fileName := "release." + rl.Architecture() + ".bin"
-				if releaseFile, ok := rl.(*release.LocalFileRelease); ok {
+				if releaseFile, ok := rl.(*release.LocalFile); ok {
 					fileName = filepath.Base(releaseFile.Path()) +
 						"." + strings.ReplaceAll(releaseFile.Version(), " ", ".") +
 						"." + rl.Architecture() + ".bin"
@@ -42,7 +48,7 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 				w.Header().Set("Content-Length", strconv.FormatInt(rl.Size(), 10))
 				w.Header().Set("Content-Type", "application/x-binary")
 				w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
-				io.Copy(w, rl.BinFile())
+				io.Copy(w, releaseBinFile)
 				return
 			}
 		}

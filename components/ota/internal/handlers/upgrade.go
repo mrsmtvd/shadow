@@ -16,7 +16,7 @@ type UpgradeHandler struct {
 	dashboard.Handler
 
 	Updater    *ota.Updater
-	Repository *repository.DirectoryRepository
+	Repository *repository.Directory
 }
 
 func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -29,7 +29,7 @@ func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 			switch t {
 			case "application/macbinary":
-				var rl *release.LocalFileRelease
+				var rl *release.LocalFile
 
 				rl, err = release.NewLocalFileFromStream(file, "", r.Config().String(ota.ConfigReleasesDirectory))
 				if err == nil {

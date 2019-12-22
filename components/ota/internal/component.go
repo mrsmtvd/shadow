@@ -17,7 +17,7 @@ type Component struct {
 	routes []dashboard.Route
 
 	updater          *ota.Updater
-	uploadRepository *repository.DirectoryRepository
+	uploadRepository *repository.Directory
 	currentRelease   ota.Release
 }
 
@@ -60,7 +60,7 @@ func (c *Component) Init(a shadow.Application) error {
 
 	c.updater = ota.NewUpdater()
 
-	c.uploadRepository = repository.NewDirectoryRepository()
+	c.uploadRepository = repository.NewDirectory()
 	c.uploadRepository.Add(c.currentRelease)
 
 	return nil

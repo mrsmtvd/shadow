@@ -34,7 +34,7 @@ type ReleasesHandler struct {
 	dashboard.Handler
 
 	Updater        *ota.Updater
-	Repository     *repository.DirectoryRepository
+	Repository     *repository.Directory
 	CurrentRelease ota.Release
 }
 
@@ -65,15 +65,14 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 			Checksum:     hex.EncodeToString(rl.Checksum()),
 			IsCurrent:    rl == h.CurrentRelease,
 			Architecture: rl.Architecture(),
+			Path:         rl.Path(),
 		}
 
-		if releaseFile, ok := rl.(*release.LocalFileRelease); ok {
-			rView.Path = releaseFile.Path()
+		if releaseFile, ok := rl.(*release.LocalFile); ok {
 			rView.UploadedAt = &[]time.Time{releaseFile.FileInfo().ModTime()}[0]
 		}
 
 		releasesView = append(releasesView, rView)
-
 	}
 
 	h.Render(r.Context(), "releases", map[string]interface{}{
@@ -103,7 +102,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 				h.Repository.Remove(rl)
 				info := []interface{}{"version", rl.Version()}
 
-				if releaseFile, ok := rl.(*release.LocalFileRelease); ok {
+				if releaseFile, ok := rl.(*release.LocalFile); ok {
 					os.Remove(releaseFile.Path())
 					info = append(info, "path", releaseFile.Path())
 				}
@@ -140,7 +139,7 @@ func (h *ReleasesHandler) actionUpgrade(w *dashboard.Response, r *dashboard.Requ
 				} else {
 					info := []interface{}{"version", rl.Version()}
 
-					if releaseFile, ok := rl.(*release.LocalFileRelease); ok {
+					if releaseFile, ok := rl.(*release.LocalFile); ok {
 						info = append(info, "path", releaseFile.Path())
 					}
 
