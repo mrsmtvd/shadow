@@ -11,7 +11,6 @@ import (
 	_ "github.com/kihamo/shadow/components/annotations/instance"
 	_ "github.com/kihamo/shadow/components/config/instance"
 	_ "github.com/kihamo/shadow/components/dashboard/instance"
-
 	_ "github.com/kihamo/shadow/components/database/instance"
 	_ "github.com/kihamo/shadow/components/grpc/instance"
 	_ "github.com/kihamo/shadow/components/i18n/instance"
@@ -19,6 +18,7 @@ import (
 	_ "github.com/kihamo/shadow/components/mail/instance"
 	_ "github.com/kihamo/shadow/components/messengers/instance"
 	_ "github.com/kihamo/shadow/components/metrics/instance"
+	_ "github.com/kihamo/shadow/components/ota/instance"
 	_ "github.com/kihamo/shadow/components/profiling/instance"
 	_ "github.com/kihamo/shadow/components/tracing/instance"
 	_ "github.com/kihamo/shadow/components/workers/instance"

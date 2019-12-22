@@ -42,7 +42,8 @@
     "waitMe": "https://github.com/vadimsva/waitMe.git#29.07.16",
     "bootstrap-languages": "https://github.com/usrz/bootstrap-languages.git",
     "bootstrap-daterangepicker": "^3.0.4",
-    "dropzonejs": "https://github.com/enyo/dropzone.git#^5.5.0"
+    "dropzonejs": "https://github.com/enyo/dropzone.git#^5.5.0",
+    "jQuery-Smart-Wizard": "^3.2.1"
   },
   "resolutions": {
     "jquery": "^2.2.4",

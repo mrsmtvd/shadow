@@ -259,6 +259,10 @@ gulp.task('frontend', gulp.series('compress-components', function(done) {
     gulp.src(['bower_components/moment/min/*.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/moment/js'));
 
+    // jQuery Smart Wizard
+    gulp.src(['bower_components/jQuery-Smart-Wizard/js/jquery.smartWizard.js'])
+        .pipe(gulp.dest(VENDORS_DASHBOARD + '/jQuery-Smart-Wizard/js'));
+
     done();
 }));
 
