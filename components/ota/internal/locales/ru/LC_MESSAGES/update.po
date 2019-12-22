@@ -13,26 +13,23 @@ msgstr ""
 msgid "Upgrade release"
 msgstr "Обновить релиз"
 
-msgid "Step 1"
-msgstr "Шаг 1"
+msgid "Step 1 Upload binary file"
+msgstr "Шаг 1 Загрузка бинарного файла"
 
-msgid "Step 2"
-msgstr "Шаг 2"
+msgid "Step 2 Verify uploaded file"
+msgstr "Шаг 2 Проверка загруженного файла"
 
-msgid "Step 3"
-msgstr "Шаг 3"
+msgid "is not for current application architecture %s"
+msgstr "не для текущей архитектуры приложения %s"
 
-msgid "Step 4"
-msgstr "Шаг 4"
+msgid "Confirm upgrade application"
+msgstr "Подтверждение обновления приложения"
 
-msgid "Upload binary file"
-msgstr "Загрузка бинарного файла"
+msgid "Confirm upgrade and restart application"
+msgstr "Подтверждение обновления и перезапуск приложения"
 
-msgid "Verify uploaded file"
-msgstr "Проверка загруженного файла"
+msgid "Upgrade and restart"
+msgstr "Обновить и перезапустить"
 
-msgid "Upgrade application"
-msgstr "Обновить приложение"
-
-msgid "Confirm and restart"
-msgstr "Подвердить и перезапустить"
+msgid "Confirm remove uploaded file"
+msgstr "Подтверждение удаления загруженного файла"

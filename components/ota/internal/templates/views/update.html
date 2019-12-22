@@ -25,7 +25,7 @@
 
                             <dt>{{ i18n "Architecture" . }}:</dt>
                             <dd><span class="arch-value"></span> <span
-                                    class="arch-danger label label-danger">{{ i18n "is not current architecture %s" . nil nil nil .goarch }}</span>
+                                    class="arch-danger label label-danger">{{ i18n "is not for current application architecture %s" . nil nil nil .goarch }}</span>
                             </dd>
 
                             <dt>{{ i18n "Size" . }}:</dt>
@@ -34,20 +34,20 @@
                         <div class="form-group">
                             <button type="button" class="btn btn-success" data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Confirm upgrade release"
-                                    data-modal-callback="releaseUpgrade(false);">{{ i18n "Upgrade" $ }}
+                                    data-modal-title="{{ i18n "Confirm upgrade application" . }}"
+                                    data-modal-callback="releaseUpgrade(false);">{{ i18n "Upgrade" . }}
                             </button>
 
                             <button type="button" class="btn btn-warning" data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Confirm upgrade release and restart application"
-                                    data-modal-callback="releaseUpgrade(true);">{{ i18n "Upgrade and restart" $ }}
+                                    data-modal-title="{{ i18n "Confirm upgrade and restart application" . }}"
+                                    data-modal-callback="releaseUpgrade(true);">{{ i18n "Upgrade and restart" . }}
                             </button>
 
                             <button type="button" class="btn btn-danger" data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Confirm remove release"
-                                    data-modal-callback="releaseRemove();">{{ i18n "Remove" $ }}
+                                    data-modal-title="{{ i18n "Confirm remove uploaded file" . }}"
+                                    data-modal-callback="releaseRemove();">{{ i18n "Remove" . }}
                             </button>
                         </div>
                     </div>

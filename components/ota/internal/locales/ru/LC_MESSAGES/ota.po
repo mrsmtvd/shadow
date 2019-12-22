@@ -21,3 +21,7 @@ msgstr "Обновить"
 msgctxt "menu"
 msgid "Releases"
 msgstr "Релизы"
+
+msgctxt "menu"
+msgid "Repository"
+msgstr "Репозиторий"
