@@ -45,3 +45,12 @@ msgstr "Удалить"
 
 msgid "Upgrade application with restart"
 msgstr "Обновить приложение с перезапуском"
+
+msgid "Confirm upgrade to release %s"
+msgstr "Подтверждение обновления до релиза %s"
+
+msgid "Confirm upgrade to release %s and restart application"
+msgstr "Подтверждение обновления до релиза %s и перезапуск приложения"
+
+msgid "Confirm remove release %s"
+msgstr "Подтверждение удаления релиза %s"

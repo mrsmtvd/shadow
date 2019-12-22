@@ -32,15 +32,15 @@
 
                                     {{ if ne $release.IsCurrent true }}
                                         {{ if eq $.currentArch $release.Architecture }}
-                                        <button type="button" class="btn btn-danger btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="Confirm upgrade to release {{ $release.Version }}" data-modal-callback="releaseUpgrade('{{ $release.ID }}', false);">
+                                        <button type="button" class="btn btn-danger btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm upgrade to release %s" $ nil nil nil $release.Version }}" data-modal-callback="releaseUpgrade('{{ $release.ID }}', false);">
                                             <i class="fas fa-arrow-circle-up" title="{{ i18n "Upgrade application" $ }}"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="Confirm upgrade to release {{ $release.Version }} and restart application" data-modal-callback="releaseUpgrade('{{ $release.ID }}', true);">
+                                        <button type="button" class="btn btn-danger btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm upgrade to release %s and restart application" $ nil nil nil $release.Version }}" data-modal-callback="releaseUpgrade('{{ $release.ID }}', true);">
                                             <i class="fas fa-cloud-upload-alt" title="{{ i18n "Upgrade application with restart" $ }}"></i>
                                         </button>
                                         {{ end }}
 
-                                        <button type="button" class="btn btn-warning btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="Confirm remove release {{ $release.Version }}" data-modal-callback="releaseRemove('{{ $release.ID }}');">
+                                        <button type="button" class="btn btn-warning btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove release %s" $ nil nil nil $release.Version }}" data-modal-callback="releaseRemove('{{ $release.ID }}');">
                                             <i class="fas fa-trash" title="{{ i18n "Remove" $ }}"></i>
                                         </button>
                                     {{ end }}
