@@ -15,8 +15,8 @@ import (
 type UpgradeHandler struct {
 	dashboard.Handler
 
-	Updater    *ota.Updater
-	Repository *repository.Directory
+	Updater          *ota.Updater
+	UploadRepository *repository.Directory
 }
 
 func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -33,7 +33,7 @@ func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 				rl, err = release.NewLocalFileFromStream(file, "", r.Config().String(ota.ConfigReleasesDirectory))
 				if err == nil {
-					h.Repository.Add(rl)
+					h.UploadRepository.Add(rl)
 
 					_ = w.SendJSON(struct {
 						ID           string `json:"id"`

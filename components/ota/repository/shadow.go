@@ -12,7 +12,7 @@ import (
 	"github.com/kihamo/shadow/components/ota/release"
 )
 
-type ShadowRepositoryRecord struct {
+type ShadowRecord struct {
 	Architecture string `json:"architecture"`
 	Checksum     string `json:"checksum"`
 	Size         int64  `json:"size"`
@@ -20,17 +20,17 @@ type ShadowRepositoryRecord struct {
 	File         string `json:"file"`
 }
 
-type ShadowRepository struct {
+type Shadow struct {
 	u *url.URL
 }
 
-func NewShadowRepository(u *url.URL) *ShadowRepository {
-	return &ShadowRepository{
+func NewShadow(u *url.URL) *Shadow {
+	return &Shadow{
 		u: u,
 	}
 }
 
-func (r *ShadowRepository) Releases(arch string) ([]ota.Release, error) {
+func (r *Shadow) Releases(arch string) ([]ota.Release, error) {
 	r.u.Query().Set("architecture", arch)
 
 	response, err := http.Get(r.u.String())
@@ -44,7 +44,7 @@ func (r *ShadowRepository) Releases(arch string) ([]ota.Release, error) {
 		return nil, err
 	}
 
-	var records []ShadowRepositoryRecord
+	var records []ShadowRecord
 
 	if err := json.Unmarshal(body, &records); err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (r *ShadowRepository) Releases(arch string) ([]ota.Release, error) {
 	return releases, nil
 }
 
-func (r *ShadowRepository) ReleaseLatest(arch string) (ota.Release, error) {
+func (r *Shadow) ReleaseLatest(arch string) (ota.Release, error) {
 	releases, err := r.Releases(arch)
 	if err != nil {
 		return nil, err

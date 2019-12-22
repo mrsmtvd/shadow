@@ -20,6 +20,7 @@ type releaseView struct {
 	Size         int64
 	Checksum     string
 	IsCurrent    bool
+	IsRemovable  bool
 	Path         string
 	Architecture string
 	UploadedAt   *time.Time
@@ -33,15 +34,16 @@ type response struct {
 type ReleasesHandler struct {
 	dashboard.Handler
 
-	Updater        *ota.Updater
-	Repository     *repository.Directory
-	CurrentRelease ota.Release
+	Updater           *ota.Updater
+	UploadRepository  *repository.Directory
+	UpgradeRepository ota.Repository
+	CurrentRelease    ota.Release
 }
 
 func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	q := r.URL().Query()
 
-	releases, err := h.Repository.Releases("")
+	releases, err := h.UpgradeRepository.Releases("")
 	if err != nil {
 		r.Session().FlashBag().Error(err.Error())
 	} else {
@@ -70,6 +72,7 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 
 		if releaseFile, ok := rl.(*release.LocalFile); ok {
 			rView.UploadedAt = &[]time.Time{releaseFile.FileInfo().ModTime()}[0]
+			rView.IsRemovable = true
 		}
 
 		releasesView = append(releasesView, rView)
@@ -99,7 +102,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 					return
 				}
 
-				h.Repository.Remove(rl)
+				h.UploadRepository.Remove(rl)
 				info := []interface{}{"version", rl.Version()}
 
 				if releaseFile, ok := rl.(*release.LocalFile); ok {

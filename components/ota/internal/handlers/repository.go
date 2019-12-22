@@ -11,19 +11,18 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/ota"
 	"github.com/kihamo/shadow/components/ota/release"
-	"github.com/kihamo/shadow/components/ota/repository"
 )
 
 type RepositoryHandler struct {
 	dashboard.Handler
 
-	Repository *repository.Directory
+	UpgradeRepository ota.Repository
 }
 
 func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	arch := strings.TrimSpace(r.URL().Query().Get("architecture"))
 
-	releases, err := h.Repository.Releases(arch)
+	releases, err := h.UpgradeRepository.Releases(arch)
 	if err != nil {
 		h.InternalError(w, r, err)
 		return

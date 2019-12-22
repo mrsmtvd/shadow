@@ -40,13 +40,19 @@
                                         </button>
                                         {{ end }}
 
+                                        {{ if $release.IsRemovable}}
                                         <button type="button" class="btn btn-warning btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove release %s" $ nil nil nil $release.Version }}" data-modal-callback="releaseRemove('{{ $release.ID }}');">
                                             <i class="fas fa-trash" title="{{ i18n "Remove" $ }}"></i>
                                         </button>
+                                        {{ end }}
                                     {{ end }}
                                 </div>
                             </td>
-                            <td><script type="application/javascript">document.write(dateToString('{{ $release.UploadedAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script></td>
+                            <td>
+                                {{ if $release.UploadedAt }}
+                                    <script type="application/javascript">document.write(dateToString('{{ $release.UploadedAt.Format "2006-01-02T15:04:05Z07:00" }}'))</script>
+                                {{ end }}
+                            </td>
                             <td>{{ $release.Size }}</td>
                             <td>{{ $release.Checksum }}</td>
                             <td>{{ $release.Architecture }}</td>
