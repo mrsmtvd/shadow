@@ -6,12 +6,14 @@ import (
 	"debug/elf"
 	"debug/macho"
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"syscall"
 
 	"github.com/kardianos/osext"
@@ -19,12 +21,50 @@ import (
 
 const (
 	ArchitectureUnknown = "unknown"
+
+	FileTypeUnknown FileType = "unknown"
+	FileTypeBinary  FileType = "binary"
+	FileTypeZip     FileType = "zip"
 )
+
+type FileType string
+
+func (t FileType) String() string {
+	switch t {
+	case FileTypeBinary, FileTypeZip, FileTypeUnknown:
+		return string(t)
+	}
+
+	return FileTypeUnknown.String()
+}
+
+func (t FileType) Ext() string {
+	switch t {
+	case FileTypeBinary:
+		return ".bin"
+	case FileTypeZip:
+		return ".zip"
+	}
+
+	return ""
+}
+
+func (t FileType) MIME() string {
+	switch t {
+	case FileTypeBinary:
+		return "application/x-binary"
+	case FileTypeZip:
+		return "application/zip"
+	}
+
+	return ""
+}
 
 type Release interface {
 	Version() string
-	BinFile() (io.ReadCloser, error)
+	File() (io.ReadCloser, error)
 	Path() string
+	Type() FileType
 	Checksum() []byte
 	Size() int64
 	Architecture() string
@@ -55,7 +95,7 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 		return errors.New("not valid architecture")
 	}
 
-	releaseBinFile, err := release.BinFile()
+	releaseBinFile, err := release.File()
 	if err != nil {
 		return err
 	}
@@ -215,4 +255,79 @@ func GoArch(reader goArchReader) string {
 	}
 
 	return ArchitectureUnknown
+}
+
+var (
+	separator     = []byte("|")
+	fileTypeSigns = []struct {
+		fileType   FileType
+		magicBytes []byte
+	}{
+		{FileTypeBinary, []byte("\x7FELF")},
+		{FileTypeBinary, []byte("\xFE\xED\xFA")},
+		{FileTypeBinary, []byte("\xFA\xED\xFE")},
+		{FileTypeBinary, []byte("\xCF\xFA\xED\xFE")},
+		{FileTypeBinary, []byte("\xFE\xED\xFA\xCE")},
+		{FileTypeBinary, []byte("\xFE\xED\xFA\xCF")},
+		{FileTypeBinary, []byte("\xCE\xFA\xED\xFE")},
+		{FileTypeZip, []byte("PK\x03\x04")},
+	}
+	fileTypeMIME = []struct {
+		fileType FileType
+		mime     string
+	}{
+		{FileTypeBinary, "application/x-binary"},
+		{FileTypeBinary, "application/zip"},
+	}
+)
+
+func FileTypeFromData(data io.Reader) FileType {
+	buf := make([]byte, 8)
+
+	if _, err := data.Read(buf); err != nil {
+		return FileTypeUnknown
+	}
+
+	for _, sign := range fileTypeSigns {
+		if bytes.Compare(sign.magicBytes, buf[:len(sign.magicBytes)]) == 0 {
+			return sign.fileType
+		}
+	}
+
+	return FileTypeUnknown
+}
+
+func FileTypeFromMIME(contentType string) FileType {
+	contentType = strings.ToLower(contentType)
+
+	for _, m := range fileTypeMIME {
+		if strings.HasPrefix(m.mime, contentType) {
+			return m.fileType
+		}
+	}
+
+	return FileTypeUnknown
+}
+
+func GenerateReleaseID(rl Release) string {
+	hasher := md5.New()
+
+	hasher.Write(rl.Checksum())
+	hasher.Write(separator)
+	hasher.Write([]byte(rl.Path()))
+
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func GenerateFileName(rl Release) string {
+	basePath := filepath.Base(rl.Path())
+	ext := rl.Type().Ext()
+
+	if ext != "" && strings.HasSuffix(basePath, ext) {
+		return basePath
+	}
+
+	return strings.ReplaceAll(basePath, " ", "_") +
+		"." + strings.ReplaceAll(rl.Version(), " ", ".") +
+		"." + rl.Architecture() + ext
 }

@@ -4,13 +4,11 @@ import (
 	"encoding/hex"
 	"io"
 	"net/url"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/ota"
-	"github.com/kihamo/shadow/components/ota/release"
 )
 
 type RepositoryHandler struct {
@@ -30,8 +28,8 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 
 	if id := r.URL().Query().Get(":id"); id != "" {
 		for _, rl := range releases {
-			if rlID := release.GenerateReleaseID(rl); rlID == id {
-				releaseBinFile, err := rl.BinFile()
+			if rlID := ota.GenerateReleaseID(rl); rlID == id {
+				releaseBinFile, err := rl.File()
 				if err != nil {
 					h.InternalError(w, r, err)
 					return
@@ -39,14 +37,21 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 
 				fileName := r.URL().Query().Get(":file")
 				if fileName == "" {
-					fileName = generateFileName(rl)
+					fileName = ota.GenerateFileName(rl)
 				}
 
 				w.Header().Set("Content-Length", strconv.FormatInt(rl.Size(), 10))
-				w.Header().Set("Content-Type", "application/x-binary")
+				w.Header().Set("Content-Type", rl.Type().MIME())
 				w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
+
+				if r.IsHead() {
+					releaseBinFile.Close()
+					return
+				}
+
 				io.Copy(w, releaseBinFile)
 				releaseBinFile.Close()
+
 				return
 			}
 		}
@@ -73,7 +78,7 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 		fileURL := &url.URL{
 			Scheme: "http",
 			Host:   r.Original().Host,
-			Path:   "/ota/repository/" + release.GenerateReleaseID(rl) + "/" + generateFileName(rl),
+			Path:   "/ota/repository/" + ota.GenerateReleaseID(rl) + "/" + ota.GenerateFileName(rl),
 		}
 
 		if r.Original().TLS != nil {
@@ -90,16 +95,4 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 	}
 
 	_ = w.SendJSON(items)
-}
-
-func generateFileName(rl ota.Release) string {
-	basePath := filepath.Base(rl.Path())
-
-	if strings.HasSuffix(basePath, ".bin") {
-		return basePath
-	}
-
-	return strings.ReplaceAll(basePath, " ", "_") +
-		"." + strings.ReplaceAll(rl.Version(), " ", ".") +
-		"." + rl.Architecture() + ".bin"
 }

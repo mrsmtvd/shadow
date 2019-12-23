@@ -42,7 +42,7 @@ func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 						Architecture string `json:"architecture"`
 						Size         int64  `json:"size"`
 					}{
-						ID:           release.GenerateReleaseID(rl),
+						ID:           ota.GenerateReleaseID(rl),
 						Version:      rl.Version(),
 						Checksum:     hex.EncodeToString(rl.Checksum()),
 						Architecture: rl.Architecture(),

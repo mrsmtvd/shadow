@@ -60,7 +60,7 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 	releasesView := make([]releaseView, 0, len(releases))
 	for _, rl := range releases {
 		rView := releaseView{
-			ID:           release.GenerateReleaseID(rl),
+			ID:           ota.GenerateReleaseID(rl),
 			Version:      rl.Version(),
 			Size:         rl.Size(),
 			Checksum:     hex.EncodeToString(rl.Checksum()),
@@ -68,7 +68,7 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 			Architecture: rl.Architecture(),
 			Path:         rl.Path(),
 		}
-		rView.DownloadURL = "/ota/repository/" + rView.ID + "/" + generateFileName(rl)
+		rView.DownloadURL = "/ota/repository/" + rView.ID + "/" + ota.GenerateFileName(rl)
 
 		if releaseFile, ok := rl.(*release.LocalFile); ok {
 			rView.UploadedAt = &[]time.Time{releaseFile.FileInfo().ModTime()}[0]
@@ -93,7 +93,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 	id := strings.TrimSpace(r.URL().Query().Get(":id"))
 	if id != "" {
 		for _, rl := range releases {
-			if rlID := release.GenerateReleaseID(rl); rlID == id {
+			if rlID := ota.GenerateReleaseID(rl); rlID == id {
 				if rl == h.CurrentRelease {
 					_ = w.SendJSON(response{
 						Result:  "failed",
@@ -139,7 +139,7 @@ func (h *ReleasesHandler) actionUpgrade(w *dashboard.Response, r *dashboard.Requ
 		var err error
 
 		for _, rl := range releases {
-			if rlID := release.GenerateReleaseID(rl); rlID == id {
+			if rlID := ota.GenerateReleaseID(rl); rlID == id {
 				err = h.Updater.Update(rl)
 				if err != nil {
 					r.Session().FlashBag().Error(err.Error())

@@ -15,6 +15,7 @@ type LocalFile struct {
 	checksum     []byte
 	architecture string
 	fileInfo     os.FileInfo
+	fileType     ota.FileType
 }
 
 func NewLocalFile(path, version string) (*LocalFile, error) {
@@ -61,6 +62,10 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
 
 	fd.Seek(0, 0)
 
+	fileType := ota.FileTypeFromData(fd)
+
+	fd.Seek(0, 0)
+
 	if version == "" {
 		version = stat.Name()
 	}
@@ -71,6 +76,7 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
 		checksum:     h.Sum(nil),
 		architecture: ota.GoArch(fd),
 		fileInfo:     stat,
+		fileType:     fileType,
 	}, nil
 }
 
@@ -78,7 +84,7 @@ func (f *LocalFile) Version() string {
 	return f.version
 }
 
-func (f *LocalFile) BinFile() (io.ReadCloser, error) {
+func (f *LocalFile) File() (io.ReadCloser, error) {
 	return os.Open(f.path)
 }
 
@@ -100,4 +106,8 @@ func (f *LocalFile) Architecture() string {
 
 func (f *LocalFile) FileInfo() os.FileInfo {
 	return f.fileInfo
+}
+
+func (f *LocalFile) Type() ota.FileType {
+	return f.fileType
 }
