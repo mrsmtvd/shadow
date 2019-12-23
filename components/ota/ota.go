@@ -34,6 +34,10 @@ type Repository interface {
 	Releases(arch string) ([]Release, error)
 }
 
+type RepositoryRemover interface {
+	Remove(Release) error
+}
+
 type Updater struct {
 }
 

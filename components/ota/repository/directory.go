@@ -41,3 +41,13 @@ func (r *Directory) Load(dir string) error {
 		return err
 	})
 }
+
+func (r *Directory) Remove(release ota.Release) (err error) {
+	err = os.Remove(release.Path())
+
+	if err == nil {
+		err = r.Memory.Remove(release)
+	}
+
+	return err
+}

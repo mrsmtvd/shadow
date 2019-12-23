@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/hex"
-	"os"
+	"fmt"
 	"runtime"
 	"strings"
 	"time"
@@ -11,7 +11,6 @@ import (
 	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/ota"
 	"github.com/kihamo/shadow/components/ota/release"
-	"github.com/kihamo/shadow/components/ota/repository"
 )
 
 type releaseView struct {
@@ -35,16 +34,15 @@ type response struct {
 type ReleasesHandler struct {
 	dashboard.Handler
 
-	Updater           *ota.Updater
-	UploadRepository  *repository.Directory
-	UpgradeRepository ota.Repository
-	CurrentRelease    ota.Release
+	Updater        *ota.Updater
+	Repository     ota.Repository
+	CurrentRelease ota.Release
 }
 
 func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	q := r.URL().Query()
 
-	releases, err := h.UpgradeRepository.Releases("")
+	releases, err := h.Repository.Releases("")
 	if err != nil {
 		r.Session().FlashBag().Error(err.Error())
 	} else {
@@ -104,20 +102,24 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 					return
 				}
 
-				h.UploadRepository.Remove(rl)
-				info := []interface{}{"version", rl.Version()}
-
-				if releaseFile, ok := rl.(*release.LocalFile); ok {
-					os.Remove(releaseFile.Path())
-					info = append(info, "path", releaseFile.Path())
+				if remover, ok := h.Repository.(ota.RepositoryRemover); ok {
+					if err := remover.Remove(rl); err != nil {
+						_ = w.SendJSON(response{
+							Result:  "failed",
+							Message: fmt.Sprintf("remove release failed %v", err),
+						})
+						return
+					}
 				}
 
-				logging.Log(r.Context()).Info("Remove release", info...)
+				logging.Log(r.Context()).Info("Remove release",
+					"version", rl.Version(),
+					"path", rl.Path(),
+				)
 
 				_ = w.SendJSON(response{
 					Result: "success",
 				})
-
 				return
 			}
 		}
@@ -142,13 +144,10 @@ func (h *ReleasesHandler) actionUpgrade(w *dashboard.Response, r *dashboard.Requ
 				if err != nil {
 					r.Session().FlashBag().Error(err.Error())
 				} else {
-					info := []interface{}{"version", rl.Version()}
-
-					if releaseFile, ok := rl.(*release.LocalFile); ok {
-						info = append(info, "path", releaseFile.Path())
-					}
-
-					logging.Log(r.Context()).Info("Release upgrade", info...)
+					logging.Log(r.Context()).Info("Release upgrade",
+						"version", rl.Version(),
+						"path", rl.Path(),
+					)
 				}
 
 				if r.URL().Query().Get("restart") != "" {

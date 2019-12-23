@@ -23,7 +23,7 @@ func (r *Memory) Add(release ota.Release) {
 	r.lock.Unlock()
 }
 
-func (r *Memory) Remove(release ota.Release) {
+func (r *Memory) Remove(release ota.Release) error {
 	r.lock.Lock()
 
 	for i, rl := range r.releases {
@@ -34,6 +34,7 @@ func (r *Memory) Remove(release ota.Release) {
 	}
 
 	r.lock.Unlock()
+	return nil
 }
 
 func (r *Memory) Releases(arch string) ([]ota.Release, error) {

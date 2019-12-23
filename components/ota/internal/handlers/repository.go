@@ -16,13 +16,13 @@ import (
 type RepositoryHandler struct {
 	dashboard.Handler
 
-	UpgradeRepository ota.Repository
+	Repository ota.Repository
 }
 
 func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	arch := strings.TrimSpace(r.URL().Query().Get("architecture"))
 
-	releases, err := h.UpgradeRepository.Releases(arch)
+	releases, err := h.Repository.Releases(arch)
 	if err != nil {
 		h.InternalError(w, r, err)
 		return
