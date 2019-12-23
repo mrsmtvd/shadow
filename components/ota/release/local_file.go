@@ -46,6 +46,8 @@ func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFile, 
 }
 
 func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
+	fd.Seek(0, 0)
+
 	stat, err := fd.Stat()
 	if err != nil {
 		return nil, err

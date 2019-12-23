@@ -28,6 +28,9 @@ msgstr "Подтверждение обновления приложения"
 msgid "Confirm upgrade and restart application"
 msgstr "Подтверждение обновления и перезапуск приложения"
 
+msgid "Upgrade"
+msgstr "Обновить"
+
 msgid "Upgrade and restart"
 msgstr "Обновить и перезапустить"
 

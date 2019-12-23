@@ -2,10 +2,12 @@ package ota
 
 import (
 	"bytes"
+	"crypto/md5"
 	"debug/elf"
 	"debug/macho"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -75,6 +77,9 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 		}
 	}
 
+	hasher := md5.New()
+	reader := io.TeeReader(releaseBinFile, hasher)
+
 	// 1. создаем файл path.new в него копируем новый релиз
 	newPath := path + ".new"
 	newFile, err := os.OpenFile(newPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, stat.Mode())
@@ -83,7 +88,7 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	}
 	defer newFile.Close()
 
-	_, err = io.Copy(newFile, releaseBinFile)
+	_, err = io.Copy(newFile, reader)
 	if err != nil {
 		return err
 	}
@@ -91,7 +96,12 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	// windows
 	// newFile.Close()
 
-	// 2. переименовываем текущий файл в path.old
+	// 2. Проверяем чексумму
+	if cs := hasher.Sum(nil); bytes.Compare(release.Checksum(), hasher.Sum(nil)) != 0 {
+		return fmt.Errorf("invalid checksum want %x have %x", release.Checksum(), cs)
+	}
+
+	// 3. переименовываем текущий файл в path.old
 	oldPath := path + ".old"
 	_ = os.Remove(oldPath)
 
@@ -100,14 +110,14 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 		return err
 	}
 
-	// 3. копируем path.new в path
+	// 4. копируем path.new в path
 	err = os.Rename(newPath, path)
 	if err != nil {
 		// rollback
 		return os.Rename(oldPath, path)
 	}
 
-	// 4. удалить старые релизы
+	// 5. удалить старые релизы
 	_ = os.Remove(oldPath)
 
 	return err
