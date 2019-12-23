@@ -10,7 +10,6 @@ import (
 )
 
 type LocalFile struct {
-	file         *os.File
 	path         string
 	version      string
 	checksum     []byte
@@ -23,6 +22,7 @@ func NewLocalFile(path, version string) (*LocalFile, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer fd.Close()
 
 	return NewLocalFileFromFD(fd, version)
 }
@@ -36,6 +36,7 @@ func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFile, 
 	if err != nil {
 		return nil, err
 	}
+	defer fd.Close()
 
 	_, err = io.Copy(fd, stream)
 	if err != nil {
@@ -65,7 +66,6 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
 	}
 
 	return &LocalFile{
-		file:         fd,
 		path:         fd.Name(),
 		version:      version,
 		checksum:     h.Sum(nil),
@@ -79,8 +79,7 @@ func (f *LocalFile) Version() string {
 }
 
 func (f *LocalFile) BinFile() (io.ReadCloser, error) {
-	f.file.Seek(0, io.SeekStart)
-	return f.file, nil
+	return os.Open(f.path)
 }
 
 func (f *LocalFile) Path() string {

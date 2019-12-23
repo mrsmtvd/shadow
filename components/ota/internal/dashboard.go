@@ -56,7 +56,7 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 				WithAuth(true),
 			dashboard.NewRoute("/"+c.Name()+"/repository/", repositoryHandler).
 				WithMethods([]string{http.MethodGet}),
-			dashboard.NewRoute("/"+c.Name()+"/repository/:id/release.bin", repositoryHandler).
+			dashboard.NewRoute("/"+c.Name()+"/repository/:id/:file", repositoryHandler).
 				WithMethods([]string{http.MethodGet}),
 		}
 	}

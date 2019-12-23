@@ -24,6 +24,7 @@ type releaseView struct {
 	Path         string
 	Architecture string
 	UploadedAt   *time.Time
+	DownloadURL  string
 }
 
 type response struct {
@@ -69,6 +70,7 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 			Architecture: rl.Architecture(),
 			Path:         rl.Path(),
 		}
+		rView.DownloadURL = "/ota/repository/" + rView.ID + "/" + generateFileName(rl)
 
 		if releaseFile, ok := rl.(*release.LocalFile); ok {
 			rView.UploadedAt = &[]time.Time{releaseFile.FileInfo().ModTime()}[0]

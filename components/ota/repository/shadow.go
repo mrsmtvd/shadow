@@ -3,7 +3,6 @@ package repository
 import (
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -66,17 +65,4 @@ func (r *Shadow) Releases(arch string) ([]ota.Release, error) {
 	}
 
 	return releases, nil
-}
-
-func (r *Shadow) ReleaseLatest(arch string) (ota.Release, error) {
-	releases, err := r.Releases(arch)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(releases) == 0 {
-		return nil, errors.New("latest release not found")
-	}
-
-	return releases[len(releases)-1], nil
 }

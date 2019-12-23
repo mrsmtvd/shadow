@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/kihamo/shadow/components/ota"
@@ -51,17 +50,4 @@ func (r *Memory) Releases(arch string) ([]ota.Release, error) {
 	}
 
 	return releases, nil
-}
-
-func (r *Memory) ReleaseLatest(arch string) (ota.Release, error) {
-	releases, err := r.Releases(arch)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(releases) == 0 {
-		return nil, errors.New("latest release not found")
-	}
-
-	return releases[len(releases)-1], nil
 }

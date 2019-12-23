@@ -32,7 +32,6 @@ type Release interface {
 
 type Repository interface {
 	Releases(arch string) ([]Release, error)
-	ReleaseLatest(arch string) (Release, error)
 }
 
 type Updater struct {
@@ -56,6 +55,7 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	if err != nil {
 		return err
 	}
+	defer releaseBinFile.Close()
 
 	// TODO: проверка подписи к файлу
 	// TODO: проверка что текущий файл не является релизным
