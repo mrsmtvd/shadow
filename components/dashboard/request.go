@@ -74,6 +74,10 @@ func (r *Request) IsOptions() bool {
 	return r.original.Method == http.MethodOptions
 }
 
+func (r *Request) IsHead() bool {
+	return r.original.Method == http.MethodHead
+}
+
 func (r *Request) IsAjax() bool {
 	return r.original.Header.Get("X-Requested-With") == "XMLHttpRequest"
 }
