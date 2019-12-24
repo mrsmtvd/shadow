@@ -74,7 +74,7 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
 		path:         fd.Name(),
 		version:      version,
 		checksum:     h.Sum(nil),
-		architecture: ota.GoArch(fd),
+		architecture: ota.ArchitectureFromReader(fd),
 		fileInfo:     stat,
 		fileType:     fileType,
 	}, nil

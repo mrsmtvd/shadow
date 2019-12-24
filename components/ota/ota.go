@@ -40,7 +40,18 @@ type goArchReader interface {
 	io.Seeker
 }
 
-func GoArch(reader goArchReader) string {
+const (
+	Architecture386     = "386"
+	ArchitectureAMD64   = "amd64"
+	ArchitectureARM     = "arm"
+	ArchitectureARM64   = "arm64"
+	ArchitecturePPC     = "ppc"
+	ArchitecturePPC64   = "ppc64"
+	ArchitecturePPC64LE = "ppc64le"
+	ArchitectureS390X   = "s390x"
+)
+
+func ArchitectureFromReader(reader goArchReader) string {
 	data := make([]byte, 16)
 	if _, err := io.ReadFull(reader, data); err != nil {
 		return ArchitectureUnknown
@@ -51,20 +62,20 @@ func GoArch(reader goArchReader) string {
 		if _elf, err := elf.NewFile(reader); err == nil {
 			switch _elf.Machine {
 			case elf.EM_386:
-				return "386"
+				return Architecture386
 			case elf.EM_X86_64:
-				return "amd64"
+				return ArchitectureAMD64
 			case elf.EM_ARM:
-				return "arm"
+				return ArchitectureARM
 			case elf.EM_AARCH64:
-				return "arm64"
+				return ArchitectureARM64
 			case elf.EM_PPC64:
 				if _elf.ByteOrder == binary.LittleEndian {
-					return "ppc64le"
+					return ArchitecturePPC64LE
 				}
-				return "ppc64"
+				return ArchitecturePPC64
 			case elf.EM_S390:
-				return "s390x"
+				return ArchitectureS390X
 			}
 		}
 	}
@@ -73,17 +84,17 @@ func GoArch(reader goArchReader) string {
 		if _macho, err := macho.NewFile(reader); err == nil {
 			switch _macho.Cpu {
 			case macho.Cpu386:
-				return "386"
+				return Architecture386
 			case macho.CpuAmd64:
-				return "amd64"
+				return ArchitectureAMD64
 			case macho.CpuArm:
-				return "arm"
+				return ArchitectureARM
 			case macho.CpuArm64:
-				return "arm64"
+				return ArchitectureARM64
 			case macho.CpuPpc:
-				return "ppc"
+				return ArchitecturePPC
 			case macho.CpuPpc64:
-				return "ppc64"
+				return ArchitecturePPC64
 			}
 		}
 	}
@@ -92,13 +103,13 @@ func GoArch(reader goArchReader) string {
 }
 
 func GenerateReleaseID(rl Release) string {
-	hasher := md5.New()
+	h := md5.New()
 
-	hasher.Write(rl.Checksum())
-	hasher.Write(separator)
-	hasher.Write([]byte(rl.Path()))
+	h.Write(rl.Checksum())
+	h.Write(separator)
+	h.Write([]byte(rl.Path()))
 
-	return hex.EncodeToString(hasher.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func GenerateFileName(rl Release) string {
