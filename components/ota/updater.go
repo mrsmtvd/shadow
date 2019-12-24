@@ -1,10 +1,8 @@
 package ota
 
 import (
-	"bytes"
 	"crypto/md5"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -31,7 +29,7 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 		return errors.New("not valid architecture")
 	}
 
-	releaseFile, err := u.getBinaryFile(release)
+	releaseFile, err := release.FileBinary()
 	if err != nil {
 		return err
 	}
@@ -46,7 +44,7 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	}
 
 	if stat.IsDir() {
-		return errors.New(path + "is directory, not executable")
+		return errors.New(path + " is directory, not executable")
 	}
 
 	//  раскрываем симлинк
@@ -76,10 +74,10 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	// windows
 	// newFile.Close()
 
-	// 2. Проверяем чексумму
-	if cs := hasher.Sum(nil); bytes.Compare(release.Checksum(), hasher.Sum(nil)) != 0 {
-		return fmt.Errorf("invalid checksum want %x have %x", release.Checksum(), cs)
-	}
+	// 2. Проверяем чексумму TODO: с учетом того, что брали из архива
+	//if cs := hasher.Sum(nil); bytes.Compare(release.Checksum(), hasher.Sum(nil)) != 0 {
+	//	return fmt.Errorf("invalid checksum want %x have %x", release.Checksum(), cs)
+	//}
 
 	// 3. переименовываем текущий файл в path.old
 	oldPath := path + ".old"
@@ -134,13 +132,4 @@ func (u *Updater) Restart() error {
 	})
 
 	return err
-}
-
-func (u *Updater) getBinaryFile(release Release) (io.ReadCloser, error) {
-	switch release.Type() {
-	case FileTypeZip:
-		fmt.Println("UNZIP")
-	}
-
-	return release.File()
 }
