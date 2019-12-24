@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/ota"
 )
 
@@ -31,7 +32,13 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			if rlID := ota.GenerateReleaseID(rl); rlID == id {
 				releaseBinFile, err := rl.File()
 				if err != nil {
-					h.InternalError(w, r, err)
+					logging.Log(r.Context()).Error("Get release download file failed ",
+						"version", rl.Version(),
+						"path", rl.Path(),
+						"error", err.Error(),
+					)
+
+					h.NotFound(w, r)
 					return
 				}
 
@@ -44,14 +51,11 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 				w.Header().Set("Content-Type", rl.Type().MIME())
 				w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 
-				if r.IsHead() {
-					releaseBinFile.Close()
-					return
+				if !r.IsHead() {
+					io.Copy(w, releaseBinFile)
 				}
 
-				io.Copy(w, releaseBinFile)
 				releaseBinFile.Close()
-
 				return
 			}
 		}

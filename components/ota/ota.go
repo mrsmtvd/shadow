@@ -14,11 +14,20 @@ import (
 
 const (
 	ArchitectureUnknown = "unknown"
+	Architecture386     = "386"
+	ArchitectureAMD64   = "amd64"
+	ArchitectureARM     = "arm"
+	ArchitectureARM64   = "arm64"
+	ArchitecturePPC     = "ppc"
+	ArchitecturePPC64   = "ppc64"
+	ArchitecturePPC64LE = "ppc64le"
+	ArchitectureS390X   = "s390x"
 )
 
 type Release interface {
 	Version() string
 	File() (io.ReadCloser, error)
+	FileBinary() (io.ReadCloser, error)
 	Path() string
 	Type() FileType
 	Checksum() []byte
@@ -40,23 +49,12 @@ type goArchReader interface {
 	io.Seeker
 }
 
-const (
-	Architecture386     = "386"
-	ArchitectureAMD64   = "amd64"
-	ArchitectureARM     = "arm"
-	ArchitectureARM64   = "arm64"
-	ArchitecturePPC     = "ppc"
-	ArchitecturePPC64   = "ppc64"
-	ArchitecturePPC64LE = "ppc64le"
-	ArchitectureS390X   = "s390x"
-)
-
 func ArchitectureFromReader(reader goArchReader) string {
 	data := make([]byte, 16)
 	if _, err := io.ReadFull(reader, data); err != nil {
 		return ArchitectureUnknown
 	}
-	reader.Seek(0, 0)
+	reader.Seek(0, io.SeekStart)
 
 	if bytes.HasPrefix(data, []byte("\x7FELF")) {
 		if _elf, err := elf.NewFile(reader); err == nil {

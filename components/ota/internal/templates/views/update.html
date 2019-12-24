@@ -80,7 +80,7 @@
             parallelUploads: 1,
             paramName: 'release',
             createImageThumbnails: false,
-            acceptedFiles: 'application/macbinary,.bin',
+            acceptedFiles: 'application/macbinary,application/x-binary,application/zip,.bin,.zip',
             success: function (f, r) {
                 $('#wizard').smartWizard('goToStep', 2);
                 $('#wizard').smartWizard('disableStep', 1);

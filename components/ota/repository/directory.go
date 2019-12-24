@@ -29,13 +29,13 @@ func (r *Directory) Load(dir string) error {
 			return nil
 		}
 
-		if !strings.HasPrefix(info.Name(), "release-") {
+		if !strings.HasPrefix(info.Name(), "release-file-") {
 			return nil
 		}
 
 		rl, err := release.NewLocalFile(path, "")
 		if err == nil {
-			r.Add(rl)
+			r.Add(release.NewCompress(rl))
 		}
 
 		return err

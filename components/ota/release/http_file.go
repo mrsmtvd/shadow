@@ -1,9 +1,12 @@
 package release
 
 import (
+	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"sync"
 
 	"github.com/kihamo/shadow/components/ota"
@@ -18,6 +21,7 @@ type HTTPFile struct {
 	size         int64
 	architecture string
 	fileType     *ota.FileType
+	fileCache    string
 }
 
 func NewHTTPFile(path, version string, checksum []byte, size int64, architecture string) (*HTTPFile, error) {
@@ -40,12 +44,44 @@ func (f *HTTPFile) Version() string {
 }
 
 func (f *HTTPFile) File() (io.ReadCloser, error) {
+	// проверяем локальный кэш
+	f.mutex.RLock()
+	fileCache := f.fileCache
+	f.mutex.RUnlock()
+
+	if fileCache != "" {
+		if fd, err := os.Open(fileCache); err == nil {
+			return fd, nil
+		}
+	}
+
 	response, err := http.Get(f.u.String())
 	if err != nil {
 		return nil, err
 	}
 
-	return response.Body, err
+	if response.StatusCode != http.StatusOK {
+		return nil, errors.New("remote server response not 200 OK")
+	}
+
+	// сохраняем в локальный кэш
+	fd, err := ioutil.TempFile(os.TempDir(), "release-download-")
+	if err == nil {
+		_, err = io.Copy(fd, response.Body)
+		if err == nil {
+			f.mutex.Lock()
+			f.fileCache = fd.Name()
+			f.mutex.Unlock()
+
+			return os.Open(fd.Name())
+		}
+	}
+
+	return nil, err
+}
+
+func (f *HTTPFile) FileBinary() (io.ReadCloser, error) {
+	return f.File()
 }
 
 func (f *HTTPFile) Path() string {

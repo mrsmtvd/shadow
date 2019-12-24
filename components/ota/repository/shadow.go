@@ -61,7 +61,7 @@ func (r *Shadow) Releases(arch string) ([]ota.Release, error) {
 			return nil, err
 		}
 
-		releases = append(releases, rl)
+		releases = append(releases, release.NewCompress(rl))
 	}
 
 	return releases, nil

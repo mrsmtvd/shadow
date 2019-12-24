@@ -33,7 +33,7 @@ func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFile, 
 		dir = os.TempDir()
 	}
 
-	fd, err := ioutil.TempFile(dir, "release-")
+	fd, err := ioutil.TempFile(dir, "release-file-")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func NewLocalFileFromStream(stream io.Reader, version, dir string) (*LocalFile, 
 }
 
 func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
-	fd.Seek(0, 0)
+	fd.Seek(0, io.SeekStart)
 
 	stat, err := fd.Stat()
 	if err != nil {
@@ -60,11 +60,11 @@ func NewLocalFileFromFD(fd *os.File, version string) (*LocalFile, error) {
 		return nil, err
 	}
 
-	fd.Seek(0, 0)
+	fd.Seek(0, io.SeekStart)
 
 	fileType := ota.FileTypeFromData(fd)
 
-	fd.Seek(0, 0)
+	fd.Seek(0, io.SeekStart)
 
 	if version == "" {
 		version = stat.Name()
@@ -86,6 +86,10 @@ func (f *LocalFile) Version() string {
 
 func (f *LocalFile) File() (io.ReadCloser, error) {
 	return os.Open(f.path)
+}
+
+func (f *LocalFile) FileBinary() (io.ReadCloser, error) {
+	return f.File()
 }
 
 func (f *LocalFile) Path() string {

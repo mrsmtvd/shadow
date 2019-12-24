@@ -28,12 +28,12 @@ func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 			t := header.Header.Get("Content-Type")
 
 			switch t {
-			case "application/macbinary":
+			case "application/macbinary", "application/x-binary", "application/zip":
 				var rl *release.LocalFile
 
 				rl, err = release.NewLocalFileFromStream(file, "", r.Config().String(ota.ConfigReleasesDirectory))
 				if err == nil {
-					h.UploadRepository.Add(rl)
+					h.UploadRepository.Add(release.NewCompress(rl))
 
 					_ = w.SendJSON(struct {
 						ID           string `json:"id"`
