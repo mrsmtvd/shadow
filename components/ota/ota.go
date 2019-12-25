@@ -37,6 +37,7 @@ type Release interface {
 
 type Repository interface {
 	Releases(arch string) ([]Release, error)
+	Update() error
 }
 
 type RepositoryRemover interface {

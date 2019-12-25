@@ -12,19 +12,19 @@ import (
 	"github.com/kardianos/osext"
 )
 
-type Updater struct {
+type Installer struct {
 }
 
-func NewUpdater() *Updater {
-	return &Updater{}
+func NewInstaller() *Installer {
+	return &Installer{}
 }
 
 // очистка старых не используемых релизов при запуске
-func (u *Updater) AutoClean() error {
+func (u *Installer) AutoClean() error {
 	return nil
 }
 
-func (u *Updater) UpdateTo(release Release, path string) error {
+func (u *Installer) InstallTo(release Release, path string) error {
 	if release.Architecture() != runtime.GOARCH {
 		return errors.New("not valid architecture")
 	}
@@ -101,16 +101,16 @@ func (u *Updater) UpdateTo(release Release, path string) error {
 	return err
 }
 
-func (u *Updater) Update(release Release) error {
+func (u *Installer) Install(release Release) error {
 	execName, err := osext.Executable()
 	if err != nil {
 		return err
 	}
 
-	return u.UpdateTo(release, execName)
+	return u.InstallTo(release, execName)
 }
 
-func (u *Updater) Restart() error {
+func (u *Installer) Restart() error {
 	execName, err := osext.Executable()
 	if err != nil {
 		return err

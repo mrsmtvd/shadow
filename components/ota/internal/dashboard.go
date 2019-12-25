@@ -28,16 +28,16 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	if c.routes == nil {
 		releasesHandler := &handlers.ReleasesHandler{
-			Updater:        c.updater,
-			Repository:     c.upgradeRepository,
+			Installer:      c.installer,
+			AllRepository:  c.allRepository,
 			CurrentRelease: c.currentRelease,
 		}
 		upgradeHandler := &handlers.UpgradeHandler{
-			Updater:          c.updater,
+			Installer:        c.installer,
 			UploadRepository: c.uploadRepository,
 		}
 		repositoryHandler := &handlers.RepositoryHandler{
-			Repository: c.upgradeRepository,
+			Repository: c.allRepository,
 		}
 
 		c.routes = []dashboard.Route{

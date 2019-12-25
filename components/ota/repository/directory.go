@@ -13,8 +13,8 @@ import (
 type Directory struct {
 	*Memory
 
-	lock     sync.RWMutex
-	releases []ota.Release
+	lock sync.Mutex
+	dir  string
 }
 
 func NewDirectory() *Directory {
@@ -23,8 +23,24 @@ func NewDirectory() *Directory {
 	}
 }
 
-func (r *Directory) Load(dir string) error {
-	return filepath.Walk(dir, func(path string, info os.FileInfo, _ error) error {
+func (r *Directory) SetPath(dir string) {
+	r.lock.Lock()
+	r.dir = dir
+	r.lock.Unlock()
+}
+
+func (r *Directory) Remove(release ota.Release) (err error) {
+	err = os.Remove(release.Path())
+
+	if err == nil {
+		err = r.Memory.Remove(release)
+	}
+
+	return err
+}
+
+func (r *Directory) Update() error {
+	return filepath.Walk(r.dir, func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -40,14 +56,4 @@ func (r *Directory) Load(dir string) error {
 
 		return err
 	})
-}
-
-func (r *Directory) Remove(release ota.Release) (err error) {
-	err = os.Remove(release.Path())
-
-	if err == nil {
-		err = r.Memory.Remove(release)
-	}
-
-	return err
 }

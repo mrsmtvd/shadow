@@ -15,7 +15,7 @@ import (
 type UpgradeHandler struct {
 	dashboard.Handler
 
-	Updater          *ota.Updater
+	Installer        *ota.Installer
 	UploadRepository *repository.Directory
 }
 

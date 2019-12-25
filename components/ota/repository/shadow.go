@@ -66,3 +66,7 @@ func (r *Shadow) Releases(arch string) ([]ota.Release, error) {
 
 	return releases, nil
 }
+
+func (r *Shadow) Update() error {
+	return nil
+}

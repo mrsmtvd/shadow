@@ -14,16 +14,17 @@ import (
 )
 
 type releaseView struct {
-	ID           string
-	Version      string
-	Size         int64
-	Checksum     string
-	IsCurrent    bool
-	IsRemovable  bool
-	Path         string
-	Architecture string
-	UploadedAt   *time.Time
-	DownloadURL  string
+	ID            string
+	Version       string
+	Size          int64
+	Checksum      string
+	IsCurrent     bool
+	IsRemovable   bool
+	IsUpgradeable bool
+	Path          string
+	Architecture  string
+	UploadedAt    *time.Time
+	DownloadURL   string
 }
 
 type response struct {
@@ -34,15 +35,15 @@ type response struct {
 type ReleasesHandler struct {
 	dashboard.Handler
 
-	Updater        *ota.Updater
-	Repository     ota.Repository
+	Installer      *ota.Installer
+	AllRepository  ota.Repository
 	CurrentRelease ota.Release
 }
 
 func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	q := r.URL().Query()
 
-	releases, err := h.Repository.Releases("")
+	releases, err := h.AllRepository.Releases("")
 	if err != nil {
 		r.Session().FlashBag().Error(err.Error())
 	} else {
@@ -60,27 +61,30 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 	releasesView := make([]releaseView, 0, len(releases))
 	for _, rl := range releases {
 		rView := releaseView{
-			ID:           ota.GenerateReleaseID(rl),
-			Version:      rl.Version(),
-			Size:         rl.Size(),
-			Checksum:     hex.EncodeToString(rl.Checksum()),
-			IsCurrent:    rl == h.CurrentRelease,
-			Architecture: rl.Architecture(),
-			Path:         rl.Path(),
+			ID:            ota.GenerateReleaseID(rl),
+			Version:       rl.Version(),
+			Size:          rl.Size(),
+			Checksum:      hex.EncodeToString(rl.Checksum()),
+			IsCurrent:     rl == h.CurrentRelease,
+			IsUpgradeable: rl != h.CurrentRelease && rl.Architecture() == runtime.GOARCH,
+			Architecture:  rl.Architecture(),
+			Path:          rl.Path(),
 		}
 		rView.DownloadURL = "/ota/repository/" + rView.ID + "/" + ota.GenerateFileName(rl)
 
 		if releaseFile, ok := rl.(*release.LocalFile); ok {
 			rView.UploadedAt = &[]time.Time{releaseFile.FileInfo().ModTime()}[0]
-			rView.IsRemovable = true
+
+			if releaseFile != h.CurrentRelease {
+				rView.IsRemovable = true
+			}
 		}
 
 		releasesView = append(releasesView, rView)
 	}
 
 	h.Render(r.Context(), "releases", map[string]interface{}{
-		"releases":    releasesView,
-		"currentArch": runtime.GOARCH,
+		"releases": releasesView,
 	})
 }
 
@@ -102,7 +106,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 					return
 				}
 
-				if remover, ok := h.Repository.(ota.RepositoryRemover); ok {
+				if remover, ok := h.AllRepository.(ota.RepositoryRemover); ok {
 					if err := remover.Remove(rl); err != nil {
 						_ = w.SendJSON(response{
 							Result:  "failed",
@@ -140,7 +144,7 @@ func (h *ReleasesHandler) actionUpgrade(w *dashboard.Response, r *dashboard.Requ
 
 		for _, rl := range releases {
 			if rlID := ota.GenerateReleaseID(rl); rlID == id {
-				err = h.Updater.Update(rl)
+				err = h.Installer.Install(rl)
 				if err != nil {
 					r.Session().FlashBag().Error(err.Error())
 				} else {
@@ -151,7 +155,7 @@ func (h *ReleasesHandler) actionUpgrade(w *dashboard.Response, r *dashboard.Requ
 				}
 
 				if r.URL().Query().Get("restart") != "" {
-					err = h.Updater.Restart()
+					err = h.Installer.Restart()
 				}
 
 				if err != nil {

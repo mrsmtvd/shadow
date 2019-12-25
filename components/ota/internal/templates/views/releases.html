@@ -30,21 +30,19 @@
                                         <i class="fas fa-file-download" title="{{ i18n "Download" $ }}"></i>
                                     </a>
 
-                                    {{ if ne $release.IsCurrent true }}
-                                        {{ if eq $.currentArch $release.Architecture }}
+                                    {{ if $release.IsUpgradeable }}
                                         <button type="button" class="btn btn-danger btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm upgrade to release %s" $ nil nil nil $release.Version }}" data-modal-callback="releaseUpgrade('{{ $release.ID }}', false);">
                                             <i class="fas fa-arrow-circle-up" title="{{ i18n "Upgrade application" $ }}"></i>
                                         </button>
                                         <button type="button" class="btn btn-danger btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm upgrade to release %s and restart application" $ nil nil nil $release.Version }}" data-modal-callback="releaseUpgrade('{{ $release.ID }}', true);">
                                             <i class="fas fa-cloud-upload-alt" title="{{ i18n "Upgrade application with restart" $ }}"></i>
                                         </button>
-                                        {{ end }}
+                                    {{ end }}
 
-                                        {{ if $release.IsRemovable}}
+                                    {{ if $release.IsRemovable}}
                                         <button type="button" class="btn btn-warning btn-icon btn-xs" data-toggle="modal" data-target="#modal" data-modal-title="{{ i18n "Confirm remove release %s" $ nil nil nil $release.Version }}" data-modal-callback="releaseRemove('{{ $release.ID }}');">
                                             <i class="fas fa-trash" title="{{ i18n "Remove" $ }}"></i>
                                         </button>
-                                        {{ end }}
                                     {{ end }}
                                 </div>
                             </td>

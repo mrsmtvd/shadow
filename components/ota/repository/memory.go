@@ -52,3 +52,7 @@ func (r *Memory) Releases(arch string) ([]ota.Release, error) {
 
 	return releases, nil
 }
+
+func (r *Memory) Update() error {
+	return nil
+}

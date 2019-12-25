@@ -19,10 +19,10 @@ type Component struct {
 	config config.Component
 	routes []dashboard.Route
 
-	updater           *ota.Updater
-	uploadRepository  *repository.Directory
-	upgradeRepository *repository.Merge
-	currentRelease    ota.Release
+	installer        *ota.Installer
+	uploadRepository *repository.Directory
+	allRepository    *repository.Merge
+	currentRelease   ota.Release
 }
 
 func (c *Component) Name() string {
@@ -62,12 +62,10 @@ func (c *Component) Init(a shadow.Application) error {
 		return err
 	}
 
-	c.updater = ota.NewUpdater()
+	c.installer = ota.NewInstaller()
 
 	c.uploadRepository = repository.NewDirectory()
-	c.uploadRepository.Add(c.currentRelease)
-
-	c.upgradeRepository = repository.NewMerge(c.uploadRepository)
+	c.allRepository = repository.NewMerge(c.uploadRepository, repository.NewMemory(c.currentRelease))
 
 	return nil
 }
@@ -76,8 +74,8 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 	<-a.ReadyComponent(config.ComponentName)
 	cfg := a.GetComponent(config.ComponentName).(config.Component)
 
-	err = c.uploadRepository.Load(cfg.String(ota.ConfigReleasesDirectory))
-	if err != nil {
+	c.uploadRepository.SetPath(cfg.String(ota.ConfigReleasesDirectory))
+	if err := c.allRepository.Update(); err != nil {
 		return err
 	}
 
@@ -89,7 +87,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 				return err
 			}
 
-			c.upgradeRepository.Merge(repository.NewShadow(shadowURL))
+			c.allRepository.Merge(repository.NewShadow(shadowURL))
 		}
 	}
 
