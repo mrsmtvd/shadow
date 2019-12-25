@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/kihamo/shadow/components/ota"
 	"github.com/kihamo/shadow/components/ota/release"
@@ -13,8 +12,7 @@ import (
 type Directory struct {
 	*Memory
 
-	lock sync.Mutex
-	dir  string
+	dir string
 }
 
 func NewDirectory() *Directory {
@@ -39,7 +37,13 @@ func (r *Directory) Remove(release ota.Release) (err error) {
 	return err
 }
 
+func (r *Directory) CanRemove(release ota.Release) bool {
+	return r.Memory.CanRemove(release)
+}
+
 func (r *Directory) Update() error {
+	r.Memory.Clean()
+
 	return filepath.Walk(r.dir, func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
 			return nil

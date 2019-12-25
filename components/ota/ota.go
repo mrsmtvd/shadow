@@ -44,6 +44,7 @@ type Repository interface {
 
 type RepositoryRemover interface {
 	Remove(Release) error
+	CanRemove(Release) bool
 }
 
 type goArchReader interface {

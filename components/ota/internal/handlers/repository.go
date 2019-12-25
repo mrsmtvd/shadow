@@ -16,7 +16,7 @@ import (
 type RepositoryHandler struct {
 	dashboard.Handler
 
-	Repository ota.Repository
+	Repository *repository.Merge
 }
 
 func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {

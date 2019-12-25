@@ -37,6 +37,19 @@ func (r *Memory) Remove(release ota.Release) error {
 	return nil
 }
 
+func (r *Memory) CanRemove(release ota.Release) bool {
+	r.lock.RLock()
+	defer r.lock.RUnlock()
+
+	for _, rl := range r.releases {
+		if release == rl {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (r *Memory) Releases(arch string) ([]ota.Release, error) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
@@ -55,4 +68,10 @@ func (r *Memory) Releases(arch string) ([]ota.Release, error) {
 
 func (r *Memory) Update() error {
 	return nil
+}
+
+func (r *Memory) Clean() {
+	r.lock.Lock()
+	r.releases = nil
+	r.lock.Unlock()
 }

@@ -41,6 +41,21 @@ func (r *Merge) Remove(release ota.Release) (err error) {
 	return err
 }
 
+func (r *Merge) CanRemove(release ota.Release) bool {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	for _, repo := range r.repositories {
+		if remover, ok := repo.(ota.RepositoryRemover); ok {
+			if remover.CanRemove(release) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func (r *Merge) Releases(arch string) ([]ota.Release, error) {
 	releases := make([]ota.Release, 0)
 

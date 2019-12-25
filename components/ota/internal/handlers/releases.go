@@ -10,7 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/ota"
-	"github.com/kihamo/shadow/components/ota/release"
+	"github.com/kihamo/shadow/components/ota/repository"
 )
 
 type releaseView struct {
@@ -36,7 +36,7 @@ type ReleasesHandler struct {
 	dashboard.Handler
 
 	Installer      *ota.Installer
-	AllRepository  ota.Repository
+	AllRepository  *repository.Merge
 	CurrentRelease ota.Release
 }
 
@@ -66,18 +66,13 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 			Size:          rl.Size(),
 			Checksum:      hex.EncodeToString(rl.Checksum()),
 			IsCurrent:     rl == h.CurrentRelease,
+			IsRemovable:   rl != h.CurrentRelease && h.AllRepository.CanRemove(rl),
 			IsUpgradeable: rl != h.CurrentRelease && rl.Architecture() == runtime.GOARCH,
 			Architecture:  rl.Architecture(),
 			Path:          rl.Path(),
 			UploadedAt:    rl.CreatedAt(),
 		}
 		rView.DownloadURL = "/ota/repository/" + rView.ID + "/" + ota.GenerateFileName(rl)
-
-		if releaseFile, ok := rl.(*release.LocalFile); ok {
-			if releaseFile != h.CurrentRelease {
-				rView.IsRemovable = true
-			}
-		}
 
 		releasesView = append(releasesView, rView)
 	}
@@ -105,20 +100,22 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 					return
 				}
 
-				if remover, ok := h.AllRepository.(ota.RepositoryRemover); ok {
-					if err := remover.Remove(rl); err != nil {
+				if h.AllRepository.CanRemove(rl) {
+					if err := h.AllRepository.Remove(rl); err != nil {
 						_ = w.SendJSON(response{
 							Result:  "failed",
 							Message: fmt.Sprintf("remove release failed %v", err),
 						})
 						return
 					}
-				}
 
-				logging.Log(r.Context()).Info("Remove release",
-					"version", rl.Version(),
-					"path", rl.Path(),
-				)
+					logging.Log(r.Context()).Info("Remove release",
+						"version", rl.Version(),
+						"path", rl.Path(),
+					)
+
+					go h.AllRepository.Update()
+				}
 
 				_ = w.SendJSON(response{
 					Result: "success",
