@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/kihamo/shadow/components/ota"
+	"go.uber.org/multierr"
 )
 
 type Merge struct {
@@ -73,15 +74,29 @@ func (r *Merge) Releases(arch string) ([]ota.Release, error) {
 	return releases, nil
 }
 
-func (r *Merge) Update() error {
+func (r *Merge) Update() (err error) {
+	var (
+		wg   sync.WaitGroup
+		lock sync.Mutex
+	)
+
 	r.mutex.RLock()
-	defer r.mutex.RUnlock()
-
 	for _, repo := range r.repositories {
-		if err := repo.Update(); err != nil {
-			return err
-		}
-	}
+		wg.Add(1)
 
-	return nil
+		go func(rp ota.Repository) {
+			defer wg.Done()
+
+			if e := rp.Update(); e != nil {
+				lock.Lock()
+				err = multierr.Append(err, e)
+				lock.Unlock()
+			}
+		}(repo)
+	}
+	r.mutex.RUnlock()
+
+	wg.Wait()
+
+	return err
 }

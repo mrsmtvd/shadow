@@ -43,6 +43,12 @@ type ReleasesHandler struct {
 func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	q := r.URL().Query()
 
+	if q.Get("update") != "" {
+		if err := h.AllRepository.Update(); err != nil {
+			r.Session().FlashBag().Error(err.Error())
+		}
+	}
+
 	releases, err := h.AllRepository.Releases("")
 	if err != nil {
 		r.Session().FlashBag().Error(err.Error())

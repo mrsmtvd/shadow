@@ -17,6 +17,7 @@ import (
 
 type Component struct {
 	config config.Component
+	logger logging.Logger
 	routes []dashboard.Route
 
 	installer        *ota.Installer
@@ -71,13 +72,13 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error) {
+	c.logger = logging.DefaultLazyLogger(c.Name())
+
 	<-a.ReadyComponent(config.ComponentName)
 	cfg := a.GetComponent(config.ComponentName).(config.Component)
 
 	c.uploadRepository.SetPath(cfg.String(ota.ConfigReleasesDirectory))
-	if err := c.allRepository.Update(); err != nil {
-		return err
-	}
+	go c.Update()
 
 	shadowURLs := cfg.String(ota.ConfigRepositoryClientShadow)
 	if shadowURLs != "" {
@@ -89,6 +90,15 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 
 			c.allRepository.Merge(repository.NewShadow(shadowURL))
 		}
+	}
+
+	return err
+}
+
+func (c *Component) Update() (err error) {
+	err = c.allRepository.Update()
+	if err != nil {
+		c.logger.Error("Update all repositories failed", "error", err.Error())
 	}
 
 	return err

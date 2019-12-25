@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/kihamo/shadow/components/ota"
 	"github.com/kihamo/shadow/components/ota/release"
 )
 
@@ -22,53 +21,51 @@ type ShadowRecord struct {
 }
 
 type Shadow struct {
+	*Memory
+
 	u *url.URL
 }
 
 func NewShadow(u *url.URL) *Shadow {
 	return &Shadow{
-		u: u,
+		Memory: NewMemory(),
+		u:      u,
 	}
 }
 
-func (r *Shadow) Releases(arch string) ([]ota.Release, error) {
-	r.u.Query().Set("architecture", arch)
-
+func (r *Shadow) Update() error {
 	response, err := http.Get(r.u.String())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var records []ShadowRecord
 
 	if err := json.Unmarshal(body, &records); err != nil {
-		return nil, err
+		return err
 	}
 
-	releases := make([]ota.Release, 0, len(records))
+	r.Memory.Clean()
+
 	for _, record := range records {
 		cs, err := hex.DecodeString(record.Checksum)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		rl, err := release.NewHTTPFile(record.File, record.Version, cs, record.Size, record.Architecture, record.CreatedAt)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		releases = append(releases, release.NewCompress(rl))
+		r.Memory.Add(release.NewCompress(rl))
 	}
 
-	return releases, nil
-}
-
-func (r *Shadow) Update() error {
 	return nil
 }

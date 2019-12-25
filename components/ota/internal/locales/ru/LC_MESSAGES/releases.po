@@ -16,6 +16,9 @@ msgstr "Релизы"
 msgid "Version"
 msgstr "Версия"
 
+msgid "Update repositories"
+msgstr "Обновить репозитории"
+
 msgid "Actions"
 msgstr "Действия"
 
