@@ -19,8 +19,8 @@ msgstr "Версия"
 msgid "Actions"
 msgstr "Действия"
 
-msgid "Uploaded at"
-msgstr "Дата загрузки"
+msgid "Created at"
+msgstr "Дата создания"
 
 msgid "Size"
 msgstr "Размер"

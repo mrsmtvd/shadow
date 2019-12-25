@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/ota"
+	"github.com/kihamo/shadow/components/ota/repository"
 )
 
 type RepositoryHandler struct {
@@ -69,15 +70,7 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 		return
 	}
 
-	type item struct {
-		Architecture string `json:"architecture"`
-		Checksum     string `json:"checksum"`
-		Size         int64  `json:"size"`
-		Version      string `json:"version"`
-		File         string `json:"file"`
-	}
-
-	items := make([]item, 0, len(releases))
+	records := make([]repository.ShadowRecord, 0, len(releases))
 	for _, rl := range releases {
 		fileURL := &url.URL{
 			Scheme: "http",
@@ -89,14 +82,15 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			fileURL.Scheme = "https"
 		}
 
-		items = append(items, item{
+		records = append(records, repository.ShadowRecord{
 			Architecture: rl.Architecture(),
 			Checksum:     hex.EncodeToString(rl.Checksum()),
 			Size:         rl.Size(),
 			Version:      rl.Version(),
 			File:         fileURL.String(),
+			CreatedAt:    rl.CreatedAt(),
 		})
 	}
 
-	_ = w.SendJSON(items)
+	_ = w.SendJSON(records)
 }

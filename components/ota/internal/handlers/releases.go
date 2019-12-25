@@ -69,12 +69,11 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 			IsUpgradeable: rl != h.CurrentRelease && rl.Architecture() == runtime.GOARCH,
 			Architecture:  rl.Architecture(),
 			Path:          rl.Path(),
+			UploadedAt:    rl.CreatedAt(),
 		}
 		rView.DownloadURL = "/ota/repository/" + rView.ID + "/" + ota.GenerateFileName(rl)
 
 		if releaseFile, ok := rl.(*release.LocalFile); ok {
-			rView.UploadedAt = &[]time.Time{releaseFile.FileInfo().ModTime()}[0]
-
 			if releaseFile != h.CurrentRelease {
 				rView.IsRemovable = true
 			}

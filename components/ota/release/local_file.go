@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/kihamo/shadow/components/ota"
 )
@@ -114,4 +115,8 @@ func (f *LocalFile) FileInfo() os.FileInfo {
 
 func (f *LocalFile) Type() ota.FileType {
 	return f.fileType
+}
+
+func (f *LocalFile) CreatedAt() *time.Time {
+	return &[]time.Time{f.fileInfo.ModTime()}[0]
 }

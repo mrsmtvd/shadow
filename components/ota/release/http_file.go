@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/kihamo/shadow/components/ota"
 )
@@ -22,9 +23,10 @@ type HTTPFile struct {
 	architecture string
 	fileType     *ota.FileType
 	fileCache    string
+	createdAt    *time.Time
 }
 
-func NewHTTPFile(path, version string, checksum []byte, size int64, architecture string) (*HTTPFile, error) {
+func NewHTTPFile(path, version string, checksum []byte, size int64, architecture string, createdAt *time.Time) (*HTTPFile, error) {
 	u, err := url.Parse(path)
 	if err != nil {
 		return nil, err
@@ -36,6 +38,7 @@ func NewHTTPFile(path, version string, checksum []byte, size int64, architecture
 		checksum:     checksum,
 		size:         size,
 		architecture: architecture,
+		createdAt:    createdAt,
 	}, nil
 }
 
@@ -115,6 +118,10 @@ func (f *HTTPFile) Type() ota.FileType {
 	}
 
 	return *ft
+}
+
+func (f *HTTPFile) CreatedAt() *time.Time {
+	return f.createdAt
 }
 
 func (f *HTTPFile) getFileType() ota.FileType {

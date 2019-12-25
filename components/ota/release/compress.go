@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/kihamo/shadow/components/ota"
 )
@@ -121,6 +122,10 @@ func (f *Compress) Architecture() string {
 
 func (f *Compress) Type() ota.FileType {
 	return f.original.Type()
+}
+
+func (f *Compress) CreatedAt() *time.Time {
+	return f.original.CreatedAt()
 }
 
 func createTempFileFromReader(reader io.Reader) (_ *fileTemp, size int64, err error) {

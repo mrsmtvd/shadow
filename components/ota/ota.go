@@ -10,6 +10,7 @@ import (
 	"io"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const (
@@ -33,6 +34,7 @@ type Release interface {
 	Checksum() []byte
 	Size() int64
 	Architecture() string
+	CreatedAt() *time.Time
 }
 
 type Repository interface {

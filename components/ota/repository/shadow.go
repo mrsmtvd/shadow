@@ -6,17 +6,19 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/kihamo/shadow/components/ota"
 	"github.com/kihamo/shadow/components/ota/release"
 )
 
 type ShadowRecord struct {
-	Architecture string `json:"architecture"`
-	Checksum     string `json:"checksum"`
-	Size         int64  `json:"size"`
-	Version      string `json:"version"`
-	File         string `json:"file"`
+	Architecture string     `json:"architecture"`
+	Checksum     string     `json:"checksum"`
+	Size         int64      `json:"size"`
+	Version      string     `json:"version"`
+	File         string     `json:"file"`
+	CreatedAt    *time.Time `json:"created_at"`
 }
 
 type Shadow struct {
@@ -56,7 +58,7 @@ func (r *Shadow) Releases(arch string) ([]ota.Release, error) {
 			return nil, err
 		}
 
-		rl, err := release.NewHTTPFile(record.File, record.Version, cs, record.Size, record.Architecture)
+		rl, err := release.NewHTTPFile(record.File, record.Version, cs, record.Size, record.Architecture, record.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
