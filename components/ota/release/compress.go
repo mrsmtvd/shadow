@@ -128,6 +128,10 @@ func (f *Compress) CreatedAt() *time.Time {
 	return f.original.CreatedAt()
 }
 
+func (f *Compress) Validate() error {
+	return f.original.Validate()
+}
+
 func createTempFileFromReader(reader io.Reader) (_ *fileTemp, size int64, err error) {
 	// если пришел дескриптор то ничего создавать не нужно, файл уже есть, переиспользуем его
 	if exist, ok := reader.(*os.File); ok {

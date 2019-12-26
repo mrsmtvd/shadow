@@ -26,6 +26,7 @@ type Application interface {
 	BuildDate() *time.Time
 	StartDate() *time.Time
 	Uptime() time.Duration
+	Shutdown() error
 
 	GetComponent(string) Component
 	GetComponents() ([]Component, error)
@@ -44,6 +45,7 @@ type App struct {
 
 	components *components
 	running    int64
+	shutdown   chan os.Signal
 
 	name    string
 	version string
@@ -72,6 +74,7 @@ func init() {
 func NewApp() *App {
 	application := &App{
 		components: &components{},
+		shutdown:   make(chan os.Signal, 1),
 	}
 
 	return application
@@ -126,9 +129,7 @@ func (a *App) Run() (err error) {
 	}
 
 	chRunDone := make(chan *component, total)
-
-	chShutdown := make(chan os.Signal, 1)
-	signal.Notify(chShutdown, sig...)
+	signal.Notify(a.shutdown, sig...)
 
 	var (
 		shutdownRunning   bool
@@ -140,7 +141,7 @@ func (a *App) Run() (err error) {
 			close(chRunDone)
 		}
 
-		close(chShutdown)
+		close(a.shutdown)
 	}()
 
 	// запускаем компоненты
@@ -165,19 +166,19 @@ func (a *App) Run() (err error) {
 						},
 					}, closers...)
 
-					chShutdown <- sig[0]
+					a.shutdown <- sig[0]
 				}
 			}
 
 			if notBlockedRunning >= total {
 				if !shutdownRunning {
-					chShutdown <- sig[0]
+					a.shutdown <- sig[0]
 				}
 			}
 
-		case <-chShutdown:
+		case <-a.shutdown:
 			shutdownRunning = true
-			signal.Stop(chShutdown)
+			signal.Stop(a.shutdown)
 
 			var shutdownEG errgroup.Group
 
@@ -307,6 +308,15 @@ func (a *App) RunningComponent(name string, names ...string) <-chan struct{} {
 
 func (a *App) ShutdownComponent(name string, names ...string) <-chan struct{} {
 	return a.WatchComponentStatus(ComponentStatusShutdown, name, names...)
+}
+
+func (a *App) Shutdown() error {
+	if atomic.LoadInt64(&a.running) != 1 {
+		return errors.New("already shutdown")
+	}
+
+	a.shutdown <- sig[0]
+	return nil
 }
 
 func SetName(name string) {

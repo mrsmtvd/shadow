@@ -1,7 +1,10 @@
 package release
 
 import (
+	"bytes"
+	"crypto/md5"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -122,6 +125,26 @@ func (f *HTTPFile) Type() ota.FileType {
 
 func (f *HTTPFile) CreatedAt() *time.Time {
 	return f.createdAt
+}
+
+func (f *HTTPFile) Validate() error {
+	file, err := f.File()
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	hasher := md5.New()
+	if _, err := io.Copy(hasher, file); err != nil {
+		return err
+	}
+
+	cs := hasher.Sum(nil)
+	if bytes.Compare(f.Checksum(), cs) != 0 {
+		return fmt.Errorf("wrong checksum have %x want %x", cs, f.Checksum())
+	}
+
+	return nil
 }
 
 func (f *HTTPFile) getFileType() ota.FileType {

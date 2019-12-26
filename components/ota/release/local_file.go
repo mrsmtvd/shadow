@@ -120,3 +120,7 @@ func (f *LocalFile) Type() ota.FileType {
 func (f *LocalFile) CreatedAt() *time.Time {
 	return &[]time.Time{f.fileInfo.ModTime()}[0]
 }
+
+func (f *LocalFile) Validate() error {
+	return nil
+}

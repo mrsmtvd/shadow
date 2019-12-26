@@ -63,7 +63,7 @@ func (c *Component) Init(a shadow.Application) error {
 		return err
 	}
 
-	c.installer = ota.NewInstaller()
+	c.installer = ota.NewInstaller(a.Shutdown)
 
 	c.uploadRepository = repository.NewDirectory()
 	c.allRepository = repository.NewMerge(c.uploadRepository, repository.NewMemory(c.currentRelease))

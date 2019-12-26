@@ -35,6 +35,7 @@ type Release interface {
 	Size() int64
 	Architecture() string
 	CreatedAt() *time.Time
+	Validate() error
 }
 
 type Repository interface {

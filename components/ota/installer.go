@@ -1,7 +1,6 @@
 package ota
 
 import (
-	"crypto/md5"
 	"errors"
 	"io"
 	"os"
@@ -13,18 +12,21 @@ import (
 )
 
 type Installer struct {
+	shutdown func() error
 }
 
-func NewInstaller() *Installer {
-	return &Installer{}
+func NewInstaller(shutdown func() error) *Installer {
+	return &Installer{
+		shutdown: shutdown,
+	}
 }
 
 // очистка старых не используемых релизов при запуске
-func (u *Installer) AutoClean() error {
+func (i *Installer) AutoClean() error {
 	return nil
 }
 
-func (u *Installer) InstallTo(release Release, path string) error {
+func (i *Installer) InstallTo(release Release, path string) error {
 	if release.Architecture() != runtime.GOARCH {
 		return errors.New("not valid architecture")
 	}
@@ -34,9 +36,6 @@ func (u *Installer) InstallTo(release Release, path string) error {
 		return err
 	}
 	defer releaseFile.Close()
-
-	// TODO: проверка подписи к файлу
-	// TODO: проверка что текущий файл не является релизным
 
 	stat, err := os.Lstat(path)
 	if err != nil {
@@ -55,29 +54,28 @@ func (u *Installer) InstallTo(release Release, path string) error {
 		}
 	}
 
-	hasher := md5.New()
-	reader := io.TeeReader(releaseFile, hasher)
+	// 1. Проверяем чексумму
+	if err := release.Validate(); err != nil {
+		return err
+	}
 
-	// 1. создаем файл path.new в него копируем новый релиз
+	// 2. создаем файл path.new в него копируем новый релиз
 	newPath := path + ".new"
+	_ = os.Remove(newPath)
+
 	newFile, err := os.OpenFile(newPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, stat.Mode())
 	if err != nil {
 		return err
 	}
 	defer newFile.Close()
 
-	_, err = io.Copy(newFile, reader)
+	_, err = io.Copy(newFile, releaseFile)
 	if err != nil {
 		return err
 	}
 
 	// windows
 	// newFile.Close()
-
-	// 2. Проверяем чексумму TODO: с учетом того, что брали из архива
-	//if cs := hasher.Sum(nil); bytes.Compare(release.Checksum(), hasher.Sum(nil)) != 0 {
-	//	return fmt.Errorf("invalid checksum want %x have %x", release.Checksum(), cs)
-	//}
 
 	// 3. переименовываем текущий файл в path.old
 	oldPath := path + ".old"
@@ -96,33 +94,38 @@ func (u *Installer) InstallTo(release Release, path string) error {
 	}
 
 	// 5. удалить старые релизы
+	_ = os.Remove(newPath)
 	_ = os.Remove(oldPath)
 
 	return err
 }
 
-func (u *Installer) Install(release Release) error {
+func (i *Installer) Install(release Release) error {
 	execName, err := osext.Executable()
 	if err != nil {
 		return err
 	}
 
-	return u.InstallTo(release, execName)
+	return i.InstallTo(release, execName)
 }
 
-func (u *Installer) Restart() error {
+func (i *Installer) Restart() error {
 	execName, err := osext.Executable()
+	if err != nil {
+		return err
+	}
+
+	err = i.shutdown()
 	if err != nil {
 		return err
 	}
 
 	execDir := filepath.Dir(execName)
 
-	files := []*os.File{
-		os.Stdin,
-		os.Stdout,
-		os.Stderr,
-	}
+	files := make([]*os.File, 3)
+	files[syscall.Stdin] = os.Stdin
+	files[syscall.Stdout] = os.Stdout
+	files[syscall.Stderr] = os.Stderr
 
 	_, err = os.StartProcess(execName, []string{execName}, &os.ProcAttr{
 		Dir:   execDir,

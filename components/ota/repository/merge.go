@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/kihamo/shadow/components/ota"
@@ -89,7 +90,7 @@ func (r *Merge) Update() (err error) {
 
 			if e := rp.Update(); e != nil {
 				lock.Lock()
-				err = multierr.Append(err, e)
+				err = multierr.Append(err, fmt.Errorf("update filed %T with error %v", rp, e))
 				lock.Unlock()
 			}
 		}(repo)
