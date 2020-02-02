@@ -140,7 +140,7 @@ func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, ns, view, layout s
 }
 
 func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, layout string, data map[string]interface{}) error {
-	tpl, err := r.getLazyViewTemplate(ns, view)
+	tpl, err := r.getLazyViewTemplate(ns, view, layout)
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (r *Renderer) getTemplateFiles(directory string, f *assetfs.AssetFS) (map[s
 	return templates, nil
 }
 
-func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, error) {
+func (r *Renderer) getLazyViewTemplate(ns, view, layout string) (*template.Template, error) {
 	r.mutex.RLock()
 	namespace, ok := r.namespaces[ns]
 	r.mutex.RUnlock()
@@ -211,8 +211,9 @@ func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, err
 	}
 
 	view += TemplatePostfix
+	cacheID := layout + "/" + view
 
-	tpl, ok := namespace.get(view)
+	tpl, ok := namespace.get(cacheID)
 	if ok {
 		return tpl, nil
 	}
@@ -246,12 +247,15 @@ func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, err
 	}
 
 	if files, err := r.getTemplateFiles(TemplateLayoutsDir, namespace.fs); err == nil {
-		for layout, body := range files {
-			layout = strings.TrimSuffix(layout, TemplatePostfix)
+		for l, body := range files {
+			l = strings.TrimSuffix(layout, TemplatePostfix)
+			if l != layout {
+				continue
+			}
 
-			t := tpl.Lookup(layout)
+			t := tpl.Lookup(l)
 			if t == nil {
-				t = tpl.New(layout)
+				t = tpl.New(l)
 			}
 
 			if _, err := t.Parse(string(body)); err != nil {
@@ -265,6 +269,6 @@ func (r *Renderer) getLazyViewTemplate(ns, view string) (*template.Template, err
 		return nil, err
 	}
 
-	namespace.set(view, tpl)
+	namespace.set(cacheID, tpl)
 	return tpl, nil
 }
