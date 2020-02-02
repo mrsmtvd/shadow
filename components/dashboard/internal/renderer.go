@@ -248,7 +248,7 @@ func (r *Renderer) getLazyViewTemplate(ns, view, layout string) (*template.Templ
 
 	if files, err := r.getTemplateFiles(TemplateLayoutsDir, namespace.fs); err == nil {
 		for l, body := range files {
-			l = strings.TrimSuffix(layout, TemplatePostfix)
+			l = strings.TrimSuffix(l, TemplatePostfix)
 			if l != layout {
 				continue
 			}
@@ -258,7 +258,7 @@ func (r *Renderer) getLazyViewTemplate(ns, view, layout string) (*template.Templ
 				t = tpl.New(l)
 			}
 
-			if _, err := t.Parse(string(body)); err != nil {
+			if tpl, err = t.Parse(string(body)); err != nil {
 				return nil, err
 			}
 		}
