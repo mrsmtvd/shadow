@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"gopkg.in/telegram-bot-api.v4"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 type Telegram struct {

@@ -12,7 +12,7 @@ import (
 	"github.com/kihamo/shadow/components/i18n"
 	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/metrics"
-	"github.com/rubenv/sql-migrate"
+	migrate "github.com/rubenv/sql-migrate"
 )
 
 type Component struct {

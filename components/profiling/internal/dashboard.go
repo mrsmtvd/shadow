@@ -5,7 +5,7 @@ import (
 	pprofHandlers "net/http/pprof"
 	"runtime/pprof"
 
-	"github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/profiling/internal/handlers"

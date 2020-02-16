@@ -7,7 +7,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/database"
 	"github.com/kihamo/shadow/components/database/storage"
-	"github.com/rubenv/sql-migrate"
+	migrate "github.com/rubenv/sql-migrate"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

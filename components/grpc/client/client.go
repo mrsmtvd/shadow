@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/kihamo/shadow/components/grpc/stats"
 	"google.golang.org/grpc"
 	s "google.golang.org/grpc/stats"

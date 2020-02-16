@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging"
+	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
 	st "github.com/kihamo/shadow/components/grpc/stats"
 	"github.com/kihamo/shadow/components/logging"
 	"google.golang.org/grpc/codes"

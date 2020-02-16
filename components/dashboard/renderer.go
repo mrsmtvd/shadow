@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 )
 
 type Renderer interface {

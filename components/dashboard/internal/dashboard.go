@@ -10,7 +10,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
 	"github.com/kihamo/shadow/components/logging"

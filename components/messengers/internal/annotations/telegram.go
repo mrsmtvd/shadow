@@ -6,7 +6,7 @@ import (
 
 	"github.com/kihamo/shadow/components/annotations"
 	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
-	"gopkg.in/telegram-bot-api.v4"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 type Telegram struct {

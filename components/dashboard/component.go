@@ -1,7 +1,7 @@
 package dashboard
 
 import (
-	"github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow"
 )
 

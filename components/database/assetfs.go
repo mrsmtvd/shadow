@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"path/filepath"
 
-	"github.com/elazarl/go-bindata-assetfs"
-	"github.com/rubenv/sql-migrate"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
+	migrate "github.com/rubenv/sql-migrate"
 )
 
 const (
