@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logging"
+	"github.com/kihamo/shadow/components/logging/internal/wrapper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -24,34 +25,34 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithGroup("General").
 			WithUsage("Global log level").
 			WithEditable(true).
-			WithDefault(int8(zapcore.InfoLevel)).
+			WithDefault(int8(wrapper.InfoLevel)).
 			WithView([]string{config.ViewEnum}).
 			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
-					{int8(zapcore.DebugLevel), "Debug"},
-					{int8(zapcore.InfoLevel), "Informational"},
-					{int8(zapcore.WarnLevel), "Warning"},
-					{int8(zapcore.ErrorLevel), "Error"},
-					{int8(zapcore.PanicLevel), "Panic"},
-					{int8(zapcore.DPanicLevel), "Development panic"},
-					{int8(zapcore.FatalLevel), "Fatal"},
+					{int8(wrapper.DebugLevel), "Debug"},
+					{int8(wrapper.InfoLevel), "Informational"},
+					{int8(wrapper.WarnLevel), "Warning"},
+					{int8(wrapper.ErrorLevel), "Error"},
+					{int8(wrapper.PanicLevel), "Panic"},
+					{int8(wrapper.DPanicLevel), "Development panic"},
+					{int8(wrapper.FatalLevel), "Fatal"},
 				},
 			}),
 		config.NewVariable(logging.ConfigStacktraceLevel, config.ValueTypeInt).
 			WithGroup("General").
 			WithUsage("Stacktrace log level").
 			WithEditable(true).
-			WithDefault(int8(zapcore.FatalLevel)).
+			WithDefault(int8(wrapper.FatalLevel)).
 			WithView([]string{config.ViewEnum}).
 			WithViewOptions(map[string]interface{}{
 				config.ViewOptionEnumOptions: [][]interface{}{
-					{int8(zapcore.DebugLevel), "Debug"},
-					{int8(zapcore.InfoLevel), "Informational"},
-					{int8(zapcore.WarnLevel), "Warning"},
-					{int8(zapcore.ErrorLevel), "Error"},
-					{int8(zapcore.PanicLevel), "Panic"},
-					{int8(zapcore.DPanicLevel), "Development panic"},
-					{int8(zapcore.FatalLevel), "Fatal"},
+					{int8(wrapper.DebugLevel), "Debug"},
+					{int8(wrapper.InfoLevel), "Informational"},
+					{int8(wrapper.WarnLevel), "Warning"},
+					{int8(wrapper.ErrorLevel), "Error"},
+					{int8(wrapper.PanicLevel), "Panic"},
+					{int8(wrapper.DPanicLevel), "Development panic"},
+					{int8(wrapper.FatalLevel), "Fatal"},
 				},
 			}),
 		config.NewVariable(logging.ConfigFields, config.ValueTypeString).

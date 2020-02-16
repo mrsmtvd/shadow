@@ -92,3 +92,7 @@ func (l *LazyLogger) Fatal(message string, args ...interface{}) {
 func (l *LazyLogger) Fatalf(message string, args ...interface{}) {
 	l.logger().Fatalf(message, args...)
 }
+
+func (l *LazyLogger) SetLevelEnabler(full bool, level wrapper.LevelEnabler) {
+	l.logger().SetLevelEnabler(full, level)
+}

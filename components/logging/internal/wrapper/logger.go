@@ -1,5 +1,21 @@
 package wrapper
 
+import (
+	"go.uber.org/zap/zapcore"
+)
+
+type LevelEnabler zapcore.LevelEnabler
+
+const (
+	DebugLevel  = zapcore.DebugLevel
+	InfoLevel   = zapcore.InfoLevel
+	WarnLevel   = zapcore.WarnLevel
+	ErrorLevel  = zapcore.ErrorLevel
+	DPanicLevel = zapcore.DPanicLevel
+	PanicLevel  = zapcore.PanicLevel
+	FatalLevel  = zapcore.FatalLevel
+)
+
 type Logger interface {
 	Name() string
 	Named(string) Logger
@@ -15,4 +31,5 @@ type Logger interface {
 	Panicf(string, ...interface{})
 	Fatal(string, ...interface{})
 	Fatalf(string, ...interface{})
+	SetLevelEnabler(full bool, level LevelEnabler)
 }

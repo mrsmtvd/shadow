@@ -6,7 +6,6 @@ import (
 
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/logging/internal/wrapper"
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -53,7 +52,7 @@ func NewManagerHandler(wrapper *wrapper.Wrapper, levels [][]interface{}) *Manage
 
 func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 	name := w.Name()
-	level := int8(zap.DebugLevel) - 1
+	level := int8(wrapper.DebugLevel) - 1
 	result := make(map[string]loggerView)
 	dependent := 0
 

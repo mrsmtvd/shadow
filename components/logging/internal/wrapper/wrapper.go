@@ -12,7 +12,7 @@ type Wrapper struct {
 
 	encoder      zapcore.Encoder
 	writeSyncer  zapcore.WriteSyncer
-	levelEnabler zapcore.LevelEnabler
+	levelEnabler LevelEnabler
 	options      []zap.Option
 
 	name   string
@@ -32,7 +32,7 @@ func NewNop(name string) *Wrapper {
 	}
 }
 
-func New(name string, enc zapcore.Encoder, ws zapcore.WriteSyncer, level zapcore.LevelEnabler, options ...zap.Option) *Wrapper {
+func New(name string, enc zapcore.Encoder, ws zapcore.WriteSyncer, level LevelEnabler, options ...zap.Option) *Wrapper {
 	w := &Wrapper{
 		name: name,
 		tree: make(map[string]*Wrapper),
@@ -42,15 +42,15 @@ func New(name string, enc zapcore.Encoder, ws zapcore.WriteSyncer, level zapcore
 	return w
 }
 
-func (w *Wrapper) Init(enc zapcore.Encoder, ws zapcore.WriteSyncer, level zapcore.LevelEnabler, options ...zap.Option) {
+func (w *Wrapper) Init(enc zapcore.Encoder, ws zapcore.WriteSyncer, level LevelEnabler, options ...zap.Option) {
 	w.init(false, enc, ws, level, options...)
 }
 
-func (w *Wrapper) InitFull(enc zapcore.Encoder, ws zapcore.WriteSyncer, level zapcore.LevelEnabler, options ...zap.Option) {
+func (w *Wrapper) InitFull(enc zapcore.Encoder, ws zapcore.WriteSyncer, level LevelEnabler, options ...zap.Option) {
 	w.init(true, enc, ws, level, options...)
 }
 
-func (w *Wrapper) init(full bool, enc zapcore.Encoder, ws zapcore.WriteSyncer, level zapcore.LevelEnabler, options ...zap.Option) {
+func (w *Wrapper) init(full bool, enc zapcore.Encoder, ws zapcore.WriteSyncer, level LevelEnabler, options ...zap.Option) {
 	var core zapcore.Core
 
 	if enc == nil || ws == nil || level == nil {
@@ -100,14 +100,14 @@ func (w *Wrapper) SetWriteSyncer(full bool, ws zapcore.WriteSyncer) {
 	w.init(full, w.Encoder(), ws, w.LevelEnabler())
 }
 
-func (w *Wrapper) LevelEnabler() zapcore.LevelEnabler {
+func (w *Wrapper) LevelEnabler() LevelEnabler {
 	w.lock.RLock()
 	defer w.lock.RUnlock()
 
 	return w.levelEnabler
 }
 
-func (w *Wrapper) SetLevelEnabler(full bool, level zapcore.LevelEnabler) {
+func (w *Wrapper) SetLevelEnabler(full bool, level LevelEnabler) {
 	w.init(full, w.Encoder(), w.WriteSyncer(), level)
 }
 
