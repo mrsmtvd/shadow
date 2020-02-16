@@ -10,6 +10,7 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/shadow/components/logging/internal/wrapper"
+	"github.com/kihamo/shadow/components/metrics"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -119,6 +120,13 @@ func (c *Component) initLogger() {
 		zap.AddCaller(),
 		zap.AddCallerSkip(1),
 		zap.AddStacktrace(zapcore.Level(c.config.Int64(logging.ConfigStacktraceLevel))),
+	}
+
+	if c.application.HasComponent(metrics.ComponentName) {
+		options = append(options, zap.Hooks(func(entry zapcore.Entry) error {
+			metricTotal.With("name", entry.LoggerName, "level", entry.Level.String()).Inc()
+			return nil
+		}))
 	}
 
 	if c.config.Bool(logging.ConfigSentryEnabled) {

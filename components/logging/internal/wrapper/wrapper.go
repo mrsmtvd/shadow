@@ -7,10 +7,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const (
-	loggerFieldName = "logger"
-)
-
 type Wrapper struct {
 	lock sync.RWMutex
 
@@ -63,11 +59,7 @@ func (w *Wrapper) init(full bool, enc zapcore.Encoder, ws zapcore.WriteSyncer, l
 		core = zapcore.NewCore(enc, ws, level)
 	}
 
-	coreOptions := append([]zap.Option{
-		zap.Fields(zap.String(loggerFieldName, w.name)),
-	}, options...)
-
-	l := zap.New(core, coreOptions...)
+	l := zap.New(core, options...).Named(w.name)
 
 	w.lock.Lock()
 	w.encoder = enc
