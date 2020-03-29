@@ -75,9 +75,10 @@ func (c *Component) initLogger() {
 	} else {
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
 	}
-	encoderConfig.MessageKey = "message"
 
+	encoderConfig.MessageKey = "message"
 	encoderConfig.TimeKey = "time"
+
 	switch c.config.String(logging.ConfigEncoderTime) {
 	case logging.EncoderTimeISO8601:
 		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -99,6 +100,7 @@ func (c *Component) initLogger() {
 	}
 
 	encoderConfig.CallerKey = "file"
+
 	switch c.config.String(logging.ConfigEncoderCaller) {
 	case logging.EncoderCallerShort:
 		encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
@@ -176,6 +178,7 @@ func (c *Component) parseFields(f string) []zap.Field {
 	fields = append(fields, zap.String(fieldAppName, c.application.Name()))
 	fields = append(fields, zap.String(fieldAppVersion, c.application.Version()))
 	fields = append(fields, zap.String(fieldAppBuild, c.application.Build()))
+
 	if hostname, err := os.Hostname(); err == nil {
 		fields = append(fields, zap.String(fieldHostname, hostname))
 	}

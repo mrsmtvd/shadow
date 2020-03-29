@@ -62,11 +62,13 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 
 func parseDateTime(str string, loc *time.Location) (t time.Time, err error) {
 	base := "0000-00-00 00:00:00.0000000"
+
 	switch len(str) {
 	case 10, 19, 21, 22, 23, 24, 25, 26: // up to "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		if str == base[:len(str)] {
 			return
 		}
+
 		t, err = time.Parse(timeFormat[:len(str)], str)
 	default:
 		err = errors.New("invalid time string: " + str)

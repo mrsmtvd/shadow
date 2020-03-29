@@ -9,10 +9,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -204,10 +204,10 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/send.html":        templatesViewsSendHtml,
+	"templates/views/send.html": templatesViewsSendHtml,
 	"locales/ru/LC_MESSAGES/config.mo": localesRuLc_messagesConfigMo,
-	"locales/ru/LC_MESSAGES/mail.mo":   localesRuLc_messagesMailMo,
-	"locales/ru/LC_MESSAGES/send.mo":   localesRuLc_messagesSendMo,
+	"locales/ru/LC_MESSAGES/mail.mo": localesRuLc_messagesMailMo,
+	"locales/ru/LC_MESSAGES/send.mo": localesRuLc_messagesSendMo,
 }
 
 // AssetDir returns the file names below a certain
@@ -249,14 +249,13 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
 				"config.mo": &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
-				"mail.mo":   &bintree{localesRuLc_messagesMailMo, map[string]*bintree{}},
-				"send.mo":   &bintree{localesRuLc_messagesSendMo, map[string]*bintree{}},
+				"mail.mo": &bintree{localesRuLc_messagesMailMo, map[string]*bintree{}},
+				"send.mo": &bintree{localesRuLc_messagesSendMo, map[string]*bintree{}},
 			}},
 		}},
 	}},
@@ -313,6 +312,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

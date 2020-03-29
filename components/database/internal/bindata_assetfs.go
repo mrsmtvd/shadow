@@ -17,10 +17,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -372,18 +372,18 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/migrations.html":                     templatesViewsMigrationsHtml,
-	"templates/views/status.html":                         templatesViewsStatusHtml,
-	"templates/views/tables.html":                         templatesViewsTablesHtml,
-	"assets/css/sql.min.css":                              assetsCssSqlMinCss,
-	"assets/js/sql.min.js":                                assetsJsSqlMinJs,
-	"assets/vendors/highlightjs/css/tomorrow.min.css":     assetsVendorsHighlightjsCssTomorrowMinCss,
+	"templates/views/migrations.html": templatesViewsMigrationsHtml,
+	"templates/views/status.html": templatesViewsStatusHtml,
+	"templates/views/tables.html": templatesViewsTablesHtml,
+	"assets/css/sql.min.css": assetsCssSqlMinCss,
+	"assets/js/sql.min.js": assetsJsSqlMinJs,
+	"assets/vendors/highlightjs/css/tomorrow.min.css": assetsVendorsHighlightjsCssTomorrowMinCss,
 	"assets/vendors/highlightjs/js/highlight.pack.min.js": assetsVendorsHighlightjsJsHighlightPackMinJs,
-	"locales/ru/LC_MESSAGES/config.mo":                    localesRuLc_messagesConfigMo,
-	"locales/ru/LC_MESSAGES/database.mo":                  localesRuLc_messagesDatabaseMo,
-	"locales/ru/LC_MESSAGES/migrations.mo":                localesRuLc_messagesMigrationsMo,
-	"locales/ru/LC_MESSAGES/status.mo":                    localesRuLc_messagesStatusMo,
-	"locales/ru/LC_MESSAGES/tables.mo":                    localesRuLc_messagesTablesMo,
+	"locales/ru/LC_MESSAGES/config.mo": localesRuLc_messagesConfigMo,
+	"locales/ru/LC_MESSAGES/database.mo": localesRuLc_messagesDatabaseMo,
+	"locales/ru/LC_MESSAGES/migrations.mo": localesRuLc_messagesMigrationsMo,
+	"locales/ru/LC_MESSAGES/status.mo": localesRuLc_messagesStatusMo,
+	"locales/ru/LC_MESSAGES/tables.mo": localesRuLc_messagesTablesMo,
 }
 
 // AssetDir returns the file names below a certain
@@ -425,7 +425,6 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"assets": &bintree{nil, map[string]*bintree{
 		"css": &bintree{nil, map[string]*bintree{
@@ -448,19 +447,19 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
-				"config.mo":     &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
-				"database.mo":   &bintree{localesRuLc_messagesDatabaseMo, map[string]*bintree{}},
+				"config.mo": &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
+				"database.mo": &bintree{localesRuLc_messagesDatabaseMo, map[string]*bintree{}},
 				"migrations.mo": &bintree{localesRuLc_messagesMigrationsMo, map[string]*bintree{}},
-				"status.mo":     &bintree{localesRuLc_messagesStatusMo, map[string]*bintree{}},
-				"tables.mo":     &bintree{localesRuLc_messagesTablesMo, map[string]*bintree{}},
+				"status.mo": &bintree{localesRuLc_messagesStatusMo, map[string]*bintree{}},
+				"tables.mo": &bintree{localesRuLc_messagesTablesMo, map[string]*bintree{}},
 			}},
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
 		"views": &bintree{nil, map[string]*bintree{
 			"migrations.html": &bintree{templatesViewsMigrationsHtml, map[string]*bintree{}},
-			"status.html":     &bintree{templatesViewsStatusHtml, map[string]*bintree{}},
-			"tables.html":     &bintree{templatesViewsTablesHtml, map[string]*bintree{}},
+			"status.html": &bintree{templatesViewsStatusHtml, map[string]*bintree{}},
+			"tables.html": &bintree{templatesViewsTablesHtml, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -511,6 +510,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

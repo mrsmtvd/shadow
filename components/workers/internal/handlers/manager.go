@@ -109,6 +109,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 			events := md[ws.ListenerMetadataEvents].([]ws.Event)
 			listener.Events = make(map[string]string, len(events))
+
 			for _, event := range events {
 				listener.Events[event.Id()] = event.Name()
 			}
@@ -225,6 +226,7 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 
 					mdEvents := md[ws.ListenerMetadataEvents].([]ws.Event)
 					events := make(map[string]ws.Event, len(mdEvents))
+
 					for _, event := range mdEvents {
 						events[event.Id()] = event
 					}

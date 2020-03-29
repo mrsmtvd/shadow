@@ -96,6 +96,7 @@ func (c *Component) LoadLocaleFromFiles(domainName string, locales map[string][]
 					"error", err.Error(),
 					"domain", domainName,
 				)
+
 				continue
 			}
 
@@ -106,6 +107,7 @@ func (c *Component) LoadLocaleFromFiles(domainName string, locales map[string][]
 					"error", err.Error(),
 					"domain", domainName,
 				)
+
 				continue
 			}
 

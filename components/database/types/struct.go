@@ -60,6 +60,7 @@ func (t *Struct) Scan(value interface{}) error {
 	}
 
 	*t = input
+
 	return nil
 }
 

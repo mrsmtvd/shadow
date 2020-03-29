@@ -120,6 +120,7 @@ func (f *factory) mergeTags(tags map[string]string) map[string]string {
 	for k, v := range f.tags {
 		result[k] = v
 	}
+
 	for k, v := range tags {
 		result[k] = v
 	}

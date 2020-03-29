@@ -71,6 +71,7 @@ func (h *AuthHandler) renderForm(r *dashboard.Request, err error) {
 	}
 
 	last := false
+
 	for i, p := range providers {
 		if i < 1 {
 			continue

@@ -121,6 +121,7 @@ func (c *Component) AddStorage(id string, s annotations.Storage) error {
 	}
 
 	c.storages[id] = s
+
 	return nil
 }
 

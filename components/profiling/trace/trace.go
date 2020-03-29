@@ -54,6 +54,7 @@ func StartProfiles(list []string) error {
 	}
 
 	now := time.Now()
+
 	for i := range runProfiles {
 		switch runProfiles[i].GetID() {
 		case ProfileCPU:
@@ -70,6 +71,7 @@ func StartProfiles(list []string) error {
 	}
 
 	startAt = &now
+
 	return nil
 }
 

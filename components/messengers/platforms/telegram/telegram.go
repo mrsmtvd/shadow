@@ -82,6 +82,7 @@ func (p *Telegram) RegisterWebHook(link fmt.Stringer, cert string) error {
 	}
 
 	_, err := p.bot.SetWebhook(config)
+
 	return err
 }
 

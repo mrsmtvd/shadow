@@ -93,6 +93,7 @@ func (r *Renderer) AddRootTemplates(fs *assetfs.AssetFS) error {
 	}
 
 	r.rootTemplate = tpl
+
 	return nil
 }
 
@@ -106,6 +107,7 @@ func (r *Renderer) IsRegisterNamespace(ns string) bool {
 	r.mutex.RLock()
 	_, ok := r.namespaces[ns]
 	r.mutex.RUnlock()
+
 	return ok
 }
 
@@ -232,6 +234,7 @@ func (r *Renderer) getLazyViewTemplate(ns, view, layout string) (*template.Templ
 		if name == view {
 			found = true
 			content = body
+
 			break
 		}
 	}
@@ -270,5 +273,6 @@ func (r *Renderer) getLazyViewTemplate(ns, view, layout string) (*template.Templ
 	}
 
 	namespace.set(cacheID, tpl)
+
 	return tpl, nil
 }

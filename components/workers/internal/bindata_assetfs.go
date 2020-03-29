@@ -10,10 +10,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -225,9 +225,9 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/manager.html":      templatesViewsManagerHtml,
-	"assets/js/manager.min.js":          assetsJsManagerMinJs,
-	"locales/ru/LC_MESSAGES/config.mo":  localesRuLc_messagesConfigMo,
+	"templates/views/manager.html": templatesViewsManagerHtml,
+	"assets/js/manager.min.js": assetsJsManagerMinJs,
+	"locales/ru/LC_MESSAGES/config.mo": localesRuLc_messagesConfigMo,
 	"locales/ru/LC_MESSAGES/manager.mo": localesRuLc_messagesManagerMo,
 	"locales/ru/LC_MESSAGES/workers.mo": localesRuLc_messagesWorkersMo,
 }
@@ -271,7 +271,6 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"assets": &bintree{nil, map[string]*bintree{
 		"js": &bintree{nil, map[string]*bintree{
@@ -281,7 +280,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
-				"config.mo":  &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
+				"config.mo": &bintree{localesRuLc_messagesConfigMo, map[string]*bintree{}},
 				"manager.mo": &bintree{localesRuLc_messagesManagerMo, map[string]*bintree{}},
 				"workers.mo": &bintree{localesRuLc_messagesWorkersMo, map[string]*bintree{}},
 			}},
@@ -340,6 +339,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

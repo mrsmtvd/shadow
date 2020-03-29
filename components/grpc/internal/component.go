@@ -115,6 +115,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 
 	addr := net.JoinHostPort(c.config.String(grpc.ConfigHost), c.config.String(grpc.ConfigPort))
 	lis, err := net.Listen("tcp", addr)
+
 	if err != nil {
 		c.logger.Errorf("Failed to listen [%d]: %s\n", os.Getpid(), err.Error())
 		return err

@@ -147,8 +147,6 @@ func (h *AssetFSHandler) getComponentByPath(name, path string) ([]assetFSList, e
 			if h.buildDate != nil {
 				infoSub.ModTime = *h.buildDate
 			}
-
-			// TODO: directory size
 		}
 
 		ret = append(ret, infoSub)

@@ -97,6 +97,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 			}
 
 			err := c.execute(task)
+
 			if metricsEnabled {
 				metricMailTotal.Inc()
 
@@ -170,6 +171,7 @@ func (c *Component) execute(task *mailTask) error {
 				)
 
 				c.open = false
+
 				return c.execute(task)
 			}
 

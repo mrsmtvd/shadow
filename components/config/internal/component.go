@@ -120,6 +120,7 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 	}
 
 	c.logger.Info("Init config", fields...)
+
 	return nil
 }
 
@@ -217,6 +218,7 @@ func (c *Component) Has(key string) bool {
 	defer c.mutex.RUnlock()
 
 	_, ok := c.variables[key]
+
 	return ok
 }
 

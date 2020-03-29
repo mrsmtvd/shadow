@@ -242,6 +242,7 @@ func (h *ManagerHandler) getServicesViewData(r *dashboard.Request) ([]managerHan
 
 	addr := net.JoinHostPort(r.Config().String(grpc.ConfigHost), r.Config().String(grpc.ConfigPort))
 	connect, err := g.DialContext(r.Context(), addr, g.WithInsecure())
+
 	if err != nil {
 		return ret, err
 	}
@@ -291,6 +292,7 @@ func (h *ManagerHandler) actionCall(w *dashboard.Response, r *dashboard.Request)
 
 	addr := net.JoinHostPort(r.Config().String(grpc.ConfigHost), r.Config().String(grpc.ConfigPort))
 	connect, err := g.DialContext(ctx, addr, g.WithInsecure())
+
 	if err != nil {
 		err = w.SendJSON(managerHandlerResponseCall{
 			Error: err.Error(),

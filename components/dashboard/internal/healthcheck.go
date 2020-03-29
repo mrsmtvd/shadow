@@ -8,8 +8,6 @@ import (
 )
 
 func (c *Component) ReadinessCheck() map[string]dashboard.HealthCheck {
-	// TODO: check shutdown application
-
 	hc := make(map[string]dashboard.HealthCheck, len(c.components))
 
 	for _, cmp := range c.components {

@@ -44,6 +44,7 @@ type SQLExecutor struct {
 
 func NewSQLExecutor(driver string, dataSourceName string, options map[string]string) (*SQLExecutor, error) {
 	var dialect gorp.Dialect
+
 	dialectName := driver
 
 	switch driver {
@@ -183,6 +184,7 @@ func (e *SQLExecutor) SelectByQuery(i interface{}, query string, args ...interfa
 	if err != nil {
 		return data, errors.New("error getting collection from DB, query: '" + query + "', error: '" + err.Error() + "'")
 	}
+
 	return data, nil
 }
 
@@ -191,6 +193,7 @@ func (e *SQLExecutor) Select(i interface{}, builder *sq.SelectBuilder) ([]interf
 	if err != nil {
 		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectByQuery(i, query, args...)
 }
 
@@ -201,6 +204,7 @@ func (e *SQLExecutor) SelectOneByQuery(holder interface{}, query string, args ..
 	if err != nil && err != sql.ErrNoRows {
 		return errors.New("error getting value from DB, query: '" + query + "', error: '" + err.Error() + "'")
 	}
+
 	return err
 }
 
@@ -209,6 +213,7 @@ func (e *SQLExecutor) SelectOne(holder interface{}, builder *sq.SelectBuilder) e
 	if err != nil {
 		return errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectOneByQuery(holder, query, args...)
 }
 
@@ -229,6 +234,7 @@ func (e *SQLExecutor) SelectInt(builder *sq.SelectBuilder) (int64, error) {
 	if err != nil {
 		return -1, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectIntByQuery(query, args...)
 }
 
@@ -251,6 +257,7 @@ func (e *SQLExecutor) SelectNullInt(builder *sq.SelectBuilder) (sql.NullInt64, e
 
 		return h, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectNullIntByQuery(query, args...)
 }
 
@@ -271,6 +278,7 @@ func (e *SQLExecutor) SelectFloat(builder *sq.SelectBuilder) (float64, error) {
 	if err != nil {
 		return -1, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectFloatByQuery(query, args...)
 }
 
@@ -293,6 +301,7 @@ func (e *SQLExecutor) SelectNullFloat(builder *sq.SelectBuilder) (sql.NullFloat6
 
 		return h, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectNullFloatByQuery(query, args...)
 }
 
@@ -313,6 +322,7 @@ func (e *SQLExecutor) SelectStr(builder *sq.SelectBuilder) (string, error) {
 	if err != nil {
 		return "", errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectStrByQuery(query, args...)
 }
 
@@ -335,6 +345,7 @@ func (e *SQLExecutor) SelectNullStr(builder *sq.SelectBuilder) (sql.NullString, 
 
 		return h, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.SelectNullStrByQuery(query, args...)
 }
 
@@ -401,6 +412,7 @@ func (e *SQLExecutor) ExecByQuery(query string, args ...interface{}) (sql.Result
 	if err != nil {
 		return result, errors.New("error executing DB query, query: '" + query + "', error: '" + err.Error() + "'")
 	}
+
 	return result, nil
 }
 
@@ -433,6 +445,7 @@ func (e *SQLExecutor) ExecSelect(builder *sq.SelectBuilder) (sql.Result, error) 
 	if err != nil {
 		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.ExecByQuery(query, args...)
 }
 
@@ -441,6 +454,7 @@ func (e *SQLExecutor) ExecInsert(builder *sq.InsertBuilder) (sql.Result, error) 
 	if err != nil {
 		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.ExecByQuery(query, args...)
 }
 
@@ -449,6 +463,7 @@ func (e *SQLExecutor) ExecUpdate(builder *sq.UpdateBuilder) (sql.Result, error) 
 	if err != nil {
 		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.ExecByQuery(query, args...)
 }
 
@@ -457,6 +472,7 @@ func (e *SQLExecutor) ExecDelete(builder *sq.DeleteBuilder) (sql.Result, error) 
 	if err != nil {
 		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.ExecByQuery(query, args...)
 }
 
@@ -465,5 +481,6 @@ func (e *SQLExecutor) ExecCase(builder *sq.CaseBuilder) (sql.Result, error) {
 	if err != nil {
 		return nil, errors.New("could not prepare SQL query, error: '" + err.Error() + "'")
 	}
+
 	return e.ExecByQuery(query, args...)
 }

@@ -15,6 +15,7 @@ type EnvironmentHandler struct {
 
 func (h *EnvironmentHandler) ServeHTTP(_ *dashboard.Response, r *dashboard.Request) {
 	vars := make(map[string]string, len(os.Environ()))
+
 	for _, e := range os.Environ() {
 		pair := strings.Split(e, "=")
 		vars[pair[0]] = pair[1]

@@ -7,10 +7,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -162,7 +162,7 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"migrations/20160301010200_test.sql":  migrations20160301010200_testSql,
+	"migrations/20160301010200_test.sql": migrations20160301010200_testSql,
 	"migrations/20160301010203_test2.sql": migrations20160301010203_test2Sql,
 }
 
@@ -205,10 +205,9 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"migrations": &bintree{nil, map[string]*bintree{
-		"20160301010200_test.sql":  &bintree{migrations20160301010200_testSql, map[string]*bintree{}},
+		"20160301010200_test.sql": &bintree{migrations20160301010200_testSql, map[string]*bintree{}},
 		"20160301010203_test2.sql": &bintree{migrations20160301010203_test2Sql, map[string]*bintree{}},
 	}},
 }}
@@ -259,6 +258,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

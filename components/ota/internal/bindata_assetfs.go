@@ -10,10 +10,10 @@
 package internal
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -225,11 +225,11 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/views/releases.html":      templatesViewsReleasesHtml,
-	"templates/views/update.html":        templatesViewsUpdateHtml,
-	"locales/ru/LC_MESSAGES/ota.mo":      localesRuLc_messagesOtaMo,
+	"templates/views/releases.html": templatesViewsReleasesHtml,
+	"templates/views/update.html": templatesViewsUpdateHtml,
+	"locales/ru/LC_MESSAGES/ota.mo": localesRuLc_messagesOtaMo,
 	"locales/ru/LC_MESSAGES/releases.mo": localesRuLc_messagesReleasesMo,
-	"locales/ru/LC_MESSAGES/update.mo":   localesRuLc_messagesUpdateMo,
+	"locales/ru/LC_MESSAGES/update.mo": localesRuLc_messagesUpdateMo,
 }
 
 // AssetDir returns the file names below a certain
@@ -271,21 +271,20 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"locales": &bintree{nil, map[string]*bintree{
 		"ru": &bintree{nil, map[string]*bintree{
 			"LC_MESSAGES": &bintree{nil, map[string]*bintree{
-				"ota.mo":      &bintree{localesRuLc_messagesOtaMo, map[string]*bintree{}},
+				"ota.mo": &bintree{localesRuLc_messagesOtaMo, map[string]*bintree{}},
 				"releases.mo": &bintree{localesRuLc_messagesReleasesMo, map[string]*bintree{}},
-				"update.mo":   &bintree{localesRuLc_messagesUpdateMo, map[string]*bintree{}},
+				"update.mo": &bintree{localesRuLc_messagesUpdateMo, map[string]*bintree{}},
 			}},
 		}},
 	}},
 	"templates": &bintree{nil, map[string]*bintree{
 		"views": &bintree{nil, map[string]*bintree{
 			"releases.html": &bintree{templatesViewsReleasesHtml, map[string]*bintree{}},
-			"update.html":   &bintree{templatesViewsUpdateHtml, map[string]*bintree{}},
+			"update.html": &bintree{templatesViewsUpdateHtml, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -336,6 +335,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

@@ -19,7 +19,7 @@ func (m orderedMenus) Less(i, j int) bool {
 	return strings.Compare(m[i].Title(), m[j].Title()) < 0
 }
 
-func (c *Component) initMenu() error {
+func (c *Component) initMenu() {
 	menus := make([]dashboard.Menu, 0)
 
 	for _, component := range c.components {
@@ -41,5 +41,4 @@ func (c *Component) initMenu() error {
 	sort.Sort(contextMenus)
 
 	c.renderer.AddGlobalVar("Menu", contextMenus)
-	return nil
 }

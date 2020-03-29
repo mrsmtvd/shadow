@@ -40,6 +40,7 @@ func (h *DataTablesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 	}
 
 	w.Header().Set("Cache-Control", "max-age=315360000, private, immutable")
+
 	if err := w.SendJSON(translate); err != nil {
 		h.InternalError(w, r, err)
 	}

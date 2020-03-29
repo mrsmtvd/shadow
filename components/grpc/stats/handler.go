@@ -38,6 +38,7 @@ func SplitFullMethod(name string) (string, string) {
 	if i := strings.LastIndex(name, "/"); i >= 0 {
 		return name[1:i], name[i+1:]
 	}
+
 	return "unknown", "unknown"
 }
 

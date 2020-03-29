@@ -77,6 +77,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 	cfg := a.GetComponent(config.ComponentName).(config.Component)
 
 	c.uploadRepository.SetPath(cfg.String(ota.ConfigReleasesDirectory))
+
 	go c.Update()
 
 	shadowURLs := cfg.String(ota.ConfigRepositoryClientShadow)

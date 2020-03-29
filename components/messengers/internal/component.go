@@ -86,6 +86,7 @@ func (c *Component) RegisterMessenger(id string, messenger messengers.Messenger)
 
 	c.messengers[id] = messenger
 	c.logger.Debug("Registered messenger " + id)
+
 	return nil
 }
 
@@ -119,6 +120,7 @@ func (c *Component) initTelegram() {
 			"error", err.Error(),
 			"messenger", messengers.MessengerTelegram,
 		)
+
 		return
 	}
 
@@ -135,6 +137,7 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 				"error", err.Error(),
 				"messenger", messengers.MessengerTelegram,
 			)
+
 			return
 		}
 
@@ -144,6 +147,7 @@ func (c *Component) initTelegramWebHook(messenger *telegram.Telegram, enabled bo
 				"error", err.Error(),
 				"messenger", messengers.MessengerTelegram,
 			)
+
 			return
 		}
 	} else {

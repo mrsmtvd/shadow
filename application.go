@@ -129,6 +129,7 @@ func (a *App) Run() (err error) {
 	}
 
 	chRunDone := make(chan *component, total)
+
 	signal.Notify(a.shutdown, sig...)
 
 	var (
@@ -178,6 +179,7 @@ func (a *App) Run() (err error) {
 
 		case <-a.shutdown:
 			shutdownRunning = true // nolint:ineffassign
+
 			signal.Stop(a.shutdown)
 
 			var shutdownEG errgroup.Group
@@ -259,6 +261,7 @@ func (a *App) RegisterComponent(c Component) error {
 	}
 
 	a.components.Add(c.Name(), c)
+
 	return nil
 }
 
@@ -279,6 +282,7 @@ func (a *App) StatusComponent(n string) componentStatus {
 
 func (a *App) WatchComponentStatus(status componentStatus, name string, names ...string) <-chan struct{} {
 	ch := make(chan struct{}, 1)
+
 	ns := append([]string{name}, names...)
 
 	if len(ns) == 0 {
@@ -317,6 +321,7 @@ func (a *App) Shutdown() error {
 	}
 
 	a.shutdown <- sig[0]
+
 	return nil
 }
 

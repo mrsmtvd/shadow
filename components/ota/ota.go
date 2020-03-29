@@ -59,6 +59,7 @@ func ArchitectureFromReader(reader goArchReader) string {
 	if _, err := io.ReadFull(reader, data); err != nil {
 		return ArchitectureUnknown
 	}
+
 	reader.Seek(0, io.SeekStart)
 
 	if bytes.HasPrefix(data, []byte("\x7FELF")) {
@@ -76,6 +77,7 @@ func ArchitectureFromReader(reader goArchReader) string {
 				if _elf.ByteOrder == binary.LittleEndian {
 					return ArchitecturePPC64LE
 				}
+
 				return ArchitecturePPC64
 			case elf.EM_S390:
 				return ArchitectureS390X

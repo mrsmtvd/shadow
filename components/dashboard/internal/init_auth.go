@@ -17,10 +17,12 @@ import (
 
 func (c *Component) initAuth() (err error) {
 	auth.ClearProviders()
-	providers := make([]goth.Provider, 0)
 
 	var baseURL *url.URL
+
+	providers := make([]goth.Provider, 0)
 	baseURLFromConfig := c.config.String(dashboard.ConfigOAuth2BaseURL)
+
 	if baseURLFromConfig != "" {
 		if baseURL, err = url.Parse(baseURLFromConfig); err != nil {
 			return err

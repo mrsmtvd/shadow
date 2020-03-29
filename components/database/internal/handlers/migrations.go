@@ -70,6 +70,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Apply migrations success", ""),
 					})
+
 					return
 				}
 			case source != "" && id != "":
@@ -79,6 +80,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Apply migration %s for %s success", "", id, source),
 					})
+
 					return
 				}
 			default:
@@ -95,6 +97,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Rollback migrations success", ""),
 					})
+
 					return
 				}
 			case source != "" && id != "":
@@ -104,6 +107,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 						Result:  "success",
 						Message: locale.Translate(h.component.Name(), "Rollback migration %s for %s success", "", id, source),
 					})
+
 					return
 				}
 			default:
@@ -121,6 +125,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 				Result:  "failed",
 				Message: err.Error(),
 			})
+
 			return
 		}
 	}
@@ -128,6 +133,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 	if r.IsAjax() {
 		all := h.component.Migrations()
 		data := make([]map[string]interface{}, 0, len(all))
+
 		for _, m := range all {
 			item := m.(MigrationsItem)
 
@@ -144,6 +150,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 		_ = w.SendJSON(map[string]interface{}{
 			"data": data,
 		})
+
 		return
 	}
 

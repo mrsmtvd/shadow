@@ -39,6 +39,7 @@ func New(name string, enc zapcore.Encoder, ws zapcore.WriteSyncer, level LevelEn
 	}
 
 	w.InitFull(enc, ws, level, options...)
+
 	return w
 }
 

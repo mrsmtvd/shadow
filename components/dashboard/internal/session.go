@@ -34,6 +34,7 @@ func (s *Session) init() {
 	if ok, err := s.Exists(SessionFlashBag); !ok || err != nil {
 		content, _ := json.Marshal(nil)
 		s.PutBytes(SessionFlashBag, content)
+
 		return
 	}
 

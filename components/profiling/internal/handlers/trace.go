@@ -146,6 +146,7 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 			redirectURL.RawQuery = ""
 
 			h.Redirect(redirectURL.String(), http.StatusFound, w, r)
+
 			return
 		}
 	} else if action == "download" {

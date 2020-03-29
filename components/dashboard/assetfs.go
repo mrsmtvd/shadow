@@ -40,6 +40,7 @@ func (h *AssetsHandler) ServeHTTP(w http.ResponseWriter, r *Request) {
 		}
 
 		h.InternalError(w, r, err)
+
 		return
 	}
 
@@ -66,6 +67,7 @@ func (h *AssetsHandler) ServeHTTP(w http.ResponseWriter, r *Request) {
 			return
 		}
 	}
+
 	w.Header().Set("Content-Type", ctype)
 	w.Header().Set("Cache-Control", "max-age=315360000, public, immutable")
 	w.Header().Set("Last-Modified", d.ModTime().UTC().Format(http.TimeFormat))

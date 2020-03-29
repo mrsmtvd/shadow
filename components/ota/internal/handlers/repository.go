@@ -40,6 +40,7 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 					)
 
 					h.NotFound(w, r)
+
 					return
 				}
 
@@ -57,11 +58,13 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 				}
 
 				releaseBinFile.Close()
+
 				return
 			}
 		}
 
 		h.NotFound(w, r)
+
 		return
 	}
 
@@ -71,6 +74,7 @@ func (h *RepositoryHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 	}
 
 	records := make([]repository.ShadowRecord, 0, len(releases))
+
 	for _, rl := range releases {
 		fileURL := &url.URL{
 			Scheme: "http",

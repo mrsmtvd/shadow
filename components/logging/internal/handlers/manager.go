@@ -89,6 +89,7 @@ func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 
 func (h *ManagerHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	var err error
+
 	loggers := h.collect(h.wrapper)
 
 	if r.IsPost() {
@@ -116,6 +117,7 @@ func (h *ManagerHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) 
 		}
 
 		h.Redirect(r.URL().String(), http.StatusFound, w, r)
+
 		return
 	}
 

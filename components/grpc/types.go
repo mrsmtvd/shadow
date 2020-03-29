@@ -184,9 +184,6 @@ func ConvertInterfaceToStructValueProto(v interface{}) *ptypes_struct.Value {
 
 		case reflect.Ptr:
 			return ConvertInterfaceToStructValueProto(reflect.Indirect(reflect.ValueOf(v)).Interface())
-
-			//case reflect.Uintptr, reflect.UnsafePointer, reflect.Chan, reflect.Func, reflect.Interface, reflect.Invalid:
-			//	return ConvertInterfaceToStructValueProto(value.String())
 		}
 	}
 

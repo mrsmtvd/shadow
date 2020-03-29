@@ -369,7 +369,7 @@ gulp.task('enumer', function() {
 
 gulp.task('backend', gulp.series(
     gulp.parallel('i18n', 'protobuf', 'easyjson', 'enumer'),
-    'bindata', 'lint', 'golang'
+    'bindata', 'golang', 'lint'
 ));
 
 /**

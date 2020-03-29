@@ -21,7 +21,9 @@ func (h *ExpvarHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	fmt.Fprintf(w, "{\n")
+
 	first := true
+
 	expvar.Do(func(kv expvar.KeyValue) {
 		if !first {
 			fmt.Fprintf(w, ",\n")

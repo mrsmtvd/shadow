@@ -244,6 +244,7 @@ func (c *Component) UpMigration(id, source string) error {
 	}
 
 	c.logger.Info("Applied migration", "source", source, "id", id)
+
 	return nil
 }
 
@@ -270,6 +271,7 @@ func (c *Component) DownMigration(id, source string) error {
 	}
 
 	c.logger.Info("Downgraded migration", "source", source, "id", id)
+
 	return nil
 }
 

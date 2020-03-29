@@ -15,7 +15,7 @@ linters:
     - scopelint
     - gocritic
     - whitespace
-#    - wsl
+    - wsl
     - goprintffuncname
   disable:
     - errcheck

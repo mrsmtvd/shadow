@@ -69,6 +69,7 @@ func (r *Merge) Releases(arch string) ([]ota.Release, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		releases = append(releases, items...)
 	}
 

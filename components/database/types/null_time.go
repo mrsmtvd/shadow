@@ -37,6 +37,7 @@ func (t *NullTime) Proto() *pb.Timestamp {
 	}
 
 	p, _ := ptypes.TimestampProto(t.Time)
+
 	return p
 }
 

@@ -26,9 +26,11 @@ func (b *RoundRobin) Get() database.Executor {
 
 	atomic.AddUint64(&b.index, 1)
 	i := atomic.LoadUint64(&b.index)
+
 	if i >= l {
 		i = 0
 	}
+
 	atomic.StoreUint64(&b.index, i)
 
 	b.mutex.RLock()

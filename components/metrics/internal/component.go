@@ -141,6 +141,7 @@ func (c *Component) initStorage() (err error) {
 		}
 
 		c.registry.AddStorages(newStorage)
+
 		return nil
 	}
 

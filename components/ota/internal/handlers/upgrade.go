@@ -25,6 +25,7 @@ func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 
 		if err == nil {
 			defer file.Close()
+
 			t := header.Header.Get("Content-Type")
 
 			switch t {
@@ -63,6 +64,7 @@ func (h *UpgradeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 		}
 
 		h.Redirect(r.Original().Referer(), http.StatusFound, w, r)
+
 		return
 	}
 

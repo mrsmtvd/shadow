@@ -86,6 +86,7 @@ func (h *ManagerHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) 
 	}
 
 	variables := map[string][]variableView{}
+
 	for _, v := range h.component.Variables() {
 		source := v.(hasSource).Source()
 

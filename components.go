@@ -29,6 +29,7 @@ func (c *components) Get(n string) (*component, bool) {
 
 func (c *components) All() ([]*component, error) {
 	var err error
+
 	c.resolved.Do(func() {
 		err = c.Resolve()
 	})
@@ -49,6 +50,7 @@ func (c *components) All() ([]*component, error) {
 
 func (c *components) Resolve() (err error) {
 	dependencies := make(map[string]mapset.Set)
+
 	c.Range(func(_, value interface{}) bool {
 		ms := mapset.NewSet()
 		cmp := value.(*component)
@@ -83,6 +85,7 @@ func (c *components) Resolve() (err error) {
 
 	for len(dependencies) > 0 {
 		readyMs := mapset.NewSet()
+
 		for name, ms := range dependencies {
 			if ms.Cardinality() == 0 {
 				readyMs.Add(name)

@@ -65,6 +65,7 @@ func (h *ReleasesHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request)
 	}
 
 	releasesView := make([]releaseView, 0, len(releases))
+
 	for _, rl := range releases {
 		rView := releaseView{
 			ID:            ota.GenerateReleaseID(rl),
@@ -103,6 +104,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 						Result:  "failed",
 						Message: "can't remove current release",
 					})
+
 					return
 				}
 
@@ -112,6 +114,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 							Result:  "failed",
 							Message: fmt.Sprintf("remove release failed %v", err),
 						})
+
 						return
 					}
 
@@ -126,6 +129,7 @@ func (h *ReleasesHandler) actionRemove(w *dashboard.Response, r *dashboard.Reque
 				_ = w.SendJSON(response{
 					Result: "success",
 				})
+
 				return
 			}
 		}

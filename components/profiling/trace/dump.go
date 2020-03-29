@@ -203,6 +203,7 @@ func DeleteDump(id string) error {
 	}
 
 	delete(dumps.dumps, id)
+
 	return nil
 }
 

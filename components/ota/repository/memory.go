@@ -34,6 +34,7 @@ func (r *Memory) Remove(release ota.Release) error {
 	}
 
 	r.lock.Unlock()
+
 	return nil
 }
 
