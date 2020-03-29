@@ -129,14 +129,14 @@ func (c *Component) convertToInt(number interface{}) (cast int) {
 	return cast
 }
 
-func (c *Component) templateFunctionTranslate(ID string, opts ...interface{}) string {
-	return c.templateFunctionTranslatePlural(ID, "", 1, opts...)
+func (c *Component) templateFunctionTranslate(singleID string, opts ...interface{}) string {
+	return c.templateFunctionTranslatePlural(singleID, "", 1, opts...)
 }
 
 func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, number interface{}, opts ...interface{}) string {
 	var (
 		ctx     map[string]interface{}
-		context string // 0
+		callCtx string // 0
 		domain  string // 1
 		locale  string // 2
 	)
@@ -152,7 +152,7 @@ func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, n
 	// message context
 	if len(opts) > 0 {
 		if v, ok := opts[0].(string); ok {
-			context = v
+			callCtx = v
 		}
 
 		opts = opts[1:]
@@ -190,5 +190,5 @@ func (c *Component) templateFunctionTranslatePlural(singleID, pluralID string, n
 		}
 	}
 
-	return c.Manager().TranslatePlural(locale, domain, singleID, pluralID, c.convertToInt(number), context, opts...)
+	return c.Manager().TranslatePlural(locale, domain, singleID, pluralID, c.convertToInt(number), callCtx, opts...)
 }

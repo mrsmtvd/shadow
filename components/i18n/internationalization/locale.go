@@ -40,8 +40,8 @@ func (l *Locale) Domain(domain string) (*Domain, bool) {
 	return d, ok
 }
 
-func (l *Locale) Translate(domain, ID, context string, format ...interface{}) string {
-	return l.TranslatePlural(domain, ID, "", 1, context, format...)
+func (l *Locale) Translate(domain, singleID, context string, format ...interface{}) string {
+	return l.TranslatePlural(domain, singleID, "", 1, context, format...)
 }
 
 func (l *Locale) TranslatePlural(domain, singleID, pluralID string, number int, context string, format ...interface{}) string {

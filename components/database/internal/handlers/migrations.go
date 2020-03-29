@@ -62,7 +62,8 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 
 		switch action {
 		case "up":
-			if source == "" && id == "" {
+			switch {
+			case source == "" && id == "":
 				_, err = h.manager.UpMigrations()
 				if err == nil {
 					_ = w.SendJSON(migrationsHandlerResponse{
@@ -71,7 +72,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 					})
 					return
 				}
-			} else if source != "" && id != "" {
+			case source != "" && id != "":
 				err = h.manager.UpMigration(id, source)
 				if err == nil {
 					_ = w.SendJSON(migrationsHandlerResponse{
@@ -80,13 +81,14 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 					})
 					return
 				}
-			} else {
+			default:
 				h.NotFound(w, r)
 				return
 			}
 
 		case "down":
-			if source == "" && id == "" {
+			switch {
+			case source == "" && id == "":
 				_, err = h.manager.DownMigrations()
 				if err == nil {
 					_ = w.SendJSON(migrationsHandlerResponse{
@@ -95,7 +97,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 					})
 					return
 				}
-			} else if source != "" && id != "" {
+			case source != "" && id != "":
 				err = h.manager.DownMigration(id, source)
 				if err == nil {
 					_ = w.SendJSON(migrationsHandlerResponse{
@@ -104,7 +106,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 					})
 					return
 				}
-			} else {
+			default:
 				h.NotFound(w, r)
 				return
 			}

@@ -30,7 +30,7 @@ func TrackWithLabel(start time.Time, label string) {
 }
 
 func Track(start time.Time) {
-	pc, _, _, _ := runtime.Caller(1)
+	pc, _, _, _ := runtime.Caller(1) // nolint:dogsled
 	name := runtime.FuncForPC(pc).Name()
 
 	parts := funcNameRegexp.FindAllStringSubmatch(name, -1)

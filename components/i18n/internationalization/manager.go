@@ -59,8 +59,8 @@ func (m *Manager) Locales() []*Locale {
 	return locales
 }
 
-func (m *Manager) Translate(locale, domain, ID, context string, format ...interface{}) string {
-	return m.TranslatePlural(locale, domain, ID, "", 1, context, format...)
+func (m *Manager) Translate(locale, domain, singleID, context string, format ...interface{}) string {
+	return m.TranslatePlural(locale, domain, singleID, "", 1, context, format...)
 }
 
 func (m *Manager) TranslatePlural(locale, domain, singleID, pluralID string, number int, context string, format ...interface{}) string {

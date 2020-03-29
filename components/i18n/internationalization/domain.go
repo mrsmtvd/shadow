@@ -42,8 +42,8 @@ func NewDomain(name string, messages []*Message, pluralRule *PluralRule) *Domain
 	return d
 }
 
-func domainMessageKeyWIthContext(ID, ctx string) string {
-	return ctx + DomainMessageKeySeparator + ID
+func domainMessageKeyWIthContext(messageID, ctx string) string {
+	return ctx + DomainMessageKeySeparator + messageID
 }
 
 func (d *Domain) Name() string {
@@ -77,8 +77,8 @@ func (d *Domain) Merge(domain *Domain) (*Domain, error) {
 	return NewDomain(d.Name(), append(d.Messages(), domain.Messages()...), d.PluralRule()), nil
 }
 
-func (d *Domain) Translate(ID, context string, format ...interface{}) string {
-	return d.TranslatePlural(ID, "", 1, context, format...)
+func (d *Domain) Translate(singleID, context string, format ...interface{}) string {
+	return d.TranslatePlural(singleID, "", 1, context, format...)
 }
 
 func (d *Domain) TranslatePlural(singleID, pluralID string, number int, context string, format ...interface{}) string {

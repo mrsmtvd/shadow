@@ -368,9 +368,8 @@ gulp.task('enumer', function() {
 });
 
 gulp.task('backend', gulp.series(
-    gulp.parallel('golang', 'i18n'),
-    gulp.parallel('bindata', 'protobuf', 'easyjson', 'enumer'),
-    gulp.parallel('lint')
+    gulp.parallel('i18n', 'protobuf', 'easyjson', 'enumer'),
+    'bindata', 'lint', 'golang'
 ));
 
 /**

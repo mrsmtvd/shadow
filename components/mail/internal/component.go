@@ -194,7 +194,6 @@ func (c *Component) Send(message *gomail.Message) {
 	c.queue <- task
 
 	c.logger.Debug("Send new message to queue", "mail", message)
-
 }
 
 func (c *Component) SendAndReturn(message *gomail.Message) error {

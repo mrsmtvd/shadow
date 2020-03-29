@@ -148,7 +148,6 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 			h.Redirect(redirectURL.String(), http.StatusFound, w, r)
 			return
 		}
-
 	} else if action == "download" {
 		if err = h.actionDownload(w, r); err != nil {
 			logging.Log(r.Context()).Error("Error in download trace: %s", err.Error())

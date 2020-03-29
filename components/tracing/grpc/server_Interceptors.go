@@ -27,7 +27,6 @@ func UnaryServerInterceptor(tracer opentracing.Tracer, opts ...otgrpc.Option) gr
 
 		return interceptor(ctx, req, info, wrapped)
 	}
-
 }
 
 func StreamServerInterceptor(tracer opentracing.Tracer, opts ...otgrpc.Option) grpc.StreamServerInterceptor {

@@ -9,15 +9,14 @@ linters:
     - unconvert
     - maligned
     - unparam
-
-#    - dogsled
-#    - nakedret
-#    - prealloc
-#    - scopelint
-#    - gocritic
-#    - whitespace
+    - dogsled
+    - nakedret
+    - prealloc
+    - scopelint
+    - gocritic
+    - whitespace
 #    - wsl
-#    - goprintffuncname
+    - goprintffuncname
   disable:
     - errcheck
     - gochecknoglobals

@@ -243,7 +243,6 @@ func readDump(dump *Dump) error {
 		if profile := GetProfile(m[1]); profile != nil {
 			dump.AddProfile(profile)
 		}
-
 	}
 
 	return nil

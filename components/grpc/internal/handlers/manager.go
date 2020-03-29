@@ -84,13 +84,14 @@ func NewManagerHandler(component grpc.Component) *ManagerHandler {
 func getTypeName(field *desc.FieldDescriptor) string {
 	var name string
 
-	if field.IsMap() {
+	switch {
+	case field.IsMap():
 		name = fmt.Sprintf("map<%s>%s", getTypeName(field.GetMapKeyType()), getTypeName(field.GetMapValueType()))
-	} else if field.GetMessageType() != nil {
+	case field.GetMessageType() != nil:
 		name = field.GetMessageType().GetName()
-	} else if field.GetEnumType() != nil {
+	case field.GetEnumType() != nil:
 		name = field.GetEnumType().GetName()
-	} else {
+	default:
 		name = strings.ToLower(field.GetType().String()[5:])
 	}
 
@@ -178,7 +179,8 @@ func getFieldViewDate(field *desc.FieldDescriptor, currentLevel, maxLevel int64)
 func (v *ManagerHandlerFieldViewData) MarshalJSON() ([]byte, error) {
 	var d interface{}
 
-	if v.Message != nil {
+	switch {
+	case v.Message != nil:
 		s := make(map[string]interface{}, len(v.Message.Fields))
 
 		for _, f := range v.Message.Fields {
@@ -186,9 +188,9 @@ func (v *ManagerHandlerFieldViewData) MarshalJSON() ([]byte, error) {
 		}
 
 		d = s
-	} else if v.IsMap {
+	case v.IsMap:
 		d = map[string]interface{}(nil)
-	} else {
+	default:
 		d = v.Default
 	}
 

@@ -43,12 +43,13 @@ func (o *StructType) UnmarshalJSON(data []byte) error {
 }
 
 func (t TypeConverter) ToDb(val interface{}) (interface{}, error) {
-	switch t := val.(type) {
-	case StructType:
+	if t, ok := val.(StructType); ok {
 		b, err := json.Marshal(t)
+
 		if err != nil {
 			return "", err
 		}
+
 		return string(b), nil
 	}
 
@@ -56,15 +57,17 @@ func (t TypeConverter) ToDb(val interface{}) (interface{}, error) {
 }
 
 func (t TypeConverter) FromDb(target interface{}) (gorp.CustomScanner, bool) {
-	switch target.(type) {
-	case *StructType:
+	if _, ok := target.(*StructType); ok {
 		binder := func(holder, target interface{}) error {
 			s, ok := holder.(*string)
+
 			if !ok {
 				return errors.New("FromDb: Unable to convert JsonField to *string")
 			}
+
 			return json.Unmarshal([]byte(*s), target)
 		}
+
 		return gorp.CustomScanner{
 			Holder: new(string),
 			Target: target,

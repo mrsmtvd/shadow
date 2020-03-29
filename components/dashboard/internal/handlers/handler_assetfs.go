@@ -159,9 +159,8 @@ func (h *AssetFSHandler) getComponentByPath(name, path string) ([]assetFSList, e
 
 func (h *AssetFSHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	var (
-		files      []assetFSList
-		breadcrumb []assetFSBreadcrumb
-		err        error
+		files []assetFSList
+		err   error
 	)
 
 	sep := string(os.PathSeparator)
@@ -223,7 +222,7 @@ func (h *AssetFSHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) 
 	// breadcrumbs
 	parts := strings.Split(strings.TrimLeft(path, sep), sep)
 	prefix := sep
-	breadcrumb = make([]assetFSBreadcrumb, 0, len(parts)+1)
+	breadcrumb := make([]assetFSBreadcrumb, 0, len(parts)+1)
 	breadcrumb = append(breadcrumb, assetFSBreadcrumb{
 		Name: "Root",
 		Path: prefix,
