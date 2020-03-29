@@ -10,9 +10,9 @@ import (
 type Renderer interface {
 	IsRegisterNamespace(ns string) bool
 	RegisterNamespace(ns string, fs *assetfs.AssetFS) error
-	Render(wr io.Writer, ctx context.Context, ns, view string, data map[string]interface{}) error
+	Render(ctx context.Context, wr io.Writer, ns, view string, data map[string]interface{}) error
 	RenderAndReturn(ctx context.Context, ns, view string, data map[string]interface{}) (string, error)
-	RenderLayout(wr io.Writer, ctx context.Context, ns, view, layout string, data map[string]interface{}) error
+	RenderLayout(ctx context.Context, wr io.Writer, ns, view, layout string, data map[string]interface{}) error
 	RenderLayoutAndReturn(ctx context.Context, ns, view, layout string, data map[string]interface{}) (string, error)
 }
 

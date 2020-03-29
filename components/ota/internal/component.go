@@ -16,7 +16,6 @@ import (
 )
 
 type Component struct {
-	config config.Component
 	logger logging.Logger
 	routes []dashboard.Route
 
@@ -102,8 +101,4 @@ func (c *Component) Update() (err error) {
 	}
 
 	return err
-}
-
-func (c *Component) doAutoUpgrade() {
-	// TODO:
 }

@@ -15,7 +15,7 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Configuration").
-		WithUrl("/" + c.Name() + "/").
+		WithURL("/" + c.Name() + "/").
 		WithIcon("cog")
 }
 

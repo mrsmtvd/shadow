@@ -17,7 +17,7 @@ const (
 
 var nameRegexp = regexp.MustCompile(`^([1-9]\d{3}[0-1]\d[0-3]\d[0-2]\d[0-5]\d[0-5]\d)(.*)$`)
 
-func formatId(source, id string) string {
+func formatID(source, id string) string {
 	parts := nameRegexp.FindStringSubmatch(id)
 	if len(parts) > 2 {
 		id = parts[1] + "_" + source + parts[2]
@@ -28,7 +28,7 @@ func formatId(source, id string) string {
 
 func (c *Component) Migration(id, source string) database.Migration {
 	for _, m := range c.collection() {
-		if m.Id() == id && m.Source() == source {
+		if m.ID() == id && m.Source() == source {
 			return m
 		}
 	}
@@ -52,7 +52,7 @@ func (c *Component) Migrations() []database.Migration {
 			var appliedAt *time.Time
 
 			for _, record := range records {
-				if record.Id == formatId(m.Source(), m.Id()) {
+				if record.Id == formatID(m.Source(), m.ID()) {
 					appliedAt = &record.AppliedAt
 					break
 				}
@@ -81,8 +81,8 @@ func (c *Component) collection() MigrationsCollection {
 	for _, component := range components {
 		if componentMigrations, ok := component.(database.HasMigrations); ok {
 			for _, migration := range componentMigrations.DatabaseMigrations() {
-				if !nameRegexp.MatchString(migration.Id()) {
-					c.logger.Warn("Skip migration with wrong id " + migration.Id())
+				if !nameRegexp.MatchString(migration.ID()) {
+					c.logger.Warn("Skip migration with wrong id " + migration.ID())
 					continue
 				}
 
@@ -104,7 +104,7 @@ func (c *Component) prepareMigrations(id, source string, dir migrate.MigrationDi
 	if id == "" && source == "" {
 		for _, m := range collection {
 			mig := migrate.Migration{
-				Id:   formatId(m.Source(), m.Id()),
+				Id:   formatID(m.Source(), m.ID()),
 				Up:   m.Up(),
 				Down: m.Down(),
 			}
@@ -121,12 +121,12 @@ func (c *Component) prepareMigrations(id, source string, dir migrate.MigrationDi
 			return -1, err
 		}
 
-		searchID := formatId(source, id)
+		searchID := formatID(source, id)
 
 		if len(records) == 0 {
 			if dir == migrate.Up {
 				for _, m := range collection {
-					genID := formatId(m.Source(), m.Id())
+					genID := formatID(m.Source(), m.ID())
 
 					mig := migrate.Migration{
 						Id:   genID,
@@ -149,7 +149,7 @@ func (c *Component) prepareMigrations(id, source string, dir migrate.MigrationDi
 
 			if dir == migrate.Up {
 				for _, m := range collection {
-					genID := formatId(m.Source(), m.Id())
+					genID := formatID(m.Source(), m.ID())
 
 					mig := migrate.Migration{
 						Id:   genID,
@@ -165,7 +165,7 @@ func (c *Component) prepareMigrations(id, source string, dir migrate.MigrationDi
 				}
 			} else {
 				for _, m := range collection {
-					genID := formatId(m.Source(), m.Id())
+					genID := formatID(m.Source(), m.ID())
 
 					if genID != searchID {
 						if _, ok := existing[genID]; !ok {

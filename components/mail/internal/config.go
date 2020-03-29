@@ -7,20 +7,20 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(mail.ConfigSmtpUsername, config.ValueTypeString).
+		config.NewVariable(mail.ConfigSMTPUsername, config.ValueTypeString).
 			WithUsage("Username").
 			WithGroup("SMTP").
 			WithEditable(true),
-		config.NewVariable(mail.ConfigSmtpPassword, config.ValueTypeString).
+		config.NewVariable(mail.ConfigSMTPPassword, config.ValueTypeString).
 			WithUsage("Password").
 			WithGroup("SMTP").
 			WithEditable(true).
 			WithView([]string{config.ViewPassword}),
-		config.NewVariable(mail.ConfigSmtpHost, config.ValueTypeString).
+		config.NewVariable(mail.ConfigSMTPHost, config.ValueTypeString).
 			WithUsage("Host").
 			WithGroup("SMTP").
 			WithEditable(true),
-		config.NewVariable(mail.ConfigSmtpPort, config.ValueTypeInt).
+		config.NewVariable(mail.ConfigSMTPPort, config.ValueTypeInt).
 			WithUsage("Port").
 			WithGroup("SMTP").
 			WithEditable(true).
@@ -39,19 +39,19 @@ func (c *Component) ConfigVariables() []config.Variable {
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher([]string{
-			mail.ConfigSmtpHost,
-			mail.ConfigSmtpPort,
-			mail.ConfigSmtpUsername,
-			mail.ConfigSmtpPassword,
+			mail.ConfigSMTPHost,
+			mail.ConfigSMTPPort,
+			mail.ConfigSMTPUsername,
+			mail.ConfigSMTPPassword,
 		}, c.watchForDialer),
 	}
 }
 
 func (c *Component) watchForDialer(_ string, _ interface{}, _ interface{}) {
 	c.initDialer(
-		c.config.String(mail.ConfigSmtpHost),
-		c.config.Int(mail.ConfigSmtpPort),
-		c.config.String(mail.ConfigSmtpUsername),
-		c.config.String(mail.ConfigSmtpPassword),
+		c.config.String(mail.ConfigSMTPHost),
+		c.config.Int(mail.ConfigSMTPPort),
+		c.config.String(mail.ConfigSMTPUsername),
+		c.config.String(mail.ConfigSMTPPassword),
 	)
 }

@@ -36,7 +36,7 @@ func (r *Request) WithContext(ctx context.Context) *Request {
 }
 
 func (r *Request) Config() config.Component {
-	return config.ConfigFromContext(r.Context())
+	return config.FromContext(r.Context())
 }
 
 func (r *Request) Render() Renderer {

@@ -50,8 +50,8 @@ func (s *Grafana) Create(annotation annotations.Annotation) (err error) {
 		input.IsRegion = grafana.Bool(true)
 	}
 
-	for _, dashboardId := range s.dashboards {
-		input.DashboardId = grafana.Int64(dashboardId)
+	for _, dashboardID := range s.dashboards {
+		input.DashboardId = grafana.Int64(dashboardID)
 
 		if _, err = s.client.CreateAnnotation(context.Background(), input); err != nil {
 			break

@@ -12,7 +12,7 @@ func (c *Component) initSession() {
 	c.sessionManager.Name(c.config.String(dashboard.ConfigSessionCookieName))
 
 	c.sessionManager.Domain(c.config.String(dashboard.ConfigSessionDomain))
-	c.sessionManager.HttpOnly(c.config.Bool(dashboard.ConfigSessionHttpOnly))
+	c.sessionManager.HttpOnly(c.config.Bool(dashboard.ConfigSessionHTTPOnly))
 	c.sessionManager.IdleTimeout(c.config.Duration(dashboard.ConfigSessionIdleTimeout))
 	c.sessionManager.Lifetime(c.config.Duration(dashboard.ConfigSessionLifetime))
 	c.sessionManager.Path(c.config.String(dashboard.ConfigSessionPath))

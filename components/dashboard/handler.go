@@ -46,7 +46,7 @@ func (h *Handler) Render(ctx context.Context, view string, data map[string]inter
 		panic("Render isn't set in context")
 	}
 
-	if err := render.Render(ResponseFromContext(ctx), ctx, TemplateNamespaceFromContext(ctx), view, data); err != nil {
+	if err := render.Render(ctx, ResponseFromContext(ctx), TemplateNamespaceFromContext(ctx), view, data); err != nil {
 		panic(err.Error())
 	}
 }
@@ -57,7 +57,7 @@ func (h *Handler) RenderLayout(ctx context.Context, view, layout string, data ma
 		panic("Render isn't set in context")
 	}
 
-	if err := render.RenderLayout(ResponseFromContext(ctx), ctx, TemplateNamespaceFromContext(ctx), view, layout, data); err != nil {
+	if err := render.RenderLayout(ctx, ResponseFromContext(ctx), TemplateNamespaceFromContext(ctx), view, layout, data); err != nil {
 		panic(err.Error())
 	}
 }

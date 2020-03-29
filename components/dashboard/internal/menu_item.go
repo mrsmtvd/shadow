@@ -38,8 +38,8 @@ func (m *MenuItem) Title() string {
 	return m.menu.Title()
 }
 
-func (m *MenuItem) Url() string {
-	return m.menu.Url()
+func (m *MenuItem) URL() string {
+	return m.menu.URL()
 }
 
 func (m *MenuItem) Route() dashboard.Route {

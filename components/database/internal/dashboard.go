@@ -14,11 +14,11 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Database").
-		WithUrl("/" + c.Name() + "/").
+		WithURL("/" + c.Name() + "/").
 		WithIcon("database").
-		WithChild(dashboard.NewMenu("Migrations").WithUrl("/" + c.Name() + "/migrations/")).
-		WithChild(dashboard.NewMenu("Tables").WithUrl("/" + c.Name() + "/tables/")).
-		WithChild(dashboard.NewMenu("Status").WithUrl("/" + c.Name() + "/status/"))
+		WithChild(dashboard.NewMenu("Migrations").WithURL("/" + c.Name() + "/migrations/")).
+		WithChild(dashboard.NewMenu("Tables").WithURL("/" + c.Name() + "/tables/")).
+		WithChild(dashboard.NewMenu("Status").WithURL("/" + c.Name() + "/status/"))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

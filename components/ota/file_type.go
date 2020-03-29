@@ -77,7 +77,7 @@ func FileTypeFromData(data io.Reader) FileType {
 	}
 
 	for _, sign := range fileTypeSigns {
-		if bytes.Compare(sign.magicBytes, buf[:len(sign.magicBytes)]) == 0 {
+		if bytes.Equal(sign.magicBytes, buf[:len(sign.magicBytes)]) {
 			return sign.fileType
 		}
 	}

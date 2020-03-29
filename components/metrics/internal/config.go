@@ -9,7 +9,7 @@ import (
 
 func (c *Component) ConfigVariables() []config.Variable {
 	return []config.Variable{
-		config.NewVariable(metrics.ConfigUrl, config.ValueTypeString).
+		config.NewVariable(metrics.ConfigURL, config.ValueTypeString).
 			WithUsage("URL").
 			WithGroup("InfluxDB").
 			WithEditable(true),
@@ -58,7 +58,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 func (c *Component) ConfigWatchers() []config.Watcher {
 	return []config.Watcher{
 		config.NewWatcher([]string{
-			metrics.ConfigUrl,
+			metrics.ConfigURL,
 			metrics.ConfigDatabase,
 			metrics.ConfigUsername,
 			metrics.ConfigPassword,

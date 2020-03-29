@@ -20,7 +20,7 @@ func NewStatusHandler(component database.Component) *StatusHandler {
 	}
 }
 
-func (h *StatusHandler) status(e database.Executor, ctx context.Context) string {
+func (h *StatusHandler) status(ctx context.Context, e database.Executor) string {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 
@@ -38,10 +38,10 @@ func (h *StatusHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	slaves := s.Slaves()
 
 	statuses := make([][]string, 0, 1+len(slaves))
-	statuses = append(statuses, []string{master.String(), "Master", h.status(master, r.Context())})
+	statuses = append(statuses, []string{master.String(), "Master", h.status(r.Context(), master)})
 
 	for _, slave := range slaves {
-		statuses = append(statuses, []string{slave.String(), "Slave", h.status(slave, r.Context())})
+		statuses = append(statuses, []string{slave.String(), "Slave", h.status(r.Context(), slave)})
 	}
 
 	h.Render(r.Context(), "status", map[string]interface{}{

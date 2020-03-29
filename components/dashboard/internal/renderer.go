@@ -123,23 +123,23 @@ func (r *Renderer) RegisterNamespace(ns string, fs *assetfs.AssetFS) error {
 
 func (r *Renderer) RenderAndReturn(ctx context.Context, ns, view string, data map[string]interface{}) (string, error) {
 	wr := bytes.NewBuffer(nil)
-	err := r.Render(wr, ctx, ns, view, data)
+	err := r.Render(ctx, wr, ns, view, data)
 
 	return wr.String(), err
 }
 
-func (r *Renderer) Render(wr io.Writer, ctx context.Context, ns, view string, data map[string]interface{}) error {
-	return r.RenderLayout(wr, ctx, ns, view, TemplateDefaultLayout, data)
+func (r *Renderer) Render(ctx context.Context, wr io.Writer, ns, view string, data map[string]interface{}) error {
+	return r.RenderLayout(ctx, wr, ns, view, TemplateDefaultLayout, data)
 }
 
 func (r *Renderer) RenderLayoutAndReturn(ctx context.Context, ns, view, layout string, data map[string]interface{}) (string, error) {
 	wr := bytes.NewBuffer(nil)
-	err := r.RenderLayout(wr, ctx, ns, view, layout, data)
+	err := r.RenderLayout(ctx, wr, ns, view, layout, data)
 
 	return wr.String(), err
 }
 
-func (r *Renderer) RenderLayout(wr io.Writer, ctx context.Context, ns, view, layout string, data map[string]interface{}) error {
+func (r *Renderer) RenderLayout(ctx context.Context, wr io.Writer, ns, view, layout string, data map[string]interface{}) error {
 	tpl, err := r.getLazyViewTemplate(ns, view, layout)
 	if err != nil {
 		return err

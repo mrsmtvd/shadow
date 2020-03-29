@@ -81,10 +81,10 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	<-a.ReadyComponent(config.ComponentName)
 
 	c.initDialer(
-		c.config.String(mail.ConfigSmtpHost),
-		c.config.Int(mail.ConfigSmtpPort),
-		c.config.String(mail.ConfigSmtpUsername),
-		c.config.String(mail.ConfigSmtpPassword),
+		c.config.String(mail.ConfigSMTPHost),
+		c.config.Int(mail.ConfigSMTPPort),
+		c.config.String(mail.ConfigSMTPUsername),
+		c.config.String(mail.ConfigSMTPPassword),
 	)
 
 	ready <- struct{}{}
@@ -151,10 +151,10 @@ func (c *Component) execute(task *mailTask) error {
 			task.result <- err
 
 			return err
-		} else {
-			c.logger.Debug("Dialer open success")
-			c.open = true
 		}
+
+		c.logger.Debug("Dialer open success")
+		c.open = true
 	}
 
 	if c.open {
@@ -171,16 +171,16 @@ func (c *Component) execute(task *mailTask) error {
 
 				c.open = false
 				return c.execute(task)
-			} else {
-				c.logger.Error(err.Error(), "mail", task.message)
-				task.result <- err
-
-				return err
 			}
-		} else {
-			c.logger.Debug("Send message success", "mail", task.message)
-			task.result <- nil
+
+			c.logger.Error(err.Error(), "mail", task.message)
+			task.result <- err
+
+			return err
 		}
+
+		c.logger.Debug("Send message success", "mail", task.message)
+		task.result <- nil
 	}
 
 	return nil

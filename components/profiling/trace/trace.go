@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	ProfileCpu   = "cpu"
+	ProfileCPU   = "cpu"
 	ProfileTrace = "trace"
 )
 
@@ -55,8 +55,8 @@ func StartProfiles(list []string) error {
 
 	now := time.Now()
 	for i := range runProfiles {
-		switch runProfiles[i].GetId() {
-		case ProfileCpu:
+		switch runProfiles[i].GetID() {
+		case ProfileCPU:
 			if err := pprof.StartCPUProfile(runProfiles[i]); err != nil {
 				return err
 			}
@@ -109,13 +109,13 @@ func StopProfiles(path string) error {
 			continue
 		}
 
-		switch profile.GetId() {
-		case ProfileCpu:
+		switch profile.GetID() {
+		case ProfileCPU:
 			pprof.StopCPUProfile()
 		case ProfileTrace:
 			trace.Stop()
 		default:
-			if err := pprof.Lookup(profile.GetId()).WriteTo(profile, 0); err != nil {
+			if err := pprof.Lookup(profile.GetID()).WriteTo(profile, 0); err != nil {
 				return err
 			}
 		}
@@ -124,7 +124,7 @@ func StopProfiles(path string) error {
 		profile.SetStarted(false)
 	}
 
-	dumps.dumps[dump.GetId()] = dump
+	dumps.dumps[dump.GetID()] = dump
 	startAt = nil
 
 	go func() {

@@ -11,7 +11,7 @@ func (m MigrationsCollection) Len() int {
 }
 
 func (m MigrationsCollection) Less(i, j int) bool {
-	return strings.Compare(m[i].Id(), m[j].Id()) < 0
+	return strings.Compare(m[i].ID(), m[j].ID()) < 0
 }
 
 func (m MigrationsCollection) Swap(i, j int) {

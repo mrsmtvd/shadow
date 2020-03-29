@@ -2,7 +2,7 @@ package dashboard
 
 type Menu interface {
 	Title() string
-	Url() string
+	URL() string
 	Route() Route
 	Icon() string
 	Childs() []Menu
@@ -38,7 +38,7 @@ func (m *MenuSimple) WithTitle(title string) *MenuSimple {
 	return m
 }
 
-func (m *MenuSimple) Url() string {
+func (m *MenuSimple) URL() string {
 	if m.url == "" && m.route != nil {
 		return m.route.Path()
 	}
@@ -46,7 +46,7 @@ func (m *MenuSimple) Url() string {
 	return m.url
 }
 
-func (m *MenuSimple) WithUrl(url string) *MenuSimple {
+func (m *MenuSimple) WithURL(url string) *MenuSimple {
 	m.url = url
 	return m
 }

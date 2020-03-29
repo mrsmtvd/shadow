@@ -1,7 +1,7 @@
 package metrics
 
 const (
-	ConfigUrl       = ComponentName + ".url"
+	ConfigURL       = ComponentName + ".url"
 	ConfigDatabase  = ComponentName + ".database"
 	ConfigUsername  = ComponentName + ".username"
 	ConfigPassword  = ComponentName + ".password"

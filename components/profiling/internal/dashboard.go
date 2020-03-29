@@ -23,9 +23,9 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Profiling").
 		WithIcon("terminal").
 		WithShow(show).
-		WithChild(dashboard.NewMenu("Trace").WithUrl("/" + c.Name() + "/trace/")).
-		WithChild(dashboard.NewMenu("Pprof").WithUrl("/debug/pprof/")).
-		WithChild(dashboard.NewMenu("Expvar").WithUrl("/debug/vars/"))
+		WithChild(dashboard.NewMenu("Trace").WithURL("/" + c.Name() + "/trace/")).
+		WithChild(dashboard.NewMenu("Pprof").WithURL("/debug/pprof/")).
+		WithChild(dashboard.NewMenu("Expvar").WithURL("/debug/vars/"))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

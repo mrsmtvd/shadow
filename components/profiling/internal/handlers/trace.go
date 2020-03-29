@@ -35,7 +35,7 @@ func (h *TraceHandler) actionStart(_ *dashboard.Response, r *dashboard.Request) 
 	runProfiles := make([]string, 0, len(profiles))
 
 	for _, profile := range profiles {
-		id := profile.GetId()
+		id := profile.GetID()
 
 		if r.Original().PostForm.Get("profile_"+id) != "" {
 			runProfiles = append(runProfiles, id)
@@ -99,11 +99,11 @@ func (h *TraceHandler) actionDelete(_ *dashboard.Response, r *dashboard.Request)
 	if id == "all" {
 		dumps := trace.GetDumps()
 		for _, dump := range dumps {
-			if err := trace.DeleteDump(dump.GetId()); err != nil {
+			if err := trace.DeleteDump(dump.GetID()); err != nil {
 				return err
 			}
 
-			logging.Log(r.Context()).Info("Remove " + dump.GetId() + " dump from file " + dump.GetFile())
+			logging.Log(r.Context()).Info("Remove " + dump.GetID() + " dump from file " + dump.GetFile())
 		}
 
 		return nil
@@ -141,11 +141,11 @@ func (h *TraceHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		}
 
 		if err == nil {
-			redirectUrl := &url.URL{}
-			*redirectUrl = *r.Original().URL
-			redirectUrl.RawQuery = ""
+			redirectURL := &url.URL{}
+			*redirectURL = *r.Original().URL
+			redirectURL.RawQuery = ""
 
-			h.Redirect(redirectUrl.String(), http.StatusFound, w, r)
+			h.Redirect(redirectURL.String(), http.StatusFound, w, r)
 			return
 		}
 

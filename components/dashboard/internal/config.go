@@ -127,7 +127,7 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithUsage("Domain attribute on the session cookie").
 			WithGroup("User session").
 			WithEditable(true),
-		config.NewVariable(dashboard.ConfigSessionHttpOnly, config.ValueTypeBool).
+		config.NewVariable(dashboard.ConfigSessionHTTPOnly, config.ValueTypeBool).
 			WithUsage("HttpOnly attribute on the session cookie").
 			WithGroup("User session").
 			WithEditable(true).
@@ -196,7 +196,7 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 		}, c.watchAuth),
 		config.NewWatcher([]string{dashboard.ConfigSessionCookieName}, c.watchSessionCookieName),
 		config.NewWatcher([]string{dashboard.ConfigSessionDomain}, c.watchSessionDomain),
-		config.NewWatcher([]string{dashboard.ConfigSessionHttpOnly}, c.watchSessionHttpOnly),
+		config.NewWatcher([]string{dashboard.ConfigSessionHTTPOnly}, c.watchSessionHTTPOnly),
 		config.NewWatcher([]string{dashboard.ConfigSessionIdleTimeout}, c.watchSessionIdleTimeout),
 		config.NewWatcher([]string{dashboard.ConfigSessionLifetime}, c.watchSessionLifetime),
 		config.NewWatcher([]string{dashboard.ConfigSessionPath}, c.watchSessionPath),
@@ -218,7 +218,7 @@ func (c *Component) watchSessionDomain(_ string, v interface{}, _ interface{}) {
 	c.sessionManager.Domain(v.(string))
 }
 
-func (c *Component) watchSessionHttpOnly(_ string, v interface{}, _ interface{}) {
+func (c *Component) watchSessionHTTPOnly(_ string, v interface{}, _ interface{}) {
 	c.sessionManager.HttpOnly(v.(bool))
 }
 

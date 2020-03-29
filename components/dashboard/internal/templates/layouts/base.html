@@ -116,7 +116,7 @@
                         <ul class="nav side-menu">
                             {{ range .Menu }}
                                 {{ if .IsShow $.Request }}
-                                    <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}>
+                                    <li{{ if eq $.Request.URL.Path .URL }} class="active"{{ end }}>
 
                                     {{ if gt (len .Childs) 0 }}
                                         <a><i class="fa{{ if .Icon }} fa-{{ .Icon }}{{ end }}"></i> {{ i18n .Title $ "menu" .Source }} <span class="fa fa-chevron-down"></span></a>
@@ -130,7 +130,7 @@
                                                                 {{ if .Route }}
                                                                     <li{{ if eq $.Request.URL.Path .Route.Path }} class="active"{{ end }}><a href="{{ .Route.Path }}">{{ i18n .Title $ "menu" .Source }}</a></li>
                                                                 {{ else }}
-                                                                    <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}><a href="{{ .Url }}">{{ i18n .Title $ "menu" .Source }}</a></li>
+                                                                    <li{{ if eq $.Request.URL.Path .URL }} class="active"{{ end }}><a href="{{ .URL }}">{{ i18n .Title $ "menu" .Source }}</a></li>
                                                                 {{ end }}
                                                             {{ end }}
                                                             </ul>
@@ -140,25 +140,25 @@
                                                     {{ end }}
                                                 {{ else }}
                                                     {{ if gt (len .Childs) 0 }}
-                                                        <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}><a>{{ i18n .Title $ "menu" .Source }}<span class="fa fa-chevron-down"></span></a>
+                                                        <li{{ if eq $.Request.URL.Path .URL }} class="active"{{ end }}><a>{{ i18n .Title $ "menu" .Source }}<span class="fa fa-chevron-down"></span></a>
                                                         <ul class="nav child_menu">
                                                         {{ range .Childs }}
                                                             {{ if .Route }}
                                                                 <li{{ if eq $.Request.URL.Path .Route.Path }} class="active"{{ end }}><a href="{{ .Route.Path }}">{{ i18n .Title $ "menu" .Source }}</a></li>
                                                             {{ else }}
-                                                                <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}><a href="{{ .Url }}">{{ i18n .Title $ "menu" .Source }}</a></li>
+                                                                <li{{ if eq $.Request.URL.Path .URL }} class="active"{{ end }}><a href="{{ .URL }}">{{ i18n .Title $ "menu" .Source }}</a></li>
                                                             {{ end }}
                                                         {{ end }}
                                                         </ul>
                                                         </li>
                                                     {{ else }}
-                                                        <li{{ if eq $.Request.URL.Path .Url }} class="active"{{ end }}><a href="{{ .Url }}">{{ i18n .Title $ "menu" .Source }}</a></li>
+                                                        <li{{ if eq $.Request.URL.Path .URL }} class="active"{{ end }}><a href="{{ .URL }}">{{ i18n .Title $ "menu" .Source }}</a></li>
                                                     {{ end }}
                                                 {{ end }}
                                             {{ end }}
                                         </ul>
                                     {{ else }}
-                                        <a href="{{ if .Route }}{{ .Route.Path }}{{ else }}{{ .Url }}{{ end }}"><i class="fa{{ if .Icon }} fa-{{ .Icon }}{{ end }}"></i> {{ i18n .Title $ "menu" .Source }}</a>
+                                        <a href="{{ if .Route }}{{ .Route.Path }}{{ else }}{{ .URL }}{{ end }}"><i class="fa{{ if .Icon }} fa-{{ .Icon }}{{ end }}"></i> {{ i18n .Title $ "menu" .Source }}</a>
                                     {{ end }}
                                     </li>
                                 {{ end }}

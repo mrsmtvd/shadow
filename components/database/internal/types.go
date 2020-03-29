@@ -55,7 +55,7 @@ func (t TypeConverter) ToDb(val interface{}) (interface{}, error) {
 	return val, nil
 }
 
-func (c TypeConverter) FromDb(target interface{}) (gorp.CustomScanner, bool) {
+func (t TypeConverter) FromDb(target interface{}) (gorp.CustomScanner, bool) {
 	switch target.(type) {
 	case *StructType:
 		binder := func(holder, target interface{}) error {

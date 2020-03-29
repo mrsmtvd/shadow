@@ -147,7 +147,7 @@ func (c *Component) initStorageGrafana() {
 
 	s := storage.NewGrafana(
 		c.config.String(annotations.ConfigStorageGrafanaAddress),
-		c.config.String(annotations.ConfigStorageGrafanaApiKey),
+		c.config.String(annotations.ConfigStorageGrafanaAPIKey),
 		c.config.String(annotations.ConfigStorageGrafanaUsername),
 		c.config.String(annotations.ConfigStorageGrafanaPassword),
 		dashboards,

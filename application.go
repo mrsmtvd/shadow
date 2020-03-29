@@ -177,7 +177,7 @@ func (a *App) Run() (err error) {
 			}
 
 		case <-a.shutdown:
-			shutdownRunning = true
+			shutdownRunning = true // nolint:ineffassign
 			signal.Stop(a.shutdown)
 
 			var shutdownEG errgroup.Group
@@ -268,6 +268,7 @@ func (a *App) MustRegisterComponent(c Component) {
 	}
 }
 
+// nolint:golint
 func (a *App) StatusComponent(n string) componentStatus {
 	if cmp, ok := a.components.Get(n); ok {
 		return cmp.Status()

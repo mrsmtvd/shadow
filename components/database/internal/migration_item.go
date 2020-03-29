@@ -31,8 +31,8 @@ func (m *MigrationItem) Source() string {
 	return m.source
 }
 
-func (m *MigrationItem) Id() string {
-	return m.migration.Id()
+func (m *MigrationItem) ID() string {
+	return m.migration.ID()
 }
 
 func (m *MigrationItem) Up() []string {

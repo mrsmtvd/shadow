@@ -17,7 +17,7 @@ type managerHandlerResponseSuccess struct {
 
 // easyjson:json
 type managerHandlerItemWorker struct {
-	Id      string                  `json:"id"`
+	ID      string                  `json:"id"`
 	Created time.Time               `json:"created"`
 	Status  string                  `json:"status"`
 	Locked  bool                    `json:"locked"`
@@ -26,7 +26,7 @@ type managerHandlerItemWorker struct {
 
 // easyjson:json
 type managerHandlerItemTask struct {
-	Id             string        `json:"id"`
+	ID             string        `json:"id"`
 	Name           string        `json:"name"`
 	Priority       int64         `json:"priority"`
 	Repeats        int64         `json:"repeats"`
@@ -44,7 +44,7 @@ type managerHandlerItemTask struct {
 
 // easyjson:json
 type managerHandlerItemListener struct {
-	Id           string            `json:"id"`
+	ID           string            `json:"id"`
 	Name         string            `json:"name"`
 	Locked       bool              `json:"locked"`
 	Events       map[string]string `json:"events"`
@@ -66,8 +66,8 @@ func NewManagerHandler(component workers.Component) *ManagerHandler {
 }
 
 func (h *ManagerHandler) isLocked(id string) bool {
-	for _, listenerId := range h.component.GetLockedListeners() {
-		if id == listenerId {
+	for _, listenerID := range h.component.GetLockedListeners() {
+		if id == listenerID {
 			return true
 		}
 	}
@@ -93,7 +93,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 		for _, item := range listListeners {
 			listener := managerHandlerItemListener{
-				Id:     item.Id(),
+				ID:     item.Id(),
 				Name:   item.Name(),
 				Locked: h.isLocked(item.Id()),
 			}
@@ -126,7 +126,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 		for _, item := range listWorkers {
 			data := managerHandlerItemWorker{
-				Id:      item.Id(),
+				ID:      item.Id(),
 				Created: item.CreatedAt(),
 			}
 
@@ -138,7 +138,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 					item := task.(ws.Task)
 
 					data.Task = &managerHandlerItemTask{
-						Id:             item.Id(),
+						ID:             item.Id(),
 						Name:           item.Name(),
 						Priority:       item.Priority(),
 						Repeats:        item.Repeats(),
@@ -172,7 +172,7 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 
 		for _, item := range listTasks {
 			data := managerHandlerItemTask{
-				Id:             item.Id(),
+				ID:             item.Id(),
 				Name:           item.Name(),
 				Priority:       item.Priority(),
 				Repeats:        item.Repeats(),
@@ -210,11 +210,11 @@ func (h *ManagerHandler) actionStats(w *dashboard.Response, r *dashboard.Request
 }
 
 func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboard.Request) {
-	checkId := r.Original().PostFormValue("id")
+	checkID := r.Original().PostFormValue("id")
 
-	if checkId != "" && !h.isLocked(checkId) {
+	if checkID != "" && !h.isLocked(checkID) {
 		for _, listener := range h.component.GetListeners() {
-			if listener.Id() == checkId {
+			if listener.Id() == checkID {
 				checkEvents := r.Original().PostForm["events[]"]
 
 				if len(checkEvents) != 0 {
@@ -229,8 +229,8 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 						events[event.Id()] = event
 					}
 
-					for _, eventId := range checkEvents {
-						event, ok := events[eventId]
+					for _, eventID := range checkEvents {
+						event, ok := events[eventID]
 						if !ok {
 							continue
 						}
@@ -256,13 +256,13 @@ func (h *ManagerHandler) actionListenersRemove(w *dashboard.Response, r *dashboa
 }
 
 func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.Request) {
-	checkId := r.Original().FormValue("id")
+	checkID := r.Original().FormValue("id")
 
 	for _, task := range h.component.GetTasks() {
-		if checkId == "" || task.Id() == checkId {
+		if checkID == "" || task.Id() == checkID {
 			h.component.RemoveTask(task)
 
-			if checkId != "" {
+			if checkID != "" {
 				break
 			}
 		}
@@ -278,13 +278,13 @@ func (h *ManagerHandler) actionTasksRemove(w *dashboard.Response, r *dashboard.R
 }
 
 func (h *ManagerHandler) actionWorkerRemove(w *dashboard.Response, r *dashboard.Request) {
-	checkId := r.Original().FormValue("id")
+	checkID := r.Original().FormValue("id")
 
 	for _, worker := range h.component.GetWorkers() {
-		if checkId == "" || worker.Id() == checkId {
+		if checkID == "" || worker.Id() == checkID {
 			h.component.RemoveWorker(worker)
 
-			if checkId != "" {
+			if checkID != "" {
 				break
 			}
 		}

@@ -14,7 +14,7 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Mail").
-		WithUrl("/" + c.Name() + "/send/").
+		WithURL("/" + c.Name() + "/send/").
 		WithIcon("envelope")
 }
 

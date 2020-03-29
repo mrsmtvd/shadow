@@ -239,7 +239,7 @@ func (c *Component) SaveToCookie(response *dashboard.Response, locale *internati
 		Value:    locale.Locale(),
 		Path:     c.config.String(dashboard.ConfigSessionPath),
 		Domain:   c.config.String(dashboard.ConfigSessionDomain),
-		HttpOnly: c.config.Bool(dashboard.ConfigSessionHttpOnly),
+		HttpOnly: c.config.Bool(dashboard.ConfigSessionHTTPOnly),
 	})
 
 	return nil

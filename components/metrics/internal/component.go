@@ -13,7 +13,7 @@ import (
 	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/snitch"
-	_ "github.com/kihamo/snitch/collector"
+	_ "github.com/kihamo/snitch/collector" // nolint:golint
 	"github.com/kihamo/snitch/storage"
 )
 
@@ -121,7 +121,7 @@ func (c *Component) Register(cs ...snitch.Collector) {
 }
 
 func (c *Component) initStorage() (err error) {
-	url := c.config.String(metrics.ConfigUrl)
+	url := c.config.String(metrics.ConfigURL)
 	if url == "" {
 		return
 	}

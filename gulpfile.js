@@ -4,7 +4,6 @@ var child          = require('child_process'),
     
     gulp           = require('gulp'),
     cleanCss       = require('gulp-clean-css'),
-    debug          = require('gulp-debug'),
     env            = require('gulp-env'),
     exec           = require('gulp-exec'),
     filterBy       = require('gulp-filter-by'),
@@ -275,6 +274,14 @@ gulp.task('golang', function() {
         .pipe(exec.reporter(execOptions));
 });
 
+gulp.task('lint', function(cb) {
+    child.exec('golangci-lint run -c .golangci.yml', function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        cb(err);
+    });
+});
+
 gulp.task('i18n', function() {
     return gulp.src([__dirname + '/**/*.po', '!' + __dirname + '/vendor/**'])
         .pipe(exec('msgfmt <%= file.path %> -o <%= options.path.dirname(file.path) %>/<%= options.path.basename(file.path, ".po") %>.mo', {
@@ -362,7 +369,8 @@ gulp.task('enumer', function() {
 
 gulp.task('backend', gulp.series(
     gulp.parallel('golang', 'i18n'),
-    gulp.parallel('bindata', 'protobuf', 'easyjson', 'enumer')
+    gulp.parallel('bindata', 'protobuf', 'easyjson', 'enumer'),
+    gulp.parallel('lint')
 ));
 
 /**

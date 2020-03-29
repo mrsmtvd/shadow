@@ -25,13 +25,13 @@ func New(token string, debug bool) (platform *Telegram, err error) {
 	return platform, nil
 }
 
-func (p *Telegram) chatId(to string) (int64, error) {
-	chatId, err := strconv.Atoi(to)
+func (p *Telegram) chatID(to string) (int64, error) {
+	chatID, err := strconv.Atoi(to)
 	if err != nil {
 		return -1, err
 	}
 
-	return int64(chatId), err
+	return int64(chatID), err
 }
 
 func (p *Telegram) Me() (tgbotapi.User, error) {
@@ -39,24 +39,24 @@ func (p *Telegram) Me() (tgbotapi.User, error) {
 }
 
 func (p *Telegram) SendMessage(to, message string) error {
-	chatId, err := p.chatId(to)
+	chatID, err := p.chatID(to)
 	if err != nil {
 		return err
 	}
 
-	msg := tgbotapi.NewMessage(chatId, message)
+	msg := tgbotapi.NewMessage(chatID, message)
 	_, err = p.bot.Send(msg)
 
 	return err
 }
 
 func (p *Telegram) SendPhoto(to, name string, file io.Reader) error {
-	chatId, err := p.chatId(to)
+	chatID, err := p.chatID(to)
 	if err != nil {
 		return err
 	}
 
-	msg := tgbotapi.NewPhotoUpload(chatId, tgbotapi.FileReader{
+	msg := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileReader{
 		Name:   name,
 		Reader: file,
 		Size:   -1,

@@ -23,15 +23,15 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Dashboard").
-		WithUrl("/" + c.Name() + "/components").
+		WithURL("/" + c.Name() + "/components").
 		WithIcon("tachometer-alt").
-		WithChild(dashboard.NewMenu("Components").WithUrl("/" + c.Name() + "/components")).
-		WithChild(dashboard.NewMenu("Environment").WithUrl("/" + c.Name() + "/environment")).
-		WithChild(dashboard.NewMenu("Asset FS").WithUrl("/" + c.Name() + "/assetfs")).
-		WithChild(dashboard.NewMenu("Routing").WithUrl("/" + c.Name() + "/routing")).
+		WithChild(dashboard.NewMenu("Components").WithURL("/" + c.Name() + "/components")).
+		WithChild(dashboard.NewMenu("Environment").WithURL("/" + c.Name() + "/environment")).
+		WithChild(dashboard.NewMenu("Asset FS").WithURL("/" + c.Name() + "/assetfs")).
+		WithChild(dashboard.NewMenu("Routing").WithURL("/" + c.Name() + "/routing")).
 		WithChild(dashboard.NewMenu("Health check").
-			WithChild(dashboard.NewMenu("Liveness").WithUrl("/healthcheck/live?full=1")).
-			WithChild(dashboard.NewMenu("Readiness").WithUrl("/healthcheck/ready?full=1")))
+			WithChild(dashboard.NewMenu("Liveness").WithURL("/healthcheck/live?full=1")).
+			WithChild(dashboard.NewMenu("Readiness").WithURL("/healthcheck/ready?full=1")))
 }
 
 func (c *Component) DashboardRoutes() []dashboard.Route {

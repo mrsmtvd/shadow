@@ -97,7 +97,7 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) (err error)
 	addr := net.JoinHostPort(c.config.String(dashboard.ConfigHost), c.config.String(dashboard.ConfigPort))
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
-		return fmt.Errorf("failed to listen [%d]: %s\n", os.Getpid(), err.Error())
+		return fmt.Errorf("failed to listen [%d]: %s", os.Getpid(), err.Error())
 	}
 
 	c.logger.Info("Running service", "addr", addr, "pid", os.Getpid())

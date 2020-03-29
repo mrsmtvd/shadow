@@ -65,6 +65,7 @@ func (f *HTTPFile) File() (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
 		return nil, errors.New("remote server response not 200 OK")
@@ -140,7 +141,7 @@ func (f *HTTPFile) Validate() error {
 	}
 
 	cs := hasher.Sum(nil)
-	if bytes.Compare(f.Checksum(), cs) != 0 {
+	if bytes.Equal(f.Checksum(), cs) {
 		return fmt.Errorf("wrong checksum have %x want %x", cs, f.Checksum())
 	}
 
@@ -151,6 +152,8 @@ func (f *HTTPFile) getFileType() ota.FileType {
 	// попытка вычитать HEAD
 	response, err := http.Head(f.u.String())
 	if err == nil {
+		defer response.Body.Close()
+
 		if response.StatusCode == http.StatusOK {
 			return ota.FileTypeFromMIME(response.Header.Get("Content-Type"))
 		}
@@ -159,6 +162,8 @@ func (f *HTTPFile) getFileType() ota.FileType {
 	// если не удалось, то делает GET
 	response, err = http.Get(f.u.String())
 	if err == nil {
+		defer response.Body.Close()
+
 		if response.StatusCode == http.StatusOK {
 			return ota.FileTypeFromMIME(response.Header.Get("Content-Type"))
 		}

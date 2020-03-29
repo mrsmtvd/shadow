@@ -62,9 +62,9 @@ func (c *components) Resolve() (err error) {
 					if dep.Required {
 						err = errors.New("component \"" + cmp.Name() + "\" has required dependency \"" + dep.Name + "\"")
 						return false
-					} else {
-						dependencies[dep.Name] = mapset.NewSet()
 					}
+
+					dependencies[dep.Name] = mapset.NewSet()
 				}
 
 				ms.Add(dep.Name)

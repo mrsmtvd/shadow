@@ -130,7 +130,7 @@ func (h *MigrationsHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Reques
 			item := m.(MigrationsItem)
 
 			data = append(data, map[string]interface{}{
-				"id":          item.Id(),
+				"id":          item.ID(),
 				"source":      item.Source(),
 				"modified_at": item.ModAt(),
 				"applied_at":  item.AppliedAt(),

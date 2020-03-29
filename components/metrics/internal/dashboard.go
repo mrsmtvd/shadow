@@ -15,7 +15,7 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 
 func (c *Component) DashboardMenu() dashboard.Menu {
 	return dashboard.NewMenu("Metrics").
-		WithUrl("/" + c.Name() + "/list/").
+		WithURL("/" + c.Name() + "/list/").
 		WithIcon("thermometer-empty")
 }
 

@@ -26,7 +26,7 @@ func init() {
 	profiles.profiles = make(map[string]*Profile)
 }
 
-func (p *Profile) GetId() string {
+func (p *Profile) GetID() string {
 	p.mutex.RLock()
 	defer p.mutex.RUnlock()
 
@@ -66,8 +66,8 @@ func loadProfilesOnce() {
 	defer profiles.mutex.Unlock()
 
 	profiles.profiles = map[string]*Profile{
-		ProfileCpu: {
-			id:          ProfileCpu,
+		ProfileCPU: {
+			id:          ProfileCPU,
 			description: "CPU profiling for the current process",
 			buffer:      bytes.NewBuffer(nil),
 		},
@@ -120,7 +120,7 @@ func GetProfiles() []*Profile {
 	}
 
 	sort.Slice(result, func(i, j int) bool {
-		return result[i].GetId() < result[j].GetId()
+		return result[i].GetID() < result[j].GetID()
 	})
 
 	return result

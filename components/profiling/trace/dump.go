@@ -47,14 +47,14 @@ func (d *Dump) Delete() error {
 	return os.Remove(d.file)
 }
 
-func (d *Dump) GetId() string {
+func (d *Dump) GetID() string {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 
 	return d.id
 }
 
-func (d *Dump) SetId(id string) {
+func (d *Dump) SetID(id string) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 
@@ -145,7 +145,7 @@ func LoadDumps(path string) error {
 		}
 
 		dumps.mutex.Lock()
-		dumps.dumps[dump.GetId()] = dump
+		dumps.dumps[dump.GetID()] = dump
 		dumps.mutex.Unlock()
 
 		go func() {

@@ -9,7 +9,7 @@ type HasMigrations interface {
 }
 
 type Migration interface {
-	Id() string
+	ID() string
 	Up() []string
 	Down() []string
 	ModAt() time.Time
@@ -31,7 +31,7 @@ func NewMigration(id string, up, down []string, modAt time.Time) *MigrationSimpl
 	}
 }
 
-func (m *MigrationSimple) Id() string {
+func (m *MigrationSimple) ID() string {
 	return m.id
 }
 

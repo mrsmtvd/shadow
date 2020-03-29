@@ -109,7 +109,7 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		}
 		switch key {
 		case "id":
-			out.Id = string(in.String())
+			out.ID = string(in.String())
 		case "created":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Created).UnmarshalJSON(data))
@@ -150,7 +150,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		} else {
 			out.RawString(prefix)
 		}
-		out.String(string(in.Id))
+		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"created\":"
@@ -242,7 +242,7 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		}
 		switch key {
 		case "id":
-			out.Id = string(in.String())
+			out.ID = string(in.String())
 		case "name":
 			out.Name = string(in.String())
 		case "priority":
@@ -333,7 +333,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		} else {
 			out.RawString(prefix)
 		}
-		out.String(string(in.Id))
+		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"name\":"
@@ -527,7 +527,7 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		}
 		switch key {
 		case "id":
-			out.Id = string(in.String())
+			out.ID = string(in.String())
 		case "name":
 			out.Name = string(in.String())
 		case "locked":
@@ -600,7 +600,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 		} else {
 			out.RawString(prefix)
 		}
-		out.String(string(in.Id))
+		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"name\":"

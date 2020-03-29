@@ -239,20 +239,20 @@ func (h *AuthHandler) redirectToExternal(r *dashboard.Request, provider goth.Pro
 		return "", err
 	}
 
-	externalUrl, err := providerSession.GetAuthURL()
+	externalURL, err := providerSession.GetAuthURL()
 	if err != nil {
 		return "", err
 	}
 
-	if externalUrl == "" {
-		return "", errors.New("External url for redirect is empty")
+	if externalURL == "" {
+		return "", errors.New("external url for redirect is empty")
 	}
 
 	if err = r.Session().PutString(dashboard.AuthSessionName(), providerSession.Marshal()); err != nil {
 		return "", err
 	}
 
-	return externalUrl, nil
+	return externalURL, nil
 }
 
 func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
@@ -279,22 +279,22 @@ func (h *AuthHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 	}
 
 	if !h.IsCallback {
-		externalUrl, err := h.redirectToExternal(r, provider)
+		externalURL, err := h.redirectToExternal(r, provider)
 		if err != nil {
 			h.renderForm(r, err)
 			return
 		}
 
-		logging.Log(r.Context()).Debug("OAuth2 external redirect to " + externalUrl)
-		h.Redirect(externalUrl, http.StatusTemporaryRedirect, w, r)
+		logging.Log(r.Context()).Debug("OAuth2 external redirect to " + externalURL)
+		h.Redirect(externalURL, http.StatusTemporaryRedirect, w, r)
 	} else {
 		if err = h.auth(r, provider); err != nil {
 			h.renderForm(r, err)
 			return
 		}
 
-		authUrl := h.getRedirectToLastURL(r)
-		logging.Log(r.Context()).Debug("Redirect to " + authUrl + " after success auth")
-		h.Redirect(authUrl, http.StatusTemporaryRedirect, w, r)
+		authURL := h.getRedirectToLastURL(r)
+		logging.Log(r.Context()).Debug("Redirect to " + authURL + " after success auth")
+		h.Redirect(authURL, http.StatusTemporaryRedirect, w, r)
 	}
 }

@@ -26,7 +26,7 @@ const (
 	ConfigOAuth2GplusScopes      = ComponentName + ".oauth2.gplus.scopes"
 	ConfigSessionCookieName      = ComponentName + ".session.cookie-name"
 	ConfigSessionDomain          = ComponentName + ".session.domain"
-	ConfigSessionHttpOnly        = ComponentName + ".session.http-only"
+	ConfigSessionHTTPOnly        = ComponentName + ".session.http-only"
 	ConfigSessionIdleTimeout     = ComponentName + ".session.idle-timeout"
 	ConfigSessionLifetime        = ComponentName + ".session.lifetime"
 	ConfigSessionPath            = ComponentName + ".session.path"

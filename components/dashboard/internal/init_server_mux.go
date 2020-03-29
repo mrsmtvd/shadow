@@ -35,11 +35,11 @@ func (c *Component) initServeMux() error {
 	c.router.addMiddleware(AuthorizationMiddleware)
 
 	// fixing routes
-	startUrlRoute := NewRouteItem(dashboard.NewRoute("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	startURLRoute := NewRouteItem(dashboard.NewRoute("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, c.config.String(dashboard.ConfigStartURL), http.StatusMovedPermanently)
 	})), c)
 
-	c.router.addRoute(startUrlRoute)
+	c.router.addRoute(startURLRoute)
 
 	return nil
 }
