@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -23,13 +24,13 @@ type AssetFSHandler struct {
 }
 
 type assetFSList struct {
-	IsDir   bool
-	Name    string
-	Size    int64
-	Mode    os.FileMode
 	ModTime time.Time
+	Name    string
 	Path    string
 	Reader  io.Reader
+	Size    int64
+	Mode    os.FileMode
+	IsDir   bool
 }
 
 type assetFSBreadcrumb struct {
@@ -45,7 +46,7 @@ func NewAssetFSHandler(registry *sync.Map, buildDate *time.Time) *AssetFSHandler
 	}
 }
 
-func (h *AssetFSHandler) getRoot() ([]assetFSList, error) {
+func (h *AssetFSHandler) getRoot() []assetFSList {
 	files := make([]assetFSList, 0)
 
 	modTime := time.Now()
@@ -68,7 +69,7 @@ func (h *AssetFSHandler) getRoot() ([]assetFSList, error) {
 		return true
 	})
 
-	return files, nil
+	return files
 }
 
 func (h *AssetFSHandler) getComponentByPath(name, path string) ([]assetFSList, error) {
@@ -156,7 +157,7 @@ func (h *AssetFSHandler) getComponentByPath(name, path string) ([]assetFSList, e
 	return ret, nil
 }
 
-func (h *AssetFSHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *AssetFSHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	var (
 		files      []assetFSList
 		breadcrumb []assetFSBreadcrumb
@@ -172,7 +173,7 @@ func (h *AssetFSHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	}
 
 	if path == sep {
-		files, err = h.getRoot()
+		files = h.getRoot()
 	} else {
 		dir, file := filepath.Split(path)
 		if dir == "" {

@@ -21,7 +21,7 @@ func NewSendHandler(component mail.Component) *SendHandler {
 	}
 }
 
-func (h *SendHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *SendHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	locale := i18n.Locale(r.Context())
 	vars := map[string]interface{}{}
 

@@ -10,7 +10,7 @@ type LogoutHandler struct {
 	dashboard.Handler
 }
 
-func (h *LogoutHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *LogoutHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	session := r.Session()
 
 	if err := session.Remove(dashboard.SessionUser); err != nil {

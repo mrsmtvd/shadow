@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql/driver"
 	"time"
 
 	"github.com/kihamo/shadow/components/dashboard"
@@ -20,7 +21,7 @@ func NewStatusHandler(component database.Component) *StatusHandler {
 	}
 }
 
-func (h *StatusHandler) status(ctx context.Context, e database.Executor) string {
+func (h *StatusHandler) status(ctx context.Context, e driver.Pinger) string {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 

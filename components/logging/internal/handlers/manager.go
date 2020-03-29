@@ -87,7 +87,7 @@ func (h *ManagerHandler) collect(w *wrapper.Wrapper) map[string]loggerView {
 	return result
 }
 
-func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *ManagerHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	var err error
 	loggers := h.collect(h.wrapper)
 

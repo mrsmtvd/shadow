@@ -7,7 +7,7 @@ import (
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
-func ContextMiddleware(router *Router, renderer *Renderer) func(http.Handler) http.Handler {
+func ContextMiddleware(router dashboard.Router, renderer dashboard.Renderer) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			writer := dashboard.NewResponse(w)

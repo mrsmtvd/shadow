@@ -64,8 +64,8 @@ type ManagerHandlerFieldViewData struct {
 }
 
 type ManagerHandlerFieldViewDataEnum struct {
-	Number    int32
 	Name      string
+	Number    int32
 	IsDefault bool
 }
 
@@ -209,7 +209,7 @@ func (v *ManagerHandlerFieldViewData) JSON() string {
 	return ""
 }
 
-func (h *ManagerHandler) getServicesLightViewData() ([]managerHandlerServiceViewData, error) {
+func (h *ManagerHandler) getServicesLightViewData() []managerHandlerServiceViewData {
 	list := h.component.GetServiceInfo()
 	ret := make([]managerHandlerServiceViewData, 0, len(list))
 
@@ -232,7 +232,7 @@ func (h *ManagerHandler) getServicesLightViewData() ([]managerHandlerServiceView
 		ret = append(ret, view)
 	}
 
-	return ret, nil
+	return ret
 }
 
 func (h *ManagerHandler) getServicesViewData(r *dashboard.Request) ([]managerHandlerServiceViewData, error) {
@@ -386,7 +386,7 @@ func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) 
 	if r.Config().Bool(grpc.ConfigReflectionEnabled) {
 		services, err = h.getServicesViewData(r)
 	} else {
-		services, err = h.getServicesLightViewData()
+		services = h.getServicesLightViewData()
 	}
 
 	if err != nil {

@@ -29,7 +29,7 @@ func NewAssetsHandler(root http.FileSystem) *AssetsHandler {
 	}
 }
 
-func (h *AssetsHandler) ServeHTTP(w *Response, r *Request) {
+func (h *AssetsHandler) ServeHTTP(w http.ResponseWriter, r *Request) {
 	path := r.URL().Query().Get(":filepath")
 
 	f, err := h.root.Open(path)

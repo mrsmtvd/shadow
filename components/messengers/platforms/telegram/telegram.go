@@ -1,8 +1,8 @@
 package telegram
 
 import (
+	"fmt"
 	"io"
-	"net/url"
 	"strconv"
 
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
@@ -72,7 +72,7 @@ func (p *Telegram) SendMessageRaw(msg tgbotapi.Chattable) (tgbotapi.Message, err
 	return p.bot.Send(msg)
 }
 
-func (p *Telegram) RegisterWebHook(link *url.URL, cert string) error {
+func (p *Telegram) RegisterWebHook(link fmt.Stringer, cert string) error {
 	var config tgbotapi.WebhookConfig
 
 	if cert != "" {

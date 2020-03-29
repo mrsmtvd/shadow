@@ -5,10 +5,11 @@ linters:
   enable:
     - bodyclose
     - golint
-#    - interfacer
-#    - unconvert
-#    - maligned
-#    - unparam
+    - interfacer
+    - unconvert
+    - maligned
+    - unparam
+
 #    - dogsled
 #    - nakedret
 #    - prealloc

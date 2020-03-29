@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/heptiolabs/healthcheck"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -47,7 +49,7 @@ func (h *HealthCheckHandler) getCheckName(cmp shadow.Component, name string) str
 	return cmp.Name()
 }
 
-func (h *HealthCheckHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *HealthCheckHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	switch r.URL().Query().Get(":healthcheck") {
 	case "live":
 		h.healthCheck.LiveEndpoint(w, r.Original())

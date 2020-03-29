@@ -9,11 +9,11 @@ type Handler struct {
 	http.Handler
 }
 
-func (h *Handler) Redirect(url string, code int, w *Response, r *Request) {
+func (h *Handler) Redirect(url string, code int, w http.ResponseWriter, r *Request) {
 	http.Redirect(w, r.Original(), url, code)
 }
 
-func (h *Handler) NotFound(w *Response, r *Request) {
+func (h *Handler) NotFound(w http.ResponseWriter, r *Request) {
 	router := RouterFromContext(r.Context())
 	if router == nil {
 		panic("Router isn't set in context")
@@ -22,7 +22,7 @@ func (h *Handler) NotFound(w *Response, r *Request) {
 	router.NotFoundServeHTTP(w, r.Original())
 }
 
-func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
+func (h *Handler) MethodNotAllowed(w http.ResponseWriter, r *Request) {
 	router := RouterFromContext(r.Context())
 	if router == nil {
 		panic("Router isn't set in context")
@@ -31,7 +31,7 @@ func (h *Handler) MethodNotAllowed(w *Response, r *Request) {
 	router.MethodNotAllowedServeHTTP(w, r.Original())
 }
 
-func (h *Handler) InternalError(w *Response, r *Request, e error) {
+func (h *Handler) InternalError(w http.ResponseWriter, r *Request, e error) {
 	router := RouterFromContext(r.Context())
 	if router == nil {
 		panic("Router isn't set in context")

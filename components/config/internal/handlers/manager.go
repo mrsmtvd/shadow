@@ -53,7 +53,7 @@ func NewManagerHandler(component config.Component) *ManagerHandler {
 	}
 }
 
-func (h *ManagerHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *ManagerHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	var err error
 
 	if r.IsPost() {

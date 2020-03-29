@@ -3,6 +3,7 @@ package handlers
 import (
 	"expvar"
 	"fmt"
+	"net/http"
 
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -12,7 +13,7 @@ type ExpvarHandler struct {
 	dashboard.Handler
 }
 
-func (h *ExpvarHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *ExpvarHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	if !r.Config().Bool(config.ConfigDebug) {
 		h.NotFound(w, r)
 		return

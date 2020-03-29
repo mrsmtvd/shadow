@@ -13,7 +13,7 @@ type DebugHandler struct {
 	HandlerFunc http.HandlerFunc
 }
 
-func (h *DebugHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
+func (h *DebugHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	if !r.Config().Bool(config.ConfigDebug) {
 		h.NotFound(w, r)
 		return
