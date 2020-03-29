@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-func HealthCheck(conn *grpc.ClientConn, service string) error {
+func HealthCheck(conn grpc.ClientConnInterface, service string) error {
 	healthClient := grpc_health_v1.NewHealthClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)

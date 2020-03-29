@@ -56,12 +56,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	_ = first
 	{
 		const prefix string = ",\"result\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Result))
 	}
 	out.RawByte('}')
@@ -145,52 +140,27 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"created\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Raw((in.Created).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"status\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Status))
 	}
 	{
 		const prefix string = ",\"locked\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.Locked))
 	}
 	{
 		const prefix string = ",\"task\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.Task == nil {
 			out.RawString("null")
 		} else {
@@ -328,82 +298,42 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"priority\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Priority))
 	}
 	{
 		const prefix string = ",\"repeats\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Repeats))
 	}
 	{
 		const prefix string = ",\"repeat_interval\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.RepeatInterval))
 	}
 	{
 		const prefix string = ",\"timeout\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Timeout))
 	}
 	{
 		const prefix string = ",\"created_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Raw((in.CreatedAt).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"started_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.StartedAt == nil {
 			out.RawString("null")
 		} else {
@@ -412,42 +342,22 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	}
 	{
 		const prefix string = ",\"status\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Status))
 	}
 	{
 		const prefix string = ",\"locked\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.Locked))
 	}
 	{
 		const prefix string = ",\"attempts\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Attempts))
 	}
 	{
 		const prefix string = ",\"allow_start_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.AllowStartAt == nil {
 			out.RawString("null")
 		} else {
@@ -456,12 +366,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	}
 	{
 		const prefix string = ",\"first_started_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.FirstStartedAt == nil {
 			out.RawString("null")
 		} else {
@@ -470,12 +375,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	}
 	{
 		const prefix string = ",\"last_started_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.LastStartedAt == nil {
 			out.RawString("null")
 		} else {
@@ -538,11 +438,7 @@ func easyjsonEd74d837DecodeGithubComKihamoShadowComponentsWorkersInternalHandler
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Events = make(map[string]string)
-				} else {
-					out.Events = nil
-				}
+				out.Events = make(map[string]string)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -595,42 +491,22 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"locked\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.Locked))
 	}
 	{
 		const prefix string = ",\"events\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.Events == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
 			out.RawString(`null`)
 		} else {
@@ -651,22 +527,12 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	}
 	{
 		const prefix string = ",\"fires\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Fires))
 	}
 	{
 		const prefix string = ",\"first_fired_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.FirstFiredAt == nil {
 			out.RawString("null")
 		} else {
@@ -675,12 +541,7 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsWorkersInternalHandler
 	}
 	{
 		const prefix string = ",\"last_fired_at\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.LastFiredAt == nil {
 			out.RawString("null")
 		} else {

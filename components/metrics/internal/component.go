@@ -76,7 +76,7 @@ func (c *Component) Init(a shadow.Application) error {
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 	if c.application.HasComponent(profiling.ComponentName) {
-		c.registry.AddStorages(storage.NewExpvarWithId(metrics.ComponentName))
+		c.registry.AddStorages(storage.NewExpvarWithID(metrics.ComponentName))
 	}
 
 	c.logger = logging.DefaultLazyLogger(c.Name())
@@ -128,7 +128,7 @@ func (c *Component) initStorage() (err error) {
 
 	existsStorage, err := c.registry.GetStorage(StorageIDInflux)
 	if err != nil {
-		newStorage, err := storage.NewInfluxWithId(
+		newStorage, err := storage.NewInfluxWithID(
 			StorageIDInflux,
 			url,
 			c.config.String(metrics.ConfigDatabase),

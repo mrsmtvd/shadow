@@ -48,6 +48,9 @@ type factory struct {
 }
 
 func (f *factory) Describe(ch chan<- *snitch.Description) {
+	f.mutex.RLock()
+	defer f.mutex.RUnlock()
+
 	for _, m := range f.children {
 		m.Describe(ch)
 	}
@@ -68,8 +71,8 @@ func (f *factory) add(m snitch.Collector) {
 	f.mutex.Unlock()
 }
 
-func (f *factory) Counter(name string, tags map[string]string) jaeger.Counter {
-	metric := snitch.NewCounter(f.subName(name), "", tagsToLabels(f.mergeTags(tags))...)
+func (f *factory) Counter(opts jaeger.Options) jaeger.Counter {
+	metric := snitch.NewCounter(f.subName(opts.Name), opts.Help, tagsToLabels(f.mergeTags(opts.Tags))...)
 	f.add(metric)
 
 	return &counter{
@@ -77,8 +80,8 @@ func (f *factory) Counter(name string, tags map[string]string) jaeger.Counter {
 	}
 }
 
-func (f *factory) Timer(name string, tags map[string]string) jaeger.Timer {
-	metric := snitch.NewTimer(f.subName(name), "", tagsToLabels(f.mergeTags(tags))...)
+func (f *factory) Timer(opts jaeger.TimerOptions) jaeger.Timer {
+	metric := snitch.NewTimer(f.subName(opts.Name), opts.Help, tagsToLabels(f.mergeTags(opts.Tags))...)
 	f.add(metric)
 
 	return &timer{
@@ -86,8 +89,8 @@ func (f *factory) Timer(name string, tags map[string]string) jaeger.Timer {
 	}
 }
 
-func (f *factory) Gauge(name string, tags map[string]string) jaeger.Gauge {
-	metric := snitch.NewGauge(f.subName(name), "", tagsToLabels(f.mergeTags(tags))...)
+func (f *factory) Gauge(opts jaeger.Options) jaeger.Gauge {
+	metric := snitch.NewGauge(f.subName(opts.Name), opts.Help, tagsToLabels(f.mergeTags(opts.Tags))...)
 	f.add(metric)
 
 	return &gauge{
@@ -95,8 +98,17 @@ func (f *factory) Gauge(name string, tags map[string]string) jaeger.Gauge {
 	}
 }
 
-func (f *factory) Namespace(name string, tags map[string]string) jaeger.Factory {
-	metric := newFactory(name, tags)
+func (f *factory) Histogram(opts jaeger.HistogramOptions) jaeger.Histogram {
+	metric := snitch.NewHistogramWithQuantiles(f.subName(opts.Name), opts.Help, opts.Buckets, tagsToLabels(f.mergeTags(opts.Tags))...)
+	f.add(metric)
+
+	return &histogram{
+		m: metric,
+	}
+}
+
+func (f *factory) Namespace(scope jaeger.NSOptions) jaeger.Factory {
+	metric := newFactory(scope.Name, scope.Tags)
 	f.add(metric)
 
 	return metric
@@ -150,6 +162,14 @@ type gauge struct {
 
 func (g *gauge) Update(value int64) {
 	g.m.Set(float64(value))
+}
+
+type histogram struct {
+	m snitch.Histogram
+}
+
+func (h *histogram) Record(value float64) {
+	h.m.Add(value)
 }
 
 func tagsToLabels(tags map[string]string) []string {

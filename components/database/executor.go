@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	sq "gopkg.in/Masterminds/squirrel.v1"
+	sq "github.com/Masterminds/squirrel"
 )
 
 type Executor interface {

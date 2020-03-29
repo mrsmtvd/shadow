@@ -7,9 +7,9 @@ import (
 	"regexp"
 	"time"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/go-gorp/gorp"
 	"github.com/kihamo/shadow/components/database"
-	sq "gopkg.in/Masterminds/squirrel.v1"
 )
 
 const (

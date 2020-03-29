@@ -140,12 +140,8 @@ func easyjsonEd74d837EncodeGithubComKihamoShadowComponentsGrpcInternalHandlers(o
 	_ = first
 	if in.Result != "" {
 		const prefix string = ",\"result\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		out.String(string(in.Result))
 	}
 	if in.Error != "" {

@@ -57,22 +57,12 @@ func easyjsonEf214727EncodeGithubComKihamoShadowComponentsDatabaseInternalHandle
 	_ = first
 	{
 		const prefix string = ",\"result\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Result))
 	}
 	{
 		const prefix string = ",\"message\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Message))
 	}
 	out.RawByte('}')
