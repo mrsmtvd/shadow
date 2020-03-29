@@ -6,7 +6,7 @@ import (
 	"time"
 
 	ws "github.com/kihamo/go-workers"
-	"github.com/kihamo/go-workers/listener"
+	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/shadow/components/workers"
 	"github.com/kihamo/snitch"
 )
@@ -107,14 +107,9 @@ func (c *Component) Metrics() snitch.Collector {
 		component: c,
 	}
 
-	l := listener.NewFunctionListener(collector.listener)
-	l.SetName(c.Name() + ".metrics")
-
-	c.AddLockedListener(l.Id())
-	c.AddListenerByEvents([]ws.Event{
-		ws.EventWorkerStatusChanged,
-		ws.EventTaskStatusChanged,
-	}, l)
+	l := NewListener(collector.listener, ws.EventWorkerStatusChanged, ws.EventTaskStatusChanged)
+	l.SetName(c.Name() + "." + metrics.ComponentName)
+	c.addLockedListener(l)
 
 	return collector
 }

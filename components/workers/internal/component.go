@@ -6,7 +6,6 @@ import (
 
 	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/go-workers/dispatcher"
-	"github.com/kihamo/go-workers/listener"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -20,9 +19,9 @@ type Component struct {
 	application shadow.Application
 	logger      logging.Logger
 
-	mutex              sync.RWMutex
-	dispatcher         *dispatcher.SimpleDispatcher
-	lockedListenersIds []string
+	mutex           sync.RWMutex
+	dispatcher      *dispatcher.SimpleDispatcher
+	lockedListeners []ws.ListenerWithEvents
 }
 
 func (c *Component) Name() string {
@@ -58,7 +57,7 @@ func (c *Component) Init(a shadow.Application) error {
 	c.application = a
 
 	c.dispatcher = dispatcher.NewSimpleDispatcher()
-	c.lockedListenersIds = []string{}
+	c.lockedListeners = make([]ws.ListenerWithEvents, 0)
 
 	return nil
 }
@@ -71,11 +70,11 @@ func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
 
 	c.dispatcher.SetTickerExecuteTasksDuration(cfg.Duration(workers.ConfigTickerExecuteTasksDuration))
 
-	l := listener.NewFunctionListener(c.listenerLogging)
-	l.SetName(c.Name() + ".logging")
-	c.AddLockedListener(l.Id())
-
-	c.AddListenerByEvents([]ws.Event{ws.EventAll}, l)
+	if cfg.Bool(workers.ConfigListenersLoggingEnabled) {
+		if l := c.newLoggingListener(); l != nil {
+			c.addLockedListener(l)
+		}
+	}
 
 	for i := 1; i <= cfg.Int(workers.ConfigWorkersCount); i++ {
 		c.AddSimpleWorker()
@@ -96,19 +95,32 @@ func (c *Component) Shutdown() error {
 	return nil
 }
 
-func (c *Component) GetLockedListeners() []string {
+func (c *Component) LockedListeners() []ws.ListenerWithEvents {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
-	tmp := make([]string, len(c.lockedListenersIds))
-	copy(tmp, c.lockedListenersIds)
+	tmp := make([]ws.ListenerWithEvents, len(c.lockedListeners))
+	copy(tmp, c.lockedListeners)
 
 	return tmp
 }
 
-func (c *Component) AddLockedListener(id string) {
+func (c *Component) addLockedListener(listener ws.ListenerWithEvents) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	c.lockedListenersIds = append(c.lockedListenersIds, id)
+	c.AddListener(listener)
+	c.lockedListeners = append(c.lockedListeners, listener)
+}
+
+func (c *Component) removeLockedListener(name string) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	for i := len(c.lockedListeners) - 1; i >= 0; i-- {
+		if c.lockedListeners[i].Name() == name {
+			c.RemoveListener(c.lockedListeners[i])
+			c.lockedListeners = append(c.lockedListeners[:i], c.lockedListeners[i+1:]...)
+		}
+	}
 }

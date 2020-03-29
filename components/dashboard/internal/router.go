@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"net/http"
 	"runtime"
 	"runtime/debug"
@@ -29,6 +28,10 @@ type Router struct {
 
 type RouterHandler interface {
 	ServeHTTP(*dashboard.Response, *dashboard.Request)
+}
+
+type RouterMixHandler interface {
+	ServeHTTP(http.ResponseWriter, *dashboard.Request)
 }
 
 func FromRouteHandler(h RouterHandler) http.Handler {
@@ -123,23 +126,27 @@ func (r *Router) addMiddleware(m func(next http.Handler) http.Handler) {
 func (r *Router) addRoute(route dashboard.Route) {
 	var handler http.Handler
 
-	if h0, ok := route.Handler().(RouterHandler); ok {
-		handler = FromRouteHandler(h0)
-	} else if h1, ok := route.Handler().(http.Handler); ok {
-		handler = h1
-	} else if h2, ok := route.Handler().(http.HandlerFunc); ok {
-		handler = h2
-	} else if h3, ok := route.Handler().(http.FileSystem); ok {
-		r.Router.ServeFiles(route.Path(), h3)
+	switch h := route.Handler().(type) {
+	case RouterHandler:
+		handler = FromRouteHandler(h)
+	case RouterMixHandler:
+		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, dashboard.NewRequest(r))
+		})
+	case http.HandlerFunc:
+		handler = h
+	case http.Handler:
+		handler = h
+	case http.FileSystem:
+		r.Router.ServeFiles(route.Path(), h)
 
 		r.mutex.Lock()
 		r.routes = append(r.routes, route)
 		r.mutex.Unlock()
 
-		// TODO: set auth, metrics
 		return
-	} else {
-		panic(fmt.Sprintf("Unknown handler type %s for path %s", route.HandlerName(), route.Path()))
+	default:
+		panic("Unknown handler type " + route.HandlerName() + " for path " + route.Path())
 	}
 
 	for i, method := range route.Methods() {

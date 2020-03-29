@@ -9,8 +9,7 @@ type Component interface {
 	shadow.Component
 
 	AddSimpleWorker()
-	GetLockedListeners() []string
-	AddLockedListener(string)
+	LockedListeners() []ws.ListenerWithEvents
 
 	AddWorker(ws.Worker)
 	RemoveWorker(ws.Worker)

@@ -66,8 +66,8 @@ func NewManagerHandler(component workers.Component) *ManagerHandler {
 }
 
 func (h *ManagerHandler) isLocked(id string) bool {
-	for _, listenerID := range h.component.GetLockedListeners() {
-		if id == listenerID {
+	for _, listener := range h.component.LockedListeners() {
+		if id == listener.Id() {
 			return true
 		}
 	}
