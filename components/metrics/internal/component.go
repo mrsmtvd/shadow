@@ -187,7 +187,6 @@ func (c *Component) initLabels(labels string) {
 	}
 
 	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
 	c.registry.SetLabels(l)
+	c.mutex.Unlock()
 }

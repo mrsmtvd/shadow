@@ -18,6 +18,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/golang/protobuf v1.3.5
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645
 	github.com/heptiolabs/healthcheck v0.0.0-20180807145615-6ff867650f40
@@ -29,7 +30,7 @@ require (
 	github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d
 	github.com/kihamo/go-workers v2.1.7+incompatible
 	github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe
-	github.com/kihamo/snitch v0.0.0-20200329181755-88633f21a790
+	github.com/kihamo/snitch v0.0.0-20200330224422-503550c7d652
 	github.com/mailru/easyjson v0.7.1
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/kinako v0.0.0-20170717041458-332c0a7e205a
