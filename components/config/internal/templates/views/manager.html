@@ -110,7 +110,7 @@
                                                 <br />{{ i18n "Allowed values:" $ }}
                                                 <ul>
                                                 {{ range $o, $option := ($config.GetViewOption "options") }}
-                                                    {{ if eq (index $option 0) (index $option 1) }}
+                                                    {{ if eq (print (index $option 0)) (print (index $option 1)) }}
                                                     <li>{{ index $option 0 }}</li>
                                                     {{ else }}
                                                     <li>{{ index $option 0 }} &mdash; {{ i18n (index $option 1) $ "config" $name }}</li>
