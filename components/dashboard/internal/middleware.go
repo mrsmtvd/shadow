@@ -3,7 +3,7 @@ package internal
 import (
 	"net/http"
 
-	"github.com/alexedwards/scs"
+	"github.com/alexedwards/scs/v2"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
@@ -31,15 +31,13 @@ func ContextMiddleware(router dashboard.Router, renderer dashboard.Renderer) fun
 	}
 }
 
-func SessionMiddleware(sessionManager *scs.Manager) func(http.Handler) http.Handler {
+func SessionMiddleware(sessionManager *scs.SessionManager) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
-		return sessionManager.Use(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			session := NewSession(sessionManager.LoadFromContext(r.Context()), w)
+		return sessionManager.LoadAndSave(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			session := NewSession(sessionManager, r)
 			ctx := dashboard.ContextWithSession(r.Context(), session)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
-
-			session.Flush()
 		}))
 	}
 }
@@ -55,9 +53,7 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 
 			if !request.User().IsAuthorized() {
 				if !request.IsAjax() && request.IsGet() {
-					if err := request.Session().PutString(dashboard.SessionLastURL, request.URL().Path); err != nil {
-						panic(err.Error())
-					}
+					request.Session().PutString(dashboard.SessionLastURL, request.URL().Path)
 				}
 
 				http.Redirect(w, r, dashboard.AuthPath, http.StatusFound)

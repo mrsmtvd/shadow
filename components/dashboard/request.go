@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"context"
+	"encoding/gob"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -11,6 +12,10 @@ import (
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard/auth"
 )
+
+func init() {
+	gob.Register(auth.User{})
+}
 
 type Request struct {
 	original *http.Request
@@ -48,14 +53,15 @@ func (r *Request) Session() Session {
 }
 
 func (r *Request) User() *auth.User {
-	user := &auth.User{}
+	var user auth.User
 
-	session := r.Session()
-	if session != nil {
-		_ = session.GetObject(SessionUser, user)
+	if session := r.Session(); session != nil {
+		if value := session.GetObject(SessionUser); value != nil {
+			user = value.(auth.User)
+		}
 	}
 
-	return user
+	return &user
 }
 
 func (r *Request) URL() *url.URL {

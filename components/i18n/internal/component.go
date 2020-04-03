@@ -190,12 +190,7 @@ func (c *Component) localeFromSession(session dashboard.Session) (*international
 		return nil, errors.New("locale not found")
 	}
 
-	localeName, err := session.GetString(sessionKey)
-	if err != nil {
-		return nil, err
-	}
-
-	if locale, ok := c.Manager().Locale(localeName); ok {
+	if locale, ok := c.Manager().Locale(session.GetString(sessionKey)); ok {
 		return locale, nil
 	}
 
@@ -221,28 +216,22 @@ func (c *Component) localeFromCookie(cookies []*http.Cookie) (*internationalizat
 	return nil, errors.New("locale not found")
 }
 
-func (c *Component) SaveToSession(session dashboard.Session, locale *internationalization.Locale) error {
+func (c *Component) SaveToSession(session dashboard.Session, locale *internationalization.Locale) {
 	key := c.config.String(i18n.ConfigLocaleSessionKey)
-	if key == "" {
-		return nil
+	if key != "" {
+		session.PutString(key, locale.Locale())
 	}
-
-	return session.PutString(key, locale.Locale())
 }
 
-func (c *Component) SaveToCookie(response *dashboard.Response, locale *internationalization.Locale) error {
+func (c *Component) SaveToCookie(response *dashboard.Response, locale *internationalization.Locale) {
 	name := c.config.String(i18n.ConfigLocaleCookieName)
-	if name == "" {
-		return nil
+	if name != "" {
+		http.SetCookie(response, &http.Cookie{
+			Name:     name,
+			Value:    locale.Locale(),
+			Path:     c.config.String(dashboard.ConfigSessionPath),
+			Domain:   c.config.String(dashboard.ConfigSessionDomain),
+			HttpOnly: c.config.Bool(dashboard.ConfigSessionHTTPOnly),
+		})
 	}
-
-	http.SetCookie(response, &http.Cookie{
-		Name:     name,
-		Value:    locale.Locale(),
-		Path:     c.config.String(dashboard.ConfigSessionPath),
-		Domain:   c.config.String(dashboard.ConfigSessionDomain),
-		HttpOnly: c.config.Bool(dashboard.ConfigSessionHTTPOnly),
-	})
-
-	return nil
 }

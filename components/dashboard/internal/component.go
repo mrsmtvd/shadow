@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/alexedwards/scs"
+	"github.com/alexedwards/scs/v2"
 	"github.com/kihamo/shadow"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -24,7 +24,7 @@ type Component struct {
 	config         config.Component
 	logger         logging.Logger
 	renderer       *Renderer
-	sessionManager *scs.Manager
+	sessionManager *scs.SessionManager
 	router         *Router
 	server         *http.Server
 

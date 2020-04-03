@@ -87,8 +87,8 @@ func (h *AuthHandler) renderForm(r *dashboard.Request, err error) {
 }
 
 func (h *AuthHandler) getRedirectToLastURL(r *dashboard.Request) string {
-	redirectURL, err := r.Session().GetString(dashboard.SessionLastURL)
-	if err == nil && redirectURL != "" && !strings.HasPrefix(redirectURL, dashboard.AuthPath) {
+	redirectURL := r.Session().GetString(dashboard.SessionLastURL)
+	if redirectURL != "" && !strings.HasPrefix(redirectURL, dashboard.AuthPath) {
 		return redirectURL
 	}
 
@@ -99,21 +99,13 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 	session := r.Session()
 	sessionKey := dashboard.AuthSessionName()
 
-	exists, err := session.Exists(sessionKey)
-	if err != nil {
-		return err
-	}
-
-	if !exists {
+	if !session.Exists(sessionKey) {
 		return errors.New("OAuth session not exists")
 	}
 
-	value, err := session.GetString(sessionKey)
-	if err != nil {
-		return err
-	}
-
+	value := session.GetString(sessionKey)
 	providerSession, err := provider.UnmarshalSession(value)
+
 	if err != nil {
 		return err
 	}
@@ -139,10 +131,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 	}
 
 	if providerUser, err := provider.FetchUser(providerSession); err == nil {
-		if err = session.PutObject(dashboard.SessionUser, auth.NewUser(providerUser)); err != nil {
-			return err
-		}
-
+		session.PutObject(dashboard.SessionUser, auth.NewUser(providerUser))
 		return nil
 	}
 
@@ -203,9 +192,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		}
 	}
 
-	if err = session.PutString(sessionKey, providerSession.Marshal()); err != nil {
-		return err
-	}
+	session.PutString(sessionKey, providerSession.Marshal())
 
 	logging.Log(r.Context()).Debug("Auth user "+providerUser.Name+" is success",
 		"auth.provider", provider.Name(),
@@ -217,9 +204,7 @@ func (h *AuthHandler) auth(r *dashboard.Request, provider goth.Provider) error {
 		"auth.expires", providerUser.ExpiresAt,
 	)
 
-	if err = session.PutObject(dashboard.SessionUser, auth.NewUser(providerUser)); err != nil {
-		return err
-	}
+	session.PutObject(dashboard.SessionUser, auth.NewUser(providerUser))
 
 	return nil
 }
@@ -249,9 +234,7 @@ func (h *AuthHandler) redirectToExternal(r *dashboard.Request, provider goth.Pro
 		return "", errors.New("external url for redirect is empty")
 	}
 
-	if err = r.Session().PutString(dashboard.AuthSessionName(), providerSession.Marshal()); err != nil {
-		return "", err
-	}
+	r.Session().PutString(dashboard.AuthSessionName(), providerSession.Marshal())
 
 	return externalURL, nil
 }

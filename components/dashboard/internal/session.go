@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alexedwards/scs"
+	"github.com/alexedwards/scs/v2"
 	"github.com/kihamo/shadow/components/dashboard/session"
 )
 
@@ -14,16 +14,16 @@ const (
 )
 
 type Session struct {
-	session  *scs.Session
+	session  *scs.SessionManager
 	flashBag session.FlashBag
-	response http.ResponseWriter
+	request  *http.Request
 }
 
-func NewSession(s *scs.Session, w http.ResponseWriter) *Session {
+func NewSession(s *scs.SessionManager, request *http.Request) *Session {
 	r := &Session{
 		session:  s,
 		flashBag: session.NewAutoExpireFlashBag(),
-		response: w,
+		request:  request,
 	}
 	r.init()
 
@@ -31,21 +31,16 @@ func NewSession(s *scs.Session, w http.ResponseWriter) *Session {
 }
 
 func (s *Session) init() {
-	if ok, err := s.Exists(SessionFlashBag); !ok || err != nil {
+	if !s.Exists(SessionFlashBag) {
 		content, _ := json.Marshal(nil)
 		s.PutBytes(SessionFlashBag, content)
 
 		return
 	}
 
-	content, err := s.GetBytes(SessionFlashBag)
-	if err != nil {
-		return
-	}
-
 	dump := make(map[string][]string)
 
-	if err := json.Unmarshal(content, &dump); err != nil {
+	if err := json.Unmarshal(s.GetBytes(SessionFlashBag), &dump); err != nil {
 		return
 	}
 
@@ -67,121 +62,105 @@ func (s *Session) FlashBag() session.FlashBag {
 }
 
 func (s *Session) RenewToken() error {
-	return s.session.RenewToken(s.response)
+	return s.session.RenewToken(s.request.Context())
 }
 
 func (s *Session) Destroy() error {
-	return s.session.Destroy(s.response)
+	return s.session.Destroy(s.request.Context())
 }
 
-func (s *Session) GetString(k string) (string, error) {
-	return s.session.GetString(k)
+func (s *Session) GetString(key string) string {
+	return s.session.GetString(s.request.Context(), key)
 }
 
-func (s *Session) PutString(k string, v string) error {
-	return s.session.PutString(s.response, k, v)
+func (s *Session) PutString(key string, value string) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopString(k string) (string, error) {
-	return s.session.PopString(s.response, k)
+func (s *Session) PopString(key string) string {
+	return s.session.PopString(s.request.Context(), key)
 }
 
-func (s *Session) GetBool(k string) (bool, error) {
-	return s.session.GetBool(k)
+func (s *Session) GetBool(key string) bool {
+	return s.session.GetBool(s.request.Context(), key)
 }
 
-func (s *Session) PutBool(k string, v bool) error {
-	return s.session.PutBool(s.response, k, v)
+func (s *Session) PutBool(key string, value bool) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopBool(k string) (bool, error) {
-	return s.session.PopBool(s.response, k)
+func (s *Session) PopBool(key string) bool {
+	return s.session.PopBool(s.request.Context(), key)
 }
 
-func (s *Session) GetInt(k string) (int, error) {
-	return s.session.GetInt(k)
+func (s *Session) GetInt(key string) int {
+	return s.session.GetInt(s.request.Context(), key)
 }
 
-func (s *Session) PutInt(k string, v int) error {
-	return s.session.PutInt(s.response, k, v)
+func (s *Session) PutInt(key string, value int) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopInt(k string) (int, error) {
-	return s.session.PopInt(s.response, k)
+func (s *Session) PopInt(key string) int {
+	return s.session.PopInt(s.request.Context(), key)
 }
 
-func (s *Session) GetInt64(k string) (int64, error) {
-	return s.session.GetInt64(k)
+func (s *Session) GetFloat(key string) float64 {
+	return s.session.GetFloat(s.request.Context(), key)
 }
 
-func (s *Session) PutInt64(k string, v int64) error {
-	return s.session.PutInt64(s.response, k, v)
+func (s *Session) PutFloat(key string, value float64) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopInt64(k string) (int64, error) {
-	return s.session.PopInt64(s.response, k)
+func (s *Session) PopFloat(key string) float64 {
+	return s.session.PopFloat(s.request.Context(), key)
 }
 
-func (s *Session) GetFloat(k string) (float64, error) {
-	return s.session.GetFloat(k)
+func (s *Session) GetTime(key string) time.Time {
+	return s.session.GetTime(s.request.Context(), key)
 }
 
-func (s *Session) PutFloat(k string, v float64) error {
-	return s.session.PutFloat(s.response, k, v)
+func (s *Session) PutTime(key string, value time.Time) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopFloat(k string) (float64, error) {
-	return s.session.PopFloat(s.response, k)
+func (s *Session) PopTime(key string) time.Time {
+	return s.session.PopTime(s.request.Context(), key)
 }
 
-func (s *Session) GetTime(k string) (time.Time, error) {
-	return s.session.GetTime(k)
+func (s *Session) GetBytes(key string) []byte {
+	return s.session.GetBytes(s.request.Context(), key)
 }
 
-func (s *Session) PutTime(k string, v time.Time) error {
-	return s.session.PutTime(s.response, k, v)
+func (s *Session) PutBytes(key string, value []byte) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopTime(k string) (time.Time, error) {
-	return s.session.PopTime(s.response, k)
+func (s *Session) PopBytes(key string) []byte {
+	return s.session.PopBytes(s.request.Context(), key)
 }
 
-func (s *Session) GetBytes(k string) ([]byte, error) {
-	return s.session.GetBytes(k)
+func (s *Session) GetObject(key string) interface{} {
+	return s.session.Get(s.request.Context(), key)
 }
 
-func (s *Session) PutBytes(k string, v []byte) error {
-	return s.session.PutBytes(s.response, k, v)
+func (s *Session) PutObject(key string, value interface{}) {
+	s.session.Put(s.request.Context(), key, value)
 }
 
-func (s *Session) PopBytes(k string) ([]byte, error) {
-	return s.session.PopBytes(s.response, k)
+func (s *Session) Keys() []string {
+	return s.session.Keys(s.request.Context())
 }
 
-func (s *Session) GetObject(k string, d interface{}) error {
-	return s.session.GetObject(k, d)
+func (s *Session) Exists(key string) bool {
+	return s.session.Exists(s.request.Context(), key)
 }
 
-func (s *Session) PutObject(k string, v interface{}) error {
-	return s.session.PutObject(s.response, k, v)
-}
-
-func (s *Session) PopObject(k string, d interface{}) error {
-	return s.session.PopObject(s.response, k, d)
-}
-
-func (s *Session) Keys() ([]string, error) {
-	return s.session.Keys()
-}
-
-func (s *Session) Exists(k string) (bool, error) {
-	return s.session.Exists(k)
-}
-
-func (s *Session) Remove(k string) error {
-	return s.session.Remove(s.response, k)
+func (s *Session) Remove(key string) {
+	s.session.Remove(s.request.Context(), key)
 }
 
 func (s *Session) Clear() error {
-	return s.session.Clear(s.response)
+	return s.session.Clear(s.request.Context())
 }

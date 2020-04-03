@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/squirrel v1.2.0
 	github.com/OneOfOne/xxhash v1.2.7 // indirect
 	github.com/TheZeroSlave/zapsentry v1.3.0
-	github.com/alexedwards/scs v1.4.1
+	github.com/alexedwards/scs/v2 v2.3.0
 	github.com/bsm/histogram v2.0.0+incompatible // indirect
 	github.com/bugsnag/osext v0.0.0-20130617224835-0dd3f918b21b
 	github.com/chai2010/gettext-go v0.0.0-20200323094640-79c7d7df857f
@@ -30,13 +30,12 @@ require (
 	github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d
 	github.com/kihamo/go-workers v2.1.7+incompatible
 	github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe
-	github.com/kihamo/snitch v0.0.0-20200330224422-503550c7d652
+	github.com/kihamo/snitch v0.0.0-20200330215756-dee5df9e2216
 	github.com/mailru/easyjson v0.7.1
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/kinako v0.0.0-20170717041458-332c0a7e205a
 	github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9
 	github.com/opentracing/opentracing-go v1.1.0
-	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pborman/uuid v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/poy/onpar v0.0.0-20190519213022-ee068f8ea4d1 // indirect

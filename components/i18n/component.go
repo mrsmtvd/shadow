@@ -13,6 +13,6 @@ type Component interface {
 
 	Manager() *internationalization.Manager
 	LoadLocaleFromFiles(domain string, locales map[string][]io.ReadSeeker)
-	SaveToSession(dashboard.Session, *internationalization.Locale) error
-	SaveToCookie(*dashboard.Response, *internationalization.Locale) error
+	SaveToSession(dashboard.Session, *internationalization.Locale)
+	SaveToCookie(*dashboard.Response, *internationalization.Locale)
 }

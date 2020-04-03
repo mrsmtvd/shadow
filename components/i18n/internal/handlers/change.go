@@ -32,15 +32,8 @@ func (h *ChangeHandler) ServeHTTP(w *dashboard.Response, r *dashboard.Request) {
 		return
 	}
 
-	if err := h.component.SaveToSession(r.Session(), locale); err != nil {
-		h.InternalError(w, r, err)
-		return
-	}
-
-	if err := h.component.SaveToCookie(w, locale); err != nil {
-		h.InternalError(w, r, err)
-		return
-	}
+	h.component.SaveToSession(r.Session(), locale)
+	h.component.SaveToCookie(w, locale)
 
 	redirect := r.URL().Query().Get("return")
 	if redirect == "" {

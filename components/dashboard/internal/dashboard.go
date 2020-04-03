@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
+	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
 	"github.com/kihamo/shadow/components/logging"
@@ -22,6 +23,10 @@ func (c *Component) DashboardTemplates() *assetfs.AssetFS {
 }
 
 func (c *Component) DashboardMenu() dashboard.Menu {
+	show := func(r *dashboard.Request) bool {
+		return r.Config().Bool(config.ConfigDebug)
+	}
+
 	return dashboard.NewMenu("Dashboard").
 		WithURL("/" + c.Name() + "/components").
 		WithIcon("tachometer-alt").
@@ -29,6 +34,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		WithChild(dashboard.NewMenu("Environment").WithURL("/" + c.Name() + "/environment")).
 		WithChild(dashboard.NewMenu("Asset FS").WithURL("/" + c.Name() + "/assetfs")).
 		WithChild(dashboard.NewMenu("Routing").WithURL("/" + c.Name() + "/routing")).
+		WithChild(dashboard.NewMenu("Session").WithURL("/" + c.Name() + "/session").WithShow(show)).
 		WithChild(dashboard.NewMenu("Health check").
 			WithChild(dashboard.NewMenu("Liveness").WithURL("/healthcheck/live?full=1")).
 			WithChild(dashboard.NewMenu("Readiness").WithURL("/healthcheck/ready?full=1")))
@@ -57,6 +63,9 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 		dashboard.NewRoute(dashboard.AuthPath, &handlers.AuthHandler{}).
 			WithMethods([]string{http.MethodGet}),
 		dashboard.NewRoute("/"+c.Name()+"/logout", &handlers.LogoutHandler{}).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/session", &handlers.SessionHandler{}).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
 		dashboard.NewRoute("/healthcheck/:healthcheck", handlers.NewHealthCheckHandler(c.components, metricHealthCheckStatus)).

@@ -13,15 +13,8 @@ type LogoutHandler struct {
 func (h *LogoutHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	session := r.Session()
 
-	if err := session.Remove(dashboard.SessionUser); err != nil {
-		h.InternalError(w, r, err)
-		return
-	}
-
-	if err := session.Remove(dashboard.AuthSessionName()); err != nil {
-		h.InternalError(w, r, err)
-		return
-	}
+	session.Remove(dashboard.SessionUser)
+	session.Remove(dashboard.AuthSessionName())
 
 	h.Redirect(r.Config().String(dashboard.ConfigStartURL), http.StatusFound, w, r)
 }

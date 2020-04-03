@@ -1,21 +1,35 @@
 package internal
 
 import (
-	"github.com/alexedwards/scs"
-	"github.com/alexedwards/scs/stores/memstore"
+	"net/http"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/alexedwards/scs/v2/memstore"
 	"github.com/kihamo/shadow/components/dashboard"
 )
 
 func (c *Component) initSession() {
-	store := memstore.New(0)
-	c.sessionManager = scs.NewManager(store)
-	c.sessionManager.Name(c.config.String(dashboard.ConfigSessionCookieName))
+	c.sessionManager = scs.New()
 
-	c.sessionManager.Domain(c.config.String(dashboard.ConfigSessionDomain))
-	c.sessionManager.HttpOnly(c.config.Bool(dashboard.ConfigSessionHTTPOnly))
-	c.sessionManager.IdleTimeout(c.config.Duration(dashboard.ConfigSessionIdleTimeout))
-	c.sessionManager.Lifetime(c.config.Duration(dashboard.ConfigSessionLifetime))
-	c.sessionManager.Path(c.config.String(dashboard.ConfigSessionPath))
-	c.sessionManager.Persist(c.config.Bool(dashboard.ConfigSessionPersist))
-	c.sessionManager.Secure(c.config.Bool(dashboard.ConfigSessionSecure))
+	c.sessionManager.IdleTimeout = c.config.Duration(dashboard.ConfigSessionIdleTimeout)
+	c.sessionManager.Lifetime = c.config.Duration(dashboard.ConfigSessionLifetime)
+
+	if d := c.config.Duration(dashboard.ConfigSessionCleanupInterval); d > 0 {
+		c.sessionManager.Store = memstore.NewWithCleanupInterval(d)
+	} else {
+		c.sessionManager.Store = memstore.New()
+	}
+
+	c.sessionManager.Cookie.Name = c.config.String(dashboard.ConfigSessionCookieName)
+	c.sessionManager.Cookie.Domain = c.config.String(dashboard.ConfigSessionDomain)
+	c.sessionManager.Cookie.HttpOnly = c.config.Bool(dashboard.ConfigSessionHTTPOnly)
+	c.sessionManager.Cookie.Path = c.config.String(dashboard.ConfigSessionPath)
+	c.sessionManager.Cookie.Persist = c.config.Bool(dashboard.ConfigSessionPersist)
+	c.sessionManager.Cookie.SameSite = http.SameSite(c.config.Int(dashboard.ConfigSessionSameSite))
+	c.sessionManager.Cookie.Secure = c.config.Bool(dashboard.ConfigSessionSecure)
+
+	c.sessionManager.ErrorFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+		c.logger.Error(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }

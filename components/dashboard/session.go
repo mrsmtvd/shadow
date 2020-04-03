@@ -10,33 +10,37 @@ type Session interface {
 	FlashBag() session.FlashBag
 	RenewToken() error
 	Destroy() error
-	GetString(k string) (string, error)
-	PutString(k string, v string) error
-	PopString(k string) (string, error)
-	GetBool(k string) (bool, error)
-	PutBool(k string, v bool) error
-	PopBool(k string) (bool, error)
-	GetInt(k string) (int, error)
-	PutInt(k string, v int) error
-	PopInt(k string) (int, error)
-	GetInt64(k string) (int64, error)
-	PutInt64(k string, v int64) error
-	PopInt64(k string) (int64, error)
-	GetFloat(k string) (float64, error)
-	PutFloat(k string, v float64) error
-	PopFloat(k string) (float64, error)
-	GetTime(k string) (time.Time, error)
-	PutTime(k string, v time.Time) error
-	PopTime(k string) (time.Time, error)
-	GetBytes(k string) ([]byte, error)
-	PutBytes(k string, v []byte) error
-	PopBytes(k string) ([]byte, error)
-	GetObject(k string, d interface{}) error
-	PutObject(k string, v interface{}) error
-	PopObject(k string, d interface{}) error
-	Keys() ([]string, error)
-	Exists(k string) (bool, error)
-	Remove(k string) error
+
+	GetString(key string) string
+	PutString(key string, value string)
+	PopString(key string) string
+
+	GetBool(key string) bool
+	PutBool(key string, value bool)
+	PopBool(key string) bool
+
+	GetInt(key string) int
+	PutInt(key string, value int)
+	PopInt(key string) int
+
+	GetFloat(key string) float64
+	PutFloat(key string, value float64)
+	PopFloat(key string) float64
+
+	GetTime(key string) time.Time
+	PutTime(key string, value time.Time)
+	PopTime(key string) time.Time
+
+	GetBytes(key string) []byte
+	PutBytes(key string, value []byte)
+	PopBytes(key string) []byte
+
+	GetObject(key string) interface{}
+	PutObject(key string, value interface{})
+
+	Keys() []string
+	Exists(key string) bool
+	Remove(key string)
 	Clear() error
 }
 
