@@ -22,7 +22,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645
 	github.com/heptiolabs/healthcheck v0.0.0-20180807145615-6ff867650f40
-	github.com/influxdata/influxdb v1.7.8 // indirect
+	github.com/influxdata/influxdb v1.8.0 // indirect
 	github.com/jhump/protoreflect v1.6.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/justinas/alice v1.2.0
@@ -30,7 +30,7 @@ require (
 	github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d
 	github.com/kihamo/go-workers v2.1.7+incompatible
 	github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe
-	github.com/kihamo/snitch v0.0.0-20200330215756-dee5df9e2216
+	github.com/kihamo/snitch v0.0.0-20200412155652-f210fc24715b
 	github.com/mailru/easyjson v0.7.1
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/kinako v0.0.0-20170717041458-332c0a7e205a
