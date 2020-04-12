@@ -13,7 +13,7 @@ import (
 	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/snitch"
-	_ "github.com/kihamo/snitch/collector" // nolint:golint
+	"github.com/kihamo/snitch/collector"
 	"github.com/kihamo/snitch/storage"
 )
 
@@ -67,7 +67,6 @@ func (c *Component) Dependencies() []shadow.Dependency {
 
 func (c *Component) Init(a shadow.Application) error {
 	c.application = a
-	c.registry = snitch.DefaultRegisterer
 
 	c.config = a.GetComponent(config.ComponentName).(config.Component)
 
@@ -75,20 +74,32 @@ func (c *Component) Init(a shadow.Application) error {
 }
 
 func (c *Component) Run(a shadow.Application, ready chan<- struct{}) error {
-	if c.application.HasComponent(profiling.ComponentName) {
-		c.registry.AddStorages(storage.NewExpvarWithID(metrics.ComponentName))
-	}
-
 	c.logger = logging.DefaultLazyLogger(c.Name())
 
 	<-a.ReadyComponent(config.ComponentName)
+	c.registry = snitch.NewRegistry(c.config.Duration(metrics.ConfigInterval))
 
 	if err := c.initStorage(); err != nil {
 		return err
 	}
 
+	if c.application.HasComponent(profiling.ComponentName) {
+		c.registry.AddStorages(storage.NewExpvarWithID(metrics.ComponentName))
+	}
+
+	c.registry.Register(
+		NewOnOffCollector(collector.NewDebugCollector(), func() bool {
+			return c.config.Bool(metrics.ConfigCollectorsDebugEnabled)
+		}),
+		NewOnOffCollector(collector.NewRuntimeCollector(), func() bool {
+			return c.config.Bool(metrics.ConfigCollectorsRuntimeEnabled)
+		}),
+		NewOnOffCollector(collector.NewModCollector(), func() bool {
+			return c.config.Bool(metrics.ConfigCollectorsModEnabled)
+		}),
+	)
+
 	c.initLabels(c.config.String(metrics.ConfigLabels))
-	c.registry.SendInterval(c.config.Duration(metrics.ConfigInterval))
 
 	ready <- struct{}{}
 

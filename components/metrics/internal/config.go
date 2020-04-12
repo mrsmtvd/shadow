@@ -52,6 +52,21 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithEditable(true).
 			WithView([]string{config.ViewTags}).
 			WithViewOptions(map[string]interface{}{config.ViewOptionTagsDefaultText: "add a label"}),
+		config.NewVariable(metrics.ConfigCollectorsDebugEnabled, config.ValueTypeBool).
+			WithUsage("Debug collector (about GC)").
+			WithGroup("Collectors").
+			WithEditable(true).
+			WithDefault(true),
+		config.NewVariable(metrics.ConfigCollectorsRuntimeEnabled, config.ValueTypeBool).
+			WithUsage("Runtime collector (about go runtime and memory)").
+			WithGroup("Collectors").
+			WithEditable(true).
+			WithDefault(true),
+		config.NewVariable(metrics.ConfigCollectorsModEnabled, config.ValueTypeBool).
+			WithUsage("Modules collector (about packages)").
+			WithGroup("Collectors").
+			WithEditable(true).
+			WithDefault(true),
 	}
 }
 

@@ -30,7 +30,7 @@ require (
 	github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d
 	github.com/kihamo/go-workers v2.1.7+incompatible
 	github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe
-	github.com/kihamo/snitch v0.0.0-20200412155652-f210fc24715b
+	github.com/kihamo/snitch v0.0.0-20200412182537-3478a87783e1
 	github.com/mailru/easyjson v0.7.1
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/kinako v0.0.0-20170717041458-332c0a7e205a
