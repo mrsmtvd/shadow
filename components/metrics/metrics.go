@@ -9,8 +9,6 @@ type HasMetrics interface {
 }
 
 var (
-	MetricUpTime = snitch.NewCounter(MetricNameUpTime, "Application up time in seconds")
-
 	MetricResponseTimeSeconds        = snitch.NewTimer(MetricNameResponseTimeSeconds, "Response time in seconds")
 	MetricResponseSizeBytes          = snitch.NewHistogram(MetricNameResponseSizeBytes, "Size of responses in bytes")
 	MetricResponseMarshalTimeSeconds = snitch.NewHistogram(MetricNameResponseMarshalTimeSeconds, "Marshal time of response in seconds")
