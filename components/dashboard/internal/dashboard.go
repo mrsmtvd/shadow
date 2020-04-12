@@ -31,6 +31,7 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 		WithURL("/" + c.Name() + "/components").
 		WithIcon("tachometer-alt").
 		WithChild(dashboard.NewMenu("Components").WithURL("/" + c.Name() + "/components")).
+		WithChild(dashboard.NewMenu("Dependencies").WithURL("/" + c.Name() + "/dependencies")).
 		WithChild(dashboard.NewMenu("Environment").WithURL("/" + c.Name() + "/environment")).
 		WithChild(dashboard.NewMenu("Asset FS").WithURL("/" + c.Name() + "/assetfs")).
 		WithChild(dashboard.NewMenu("Routing").WithURL("/" + c.Name() + "/routing")).
@@ -49,6 +50,9 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 		dashboard.NewRoute("/"+c.Name()+"/datatables/i18n.json", &handlers.DataTablesHandler{}).
 			WithMethods([]string{http.MethodGet}),
 		dashboard.NewRoute("/"+c.Name()+"/environment", &handlers.EnvironmentHandler{}).
+			WithMethods([]string{http.MethodGet}).
+			WithAuth(true),
+		dashboard.NewRoute("/"+c.Name()+"/dependencies", &handlers.DependenciesHandler{}).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),
 		dashboard.NewRoute("/"+c.Name()+"/routing", handlers.NewRoutingHandler(c.router)).
