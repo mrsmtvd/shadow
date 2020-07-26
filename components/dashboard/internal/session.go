@@ -15,7 +15,7 @@ const (
 
 type Session struct {
 	session  *scs.SessionManager
-	flashBag session.FlashBag
+	flashBag *session.AutoExpireFlashBag
 	request  *http.Request
 }
 
@@ -49,11 +49,15 @@ func (s *Session) init() {
 			s.flashBag.Add(level, message)
 		}
 	}
+
+	s.flashBag.Commit()
 }
 
 func (s *Session) Flush() {
-	if content, err := json.Marshal(s.flashBag.All()); err == nil {
-		s.PutBytes(SessionFlashBag, content)
+	if s.flashBag.Changed() {
+		if content, err := json.Marshal(s.flashBag.All()); err == nil {
+			s.PutBytes(SessionFlashBag, content)
+		}
 	}
 }
 

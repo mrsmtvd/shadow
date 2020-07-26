@@ -30,6 +30,6 @@ func (c *Component) initSession() {
 
 	c.sessionManager.ErrorFunc = func(w http.ResponseWriter, r *http.Request, err error) {
 		c.logger.Error(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		c.router.InternalErrorServeHTTP(w, r, err)
 	}
 }

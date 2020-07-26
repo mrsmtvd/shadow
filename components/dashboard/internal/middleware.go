@@ -38,6 +38,8 @@ func SessionMiddleware(sessionManager *scs.SessionManager) func(http.Handler) ht
 			ctx := dashboard.ContextWithSession(r.Context(), session)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
+
+			session.Flush()
 		}))
 	}
 }

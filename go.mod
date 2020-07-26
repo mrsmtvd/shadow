@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/squirrel v1.2.0
 	github.com/OneOfOne/xxhash v1.2.7 // indirect
 	github.com/TheZeroSlave/zapsentry v1.3.0
-	github.com/alexedwards/scs/v2 v2.3.0
+	github.com/alexedwards/scs/v2 v2.3.1
 	github.com/bsm/histogram v2.0.0+incompatible // indirect
 	github.com/bugsnag/osext v0.0.0-20130617224835-0dd3f918b21b
 	github.com/chai2010/gettext-go v0.0.0-20200323094640-79c7d7df857f

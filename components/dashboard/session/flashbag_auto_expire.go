@@ -5,14 +5,29 @@ import (
 )
 
 type AutoExpireFlashBag struct {
-	lock     sync.Mutex
+	lock     sync.RWMutex
 	messages map[string][]string
+	changed  bool
 }
 
 func NewAutoExpireFlashBag() *AutoExpireFlashBag {
 	return &AutoExpireFlashBag{
 		messages: make(map[string][]string),
 	}
+}
+
+func (b *AutoExpireFlashBag) Commit() {
+	b.lock.Lock()
+	defer b.lock.Unlock()
+
+	b.changed = false
+}
+
+func (b *AutoExpireFlashBag) Changed() bool {
+	b.lock.RLock()
+	defer b.lock.RUnlock()
+
+	return b.changed
 }
 
 func (b *AutoExpireFlashBag) Notice(message string) {
@@ -40,6 +55,7 @@ func (b *AutoExpireFlashBag) Add(level, message string) {
 	}
 
 	b.messages[level] = append(b.messages[level], message)
+	b.changed = true
 }
 
 func (b *AutoExpireFlashBag) Get(level string) []string {
@@ -49,6 +65,7 @@ func (b *AutoExpireFlashBag) Get(level string) []string {
 	messages, ok := b.messages[level]
 	if ok {
 		b.messages[level] = make([]string, 0)
+		b.changed = true
 		return messages
 	}
 
@@ -61,6 +78,7 @@ func (b *AutoExpireFlashBag) All() map[string][]string {
 
 	messages := b.messages
 	b.messages = make(map[string][]string)
+	b.changed = true
 
 	return messages
 }
