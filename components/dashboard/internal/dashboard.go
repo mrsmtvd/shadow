@@ -10,7 +10,7 @@ import (
 	"path"
 	"strings"
 
-	assetfs "github.com/elazarl/go-bindata-assetfs"
+	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
@@ -185,8 +185,8 @@ func templateFunctionMock(i int) func(...interface{}) string {
 	}
 }
 
-func templateFunctionRaw(x string) template.HTML {
-	return template.HTML(x)
+func templateFunctionRaw(value interface{}) template.HTML {
+	return template.HTML(fmt.Sprint(value))
 }
 
 func templateFunctionAdd(x, y int) (interface{}, error) {
