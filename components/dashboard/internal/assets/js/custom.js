@@ -494,6 +494,14 @@ function init_modals() {
             modal.find('.modal-body').text(body);
         }
 
+        var url = target.data('modal-url');
+        if (url !== 'undefined') {
+            modal.find('.modal-body').html(
+                '<iframe src="' + url + '" ' + ' style="border:0;height:100%;width:100%">' +
+                '</iframe>'
+            );
+        }
+
         var callback = target.data('modal-callback');
         if (callback !== 'undefined') {
             $('#modal').data('modal-callback', callback);
