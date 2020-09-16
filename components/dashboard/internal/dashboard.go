@@ -10,7 +10,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
@@ -198,7 +198,7 @@ func templateFunctionMod(x, y int) (bool, error) {
 }
 
 func templateFunctionReplace(input, from, to string) string {
-	return strings.Replace(input, from, to, -1)
+	return strings.ReplaceAll(input, from, to)
 }
 
 func templateFunctionStaticHTML(file string) template.HTML {

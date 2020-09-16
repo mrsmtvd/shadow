@@ -17,9 +17,9 @@ import (
 
 func EnvKey(name string) string {
 	name = strings.ToUpper(name)
-	name = strings.Replace(name, " ", "_", -1)
-	name = strings.Replace(name, "-", "_", -1)
-	name = strings.Replace(name, ".", "_", -1)
+	name = strings.ReplaceAll(name, " ", "_")
+	name = strings.ReplaceAll(name, "-", "_")
+	name = strings.ReplaceAll(name, ".", "_")
 
 	return name
 }

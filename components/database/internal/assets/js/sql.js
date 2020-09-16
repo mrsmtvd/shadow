@@ -116,7 +116,7 @@ $(document).ready(function () {
                 return
             }
 
-            if (r.message !== 'undefined') {
+            if (typeof r.message !== 'undefined') {
                 new PNotify({
                     title: 'Result operation',
                     text: r.message,

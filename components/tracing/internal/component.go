@@ -29,7 +29,7 @@ func (c *Component) Name() string {
 }
 
 func (c *Component) Version() string {
-	return tracing.ComponentVersion + "/" + strings.Replace(jaeger.JaegerClientVersion, "Go-", "", -1)
+	return tracing.ComponentVersion + "/" + strings.ReplaceAll(jaeger.JaegerClientVersion, "Go-", "")
 }
 
 func (c *Component) Dependencies() []shadow.Dependency {

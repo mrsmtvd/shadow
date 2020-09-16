@@ -42,7 +42,7 @@
                 {{ range $id, $profile := .profiles }}
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" class="flat" id="{{ $profile.GetId }}" name="profile_{{ $profile.GetId }}" value="{{ $profile.GetId }}" {{ if $profile.GetStarted }}checked{{ end }}> {{ i18n $profile.GetDescription $ }}
+                        <input type="checkbox" class="flat" id="{{ $profile.GetID }}" name="profile_{{ $profile.GetID }}" value="{{ $profile.GetID }}" {{ if $profile.GetStarted }}checked{{ end }}> {{ i18n $profile.GetDescription $ }}
                     </label>
                 </div>
                 {{ end }}
@@ -99,7 +99,7 @@
                 <td>
                     {{ if eq $dump.GetStatus 1 }}
                         {{ range $p, $profile := $dump.GetProfiles }}
-                            {{ $profile.GetId }}
+                            {{ $profile.GetID }}
                         {{ end }}
                     {{ else }}
                     <div class="progress" style="width:100%;margin-bottom:0;float:right">
@@ -114,8 +114,8 @@
                 <td>{{ $dump.GetSize }}</td>
                 <td class="text-right">
                     {{ if and (ne $dump.GetStatus 0) (ne $dump.GetStatus 2) }}
-                    <form method="post" action="?action=delete&id={{ $dump.GetId }}" class="btn-group btn-group-xs">
-                        <a href="?action=download&id={{ $dump.GetId }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download" title="{{ i18n "Download" $ }}"></i></a>
+                    <form method="post" action="?action=delete&id={{ $dump.GetID }}" class="btn-group btn-group-xs">
+                        <a href="?action=download&id={{ $dump.GetID }}" class="btn btn-info btn-icon"><i class="glyphicon glyphicon-download" title="{{ i18n "Download" $ }}"></i></a>
                         <button type="submit" class="btn btn-danger btn-icon"><i class="glyphicon glyphicon-trash" title="{{ i18n "Delete" $ }}"></i></button>
                     </form>
                     {{ else }}

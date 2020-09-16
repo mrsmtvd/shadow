@@ -66,6 +66,7 @@ func (b *AutoExpireFlashBag) Get(level string) []string {
 	if ok {
 		b.messages[level] = make([]string, 0)
 		b.changed = true
+
 		return messages
 	}
 

@@ -122,45 +122,36 @@ func (c *Component) ConfigVariables() []config.Variable {
 		config.NewVariable(dashboard.ConfigSessionCleanupInterval, config.ValueTypeDuration).
 			WithUsage("Maximum length of time a session can be inactive before it expires").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault(0),
 		config.NewVariable(dashboard.ConfigSessionCookieName, config.ValueTypeString).
 			WithUsage("The name of the session cookie issued to clients. Note that cookie names should not contain whitespace, commas, semicolons, backslashes or control characters as per RFC6265n").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault("shadow.session"),
 		config.NewVariable(dashboard.ConfigSessionDomain, config.ValueTypeString).
 			WithUsage("Domain attribute on the session cookie").
 			WithGroup("User session"),
-		//WithEditable(true),
 		config.NewVariable(dashboard.ConfigSessionHTTPOnly, config.ValueTypeBool).
 			WithUsage("HttpOnly attribute on the session cookie").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault(true),
 		config.NewVariable(dashboard.ConfigSessionIdleTimeout, config.ValueTypeDuration).
 			WithUsage("Maximum length of time a session can be inactive before it expires").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault(0),
 		config.NewVariable(dashboard.ConfigSessionLifetime, config.ValueTypeDuration).
 			WithUsage("Maximum length of time that a session is valid for before it expires").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault(24 * time.Hour),
 		config.NewVariable(dashboard.ConfigSessionPath, config.ValueTypeString).
 			WithUsage("Path attribute on the session cookie").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault("/"),
 		config.NewVariable(dashboard.ConfigSessionPersist, config.ValueTypeBool).
 			WithUsage("Persist sets whether the session cookie should be persistent or not").
 			WithGroup("User session"),
-		//WithEditable(true),
 		config.NewVariable(dashboard.ConfigSessionSameSite, config.ValueTypeInt).
 			WithUsage("SameSite controls the value of the 'SameSite' attribute on the session cookie").
 			WithGroup("User session").
-			//WithEditable(true).
 			WithDefault(http.SameSiteDefaultMode).
 			WithView([]string{config.ViewEnum}).
 			WithViewOptions(map[string]interface{}{
@@ -174,20 +165,16 @@ func (c *Component) ConfigVariables() []config.Variable {
 		config.NewVariable(dashboard.ConfigSessionSecure, config.ValueTypeBool).
 			WithUsage("Secure attribute on the session cookie").
 			WithGroup("User session"),
-		//WithEditable(true),
 		config.NewVariable(dashboard.ConfigFrontendMinifyEnabled, config.ValueTypeBool).
 			WithUsage("Use minified static files").
 			WithGroup("Develop mode").
-			//WithEditable(true).
 			WithDefault(true),
 		config.NewVariable(dashboard.ConfigPanicHandlerCallerSkip, config.ValueTypeInt64).
 			WithUsage("Skip number of callers in panic handler").
 			WithGroup("Develop mode").
-			//WithEditable(true).
 			WithDefault(DefaultCallerSkip),
 		config.NewVariable(dashboard.ConfigStartURL, config.ValueTypeString).
 			WithUsage("Start URL").
-			//WithEditable(true).
 			WithDefault("/" + c.Name()),
 	}
 }
@@ -214,14 +201,6 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 			dashboard.ConfigOAuth2GplusSecret,
 			dashboard.ConfigOAuth2GplusScopes,
 		}, c.watchAuth),
-		//config.NewWatcher([]string{dashboard.ConfigSessionCookieName}, c.watchSessionCookieName),
-		//config.NewWatcher([]string{dashboard.ConfigSessionDomain}, c.watchSessionDomain),
-		//config.NewWatcher([]string{dashboard.ConfigSessionHTTPOnly}, c.watchSessionHTTPOnly),
-		//config.NewWatcher([]string{dashboard.ConfigSessionIdleTimeout}, c.watchSessionIdleTimeout),
-		//config.NewWatcher([]string{dashboard.ConfigSessionLifetime}, c.watchSessionLifetime),
-		//config.NewWatcher([]string{dashboard.ConfigSessionPath}, c.watchSessionPath),
-		//config.NewWatcher([]string{dashboard.ConfigSessionPersist}, c.watchSessionPersist),
-		//config.NewWatcher([]string{dashboard.ConfigSessionSecure}, c.watchSessionSecure),
 		config.NewWatcher([]string{dashboard.ConfigPanicHandlerCallerSkip}, c.watchPanicHandlerCallerSkip),
 	}
 }
@@ -229,38 +208,6 @@ func (c *Component) ConfigWatchers() []config.Watcher {
 func (c *Component) watchAuth(_ string, _ interface{}, _ interface{}) {
 	_ = c.initAuth()
 }
-
-//func (c *Component) watchSessionCookieName(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.Name(v.(string))
-//}
-//
-//func (c *Component) watchSessionDomain(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.Domain(v.(string))
-//}
-//
-//func (c *Component) watchSessionHTTPOnly(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.HttpOnly(v.(bool))
-//}
-//
-//func (c *Component) watchSessionIdleTimeout(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.IdleTimeout(v.(time.Duration))
-//}
-//
-//func (c *Component) watchSessionLifetime(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.Lifetime(v.(time.Duration))
-//}
-//
-//func (c *Component) watchSessionPath(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.Path(v.(string))
-//}
-//
-//func (c *Component) watchSessionPersist(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.Persist(v.(bool))
-//}
-//
-//func (c *Component) watchSessionSecure(_ string, v interface{}, _ interface{}) {
-//	c.sessionManager.Secure(v.(bool))
-//}
 
 func (c *Component) watchPanicHandlerCallerSkip(_ string, v interface{}, _ interface{}) {
 	c.router.SetPanicHandlerCallerSkip(int(v.(int64)))

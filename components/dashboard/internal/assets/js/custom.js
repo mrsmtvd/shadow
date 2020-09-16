@@ -485,17 +485,17 @@ function init_modals() {
         var modal = $(this);
 
         var title = target.data('modal-title');
-        if (title !== 'undefined') {
+        if (typeof title !== 'undefined') {
             modal.find('.modal-title').text(title);
         }
 
         var body = target.data('modal-body');
-        if (body !== 'undefined') {
+        if (typeof body !== 'undefined') {
             modal.find('.modal-body').text(body);
         }
 
         var url = target.data('modal-url');
-        if (url !== 'undefined') {
+        if (typeof url !== 'undefined') {
             modal.find('.modal-body').html(
                 '<iframe src="' + url + '" ' + ' style="border:0;height:100%;width:100%">' +
                 '</iframe>'
@@ -503,7 +503,7 @@ function init_modals() {
         }
 
         var callback = target.data('modal-callback');
-        if (callback !== 'undefined') {
+        if (typeof callback !== 'undefined') {
             $('#modal').data('modal-callback', callback);
         }
     });
@@ -512,7 +512,7 @@ function init_modals() {
         e.preventDefault();
 
         var callback = $('#modal').data('modal-callback');
-        if (callback !== 'undefined') {
+        if (typeof callback !== 'undefined') {
             eval(callback);
         }
     });

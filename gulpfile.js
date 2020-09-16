@@ -97,7 +97,7 @@ gulp.task('frontend', gulp.series('compress-components', function(done) {
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-progressbar/css'));
 
     // bootstrap-show-password
-    gulp.src(['bower_components/bootstrap-show-password/*.min.js'])
+    gulp.src(['bower_components/bootstrap-show-password/dist/*password.min.js'])
         .pipe(gulp.dest(VENDORS_DASHBOARD + '/bootstrap-show-password/js'));
 
     // datatables

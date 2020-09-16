@@ -175,7 +175,7 @@ func (c *Component) localeFromAcceptLanguage(acceptLanguage string) (*internatio
 	}
 
 	for _, t := range tags {
-		locale, ok := c.Manager().Locale(strings.Replace(t.String(), "-", "_", -1))
+		locale, ok := c.Manager().Locale(strings.ReplaceAll(t.String(), "-", "_"))
 		if ok {
 			return locale, nil
 		}
