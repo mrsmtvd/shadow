@@ -63,14 +63,40 @@ func (w *Wrapper) init(full bool, enc zapcore.Encoder, ws zapcore.WriteSyncer, l
 	l := zap.New(core, options...).Named(w.name)
 
 	w.lock.Lock()
-	w.encoder = enc
-	w.writeSyncer = ws
-	w.levelEnabler = level
-	w.options = options
 
+	if enc != nil {
+		w.encoder = enc
+	}
+
+	if ws != nil {
+		w.writeSyncer = ws
+	}
+
+	if level != nil {
+		w.levelEnabler = level
+	}
+
+	w.options = options
 	w.logger = l
 	w.sugar = l.Sugar()
+
 	w.lock.Unlock()
+
+	w.lock.RLock()
+
+	if enc == nil {
+		enc = w.encoder
+	}
+
+	if ws == nil {
+		ws = w.writeSyncer
+	}
+
+	if level == nil {
+		level = w.levelEnabler
+	}
+
+	w.lock.RUnlock()
 
 	if full {
 		for _, node := range w.Tree() {
@@ -87,7 +113,7 @@ func (w *Wrapper) Encoder() zapcore.Encoder {
 }
 
 func (w *Wrapper) SetEncoder(full bool, enc zapcore.Encoder) {
-	w.init(full, enc, w.WriteSyncer(), w.LevelEnabler())
+	w.init(full, enc, nil, nil)
 }
 
 func (w *Wrapper) WriteSyncer() zapcore.WriteSyncer {
@@ -98,7 +124,7 @@ func (w *Wrapper) WriteSyncer() zapcore.WriteSyncer {
 }
 
 func (w *Wrapper) SetWriteSyncer(full bool, ws zapcore.WriteSyncer) {
-	w.init(full, w.Encoder(), ws, w.LevelEnabler())
+	w.init(full, nil, ws, nil)
 }
 
 func (w *Wrapper) LevelEnabler() LevelEnabler {
@@ -109,7 +135,7 @@ func (w *Wrapper) LevelEnabler() LevelEnabler {
 }
 
 func (w *Wrapper) SetLevelEnabler(full bool, level LevelEnabler) {
-	w.init(full, w.Encoder(), w.WriteSyncer(), level)
+	w.init(full, nil, nil, level)
 }
 
 func (w *Wrapper) Options() []zap.Option {
@@ -123,11 +149,7 @@ func (w *Wrapper) Options() []zap.Option {
 }
 
 func (w *Wrapper) WithOptions(full bool, options ...zap.Option) {
-	w.lock.RLock()
-	opts := append(w.Options(), options...)
-	w.lock.RUnlock()
-
-	w.init(full, w.Encoder(), w.WriteSyncer(), w.LevelEnabler(), opts...)
+	w.init(full, nil, nil, nil, append(w.Options(), options...)...)
 }
 
 func (w *Wrapper) Name() string {
@@ -141,13 +163,22 @@ func (w *Wrapper) Named(name string) Logger {
 func (w *Wrapper) LoadOrStore(name string) *Wrapper {
 	w.lock.RLock()
 	exists, ok := w.tree[name]
-	w.lock.RUnlock()
 
 	if ok {
+		w.lock.RUnlock()
 		return exists
 	}
 
-	l := New(name, w.Encoder(), w.WriteSyncer(), w.LevelEnabler(), w.Options()...)
+	enc := w.encoder
+	ws := w.writeSyncer
+	level := w.levelEnabler
+
+	opts := make([]zap.Option, len(w.options))
+	copy(opts, w.options)
+
+	w.lock.RUnlock()
+
+	l := New(name, enc, ws, level, opts...)
 
 	w.lock.Lock()
 	w.tree[name] = l
