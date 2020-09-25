@@ -487,24 +487,31 @@ function init_modals() {
         var title = target.data('modal-title');
         if (typeof title !== 'undefined') {
             modal.find('.modal-title').text(title);
+        } else {
+            modal.find('.modal-title').text('');
         }
 
         var body = target.data('modal-body');
-        if (typeof body !== 'undefined') {
-            modal.find('.modal-body').text(body);
-        }
-
         var url = target.data('modal-url');
-        if (typeof url !== 'undefined') {
-            modal.find('.modal-body').html(
-                '<iframe src="' + url + '" ' + ' style="border:0;height:100%;width:100%">' +
-                '</iframe>'
-            );
+
+        if (typeof body !== 'undefined' || typeof url !== 'undefined') {
+            if (typeof body !== 'undefined') {
+                modal.find('.modal-body').text(body);
+            } else {
+                modal.find('.modal-body').html(
+                    '<iframe src="' + url + '" ' + ' style="border:0;height:100%;width:100%">' +
+                    '</iframe>'
+                );
+            }
+        } else {
+            modal.find('.modal-body').html('');
         }
 
         var callback = target.data('modal-callback');
         if (typeof callback !== 'undefined') {
             $('#modal').data('modal-callback', callback);
+        } else {
+            $('#modal').removeData('modal-callback');
         }
     });
 
