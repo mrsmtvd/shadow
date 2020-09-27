@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	code.cloudfoundry.org/clock v1.0.0 // indirect
+	github.com/Masterminds/sprig/v3 v3.1.0
 	github.com/Masterminds/squirrel v1.2.0
 	github.com/OneOfOne/xxhash v1.2.7 // indirect
 	github.com/TheZeroSlave/zapsentry v1.3.0
@@ -18,10 +19,12 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/golang/protobuf v1.3.5
-	github.com/google/uuid v1.1.1 // indirect
+	github.com/google/uuid v1.1.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645
 	github.com/heptiolabs/healthcheck v0.0.0-20180807145615-6ff867650f40
+	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/influxdata/influxdb v1.8.0 // indirect
 	github.com/jhump/protoreflect v1.6.0
 	github.com/julienschmidt/httprouter v1.3.0
@@ -34,6 +37,7 @@ require (
 	github.com/mailru/easyjson v0.7.1
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/kinako v0.0.0-20170717041458-332c0a7e205a
+	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pborman/uuid v1.2.0 // indirect
@@ -47,6 +51,7 @@ require (
 	github.com/uber/jaeger-lib v2.2.0+incompatible
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.14.1
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a

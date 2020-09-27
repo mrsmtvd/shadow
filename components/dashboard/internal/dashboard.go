@@ -10,6 +10,7 @@ import (
 	"path"
 	"strings"
 
+	sprig "github.com/Masterminds/sprig/v3"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -93,18 +94,16 @@ func (c *Component) DashboardRoutes() []dashboard.Route {
 }
 
 func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
-	return template.FuncMap{
-		"i18n":       templateFunctionMock(0),
-		"i18nPlural": templateFunctionMock(0),
-		"raw":        templateFunctionRaw,
-		"add":        templateFunctionAdd,
-		"mod":        templateFunctionMod,
-		"replace":    templateFunctionReplace,
-		"staticHTML": templateFunctionStaticHTML,
-		"staticURL":  c.templateFunctionStaticURL,
-		"toolbar":    c.templateFunctionToolbar,
-		"date_since": time.DateSinceAsMessage,
-	}
+	list := sprig.FuncMap()
+	list["i18n"] = templateFunctionMock(0)
+	list["i18nPlural"] = templateFunctionMock(0)
+	list["raw"] = templateFunctionRaw
+	list["staticHTML"] = templateFunctionStaticHTML
+	list["staticURL"] = c.templateFunctionStaticURL
+	list["toolbar"] = c.templateFunctionToolbar
+	list["date_since"] = time.DateSinceAsMessage
+
+	return list
 }
 
 func (c *Component) DashboardToolbar(ctx context.Context) string {
@@ -189,18 +188,6 @@ func templateFunctionMock(i int) func(...interface{}) string {
 
 func templateFunctionRaw(value interface{}) template.HTML {
 	return template.HTML(fmt.Sprint(value))
-}
-
-func templateFunctionAdd(x, y int) (interface{}, error) {
-	return x + y, nil
-}
-
-func templateFunctionMod(x, y int) (bool, error) {
-	return x%y == 0, nil
-}
-
-func templateFunctionReplace(input, from, to string) string {
-	return strings.ReplaceAll(input, from, to)
 }
 
 func templateFunctionStaticHTML(file string) template.HTML {
