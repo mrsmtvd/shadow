@@ -44,6 +44,8 @@ func (c *Component) DashboardMenu() dashboard.Menu {
 func (c *Component) DashboardRoutes() []dashboard.Route {
 	routes := []dashboard.Route{
 		dashboard.RouteFromAssetFS(c),
+		dashboard.NewRoute("/favicon.ico", dashboard.NewAssetsHandlerByPath(c.AssetFS(), "images/favicon.svg")).
+			WithMethods([]string{http.MethodGet}),
 		dashboard.NewRoute("/"+c.Name()+"/assetfs", handlers.NewAssetFSHandler(c.registryAssetFS, c.application.BuildDate())).
 			WithMethods([]string{http.MethodGet}).
 			WithAuth(true),

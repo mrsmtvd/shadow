@@ -127,6 +127,8 @@ func (r *Router) addRoute(route dashboard.Route) {
 		})
 	case http.HandlerFunc:
 		handler = h
+	case func(http.ResponseWriter, *http.Request):
+		handler = http.HandlerFunc(h)
 	case http.Handler:
 		handler = h
 	case http.FileSystem:

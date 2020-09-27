@@ -21,6 +21,7 @@ type AssetsHandler struct {
 	Handler
 
 	root http.FileSystem
+	path string
 }
 
 func NewAssetsHandler(root http.FileSystem) *AssetsHandler {
@@ -29,8 +30,25 @@ func NewAssetsHandler(root http.FileSystem) *AssetsHandler {
 	}
 }
 
+func NewAssetsHandlerByPath(root http.FileSystem, path string) *AssetsHandler {
+	return &AssetsHandler{
+		root: root,
+		path: path,
+	}
+}
+
 func (h *AssetsHandler) ServeHTTP(w http.ResponseWriter, r *Request) {
-	path := r.URL().Query().Get(":filepath")
+	var path string
+	if h.path != "" {
+		path = h.path
+	} else {
+		path = r.URL().Query().Get(":filepath")
+	}
+
+	if path == "" {
+		h.NotFound(w, r)
+		return
+	}
 
 	f, err := h.root.Open(path)
 	if err != nil {
@@ -68,7 +86,10 @@ func (h *AssetsHandler) ServeHTTP(w http.ResponseWriter, r *Request) {
 		}
 	}
 
-	w.Header().Set("Content-Type", ctype)
+	if ctype != "" {
+		w.Header().Set("Content-Type", ctype)
+	}
+
 	w.Header().Set("Cache-Control", "max-age=315360000, public, immutable")
 	w.Header().Set("Last-Modified", d.ModTime().UTC().Format(http.TimeFormat))
 	w.Header().Set("Content-Length", strconv.FormatInt(d.Size(), 10))
