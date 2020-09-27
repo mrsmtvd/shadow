@@ -4,7 +4,13 @@ function getParameterByName(name) {
 }
 
 function dateToString(d) {
-    return new Date(d).toLocaleString()
+    var timestamp = Date.parse(d);
+
+    if (isNaN(timestamp) === false) {
+        return new Date(timestamp).toLocaleString();
+    }
+
+    return d
 }
 
 function durationToReadableString(ns) {
