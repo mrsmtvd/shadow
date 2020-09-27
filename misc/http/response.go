@@ -7,11 +7,15 @@ import (
 
 type Response struct {
 	http.ResponseWriter
-	length int64
+	length int
 	status int
 }
 
 func NewResponse(w http.ResponseWriter) *Response {
+	if r, ok := w.(*Response); ok {
+		return r
+	}
+
 	return &Response{
 		ResponseWriter: w,
 	}
@@ -27,7 +31,7 @@ func (w *Response) Write(data []byte) (int, error) {
 	}
 
 	n, err := w.ResponseWriter.Write(data)
-	w.length += int64(n)
+	w.length += n
 
 	return n, err
 }
@@ -41,7 +45,7 @@ func (w *Response) StatusCode() int {
 	return w.status
 }
 
-func (w *Response) Length() int64 {
+func (w *Response) Length() int {
 	return w.length
 }
 

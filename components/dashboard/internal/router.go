@@ -36,15 +36,7 @@ type RouterMixHandler interface {
 
 func FromRouteHandler(h RouterHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var wq *dashboard.Response
-
-		if resp, ok := w.(*dashboard.Response); ok {
-			wq = resp
-		} else {
-			wq = dashboard.NewResponse(w)
-		}
-
-		h.ServeHTTP(wq, dashboard.NewRequest(r))
+		h.ServeHTTP(dashboard.NewResponse(w), dashboard.NewRequest(r))
 	})
 }
 
