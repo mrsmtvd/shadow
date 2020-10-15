@@ -85,18 +85,20 @@ func loadProfilesOnce() {
 		}
 
 		switch profile.id {
+		case "allocs":
+			profile.description = "a sampling of all past memory allocations"
+		case "block":
+			profile.description = "stack traces that led to blocking on synchronization primitives"
 		case "goroutine":
 			profile.description = "stack traces of all current goroutines"
 		case "heap":
 			profile.description = "a sampling of all heap allocations"
-		case "threadcreate":
-			profile.description = "stack traces that led to the creation of new OS threads"
-		case "block":
-			profile.description = "stack traces that led to blocking on synchronization primitives"
 		case "mutex":
 			profile.description = "stack traces of holders of contended mutexes"
+		case "threadcreate":
+			profile.description = "stack traces that led to the creation of new OS threads"
 		default:
-			profile.description = profile.id
+			profile.description = p.Name()
 		}
 
 		profiles.profiles[profile.id] = &profile

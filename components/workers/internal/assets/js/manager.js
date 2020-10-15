@@ -25,6 +25,8 @@ $(document).ready(function () {
             }
         })
         .DataTable({
+            stateSave: true,
+            stateDuration: 0,
             language: {
                 url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },
@@ -90,6 +92,8 @@ $(document).ready(function () {
             }
         })
         .DataTable({
+            stateSave: true,
+            stateDuration: 0,
             language: {
                 url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },
@@ -183,6 +187,8 @@ $(document).ready(function () {
             }
         })
         .DataTable({
+            stateSave: true,
+            stateDuration: 0,
             language: {
                 url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },

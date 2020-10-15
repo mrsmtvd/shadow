@@ -1,6 +1,8 @@
 $(document).ready(function () {
     var table = $('#sql')
         .DataTable({
+            stateSave: true,
+            stateDuration: 0,
             language: {
                 url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
             },

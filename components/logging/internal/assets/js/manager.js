@@ -3,6 +3,8 @@ $(document).ready(function () {
 
     var tableLoggers = $('#loggers table')
         .DataTable({
+            stateSave: true,
+            stateDuration: 0,
             pageLength: 50,
             language: {
                 url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale

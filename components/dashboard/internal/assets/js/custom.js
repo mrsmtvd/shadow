@@ -246,6 +246,8 @@ function init_datatables() {
     $('.datatable').DataTable({
         paging: false,
         fixedHeader: true,
+        stateSave: true,
+        stateDuration: 0,
         language: {
             url: '/dashboard/datatables/i18n.json?locale=' + window.shadowLocale
         }
