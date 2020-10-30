@@ -27,6 +27,7 @@
     {{ staticHTML (staticURL "/dashboard/assets/vendors/jquery/js/jquery.min.js" false) }}
 
     <script type="application/javascript">
+        window.shadowAppName = "{{ .Application.name }}";
         window.shadowLocale = '{{ .Locale }}';
         window.shadowI18n = {
             labels: {

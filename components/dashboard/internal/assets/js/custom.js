@@ -608,7 +608,8 @@ function init_sidebar() {
         }
     });
 
-    var menuToggleOnClick = function () {
+    // toggle small or large menu
+    $MENU_TOGGLE.on('click', function () {
         var state = $BODY.hasClass('nav-md');
 
         if (state) {
@@ -627,23 +628,24 @@ function init_sidebar() {
         $('.dataTable').each(function () {
             $(this).dataTable().fnDraw();
         });
-    };
-
-    if  (!$BODY.hasClass('nav-sm') && loadStateStorage(0, 'menu_toggle_hide')) {
-        menuToggleOnClick();
-    }
-
-    // toggle small or large menu
-    $MENU_TOGGLE.on('click', menuToggleOnClick);
+    });
 
     // check active menu
     $SIDEBAR_MENU.find('a[href="' + CURRENT_URL + '"]').parent('li').addClass('current-page');
 
-    $SIDEBAR_MENU.find('a').filter(function () {
-        return this.href == CURRENT_URL;
-    }).parent('li').addClass('current-page').parents('ul').slideDown(function () {
-        setContentHeight();
-    }).parent().addClass('active');
+    if (!$BODY.hasClass('nav-sm') && loadStateStorage(0, 'menu_toggle_hide')) {
+        $BODY.toggleClass('nav-md nav-sm');
+
+        $SIDEBAR_MENU.find('a').filter(function () {
+            return this.href == CURRENT_URL;
+        }).parent('li').addClass('current-page').parents('ul').parent().addClass('current-page');
+    } else {
+        $SIDEBAR_MENU.find('a').filter(function () {
+            return this.href == CURRENT_URL;
+        }).parent('li').addClass('current-page').parents('ul').slideDown(function () {
+            setContentHeight();
+        }).parent().addClass('active');
+    }
 
     // recompute content when resizing
     $(window).smartresize(function () {
@@ -777,7 +779,11 @@ function init_daterangepicker() {
 function loadStateStorage(iStateDuration, path) {
     try {
         return JSON.parse(
-            (iStateDuration === -1 ? sessionStorage : localStorage).getItem('shadow_'+path)
+            (iStateDuration === -1 ? sessionStorage : localStorage).getItem(
+                'shadow'
+                + (window.shadowAppName ? '_' + window.shadowAppName.replace(/\s/g, '_') : '')
+                + '_'+path
+            )
         );
     } catch (e) {
         return {};
@@ -786,6 +792,10 @@ function loadStateStorage(iStateDuration, path) {
 
 function saveStateStorage(iStateDuration, path, data) {
     try {
-        (iStateDuration === -1 ? sessionStorage : localStorage).setItem('shadow_'+path, JSON.stringify(data));
+        (iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+            'shadow'
+            + (window.shadowAppName ? '_' + window.shadowAppName.replace(/\s/g, '_') : '')
+            + '_'+path,
+            JSON.stringify(data));
     } catch (e) {}
 }
