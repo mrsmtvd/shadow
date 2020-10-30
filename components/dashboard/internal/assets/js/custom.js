@@ -608,15 +608,17 @@ function init_sidebar() {
         }
     });
 
-    // toggle small or large menu
-    $MENU_TOGGLE.on('click', function () {
-        if ($BODY.hasClass('nav-md')) {
+    var menuToggleOnClick = function () {
+        var state = $BODY.hasClass('nav-md');
+
+        if (state) {
             $SIDEBAR_MENU.find('li.active ul').hide();
             $SIDEBAR_MENU.find('li.active').addClass('active-sm').removeClass('active');
         } else {
             $SIDEBAR_MENU.find('li.active-sm ul').show();
             $SIDEBAR_MENU.find('li.active-sm').addClass('active').removeClass('active-sm');
         }
+        saveStateStorage(0, 'menu_toggle_hide', state);
 
         $BODY.toggleClass('nav-md nav-sm');
 
@@ -625,7 +627,14 @@ function init_sidebar() {
         $('.dataTable').each(function () {
             $(this).dataTable().fnDraw();
         });
-    });
+    };
+
+    if  (!$BODY.hasClass('nav-sm') && loadStateStorage(0, 'menu_toggle_hide')) {
+        menuToggleOnClick();
+    }
+
+    // toggle small or large menu
+    $MENU_TOGGLE.on('click', menuToggleOnClick);
 
     // check active menu
     $SIDEBAR_MENU.find('a[href="' + CURRENT_URL + '"]').parent('li').addClass('current-page');
@@ -763,4 +772,20 @@ function init_daterangepicker() {
             firstDay: 1
         }
     };
+}
+
+function loadStateStorage(iStateDuration, path) {
+    try {
+        return JSON.parse(
+            (iStateDuration === -1 ? sessionStorage : localStorage).getItem('shadow_'+path)
+        );
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveStateStorage(iStateDuration, path, data) {
+    try {
+        (iStateDuration === -1 ? sessionStorage : localStorage).setItem('shadow_'+path, JSON.stringify(data));
+    } catch (e) {}
 }

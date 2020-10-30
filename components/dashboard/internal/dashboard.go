@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"reflect"
+	"strconv"
 	"strings"
 
-	sprig "github.com/Masterminds/sprig/v3"
+	"github.com/Masterminds/sprig/v3"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/kihamo/shadow/components/config"
 	"github.com/kihamo/shadow/components/dashboard"
@@ -102,6 +104,8 @@ func (c *Component) DashboardTemplateFunctions() map[string]interface{} {
 	list["staticURL"] = c.templateFunctionStaticURL
 	list["toolbar"] = c.templateFunctionToolbar
 	list["date_since"] = time.DateSinceAsMessage
+	list["pointer"] = templateFunctionPointer
+	list["format_float"] = strconv.FormatFloat
 
 	return list
 }
@@ -210,4 +214,16 @@ func templateFunctionStaticHTML(file string) template.HTML {
 	}
 
 	return template.HTML(file)
+}
+
+func templateFunctionPointer(v interface{}) interface{} {
+	if ref := reflect.ValueOf(v); ref.Kind() == reflect.Ptr {
+		if !ref.Elem().IsValid() {
+			return nil
+		}
+
+		return ref.Elem().Interface()
+	}
+
+	return v
 }
