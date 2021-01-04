@@ -47,6 +47,8 @@ func (c *Component) Run(a shadow.Application, _ chan<- struct{}) error {
 
 	c.initGCPercent(cfg.Int(profiling.ConfigGCPercent))
 	c.initGoMaxProc(cfg.Int(profiling.ConfigGoMaxProc))
+	c.initBlockProfile(cfg.Int(profiling.ConfigProfileBlockRate))
+	c.initMutexProfile(cfg.Int(profiling.ConfigProfileMutexFraction))
 
 	return trace.LoadDumps(cfg.String(profiling.ConfigDumpDirectory))
 }
@@ -57,4 +59,12 @@ func (c *Component) initGCPercent(value int) {
 
 func (c *Component) initGoMaxProc(value int) {
 	runtime.GOMAXPROCS(value)
+}
+
+func (c *Component) initBlockProfile(rate int) {
+	runtime.SetBlockProfileRate(1)
+}
+
+func (c *Component) initMutexProfile(fraction int) {
+	runtime.SetMutexProfileFraction(1)
 }
