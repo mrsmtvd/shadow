@@ -62,9 +62,9 @@ func (c *Component) initGoMaxProc(value int) {
 }
 
 func (c *Component) initBlockProfile(rate int) {
-	runtime.SetBlockProfileRate(1)
+	runtime.SetBlockProfileRate(rate)
 }
 
 func (c *Component) initMutexProfile(fraction int) {
-	runtime.SetMutexProfileFraction(1)
+	runtime.SetMutexProfileFraction(fraction)
 }

@@ -89,7 +89,7 @@
 <body class="nav-md">
 <div class="container body">
     <div class="main_container">
-        <div class="col-md-3 left_col">
+        <div class="col-md-3 left_col hidden-print">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
                     <a href="{{ config "dashboard.start-url" }}" class="site_title"><span>{{ .Application.name }}</span></a>
@@ -197,7 +197,7 @@
         </div>
 
         <!-- top navigation -->
-        <div class="top_nav">
+        <div class="top_nav hidden-print">
             <div class="nav_menu">
                 <nav>
                     <div class="nav toggle">
@@ -242,7 +242,7 @@
         <!-- /page content -->
 
         <!-- footer content -->
-        <footer>
+        <footer class="hidden-print">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pull-left">
                 {{ .Application.name }} <strong>v.{{ .Application.version }}</strong> build <strong>{{ .Application.build }}</strong>
                 {{ if .Application.build_date }}
