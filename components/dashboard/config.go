@@ -9,6 +9,7 @@ const (
 	ConfigOAuth2EmailsAllowed    = ComponentName + ".oauth2.emails-allowed"
 	ConfigOAuth2DomainsAllowed   = ComponentName + ".oauth2.domains-allowed"
 	ConfigOAuth2BaseURL          = ComponentName + ".oauth2.base-url"
+	ConfigOAuth2AutoLogin        = ComponentName + ".oauth2.auto-login"
 	ConfigOAuth2GithubEnabled    = ComponentName + ".oauth2.github.enabled"
 	ConfigOAuth2GithubID         = ComponentName + ".oauth2.github.id"
 	ConfigOAuth2GithubSecret     = ComponentName + ".oauth2.github.secret"

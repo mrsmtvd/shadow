@@ -48,6 +48,11 @@ func (c *Component) ConfigVariables() []config.Variable {
 			WithGroup("Authorization OAuth").
 			WithEditable(true).
 			WithDefault("http://localhost/"),
+		config.NewVariable(dashboard.ConfigOAuth2AutoLogin, config.ValueTypeBool).
+			WithUsage("Set to true to attempt login with OAuth automatically, skipping the login screen. This setting is ignored if multiple OAuth providers are configured").
+			WithGroup("Authorization OAuth").
+			WithEditable(true).
+			WithDefault(true),
 		config.NewVariable(dashboard.ConfigOAuth2GithubEnabled, config.ValueTypeBool).
 			WithUsage("Enabled").
 			WithGroup("Authorization OAuth Github provider").

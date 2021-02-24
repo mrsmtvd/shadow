@@ -248,12 +248,23 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *dashboard.Request) {
 	providerName := r.URL().Query().Get(":provider")
 	if providerName == "" {
 		if !h.IsCallback {
-			h.renderForm(r, nil)
+			if r.Config().Bool(dashboard.ConfigOAuth2AutoLogin) {
+				providers := auth.GetProviders()
+				if len(providers) == 1 {
+					for name := range providers {
+						providerName = name
+					}
+				}
+			}
+
+			if providerName == "" {
+				h.renderForm(r, nil)
+				return
+			}
 		} else {
 			h.NotFound(w, r)
+			return
 		}
-
-		return
 	}
 
 	provider, err := auth.GetProvider(providerName)
