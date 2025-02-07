@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/mail"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/mail"
 	"gopkg.in/gomail.v2"
 )
 

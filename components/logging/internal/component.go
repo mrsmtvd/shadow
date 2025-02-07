@@ -6,11 +6,11 @@ import (
 	"sync"
 
 	"github.com/TheZeroSlave/zapsentry"
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/logging/internal/wrapper"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/logging/internal/wrapper"
+	"github.com/mrsmtvd/shadow/components/metrics"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

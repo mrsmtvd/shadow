@@ -6,12 +6,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/annotations"
-	"github.com/kihamo/shadow/components/annotations/storage"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/annotations"
+	"github.com/mrsmtvd/shadow/components/annotations/storage"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 type Component struct {

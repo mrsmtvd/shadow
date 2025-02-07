@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/tracing"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/tracing"
 	"github.com/uber/jaeger-client-go"
 )
 

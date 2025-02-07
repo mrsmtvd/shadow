@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type RoutingHandler struct {

@@ -3,8 +3,8 @@ package internal
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard/internal/handlers"
 )
 
 func (c *Component) initServeMux() error {

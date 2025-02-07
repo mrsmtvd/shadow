@@ -3,7 +3,7 @@ package internal
 import (
 	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/go-workers/worker"
-	"github.com/kihamo/shadow/components/workers"
+	"github.com/mrsmtvd/shadow/components/workers"
 )
 
 func (c *Component) AddSimpleWorker() {

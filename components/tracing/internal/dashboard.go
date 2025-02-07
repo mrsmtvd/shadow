@@ -3,7 +3,7 @@ package internal
 import (
 	"net/http"
 
-	m "github.com/kihamo/shadow/components/tracing/http"
+	m "github.com/mrsmtvd/shadow/components/tracing/http"
 )
 
 func (c *Component) DashboardMiddleware() []func(http.Handler) http.Handler {

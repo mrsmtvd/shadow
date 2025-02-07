@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kihamo/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota"
 )
 
 type HTTPFile struct {

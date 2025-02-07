@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kihamo/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota"
 )
 
 // подходит первый попавшийся файл

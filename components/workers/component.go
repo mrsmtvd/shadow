@@ -2,7 +2,7 @@ package workers
 
 import (
 	ws "github.com/kihamo/go-workers"
-	"github.com/kihamo/shadow"
+	"github.com/mrsmtvd/shadow"
 )
 
 type Component interface {

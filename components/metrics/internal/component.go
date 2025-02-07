@@ -5,16 +5,16 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/metrics"
-	"github.com/kihamo/shadow/components/profiling"
 	"github.com/kihamo/snitch"
 	"github.com/kihamo/snitch/collector"
 	"github.com/kihamo/snitch/storage"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow/components/profiling"
 )
 
 const (

@@ -3,7 +3,7 @@ package dashboard
 import (
 	"time"
 
-	"github.com/kihamo/shadow/components/dashboard/session"
+	"github.com/mrsmtvd/shadow/components/dashboard/session"
 )
 
 type Session interface {

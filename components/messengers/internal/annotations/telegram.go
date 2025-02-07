@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kihamo/shadow/components/annotations"
-	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
+	"github.com/mrsmtvd/shadow/components/annotations"
+	"github.com/mrsmtvd/shadow/components/messengers/platforms/telegram"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 

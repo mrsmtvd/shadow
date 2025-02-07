@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/logging/internal/wrapper"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/logging/internal/wrapper"
 	"go.uber.org/zap/zapcore"
 )
 

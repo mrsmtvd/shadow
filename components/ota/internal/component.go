@@ -5,14 +5,14 @@ import (
 	"strings"
 
 	"github.com/kardianos/osext"
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/ota"
-	"github.com/kihamo/shadow/components/ota/release"
-	"github.com/kihamo/shadow/components/ota/repository"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota/release"
+	"github.com/mrsmtvd/shadow/components/ota/repository"
 )
 
 type Component struct {

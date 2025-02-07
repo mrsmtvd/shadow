@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/config"
 )
 
 type VariableItem struct {

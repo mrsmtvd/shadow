@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/metrics/grpc"
+	"github.com/mrsmtvd/shadow/components/metrics/grpc"
 	"google.golang.org/grpc/stats"
 )
 

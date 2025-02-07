@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow"
+	"github.com/mrsmtvd/shadow"
 )
 
 const (

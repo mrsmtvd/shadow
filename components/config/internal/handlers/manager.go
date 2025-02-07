@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 type variableView struct {

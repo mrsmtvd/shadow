@@ -3,8 +3,8 @@ package internal
 import (
 	"os"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/ota"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

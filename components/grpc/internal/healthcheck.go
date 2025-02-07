@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/heptiolabs/healthcheck"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/grpc"
-	"github.com/kihamo/shadow/components/grpc/client"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/grpc"
+	"github.com/mrsmtvd/shadow/components/grpc/client"
 	g "google.golang.org/grpc"
 )
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-gorp/gorp"
-	"github.com/kihamo/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database"
 )
 
 type SQL struct {

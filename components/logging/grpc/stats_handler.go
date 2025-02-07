@@ -4,8 +4,8 @@ import (
 	"context"
 
 	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
-	st "github.com/kihamo/shadow/components/grpc/stats"
-	"github.com/kihamo/shadow/components/logging"
+	st "github.com/mrsmtvd/shadow/components/grpc/stats"
+	"github.com/mrsmtvd/shadow/components/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
 )

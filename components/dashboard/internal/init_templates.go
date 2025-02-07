@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 func (c *Component) initTemplates() error {

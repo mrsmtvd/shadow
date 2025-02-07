@@ -4,8 +4,8 @@ import (
 	"expvar"
 	"net/http"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type ExpvarHandler struct {

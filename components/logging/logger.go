@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"github.com/kihamo/shadow/components/logging/internal/wrapper"
+	"github.com/mrsmtvd/shadow/components/logging/internal/wrapper"
 )
 
 type Logger wrapper.Logger

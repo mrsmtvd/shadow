@@ -1,4 +1,4 @@
-package shadow // import "github.com/kihamo/shadow"
+package shadow // import "github.com/mrsmtvd/shadow"
 
 //go:generate npm install
 //go:generate bower install

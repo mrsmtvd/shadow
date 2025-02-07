@@ -10,8 +10,8 @@ import (
 	"sync"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
 )
 
 const (

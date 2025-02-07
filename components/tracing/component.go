@@ -1,7 +1,7 @@
 package tracing
 
 import (
-	"github.com/kihamo/shadow"
+	"github.com/mrsmtvd/shadow"
 	"github.com/opentracing/opentracing-go"
 )
 

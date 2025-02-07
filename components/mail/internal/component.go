@@ -5,13 +5,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/mail"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/mail"
+	"github.com/mrsmtvd/shadow/components/metrics"
 	"gopkg.in/gomail.v2"
 )
 

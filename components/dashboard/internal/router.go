@@ -8,8 +8,8 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 const (

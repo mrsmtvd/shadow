@@ -3,8 +3,8 @@ package internal
 import (
 	"errors"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 func (c *Component) ReadinessCheck() map[string]dashboard.HealthCheck {

@@ -1,8 +1,8 @@
 package i18n
 
 import (
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n/internationalization"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n/internationalization"
 )
 
 func init() {

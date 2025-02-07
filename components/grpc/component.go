@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/kihamo/shadow"
+	"github.com/mrsmtvd/shadow"
 	"google.golang.org/grpc"
 )
 

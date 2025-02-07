@@ -5,7 +5,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/alexedwards/scs/v2/memstore"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 func (c *Component) initSession() {

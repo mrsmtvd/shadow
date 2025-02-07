@@ -7,14 +7,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/annotations"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/messengers"
-	storages "github.com/kihamo/shadow/components/messengers/internal/annotations"
-	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/annotations"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/messengers"
+	storages "github.com/mrsmtvd/shadow/components/messengers/internal/annotations"
+	"github.com/mrsmtvd/shadow/components/messengers/platforms/telegram"
 )
 
 type Component struct {

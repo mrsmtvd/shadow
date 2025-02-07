@@ -3,9 +3,9 @@ package internal
 import (
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/workers"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/workers"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

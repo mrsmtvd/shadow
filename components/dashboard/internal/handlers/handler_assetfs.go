@@ -13,7 +13,7 @@ import (
 	"time"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type AssetFSHandler struct {

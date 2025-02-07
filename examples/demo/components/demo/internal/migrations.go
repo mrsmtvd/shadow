@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database"
 )
 
 func (c *Component) DatabaseMigrations() []database.Migration {

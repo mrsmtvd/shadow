@@ -1,8 +1,8 @@
 package metrics
 
 import (
-	"github.com/kihamo/shadow"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow"
 )
 
 type Component interface {

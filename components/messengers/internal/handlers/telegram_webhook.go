@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/messengers"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/messengers"
 )
 
 type TelegramWebHookHandler struct {

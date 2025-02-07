@@ -3,8 +3,8 @@ package internal
 import (
 	"runtime"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/profiling"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/profiling"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

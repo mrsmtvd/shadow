@@ -3,9 +3,9 @@ package http
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/tracing"
-	misc "github.com/kihamo/shadow/misc/http"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/tracing"
+	misc "github.com/mrsmtvd/shadow/misc/http"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"

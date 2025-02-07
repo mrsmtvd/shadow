@@ -5,12 +5,12 @@ import (
 	"runtime"
 	"runtime/debug"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/profiling"
-	"github.com/kihamo/shadow/components/profiling/trace"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/profiling"
+	"github.com/mrsmtvd/shadow/components/profiling/trace"
 )
 
 type Component struct {

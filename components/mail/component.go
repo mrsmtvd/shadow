@@ -1,7 +1,7 @@
 package mail
 
 import (
-	"github.com/kihamo/shadow"
+	"github.com/mrsmtvd/shadow"
 	"gopkg.in/gomail.v2"
 )
 

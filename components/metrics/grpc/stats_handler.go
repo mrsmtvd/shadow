@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kihamo/shadow/components/grpc"
-	st "github.com/kihamo/shadow/components/grpc/stats"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow/components/grpc"
+	st "github.com/mrsmtvd/shadow/components/grpc/stats"
+	"github.com/mrsmtvd/shadow/components/metrics"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"

@@ -3,7 +3,7 @@ package internal
 import (
 	"io"
 
-	"github.com/kihamo/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/i18n"
 )
 
 func (c *Component) I18n() map[string][]io.ReadSeeker {

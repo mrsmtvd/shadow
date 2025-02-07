@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/mail"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/mail"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

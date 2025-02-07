@@ -2,7 +2,7 @@ package internal
 
 import (
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 func (c *Component) initAssetFS() {

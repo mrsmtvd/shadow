@@ -1,4 +1,4 @@
-module github.com/kihamo/shadow
+module github.com/mrsmtvd/shadow
 
 go 1.17
 

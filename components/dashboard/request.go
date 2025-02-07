@@ -9,8 +9,8 @@ import (
 	"net/url"
 
 	"github.com/kihamo/gotypes"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard/auth"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard/auth"
 )
 
 func init() {

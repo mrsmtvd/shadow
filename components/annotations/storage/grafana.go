@@ -6,7 +6,7 @@ import (
 	"time"
 
 	grafana "github.com/kihamo/go-grafana-api"
-	"github.com/kihamo/shadow/components/annotations"
+	"github.com/mrsmtvd/shadow/components/annotations"
 )
 
 type Grafana struct {

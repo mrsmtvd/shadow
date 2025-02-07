@@ -6,13 +6,13 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/dashboard/auth"
-	"github.com/kihamo/shadow/components/dashboard/auth/providers/password"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
 	"github.com/markbates/goth/providers/gplus"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard/auth"
+	"github.com/mrsmtvd/shadow/components/dashboard/auth/providers/password"
 )
 
 func (c *Component) initAuth() (err error) {

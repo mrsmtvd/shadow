@@ -3,8 +3,8 @@ package internal
 import (
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/metrics"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

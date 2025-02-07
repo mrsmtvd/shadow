@@ -1,4 +1,4 @@
-package main // import "github.com/kihamo/shadow/examples/demo"
+package main // import "github.com/mrsmtvd/shadow/examples/demo"
 
 import (
 	"log"
@@ -7,22 +7,22 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/kihamo/shadow"
-	_ "github.com/kihamo/shadow/components/annotations/instance"
-	_ "github.com/kihamo/shadow/components/config/instance"
-	_ "github.com/kihamo/shadow/components/dashboard/instance"
-	_ "github.com/kihamo/shadow/components/database/instance"
-	_ "github.com/kihamo/shadow/components/grpc/instance"
-	_ "github.com/kihamo/shadow/components/i18n/instance"
-	_ "github.com/kihamo/shadow/components/logging/instance"
-	_ "github.com/kihamo/shadow/components/mail/instance"
-	_ "github.com/kihamo/shadow/components/messengers/instance"
-	_ "github.com/kihamo/shadow/components/metrics/instance"
-	_ "github.com/kihamo/shadow/components/ota/instance"
-	_ "github.com/kihamo/shadow/components/profiling/instance"
-	_ "github.com/kihamo/shadow/components/tracing/instance"
-	_ "github.com/kihamo/shadow/components/workers/instance"
-	_ "github.com/kihamo/shadow/examples/demo/components/demo/instance"
+	"github.com/mrsmtvd/shadow"
+	_ "github.com/mrsmtvd/shadow/components/annotations/instance"
+	_ "github.com/mrsmtvd/shadow/components/config/instance"
+	_ "github.com/mrsmtvd/shadow/components/dashboard/instance"
+	_ "github.com/mrsmtvd/shadow/components/database/instance"
+	_ "github.com/mrsmtvd/shadow/components/grpc/instance"
+	_ "github.com/mrsmtvd/shadow/components/i18n/instance"
+	_ "github.com/mrsmtvd/shadow/components/logging/instance"
+	_ "github.com/mrsmtvd/shadow/components/mail/instance"
+	_ "github.com/mrsmtvd/shadow/components/messengers/instance"
+	_ "github.com/mrsmtvd/shadow/components/metrics/instance"
+	_ "github.com/mrsmtvd/shadow/components/ota/instance"
+	_ "github.com/mrsmtvd/shadow/components/profiling/instance"
+	_ "github.com/mrsmtvd/shadow/components/tracing/instance"
+	_ "github.com/mrsmtvd/shadow/components/workers/instance"
+	_ "github.com/mrsmtvd/shadow/examples/demo/components/demo/instance"
 )
 
 var (

@@ -1,8 +1,8 @@
 package instance
 
 import (
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/profiling/internal"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/profiling/internal"
 )
 
 func NewComponent() shadow.Component {

@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/i18n"
 )
 
 // easyjson:json

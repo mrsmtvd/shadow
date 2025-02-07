@@ -3,9 +3,9 @@ package i18n
 import (
 	"io"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n/internationalization"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n/internationalization"
 )
 
 type Component interface {

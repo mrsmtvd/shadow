@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/kihamo/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota"
 	"go.uber.org/multierr"
 )
 

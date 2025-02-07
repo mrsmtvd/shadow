@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/heptiolabs/healthcheck"
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type HealthCheckHandler struct {

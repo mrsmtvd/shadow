@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kihamo/shadow/components/metrics"
-	misc "github.com/kihamo/shadow/misc/http"
+	"github.com/mrsmtvd/shadow/components/metrics"
+	misc "github.com/mrsmtvd/shadow/misc/http"
 )
 
 const (

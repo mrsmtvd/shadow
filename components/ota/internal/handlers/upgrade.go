@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/ota"
-	"github.com/kihamo/shadow/components/ota/release"
-	"github.com/kihamo/shadow/components/ota/repository"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota/release"
+	"github.com/mrsmtvd/shadow/components/ota/repository"
 )
 
 type UpgradeHandler struct {

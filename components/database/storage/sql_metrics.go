@@ -3,8 +3,8 @@ package storage
 import (
 	"time"
 
-	"github.com/kihamo/shadow/components/database"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow/components/database"
 )
 
 const (

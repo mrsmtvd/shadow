@@ -3,7 +3,7 @@ package logging
 import (
 	"sync"
 
-	"github.com/kihamo/shadow/components/logging/internal/wrapper"
+	"github.com/mrsmtvd/shadow/components/logging/internal/wrapper"
 	"go.uber.org/zap"
 )
 

@@ -2,8 +2,8 @@ package server
 
 import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/kihamo/shadow/components/grpc/interceptor"
-	"github.com/kihamo/shadow/components/grpc/stats"
+	"github.com/mrsmtvd/shadow/components/grpc/interceptor"
+	"github.com/mrsmtvd/shadow/components/grpc/stats"
 	"google.golang.org/grpc"
 	s "google.golang.org/grpc/stats"
 )

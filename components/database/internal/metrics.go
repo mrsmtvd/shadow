@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/database/storage"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database/storage"
 )
 
 const (

@@ -1,9 +1,9 @@
 Shadow framework
 ================
 
-[![Build Status](https://travis-ci.org/kihamo/shadow.svg)](https://travis-ci.org/kihamo/shadow)
-[![Coverage Status](https://coveralls.io/repos/kihamo/shadow/badge.svg?branch=master&service=github)](https://coveralls.io/github/kihamo/shadow?branch=master)
-[![GoDoc](https://godoc.org/github.com/kihamo/shadow?status.svg)](https://godoc.org/github.com/kihamo/shadow)
+[![Build Status](https://travis-ci.org/mrsmtvd/shadow.svg)](https://travis-ci.org/mrsmtvd/shadow)
+[![Coverage Status](https://coveralls.io/repos/mrsmtvd/shadow/badge.svg?branch=master&service=github)](https://coveralls.io/github/mrsmtvd/shadow?branch=master)
+[![GoDoc](https://godoc.org/github.com/mrsmtvd/shadow?status.svg)](https://godoc.org/github.com/mrsmtvd/shadow)
 
 Development
 ------------------
@@ -29,10 +29,10 @@ $ make build-all
 Container upgrade
 -----------------
 ```bash
-$ docker pull kihamo/shadow-full
+$ docker pull mrsmtvd/shadow-full
 $ docker stop shadow
 $ docker rm shadow
-$ docker run -d --name shadow -p 8001:8001 -p 8080:8080 kihamo/shadow-full -debug=true
+$ docker run -d --name shadow -p 8001:8001 -p 8080:8080 mrsmtvd/shadow-full -debug=true
 ```
 
 Docker restart on MacOS

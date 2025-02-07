@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/kihamo/shadow/components/dashboard/session"
+	"github.com/mrsmtvd/shadow/components/dashboard/session"
 )
 
 const (

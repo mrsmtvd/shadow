@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kihamo/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota"
 )
 
 type LocalFile struct {

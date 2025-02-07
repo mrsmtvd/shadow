@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type RouteItem struct {

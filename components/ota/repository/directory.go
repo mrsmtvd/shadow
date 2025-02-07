@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kihamo/shadow/components/ota"
-	"github.com/kihamo/shadow/components/ota/release"
+	"github.com/mrsmtvd/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota/release"
 )
 
 type Directory struct {

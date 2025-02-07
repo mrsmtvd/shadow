@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/kihamo/shadow/components/ota/release"
+	"github.com/mrsmtvd/shadow/components/ota/release"
 )
 
 type ShadowRecord struct {

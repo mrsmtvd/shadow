@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/logging/internal/wrapper"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/logging/internal/wrapper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

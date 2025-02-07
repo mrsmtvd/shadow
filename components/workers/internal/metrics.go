@@ -6,9 +6,9 @@ import (
 	"time"
 
 	ws "github.com/kihamo/go-workers"
-	"github.com/kihamo/shadow/components/metrics"
-	"github.com/kihamo/shadow/components/workers"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow/components/workers"
 )
 
 const (

@@ -5,7 +5,7 @@
   "author": "Kihamo",
   "repository": {
     "type": "git",
-    "url": "git://github.com/kihamo/shadow.git"
+    "url": "git://github.com/mrsmtvd/shadow.git"
   },
   "dependencies": {
     "del": "^3.0.0",

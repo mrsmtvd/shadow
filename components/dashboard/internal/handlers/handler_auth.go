@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/dashboard/auth"
-	"github.com/kihamo/shadow/components/logging"
 	"github.com/markbates/goth"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard/auth"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 var stateRand = rand.New(rand.NewSource(time.Now().UnixNano()))

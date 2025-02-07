@@ -4,14 +4,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/database/balancer"
-	"github.com/kihamo/shadow/components/database/storage"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database/balancer"
+	"github.com/mrsmtvd/shadow/components/database/storage"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/metrics"
 	migrate "github.com/rubenv/sql-migrate"
 )
 

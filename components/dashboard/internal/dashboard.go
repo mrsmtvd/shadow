@@ -14,11 +14,11 @@ import (
 
 	"github.com/Masterminds/sprig/v3"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/dashboard/internal/handlers"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/misc/time"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard/internal/handlers"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/misc/time"
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {

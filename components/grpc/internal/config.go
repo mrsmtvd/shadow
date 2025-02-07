@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/grpc"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/grpc"
 )
 
 func (c *Component) ConfigVariables() []config.Variable {

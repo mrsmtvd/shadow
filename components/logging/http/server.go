@@ -3,8 +3,8 @@ package http
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/logging"
-	misc "github.com/kihamo/shadow/misc/http"
+	"github.com/mrsmtvd/shadow/components/logging"
+	misc "github.com/mrsmtvd/shadow/misc/http"
 )
 
 func ServerMiddleware(log logging.Logger) func(http.Handler) http.Handler {

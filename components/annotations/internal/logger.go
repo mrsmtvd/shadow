@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 type logger struct {

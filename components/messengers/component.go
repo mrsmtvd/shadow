@@ -1,7 +1,7 @@
 package messengers
 
 import (
-	"github.com/kihamo/shadow"
+	"github.com/mrsmtvd/shadow"
 )
 
 type Component interface {

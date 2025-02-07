@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kihamo/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database"
 )
 
 type MigrationItem struct {

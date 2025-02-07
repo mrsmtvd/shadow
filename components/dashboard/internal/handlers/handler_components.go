@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/grpc"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/grpc"
+	"github.com/mrsmtvd/shadow/components/metrics"
 )
 
 type ComponentsHandler struct {

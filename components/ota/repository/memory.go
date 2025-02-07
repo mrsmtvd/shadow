@@ -3,7 +3,7 @@ package repository
 import (
 	"sync"
 
-	"github.com/kihamo/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota"
 )
 
 type Memory struct {

@@ -4,8 +4,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/metrics"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/metrics"
 )
 
 type ListHandler struct {

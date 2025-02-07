@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type orderedMenus []dashboard.Menu

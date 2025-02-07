@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 func ContextMiddleware(router dashboard.Router, renderer dashboard.Renderer) func(http.Handler) http.Handler {

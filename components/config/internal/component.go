@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/kihamo/gotypes"
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 func EnvKey(name string) string {

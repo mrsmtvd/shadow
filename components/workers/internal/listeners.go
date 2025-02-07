@@ -6,7 +6,7 @@ import (
 
 	"github.com/kihamo/go-workers"
 	"github.com/kihamo/go-workers/listener"
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 type Listener struct {

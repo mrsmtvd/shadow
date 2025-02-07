@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/logging"
 	"google.golang.org/grpc/grpclog"
 )
 

@@ -9,7 +9,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/go-gorp/gorp"
-	"github.com/kihamo/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database"
 )
 
 const (

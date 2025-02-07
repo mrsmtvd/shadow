@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/logging"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow/components/logging"
 )
 
 const (

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/database/storage"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database/storage"
 	migrate "github.com/rubenv/sql-migrate"
 )
 

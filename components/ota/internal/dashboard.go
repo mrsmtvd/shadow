@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/ota"
-	"github.com/kihamo/shadow/components/ota/internal/handlers"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/ota"
+	"github.com/mrsmtvd/shadow/components/ota/internal/handlers"
 )
 
 func (c *Component) DashboardTemplates() *assetfs.AssetFS {

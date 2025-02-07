@@ -3,7 +3,7 @@ package stats
 import (
 	"context"
 
-	"github.com/kihamo/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/config"
 	"google.golang.org/grpc/stats"
 )
 

@@ -5,8 +5,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/kihamo/shadow/components/dashboard"
-	rt "github.com/kihamo/shadow/components/dashboard/runtime"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	rt "github.com/mrsmtvd/shadow/components/dashboard/runtime"
 )
 
 type EnvironmentHandler struct {

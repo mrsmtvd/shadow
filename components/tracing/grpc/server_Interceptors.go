@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
-	"github.com/kihamo/shadow/components/tracing"
+	"github.com/mrsmtvd/shadow/components/tracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"google.golang.org/grpc"

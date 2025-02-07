@@ -11,12 +11,12 @@ import (
 	"strings"
 
 	"github.com/chai2010/gettext-go/gettext/mo"
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/i18n/internationalization"
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/i18n/internationalization"
+	"github.com/mrsmtvd/shadow/components/logging"
 	"golang.org/x/text/language"
 )
 

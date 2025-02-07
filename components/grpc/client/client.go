@@ -4,7 +4,7 @@ import (
 	"context"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/kihamo/shadow/components/grpc/stats"
+	"github.com/mrsmtvd/shadow/components/grpc/stats"
 	"google.golang.org/grpc"
 	s "google.golang.org/grpc/stats"
 )

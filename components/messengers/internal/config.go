@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/messengers"
-	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/messengers"
+	"github.com/mrsmtvd/shadow/components/messengers/platforms/telegram"
 )
 
 // TODO: listen debug mode

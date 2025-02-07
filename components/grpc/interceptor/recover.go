@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/kihamo/shadow/components/grpc/stats"
+	"github.com/mrsmtvd/shadow/components/grpc/stats"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

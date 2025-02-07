@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/kihamo/go-workers/task"
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/workers"
-	"github.com/kihamo/shadow/examples/demo/components/demo"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/workers"
+	"github.com/mrsmtvd/shadow/examples/demo/components/demo"
 )
 
 type Component struct {

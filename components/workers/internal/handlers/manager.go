@@ -5,9 +5,9 @@ import (
 	"time"
 
 	ws "github.com/kihamo/go-workers"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/i18n"
-	"github.com/kihamo/shadow/components/workers"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/i18n"
+	"github.com/mrsmtvd/shadow/components/workers"
 )
 
 // easyjson:json

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/kihamo/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database"
 )
 
 type Random struct {

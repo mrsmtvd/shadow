@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"github.com/kihamo/shadow/components/dashboard"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 const (

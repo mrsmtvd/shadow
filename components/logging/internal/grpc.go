@@ -1,8 +1,8 @@
 package internal
 
 import (
-	cmp "github.com/kihamo/shadow/components/grpc"
-	"github.com/kihamo/shadow/components/logging/grpc"
+	cmp "github.com/mrsmtvd/shadow/components/grpc"
+	"github.com/mrsmtvd/shadow/components/logging/grpc"
 	"google.golang.org/grpc/stats"
 )
 

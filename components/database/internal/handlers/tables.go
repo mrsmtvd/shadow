@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/database"
-	"github.com/kihamo/shadow/components/database/storage"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/database"
+	"github.com/mrsmtvd/shadow/components/database/storage"
 )
 
 type TablesHandler struct {

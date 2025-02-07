@@ -3,9 +3,9 @@ package internal
 import (
 	"time"
 
-	"github.com/kihamo/shadow"
-	"github.com/kihamo/shadow/components/metrics"
 	"github.com/kihamo/snitch"
+	"github.com/mrsmtvd/shadow"
+	"github.com/mrsmtvd/shadow/components/metrics"
 )
 
 type metricsCollector struct {

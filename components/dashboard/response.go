@@ -3,7 +3,7 @@ package dashboard
 import (
 	o "net/http"
 
-	"github.com/kihamo/shadow/misc/http"
+	"github.com/mrsmtvd/shadow/misc/http"
 )
 
 type Response = http.Response

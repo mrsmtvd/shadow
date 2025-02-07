@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/heptiolabs/healthcheck"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/messengers"
-	"github.com/kihamo/shadow/components/messengers/platforms/telegram"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/messengers"
+	"github.com/mrsmtvd/shadow/components/messengers/platforms/telegram"
 )
 
 const (

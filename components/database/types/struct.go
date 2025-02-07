@@ -7,7 +7,7 @@ import (
 
 	pb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/kihamo/gotypes"
-	"github.com/kihamo/shadow/components/grpc"
+	"github.com/mrsmtvd/shadow/components/grpc"
 )
 
 type Struct map[string]interface{}

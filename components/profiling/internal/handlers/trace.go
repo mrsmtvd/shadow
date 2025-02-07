@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kihamo/shadow/components/config"
-	"github.com/kihamo/shadow/components/dashboard"
-	"github.com/kihamo/shadow/components/logging"
-	"github.com/kihamo/shadow/components/profiling"
-	"github.com/kihamo/shadow/components/profiling/trace"
+	"github.com/mrsmtvd/shadow/components/config"
+	"github.com/mrsmtvd/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/profiling"
+	"github.com/mrsmtvd/shadow/components/profiling/trace"
 )
 
 type TraceHandler struct {

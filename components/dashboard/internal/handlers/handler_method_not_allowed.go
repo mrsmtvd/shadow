@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/kihamo/shadow/components/dashboard"
+	"github.com/mrsmtvd/shadow/components/dashboard"
 )
 
 type MethodNotAllowedHandler struct {

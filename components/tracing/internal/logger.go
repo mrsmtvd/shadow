@@ -3,7 +3,7 @@ package internal
 import (
 	"strings"
 
-	"github.com/kihamo/shadow/components/logging"
+	"github.com/mrsmtvd/shadow/components/logging"
 	"github.com/uber/jaeger-client-go"
 )
 
