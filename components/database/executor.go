@@ -12,6 +12,7 @@ type Executor interface {
 	Ping(context.Context) error
 	Begin() (Executor, error)
 	Commit() error
+	DB() *sql.DB
 	Rollback() error
 	SelectByQuery(i interface{}, query string, args ...interface{}) ([]interface{}, error)
 	Select(i interface{}, builder *sq.SelectBuilder) ([]interface{}, error)
