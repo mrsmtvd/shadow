@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	ws "github.com/kihamo/go-workers"
 	"github.com/kihamo/snitch"
+	ws "github.com/mrsmtvd/go-workers"
 	"github.com/mrsmtvd/shadow/components/metrics"
 	"github.com/mrsmtvd/shadow/components/workers"
 )

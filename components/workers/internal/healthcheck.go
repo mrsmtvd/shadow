@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"github.com/kihamo/go-workers"
 	"github.com/mrsmtvd/shadow/components/dashboard"
 	"github.com/pkg/errors"
 )

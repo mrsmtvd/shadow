@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	ws "github.com/kihamo/go-workers"
+	ws "github.com/mrsmtvd/go-workers"
 	"github.com/mrsmtvd/shadow/components/dashboard"
 	"github.com/mrsmtvd/shadow/components/i18n"
 	"github.com/mrsmtvd/shadow/components/workers"

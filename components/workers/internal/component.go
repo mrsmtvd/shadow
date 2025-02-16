@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	ws "github.com/kihamo/go-workers"
-	"github.com/kihamo/go-workers/dispatcher"
+	ws "github.com/mrsmtvd/go-workers"
+	"github.com/mrsmtvd/go-workers/dispatcher"
 	"github.com/mrsmtvd/shadow"
 	"github.com/mrsmtvd/shadow/components/config"
 	"github.com/mrsmtvd/shadow/components/dashboard"

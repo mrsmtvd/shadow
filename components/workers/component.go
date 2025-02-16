@@ -1,7 +1,7 @@
 package workers
 
 import (
-	ws "github.com/kihamo/go-workers"
+	ws "github.com/mrsmtvd/go-workers"
 	"github.com/mrsmtvd/shadow"
 )
 

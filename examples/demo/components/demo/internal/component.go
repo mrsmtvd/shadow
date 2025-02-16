@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/kihamo/go-workers/task"
+	"github.com/mrsmtvd/go-workers/task"
 	"github.com/mrsmtvd/shadow"
 	"github.com/mrsmtvd/shadow/components/database"
 	"github.com/mrsmtvd/shadow/components/logging"

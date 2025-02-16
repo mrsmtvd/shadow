@@ -263,8 +263,6 @@ github.com/kataras/pio v0.0.2/go.mod h1:hAoW0t9UmXi4R5Oyq5Z4irTbaTsOemSrDGUtaTl7
 github.com/kataras/sitemap v0.0.5/go.mod h1:KY2eugMKiPwsJgx7+U103YZehfvNGOXURubcGyk0Bz8=
 github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d h1:OWGFgM385y3MB18gWU1Cbb9WQZEnvCBdgtZXLZlOkHc=
 github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d/go.mod h1:tsZ8kui+vN0WhM98DPME1MKh0TD2MTVvE/Ig+qi+rn8=
-github.com/kihamo/go-workers v2.1.7+incompatible h1:OcxgzaRxzWCoGLXG4zOHauU9RG9Ef+C6Qbbs6NVoIPY=
-github.com/kihamo/go-workers v2.1.7+incompatible/go.mod h1:/25LqDRVdScSTfeBInL4i45Q9JDc6ddM6toL1lEUkaQ=
 github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe h1:tPzbTI6UkYAnF2O55sh0106hHotsyQLEFlsqcwjeUZU=
 github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe/go.mod h1:Ea+63Rptr1cn2lZLAq4FtbjhJiTD5pS0MnCsta84xqY=
 github.com/kihamo/snitch v0.0.0-20200412182537-3478a87783e1 h1:9LLnHjW6WOaIC2GG+y/73QCTzhRxu05CNPkXg4Mh2TI=
@@ -337,6 +335,8 @@ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lN
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/moul/http2curl v1.0.0/go.mod h1:8UbvGypXm98wA/IqH45anm5Y2Z6ep6O31QGOAZ3H0fQ=
 github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c/go.mod h1:skjdDftzkFALcuGzYSklqYd8gvat6F1gZJ4YPVbkZpM=
+github.com/mrsmtvd/go-workers v1.0.0 h1:3OE6X6UxMfKppqewO42pWLzlB4gpX2EolQKRcNu7k1w=
+github.com/mrsmtvd/go-workers v1.0.0/go.mod h1:v1RpnkEZUIVegi3RM8E5uHgCb24PZ9H+Qr6hHj+ooyY=
 github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae/go.mod h1:qAyveg+e4CE+eKJXWVjKXM4ck2QobLqTDytGJbLLhJg=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/nats-io/jwt v0.3.0/go.mod h1:fRYCDE99xlTsqUzISS1Bi75UBJ6ljOJQOAAu5VglpSg=

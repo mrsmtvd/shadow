@@ -22,7 +22,7 @@ require (
 	github.com/justinas/alice v1.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d
-	github.com/kihamo/go-workers v2.1.7+incompatible
+	github.com/mrsmtvd/go-workers v1.0.0
 	github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe
 	github.com/kihamo/snitch v0.0.0-20200412182537-3478a87783e1
 	github.com/mailru/easyjson v0.7.1
