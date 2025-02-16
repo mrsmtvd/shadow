@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/mrsmtvd/go-workers"
 	"github.com/mrsmtvd/go-workers/listener"
 	"github.com/mrsmtvd/shadow/components/logging"
 )

@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/mrsmtvd/go-workers"
 	"github.com/mrsmtvd/shadow/components/dashboard"
 	"github.com/pkg/errors"
 )
