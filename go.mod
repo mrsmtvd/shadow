@@ -22,12 +22,12 @@ require (
 	github.com/justinas/alice v1.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/kihamo/go-grafana-api v0.0.0-20180122174539-b9af836f6e9d
-	github.com/mrsmtvd/go-workers v1.0.0
 	github.com/kihamo/gotypes v0.0.0-20161225095921-c1b2b85a41fe
 	github.com/kihamo/snitch v0.0.0-20200412182537-3478a87783e1
 	github.com/mailru/easyjson v0.7.1
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/kinako v0.0.0-20170717041458-332c0a7e205a
+	github.com/mrsmtvd/go-workers v1.0.1
 	github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1
